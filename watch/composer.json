@@ -1,0 +1,7 @@
+{
+    "require": {
+        "slim/slim": "4.*",
+        "guzzlehttp/psr7": "^2",
+        "ext-json": "*"
+    }
+}

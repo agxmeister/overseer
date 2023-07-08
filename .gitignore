@@ -1,0 +1,45 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# Common
+
+# local env files
+.env*.local
+
+# misc
+.DS_Store
+.idea
+*.pem
+
+# Watch
+
+# dependencies
+/watch/vendor
+
+# Tower
+
+# dependencies
+/tower/node_modules
+/tower/.pnp
+/tower/**/.pnp.js
+
+# testing
+/tower/coverage
+
+# next.js
+/tower/.next/
+/tower/dst/
+
+# production
+/tower/build
+
+# debug
+/tower/**/npm-debug.log*
+/tower/**/yarn-debug.log*
+/tower/**/yarn-error.log*
+
+# vercel
+/tower/**/.vercel
+
+# typescript
+/tower/**/*.tsbuildinfo
+/tower/**/next-env.d.ts
