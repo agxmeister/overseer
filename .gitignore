@@ -15,6 +15,10 @@
 # dependencies
 /watch/vendor
 
+# testing
+/watch/tests/_output/*
+/watch/tests/Support/_generated/*
+
 # Tower
 
 # dependencies

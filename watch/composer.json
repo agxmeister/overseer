@@ -3,5 +3,10 @@
         "slim/slim": "4.*",
         "guzzlehttp/psr7": "^2",
         "ext-json": "*"
+    },
+    "require-dev": {
+        "codeception/codeception": "^5.0",
+        "codeception/module-rest": "*",
+        "codeception/module-phpbrowser": "*"
     }
 }
