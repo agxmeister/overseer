@@ -2,7 +2,7 @@
     "require": {
         "slim/slim": "4.*",
         "guzzlehttp/psr7": "^2",
-        "ext-json": "*"
+        "php-di/php-di": "^7.0"
     },
     "require-dev": {
         "codeception/codeception": "^5.0",

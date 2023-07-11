@@ -1,17 +1,19 @@
 <?php
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
+
+use DI\ContainerBuilder;
 use Slim\Factory\AppFactory;
 
 require __DIR__ . '/../vendor/autoload.php';
 
+$dependencies = require __DIR__ . '/../app/dependencies.php';
+$containerBuilder = new ContainerBuilder();
+$dependencies($containerBuilder);
+$container = $containerBuilder->build();
+
+AppFactory::setContainer($container);
 $app = AppFactory::create();
 
-$app->get('/api/v1/hello', function (Request $request, Response $response, $args) {
-    $response->getBody()->write(json_encode('Hello, World!'));
-    return $response
-        ->withHeader('Content-Type', 'application/json')
-        ->withHeader('Access-Control-Allow-Origin', '*');
-});
+$routes = require __DIR__ . '/../app/routes.php';
+$routes($app);
 
 $app->run();

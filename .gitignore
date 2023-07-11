@@ -12,6 +12,9 @@
 
 # Watch
 
+# configuration
+/watch/config.php
+
 # dependencies
 /watch/vendor
 
