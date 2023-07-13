@@ -6,7 +6,7 @@ use Slim\App;
 
 return function (App $app) {
     $app->get('/api/v1/hello', function (Request $request, Response $response, $args) use ($app) {
-        $response->getBody()->write(json_encode($app->getContainer()->get('hello')));
+        $response->getBody()->write(json_encode($app->getContainer()->get(\Watch\Jira::class)->getIssue()));
         return $response
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Access-Control-Allow-Origin', '*');

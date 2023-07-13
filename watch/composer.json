@@ -2,11 +2,18 @@
     "require": {
         "slim/slim": "4.*",
         "guzzlehttp/psr7": "^2",
-        "php-di/php-di": "^7.0"
+        "guzzlehttp/guzzle": "^7.0",
+        "php-di/php-di": "^7.0",
+        "vlucas/phpdotenv": "^5.5"
     },
     "require-dev": {
         "codeception/codeception": "^5.0",
         "codeception/module-rest": "*",
         "codeception/module-phpbrowser": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Watch\\": "src/"
+        }
     }
 }
