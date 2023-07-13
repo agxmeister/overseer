@@ -14,12 +14,7 @@ class Jira
 
     public function getIssue(): string
     {
-        $response = $this->getClient()->get('issue/OD-1', [
-            'headers' => [
-                'Authorization' => 'Basic ' . base64_encode($this->apiUsername . ':' . $this->apiToken),
-                'Content-Type' => 'application/json',
-            ],
-        ]);
+        $response = $this->getClient()->get('issue/OD-1');
         $data = json_decode($response->getBody());
         return $data->fields->summary;
     }
@@ -28,6 +23,10 @@ class Jira
     {
         return $this->client = $this->client ?? new Client([
             'base_uri' => $this->apiUrl,
+            'headers' => [
+                'Authorization' => 'Basic ' . base64_encode($this->apiUsername . ':' . $this->apiToken),
+                'Content-Type' => 'application/json',
+            ],
         ]);
     }
 }
