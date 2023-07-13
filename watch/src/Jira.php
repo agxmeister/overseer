@@ -3,7 +3,6 @@
 namespace Watch;
 
 use GuzzleHttp\Client;
-
 class Jira
 {
     private Client $client;
@@ -17,6 +16,16 @@ class Jira
         $response = $this->getClient()->get('issue/OD-1');
         $data = json_decode($response->getBody());
         return $data->fields->summary;
+    }
+
+    public function getByJql($jql): mixed
+    {
+        $response = $this->getClient()->post('search', [
+            'json' => [
+                'jql' => $jql,
+            ],
+        ]);
+        return json_decode($response->getBody());
     }
 
     private function getClient(): Client
