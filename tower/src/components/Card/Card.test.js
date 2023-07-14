@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
-import Card from '../src/app/card'
 import '@testing-library/jest-dom'
+import Card from "./Card";
 
 describe('Card', () => {
     it('renders a title', () => {
