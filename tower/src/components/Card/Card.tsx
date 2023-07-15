@@ -1,6 +1,6 @@
 'use client'
 
-import styles from './Card.module.css'
+import styles from './Card.module.sass'
 
 type CardProps = {
     title: string,
