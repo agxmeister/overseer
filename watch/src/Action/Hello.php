@@ -17,7 +17,11 @@ class Hello
         $data = $this->jira->getByJql('');
         $tasks = [];
         foreach ($data->issues as $issueData) {
-            $tasks[] = $issueData->fields->summary;
+            $tasks[] = [
+                'key' => $issueData->key,
+                'summary' => $issueData->fields->summary,
+                'estimatedStartDate' => $issueData->fields->customfield_10036,
+            ];
         }
         $response->getBody()->write(json_encode($tasks));
         return $response

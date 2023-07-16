@@ -4,8 +4,8 @@ import styles from './Card.module.sass'
 
 type CardProps = {
     title: string,
-    row: number,
-    column: number,
+    row: string,
+    column: string,
 }
 
 export default function Card({ title, row, column }: CardProps) {
@@ -15,7 +15,7 @@ export default function Card({ title, row, column }: CardProps) {
             className={styles.container}
             style={{
                 gridRow: `${row}/${row}`,
-                gridColumn: `${column}/${column}`,
+                gridColumn: `col-${column}-start/col-${column}-end`,
             }}
         >
             {title}
