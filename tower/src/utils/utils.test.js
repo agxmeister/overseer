@@ -1,6 +1,6 @@
 import {format} from "./date";
 import {describe} from "node:test";
-import {getColumnsTemplate} from "./grid";
+import {getLinesTemplate} from "./grid";
 
 describe('date.format', () => {
     it.each([
@@ -12,12 +12,12 @@ describe('date.format', () => {
     })
 })
 
-describe('grid.getColumnsTemplate', () => {
+describe('grid.getLinesTemplate', () => {
     it.each([
-        {columns: [], template: 'auto'},
-        {columns: ['one'], template: '[col-one-start] auto [col-one-end]'},
-        {columns: ['one', 'two'], template: '[col-one-start] auto [col-one-end col-two-start] auto [col-two-end]'},
-    ])('generate CSS grid-template-columns by given column names', ({columns, template}) => {
-        expect(getColumnsTemplate(columns)).toEqual(template);
+        {lines: [], template: 'auto'},
+        {lines: ['one'], template: '[line-one-start] auto [line-one-end]'},
+        {lines: ['one', 'two'], template: '[line-one-start] auto [line-one-end line-two-start] auto [line-two-end]'},
+    ])('generate CSS grid-template-columns by given column names', ({lines, template}) => {
+        expect(getLinesTemplate(lines)).toEqual(template);
     })
 })

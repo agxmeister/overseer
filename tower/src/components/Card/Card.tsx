@@ -3,19 +3,19 @@
 import styles from './Card.module.sass'
 
 type CardProps = {
+    id: string,
+    date: string,
     title: string,
-    row: string,
-    column: string,
 }
 
-export default function Card({ title, row, column }: CardProps) {
+export default function Card({ id, date, title }: CardProps) {
     return (
         <div
             role={"heading"}
             className={styles.container}
             style={{
-                gridRow: `${row}/${row}`,
-                gridColumn: `col-${column}-start/col-${column}-end`,
+                gridRow: `line-${id}-start/line-${id}-end`,
+                gridColumn: `line-${date}-start/line-${date}-end`,
             }}
         >
             {title}
