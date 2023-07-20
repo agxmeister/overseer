@@ -4,7 +4,7 @@ import Card from "./Card";
 
 describe('Card', () => {
     it('renders a title', () => {
-        render(<Card title={"test"}/>)
+        render(<Card title={"test"} row={'row'} column={'column'}/>)
 
         const title = screen.getByRole('heading', {
             name: /test/i,
