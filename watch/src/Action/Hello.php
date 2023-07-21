@@ -15,15 +15,16 @@ class Hello
     public function __invoke(Request $request, Response $response, $args): Response
     {
         $data = $this->jira->getByJql('');
-        $tasks = [];
+        $issues = [];
         foreach ($data->issues as $issueData) {
-            $tasks[] = [
+            $issues[] = [
                 'key' => $issueData->key,
                 'summary' => $issueData->fields->summary,
                 'estimatedStartDate' => $issueData->fields->customfield_10036,
+                'estimatedFinishDate' => $issueData->fields->customfield_10037,
             ];
         }
-        $response->getBody()->write(json_encode($tasks));
+        $response->getBody()->write(json_encode($issues));
         return $response
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Access-Control-Allow-Origin', '*');

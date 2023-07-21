@@ -17,7 +17,10 @@ describe('grid.getLinesTemplate', () => {
         {lines: [], template: 'auto'},
         {lines: ['one'], template: '[line-one-start] auto [line-one-end]'},
         {lines: ['one', 'two'], template: '[line-one-start] auto [line-one-end line-two-start] auto [line-two-end]'},
-    ])('generate CSS grid-template-columns by given column names', ({lines, template}) => {
-        expect(getLinesTemplate(lines)).toEqual(template);
+        {lines: ['one'], size: "10em", template: '[line-one-start] 10em [line-one-end]'},
+    ])('generate CSS grid-template-columns by given column names', ({lines, size, template}) => {
+        size ?
+            expect(getLinesTemplate(lines, size)).toEqual(template) :
+            expect(getLinesTemplate(lines)).toEqual(template);
     })
 })

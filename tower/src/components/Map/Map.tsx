@@ -8,12 +8,12 @@ type MapProps = {
 }
 
 export default function Map({cards}: MapProps) {
-    const ids = cards.map((card: Card) => card.props.id);
+    const ids = cards.map(card => card.props.id);
     const dates = getDates(new Date("2023-07-10"), new Date("2023-07-20"));
     return (
         <div className={styles.map} style={{
-            gridTemplateRows: getLinesTemplate(ids),
-            gridTemplateColumns: getLinesTemplate(dates),
+            gridTemplateRows: getLinesTemplate(ids, "7em"),
+            gridTemplateColumns: getLinesTemplate(dates, "7em"),
         }}>
             {cards.length > 0 ? cards : "Loading"}
         </div>

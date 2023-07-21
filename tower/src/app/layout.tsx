@@ -8,7 +8,7 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            <body suppressHydrationWarning={true} className={"text-sm font-mono box-content p-4"}>
+            <body suppressHydrationWarning={true} className={"text-xs font-mono box-content p-4"}>
                 {children}
             </body>
         </html>
