@@ -15,6 +15,7 @@ describe('date.format', () => {
 describe('grid.getLinesTemplate', () => {
     it.each([
         {lines: [], template: 'auto'},
+        {lines: [], size: "10em", template: 'auto'},
         {lines: ['one'], template: '[line-one-start] auto [line-one-end]'},
         {lines: ['one', 'two'], template: '[line-one-start] auto [line-one-end line-two-start] auto [line-two-end]'},
         {lines: ['one'], size: "10em", template: '[line-one-start] 10em [line-one-end]'},
