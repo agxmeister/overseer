@@ -1,21 +1,21 @@
 import styles from './Map.module.sass'
-import Card from "@/components/Card/Card";
+import Task from "@/components/Task/Task";
 import {format} from "@/utils/date";
 import {getLinesTemplate} from "@/utils/grid";
 
 type MapProps = {
-    cards: Array<Card>,
+    tasks: Array<Task>,
 }
 
-export default function Map({cards}: MapProps) {
-    const ids = cards.map(card => card.props.id);
-    const dates = getDates(new Date("2023-07-10"), new Date("2023-07-20"));
+export default function Map({tasks}: MapProps) {
+    const ids = tasks.map(task => task.props.id);
+    const dates = getDates(new Date("2023-07-20"), new Date("2023-07-30"));
     return (
         <div className={styles.map} style={{
             gridTemplateRows: getLinesTemplate(ids, "7em"),
             gridTemplateColumns: getLinesTemplate(dates, "7em"),
         }}>
-            {cards.length > 0 ? cards : "Loading"}
+            {tasks.length > 0 ? tasks : "Loading"}
         </div>
     );
 }

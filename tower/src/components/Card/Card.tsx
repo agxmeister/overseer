@@ -1,6 +1,7 @@
 'use client'
 
 import styles from './Card.module.sass'
+import {format} from "@/utils/date";
 
 type CardProps = {
     id: string,
@@ -10,16 +11,18 @@ type CardProps = {
 }
 
 export default function Card({ id, start, finish, title }: CardProps) {
+    const now = format(new Date());
+    const date = now > start ? now < finish ? now : finish ?? start : start;
     return (
         <div
             role={"heading"}
             className={styles.container}
             style={{
                 gridRow: `line-${id}-start/line-${id}-end`,
-                gridColumn: `line-${start}-start/line-${finish ?? start}-end`,
+                gridColumn: `line-${date}-start/line-${date}-end`,
             }}
         >
-            {title}
+            <div className={styles.title}>{title}</div>
         </div>
     )
 }
