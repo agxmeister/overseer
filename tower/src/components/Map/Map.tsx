@@ -1,10 +1,11 @@
 import styles from './Map.module.sass'
-import Task from "@/components/Task/Task";
 import {format} from "@/utils/date";
 import {getLinesTemplate} from "@/utils/grid";
+import {ReactElement} from "react";
+import {TaskProps} from "@/components/Task/Task";
 
-type MapProps = {
-    tasks: Array<Task>,
+export type MapProps = {
+    tasks: ReactElement<TaskProps>[],
 }
 
 export default function Map({tasks}: MapProps) {

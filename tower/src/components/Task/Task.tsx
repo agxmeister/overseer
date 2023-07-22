@@ -1,10 +1,11 @@
-import Trace from "@/components/Trace/Trace";
-import Card from "@/components/Card/Card";
+import {ReactElement} from "react";
+import {TraceProps} from "@/components/Trace/Trace";
+import {CardProps} from "@/components/Card/Card";
 
-type TaskProps = {
+export type TaskProps = {
     id: string,
-    trace: Trace,
-    card: Card,
+    trace: ReactElement<TraceProps>,
+    card: ReactElement<CardProps>,
 }
 export default function Task({id, trace, card}: TaskProps) {
     return <>

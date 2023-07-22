@@ -1,6 +1,6 @@
 import styles from './Trace.module.sass'
 
-type TraceProps = {
+export type TraceProps = {
     id: string,
     start: string,
     finish: string,

@@ -16,7 +16,7 @@ type Issue = {
 export default function Page() {
     const {data} = useSWR('http://localhost:8080/api/v1/hello', (api: string) => fetch(api).then(res => res.json()));
     const tasks = data ? data.map((issue: Issue) =>
-        <Task id={issue.key} trace={
+        <Task key={issue.key} id={issue.key} trace={
             <Trace
                 id={issue.key}
                 start={issue.estimatedStartDate}

@@ -1,9 +1,7 @@
-'use client'
-
 import styles from './Card.module.sass'
 import {format} from "@/utils/date";
 
-type CardProps = {
+export type CardProps = {
     id: string,
     start: string,
     finish: string,
