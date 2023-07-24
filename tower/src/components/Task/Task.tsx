@@ -7,7 +7,8 @@ export type TaskProps = {
     trace: ReactElement<TraceProps>,
     card: ReactElement<CardProps>,
 }
-export default function Task({id, trace, card}: TaskProps) {
+export default function Task({id, trace, card}: TaskProps)
+{
     return <>
         {trace}
         {card}
