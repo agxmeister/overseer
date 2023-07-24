@@ -8,13 +8,20 @@ export type CardProps = {
     start: string,
     finish: string,
     title: string,
+    onMove: any,
 }
 
-export default function Card({ id, start, finish, title }: CardProps)
+export default function Card({ id, start, finish, title, onMove }: CardProps)
 {
     const [{ isDragging }, drag] = useDrag(() => ({
         type: ItemTypes.CARD,
-        item: {cardId: id},
+        item: () => {
+            onMove(id);
+            return {cardId: id};
+        },
+        end: () => {
+            onMove(null);
+        },
         collect: monitor => ({
             isDragging: monitor.isDragging(),
         }),

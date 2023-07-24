@@ -1,3 +1,13 @@
+export function getDates(currentDate: Date, endDate: Date): Array<string>
+{
+    const dates = [];
+    while (currentDate < endDate) {
+        dates.push(format(currentDate));
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+    return dates;
+}
+
 export function format(date: Date): string {
     const month = date.getMonth() + 1;
     const day = date.getDate();
