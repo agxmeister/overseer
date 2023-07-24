@@ -12,7 +12,7 @@ export type CardProps = {
 
 export default function Card({ id, start, finish, title }: CardProps)
 {
-    const [{isDragging}, drag] = useDrag(() => ({
+    const [{ isDragging }, drag] = useDrag(() => ({
         type: ItemTypes.CARD,
         item: {cardId: id},
         collect: monitor => ({

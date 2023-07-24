@@ -1,4 +1,4 @@
-export function put(cardId, traceId)
+export function put(cardId: string, traceId: string)
 {
     console.log(`Put card ${cardId} to trace ${traceId}.`);
 }
