@@ -11,9 +11,9 @@ class Jira
     {
     }
 
-    public function getIssue(): string
+    public function getIssue($jiraId): string
     {
-        $response = $this->getClient()->get('issue/OD-1');
+        $response = $this->getClient()->get("issue/$jiraId");
         $data = json_decode($response->getBody());
         return $data->fields->summary;
     }
@@ -26,6 +26,17 @@ class Jira
             ],
         ]);
         return json_decode($response->getBody());
+    }
+
+    public function setStartDate($jiraId, $startDate): void
+    {
+        $this->getClient()->put("issue/$jiraId", [
+            'json' => [
+                'fields' => [
+                    'customfield_10037' => $startDate,
+                ],
+            ],
+        ]);
     }
 
     private function getClient(): Client
