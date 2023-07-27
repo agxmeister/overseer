@@ -24,7 +24,7 @@ export default function Page() {
 
     const dates = getDates(new Date("2023-07-20"), new Date("2023-07-30"));
 
-    const {data} = useSWR('http://localhost:8080/api/v1/hello', (api: string) => fetch(api).then(res => res.json()));
+    const {data} = useSWR('http://localhost:8080/api/v1/tasks', (api: string) => fetch(api).then(res => res.json()));
     const tasks = data ? data.map((issue: Issue) =>
         <Task key={issue.key} id={issue.key} trace={
             <Trace

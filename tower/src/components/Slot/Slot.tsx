@@ -16,7 +16,7 @@ export default function Slot({id, position}: SlotProps)
     const [{ isOver }, drop] = useDrop(() => ({
         accept: ItemTypes.CARD,
         drop: ({ cardId }: {cardId: string}) => {
-            mutate('http://localhost:8080/api/v1/hello', async () => {
+            mutate('http://localhost:8080/api/v1/tasks', async () => {
                 return await fetch('http://localhost:8080/api/v1/set-start-date', {
                     method: 'POST',
                     headers: {
