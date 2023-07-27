@@ -39,6 +39,21 @@ class Jira
         ]);
     }
 
+    public function getIssuesByJql($jql)
+    {
+        $data = $this->getByJql($jql);
+        $issues = [];
+        foreach ($data->issues as $issueData) {
+            $issues[] = [
+                'key' => $issueData->key,
+                'summary' => $issueData->fields->summary,
+                'estimatedStartDate' => $issueData->fields->customfield_10036,
+                'estimatedFinishDate' => $issueData->fields->customfield_10037,
+            ];
+        }
+        return $issues;
+    }
+
     private function getClient(): Client
     {
         return $this->client = $this->client ?? new Client([

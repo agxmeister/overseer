@@ -2,36 +2,33 @@ import styles from './Slot.module.sass'
 import {useDrop} from "react-dnd";
 import {ItemTypes} from "@/constants/draggable";
 import {ConnectDropTarget} from "react-dnd/src/types";
-import useSWRMutation from "swr/mutation";
+import {useSWRConfig} from "swr";
 
 export type SlotProps = {
     id: string,
     position: string,
 }
 
-async function setStartDate(url: string, { arg }: { arg: { jiraId: string, startDate: string }}) {
-    await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            "jiraId": arg.jiraId,
-            "startDate": arg.startDate,
-        }),
-    })
-}
-
 export default function Slot({id, position}: SlotProps)
 {
-    const { trigger } = useSWRMutation('http://localhost:8080/api/v1/set-start-date', setStartDate);
+    const { mutate } = useSWRConfig();
 
     const [{ isOver }, drop] = useDrop(() => ({
         accept: ItemTypes.CARD,
-        drop: ({ cardId }: {cardId: string}) => trigger({
-            jiraId: cardId,
-            startDate: position,
-        }),
+        drop: ({ cardId }: {cardId: string}) => {
+            mutate('http://localhost:8080/api/v1/hello', async () => {
+                return await fetch('http://localhost:8080/api/v1/set-start-date', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        "jiraId": cardId,
+                        "startDate": position,
+                    }),
+                }).then(res => res.json());
+            }, { revalidate: false });
+        },
         collect: monitor => ({
             isOver: monitor.isOver(),
         }),
