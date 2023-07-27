@@ -25,7 +25,7 @@ export default function Slot({id, position, onMutate}: SlotProps)
                         "startDate": position,
                     }),
                 }).then(res => res.json());
-            });
+            }, {cardId: cardId, startDate: position});
         },
         collect: monitor => ({
             isOver: monitor.isOver(),

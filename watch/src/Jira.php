@@ -38,7 +38,7 @@ class Jira
         $this->getClient()->put("issue/$jiraId", [
             'json' => [
                 'fields' => [
-                    'customfield_10037' => $startDate,
+                    'customfield_10036' => $startDate,
                 ],
             ],
         ]);

@@ -26,9 +26,9 @@ export default function Page()
     }
 
     const {data, mutate} = useSWR('http://localhost:8080/api/v1/tasks', (api: string) => fetch(api).then(res => res.json()));
-    const onMutate = (fetcher: Function) => {
+    const onMutate = (fetcher: Function, mutation: {cardId: string, startDate: string}) => {
         mutate(fetcher,{
-            optimisticData: data,
+            optimisticData: data.map((issue: Issue) => issue.key === mutation.cardId ? {...issue, estimatedStartDate: mutation.startDate} : issue),
             populateCache: (mutatedIssue, issues) => {
                 return issues.map((issue: Issue) => issue.key === mutatedIssue.key ? mutatedIssue : issue);
             },
