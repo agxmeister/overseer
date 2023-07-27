@@ -16,7 +16,7 @@ class SetStartDate
     {
         $params = json_decode(file_get_contents('php://input'));
         $this->jira->setStartDate($params->jiraId, $params->startDate);
-        $response->getBody()->write(json_encode($this->jira->getIssuesByJql('')));
+        $response->getBody()->write(json_encode($this->jira->getIssue($params->jiraId)));
         return $response
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Access-Control-Allow-Origin', '*')

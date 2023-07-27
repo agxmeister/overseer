@@ -14,7 +14,7 @@ class Tasks
 
     public function __invoke(Request $request, Response $response, $args): Response
     {
-        $response->getBody()->write(json_encode($this->jira->getIssuesByJql('')));
+        $response->getBody()->write(json_encode($this->jira->getIssues('')));
         return $response
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Access-Control-Allow-Origin', '*');

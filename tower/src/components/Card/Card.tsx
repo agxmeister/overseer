@@ -8,7 +8,7 @@ export type CardProps = {
     start: string,
     finish: string,
     title: string,
-    onMove: any,
+    onMove: Function,
 }
 
 export default function Card({ id, start, finish, title, onMove }: CardProps)

@@ -11,21 +11,26 @@ class Jira
     {
     }
 
-    public function getIssue($jiraId): string
+    public function getIssue($jiraId): array
     {
         $response = $this->getClient()->get("issue/$jiraId");
-        $data = json_decode($response->getBody());
-        return $data->fields->summary;
+        $issueData = json_decode($response->getBody());
+        return $this->formatIssue($issueData);
     }
 
-    public function getByJql($jql): mixed
+    public function getIssues($jql): mixed
     {
         $response = $this->getClient()->post('search', [
             'json' => [
                 'jql' => $jql,
             ],
         ]);
-        return json_decode($response->getBody());
+        $data = json_decode($response->getBody());
+        $issues = [];
+        foreach ($data->issues as $issueData) {
+            $issues[] = $this->formatIssue($issueData);
+        }
+        return $issues;
     }
 
     public function setStartDate($jiraId, $startDate): void
@@ -39,19 +44,14 @@ class Jira
         ]);
     }
 
-    public function getIssuesByJql($jql)
+    private function formatIssue($issue): array
     {
-        $data = $this->getByJql($jql);
-        $issues = [];
-        foreach ($data->issues as $issueData) {
-            $issues[] = [
-                'key' => $issueData->key,
-                'summary' => $issueData->fields->summary,
-                'estimatedStartDate' => $issueData->fields->customfield_10036,
-                'estimatedFinishDate' => $issueData->fields->customfield_10037,
-            ];
-        }
-        return $issues;
+        return [
+            'key' => $issue->key,
+            'summary' => $issue->fields->summary,
+            'estimatedStartDate' => $issue->fields->customfield_10036,
+            'estimatedFinishDate' => $issue->fields->customfield_10037,
+        ];
     }
 
     private function getClient(): Client

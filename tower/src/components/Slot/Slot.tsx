@@ -2,22 +2,20 @@ import styles from './Slot.module.sass'
 import {useDrop} from "react-dnd";
 import {ItemTypes} from "@/constants/draggable";
 import {ConnectDropTarget} from "react-dnd/src/types";
-import {useSWRConfig} from "swr";
 
 export type SlotProps = {
     id: string,
     position: string,
+    onMutate: Function,
 }
 
-export default function Slot({id, position}: SlotProps)
+export default function Slot({id, position, onMutate}: SlotProps)
 {
-    const { mutate } = useSWRConfig();
-
     const [{ isOver }, drop] = useDrop(() => ({
         accept: ItemTypes.CARD,
         drop: ({ cardId }: {cardId: string}) => {
-            mutate('http://localhost:8080/api/v1/tasks', async () => {
-                return await fetch('http://localhost:8080/api/v1/set-start-date', {
+            onMutate(() => {
+                return fetch('http://localhost:8080/api/v1/set-start-date', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -27,7 +25,7 @@ export default function Slot({id, position}: SlotProps)
                         "startDate": position,
                     }),
                 }).then(res => res.json());
-            }, { revalidate: false });
+            });
         },
         collect: monitor => ({
             isOver: monitor.isOver(),

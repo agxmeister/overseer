@@ -16,15 +16,26 @@ type Issue = {
     summary: string,
 }
 
-export default function Page() {
+export default function Page()
+{
+    const dates = getDates(new Date("2023-07-20"), new Date("2023-07-30"));
+
     const [moveCardId, setMoveCardId] = useState<string|null>(null);
     const onCardMove = (cardId: string) => {
         setMoveCardId(cardId);
     }
 
-    const dates = getDates(new Date("2023-07-20"), new Date("2023-07-30"));
+    const {data, mutate} = useSWR('http://localhost:8080/api/v1/tasks', (api: string) => fetch(api).then(res => res.json()));
+    const onMutate = (fetcher: Function) => {
+        mutate(fetcher,{
+            optimisticData: data,
+            populateCache: (mutatedIssue, issues) => {
+                return issues.map((issue: Issue) => issue.key === mutatedIssue.key ? mutatedIssue : issue);
+            },
+            revalidate: false
+        });
+    }
 
-    const {data} = useSWR('http://localhost:8080/api/v1/tasks', (api: string) => fetch(api).then(res => res.json()));
     const tasks = data ? data.map((issue: Issue) =>
         <Task key={issue.key} id={issue.key} trace={
             <Trace
@@ -41,7 +52,9 @@ export default function Page() {
                 title={issue.summary}
                 onMove={onCardMove}
             />
-        } slots={issue.key === moveCardId ? dates.filter(date => date < issue.estimatedStartDate || date > issue.estimatedFinishDate).map(date => <Slot key={date} id={issue.key} position={date}/>) : []}/>
+        } slots={issue.key === moveCardId ? dates
+            .filter(date => date < issue.estimatedStartDate || date > issue.estimatedFinishDate)
+            .map(date => <Slot key={date} id={issue.key} position={date} onMutate={onMutate}/>) : []}/>
     ): [];
     return <Map dates={dates} tasks={tasks}/>
 }
