@@ -1,7 +1,7 @@
 import styles from './Slot.module.sass'
 import {useDrop} from "react-dnd";
-import {ItemTypes} from "@/constants/draggable";
 import {ConnectDropTarget} from "react-dnd/src/types";
+import {ItemTypes} from "@/constants/draggable";
 
 export type SlotProps = {
     id: string,
@@ -12,8 +12,8 @@ export type SlotProps = {
 export default function Slot({id, position, onMutate}: SlotProps)
 {
     const [{ isOver }, drop] = useDrop(() => ({
-        accept: ItemTypes.CARD,
-        drop: ({ cardId }: {cardId: string}) => {
+        accept: ItemTypes.MARKER,
+        drop: ({ taskId }: {taskId: string}) => {
             onMutate(() => {
                 return fetch('http://localhost:8080/api/v1/set-start-date', {
                     method: 'POST',
@@ -21,24 +21,26 @@ export default function Slot({id, position, onMutate}: SlotProps)
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        "jiraId": cardId,
+                        "jiraId": taskId,
                         "startDate": position,
                     }),
                 }).then(res => res.json());
-            }, {cardId: cardId, startDate: position});
+            }, {taskId: taskId, startDate: position});
         },
         collect: monitor => ({
             isOver: monitor.isOver(),
         }),
     })) as [{isOver: boolean}, ConnectDropTarget];
 
-    return <div
-        ref={drop}
-        className={styles.container}
-        style={{
-            gridRow: `line-${id}-start/line-${id}-end`,
-            gridColumn: `line-${position}-start/line-${position}-end`,
-            border: isOver ? '4px solid rgb(181, 12, 15)' : 'none',
-        }}
-    />
+    return (
+        <div
+            ref={drop}
+            className={styles.container}
+            style={{
+                gridRow: `line-${id}-start/line-${id}-end`,
+                gridColumn: `line-${position}-start/line-${position}-end`,
+                border: isOver ? '4px solid rgb(181, 12, 15)' : 'none',
+            }}
+        />
+    )
 }

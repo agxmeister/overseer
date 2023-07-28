@@ -3,7 +3,6 @@
 import useSWR from 'swr'
 import Map from "@/components/Map/Map";
 import Card from "@/components/Card/Card";
-import Trace from "@/components/Trace/Trace";
 import Task from "@/components/Task/Task";
 import {useState} from "react";
 import Slot from "@/components/Slot/Slot";
@@ -18,17 +17,17 @@ type Issue = {
 
 export default function Page()
 {
-    const dates = getDates(new Date("2023-07-20"), new Date("2023-07-30"));
+    const dates = getDates(new Date("2023-07-25"), new Date("2023-08-05"));
 
-    const [moveCardId, setMoveCardId] = useState<string|null>(null);
-    const onCardMove = (cardId: string) => {
-        setMoveCardId(cardId);
+    const [scaleTaskId, setScaleTaskId] = useState<string|null>(null);
+    const onScale = (taskId: string) => {
+        setScaleTaskId(taskId);
     }
 
     const {data, mutate} = useSWR('http://localhost:8080/api/v1/tasks', (api: string) => fetch(api).then(res => res.json()));
-    const onMutate = (fetcher: Function, mutation: {cardId: string, startDate: string}) => {
+    const onMutate = (fetcher: Function, mutation: {taskId: string, startDate: string}) => {
         mutate(fetcher,{
-            optimisticData: data.map((issue: Issue) => issue.key === mutation.cardId ? {...issue, estimatedStartDate: mutation.startDate} : issue),
+            optimisticData: data.map((issue: Issue) => issue.key === mutation.taskId ? {...issue, estimatedStartDate: mutation.startDate} : issue),
             populateCache: (mutatedIssue, issues) => {
                 return issues.map((issue: Issue) => issue.key === mutatedIssue.key ? mutatedIssue : issue);
             },
@@ -37,24 +36,24 @@ export default function Page()
     }
 
     const tasks = data ? data.map((issue: Issue) =>
-        <Task key={issue.key} id={issue.key} trace={
-            <Trace
-                id={issue.key}
-                start={issue.estimatedStartDate}
-                finish={issue.estimatedFinishDate}
-            />
-        } card={
-            <Card
+        <Task
+            key={issue.key}
+            id={issue.key}
+            start={issue.estimatedStartDate}
+            finish={issue.estimatedFinishDate}
+            card={<Card
                 key={issue.key}
                 id={issue.key}
                 start={issue.estimatedStartDate}
                 finish={issue.estimatedFinishDate}
                 title={issue.summary}
-                onMove={onCardMove}
-            />
-        } slots={issue.key === moveCardId ? dates
-            .filter(date => date < issue.estimatedStartDate || date > issue.estimatedFinishDate)
-            .map(date => <Slot key={date} id={issue.key} position={date} onMutate={onMutate}/>) : []}/>
+            />}
+            onScale={onScale}
+        />
     ): [];
-    return <Map dates={dates} tasks={tasks}/>
+
+    const slots = scaleTaskId !== null ? dates
+        .map(date => <Slot key={date} id={scaleTaskId} position={date} onMutate={onMutate}/>) : [];
+
+    return <Map dates={dates} tasks={tasks} slots={slots}/>
 }
