@@ -33,12 +33,23 @@ class Jira
         return $issues;
     }
 
-    public function setStartDate($jiraId, $startDate): void
+    public function setStartDate($jiraId, $date): void
     {
         $this->getClient()->put("issue/$jiraId", [
             'json' => [
                 'fields' => [
-                    'customfield_10036' => $startDate,
+                    'customfield_10036' => $date,
+                ],
+            ],
+        ]);
+    }
+
+    public function setFinishDate($jiraId, $date): void
+    {
+        $this->getClient()->put("issue/$jiraId", [
+            'json' => [
+                'fields' => [
+                    'customfield_10037' => $date,
                 ],
             ],
         ]);

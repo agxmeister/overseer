@@ -25,9 +25,15 @@ export default function Page()
     }
 
     const {data, mutate} = useSWR('http://localhost:8080/api/v1/tasks', (api: string) => fetch(api).then(res => res.json()));
-    const onMutate = (fetcher: Function, mutation: {taskId: string, startDate: string}) => {
+    const onMutate = (fetcher: Function, mutation: {taskId: string, direction: string, date: string}) => {
+        const optimisticData = data.map((issue: Issue) =>
+            issue.key === mutation.taskId ?
+                (mutation.direction === "left" ?
+                    {...issue, estimatedStartDate: mutation.date} :
+                    {...issue, estimatedFinishDate: mutation.date}) :
+                issue);
         mutate(fetcher,{
-            optimisticData: data.map((issue: Issue) => issue.key === mutation.taskId ? {...issue, estimatedStartDate: mutation.startDate} : issue),
+            optimisticData: optimisticData,
             populateCache: (mutatedIssue, issues) => {
                 return issues.map((issue: Issue) => issue.key === mutatedIssue.key ? mutatedIssue : issue);
             },
@@ -44,8 +50,6 @@ export default function Page()
             card={<Card
                 key={issue.key}
                 id={issue.key}
-                start={issue.estimatedStartDate}
-                finish={issue.estimatedFinishDate}
                 title={issue.summary}
             />}
             onScale={onScale}

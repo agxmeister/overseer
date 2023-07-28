@@ -13,19 +13,22 @@ export default function Slot({id, position, onMutate}: SlotProps)
 {
     const [{ isOver }, drop] = useDrop(() => ({
         accept: ItemTypes.MARKER,
-        drop: ({ taskId }: {taskId: string}) => {
+        drop: ({ taskId, direction }: {taskId: string, direction: string}) => {
+            const url = direction === "left" ?
+                'http://localhost:8080/api/v1/set-start-date' :
+                'http://localhost:8080/api/v1/set-finish-date';
             onMutate(() => {
-                return fetch('http://localhost:8080/api/v1/set-start-date', {
+                return fetch(url, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         "jiraId": taskId,
-                        "startDate": position,
+                        "date": position,
                     }),
                 }).then(res => res.json());
-            }, {taskId: taskId, startDate: position});
+            }, {taskId: taskId, direction: direction, date: position});
         },
         collect: monitor => ({
             isOver: monitor.isOver(),

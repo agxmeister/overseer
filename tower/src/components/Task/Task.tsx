@@ -13,17 +13,31 @@ export type TaskProps = {
 }
 export default function Task({id, start, finish, card, onScale}: TaskProps)
 {
-    const [{ isDragging }, drag] = useDrag(() => ({
+    const [{ isDraggingLeft }, dragLeft] = useDrag(() => ({
         type: ItemTypes.MARKER,
         item: () => {
             onScale(id);
-            return {taskId: id};
+            return {taskId: id, direction: "left"};
         },
         end: () => {
             onScale(null);
         },
         collect: monitor => ({
-            isDragging: monitor.isDragging(),
+            isDraggingLeft: monitor.isDragging(),
+        }),
+    }));
+
+    const [{ isDraggingRight }, dragRight] = useDrag(() => ({
+        type: ItemTypes.MARKER,
+        item: () => {
+            onScale(id);
+            return {taskId: id, direction: "right"};
+        },
+        end: () => {
+            onScale(null);
+        },
+        collect: monitor => ({
+            isDraggingRight: monitor.isDragging(),
         }),
     }));
 
@@ -32,10 +46,15 @@ export default function Task({id, start, finish, card, onScale}: TaskProps)
             gridRow: `line-${id}-start/line-${id}-end`,
             gridColumn: `line-${start}-start/line-${finish ?? start}-end`,
         }}>
-            <div ref={drag} className={styles.marker} style={{
-                opacity: isDragging ? 0 : 1,
+            <div ref={dragLeft} className={styles.marker} style={{
+                gridColumn: "1/1",
+                opacity: isDraggingLeft ? 0 : 1,
             }}/>
             {card}
+            <div ref={dragRight} className={styles.marker} style={{
+                gridColumn: "3/3",
+                opacity: isDraggingRight ? 0 : 1,
+            }}/>
         </div>
     )
 }
