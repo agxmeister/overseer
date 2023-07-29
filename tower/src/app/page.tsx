@@ -3,7 +3,7 @@
 import useSWR from 'swr'
 import Map from "@/components/Map/Map";
 import Card from "@/components/Card/Card";
-import Task from "@/components/Task/Task";
+import Task, {ScaleDirection} from "@/components/Task/Task";
 import React, {useState} from "react";
 import Slot from "@/components/Slot/Slot";
 import {getDates} from "@/utils/date";
@@ -37,7 +37,7 @@ export default function Page()
     const onMutate = (fetcher: Function, mutation: {taskId: string, direction: string, date: string}) => {
         const optimisticData = data.map((issue: Issue) =>
             issue.key === mutation.taskId ?
-                (mutation.direction === "left" ?
+                (mutation.direction === ScaleDirection.Left ?
                     {...issue, estimatedStartDate: mutation.date} :
                     {...issue, estimatedFinishDate: mutation.date}) :
                 issue);

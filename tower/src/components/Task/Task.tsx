@@ -11,24 +11,37 @@ export type TaskProps = {
     card: ReactElement<CardProps>,
     onScale: Function,
 }
+
+export enum ScaleDirection {
+    Left = "left",
+    Right = "right",
+}
+
 export default function Task({id, start, finish, card, onScale}: TaskProps)
 {
-    const getDragSpec = (direction: string) => ({
+    const [{ isDraggingLeft }, dragLeft] = useDrag(() => ({
         type: ItemTypes.MARKER,
         item: () => {
             onScale(id);
-            return {taskId: id, direction: direction};
+            return {taskId: id, direction: ScaleDirection.Left};
         },
         end: () => {
             onScale(null);
         },
-        collect: monitor => ({
-            isDraggingLeft: monitor.isDragging(),
-        }),
-    });
+        collect: monitor => ({isDraggingLeft: monitor.isDragging()}),
+    }));
 
-    const [{ isDraggingLeft }, dragLeft] = useDrag(() => getDragSpec("left"));
-    const [{ isDraggingRight }, dragRight] = useDrag(() => getDragSpec("right"));
+    const [{ isDraggingRight }, dragRight] = useDrag(() => ({
+        type: ItemTypes.MARKER,
+        item: () => {
+            onScale(id);
+            return {taskId: id, direction: ScaleDirection.Right};
+        },
+        end: () => {
+            onScale(null);
+        },
+        collect: monitor => ({isDraggingRight: monitor.isDragging()}),
+    }));
 
     return (
         <div className={styles.task} style={{

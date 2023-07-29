@@ -33,6 +33,19 @@ class Jira
         return $issues;
     }
 
+    public function setIssue($jiraId, $fields): void
+    {
+        $jiraFields = [];
+        foreach ($fields as $key => $value) {
+            $jiraFields[$this->fieldsMapping($key)] = $value;
+        }
+        $this->getClient()->put("issue/$jiraId", [
+            'json' => [
+                'fields' => $jiraFields,
+            ],
+        ]);
+    }
+
     public function setStartDate($jiraId, $date): void
     {
         $this->getClient()->put("issue/$jiraId", [
@@ -63,6 +76,15 @@ class Jira
             'estimatedStartDate' => $issue->fields->customfield_10036,
             'estimatedFinishDate' => $issue->fields->customfield_10037,
         ];
+    }
+
+    private function fieldsMapping($field): string
+    {
+        $mapping = [
+            "estimatedStartDate" => "customfield_10036",
+            "estimatedFinishDate" => "customfield_10037",
+        ];
+        return $mapping[$field];
     }
 
     private function getClient(): Client
