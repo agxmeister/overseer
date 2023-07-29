@@ -4,7 +4,7 @@ import useSWR from 'swr'
 import Map from "@/components/Map/Map";
 import Card from "@/components/Card/Card";
 import Task from "@/components/Task/Task";
-import {useState} from "react";
+import React, {useState} from "react";
 import Slot from "@/components/Slot/Slot";
 import {getDates} from "@/utils/date";
 
@@ -17,7 +17,16 @@ type Issue = {
 
 export default function Page()
 {
-    const dates = getDates(new Date("2023-07-25"), new Date("2023-08-05"));
+    const [scale, setScale] = useState<number>(1);
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+        if (['=', '+'].includes(event.key)) {
+            setScale(scale + 0.1);
+        } else if (['-', '_'].includes(event.key)) {
+            setScale(scale - 0.1);
+        }
+    };
+
+    const dates = getDates(new Date("2023-07-25"), new Date("2023-09-05"));
 
     const [scaleTaskId, setScaleTaskId] = useState<string|null>(null);
     const onScale = (taskId: string) => {
@@ -59,5 +68,9 @@ export default function Page()
     const slots = scaleTaskId !== null ? dates
         .map(date => <Slot key={date} id={scaleTaskId} position={date} onMutate={onMutate}/>) : [];
 
-    return <Map dates={dates} tasks={tasks} slots={slots}/>
+    return (
+        <div tabIndex={0} onKeyDown={handleKeyDown}>
+            <Map scale={scale} dates={dates} tasks={tasks} slots={slots}/>
+        </div>
+    );
 }
