@@ -13,11 +13,11 @@ export type TaskProps = {
 }
 export default function Task({id, start, finish, card, onScale}: TaskProps)
 {
-    const [{ isDraggingLeft }, dragLeft] = useDrag(() => ({
+    const getDragSpec = (direction: string) => ({
         type: ItemTypes.MARKER,
         item: () => {
             onScale(id);
-            return {taskId: id, direction: "left"};
+            return {taskId: id, direction: direction};
         },
         end: () => {
             onScale(null);
@@ -25,21 +25,10 @@ export default function Task({id, start, finish, card, onScale}: TaskProps)
         collect: monitor => ({
             isDraggingLeft: monitor.isDragging(),
         }),
-    }));
+    });
 
-    const [{ isDraggingRight }, dragRight] = useDrag(() => ({
-        type: ItemTypes.MARKER,
-        item: () => {
-            onScale(id);
-            return {taskId: id, direction: "right"};
-        },
-        end: () => {
-            onScale(null);
-        },
-        collect: monitor => ({
-            isDraggingRight: monitor.isDragging(),
-        }),
-    }));
+    const [{ isDraggingLeft }, dragLeft] = useDrag(() => getDragSpec("left"));
+    const [{ isDraggingRight }, dragRight] = useDrag(() => getDragSpec("right"));
 
     return (
         <div className={styles.task} style={{
