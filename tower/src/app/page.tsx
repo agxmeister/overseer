@@ -49,6 +49,11 @@ export default function Page()
             revalidate: false
         });
     }
+    const onLink = (fetcher: Function) => {
+        mutate(fetcher,{
+            populateCache: false,
+        });
+    }
 
     const tasks = data ? data.map((issue: Issue) =>
         <Task
@@ -62,6 +67,7 @@ export default function Page()
                 title={issue.summary}
             />}
             onScale={onScale}
+            onLink={onLink}
         />
     ): [];
 
