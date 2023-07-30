@@ -46,23 +46,18 @@ class Jira
         ]);
     }
 
-    public function setStartDate($jiraId, $date): void
+    public function addLink($outwardJiraId, $inwardJiraId, $type)
     {
-        $this->getClient()->put("issue/$jiraId", [
+        $this->getClient()->post("issueLink", [
             'json' => [
-                'fields' => [
-                    'customfield_10036' => $date,
+                'inwardIssue' => [
+                    'key' => $outwardJiraId,
                 ],
-            ],
-        ]);
-    }
-
-    public function setFinishDate($jiraId, $date): void
-    {
-        $this->getClient()->put("issue/$jiraId", [
-            'json' => [
-                'fields' => [
-                    'customfield_10037' => $date,
+                'outwardIssue' => [
+                    'key' => $inwardJiraId,
+                ],
+                'type' => [
+                    'name' => $type,
                 ],
             ],
         ]);
