@@ -64,7 +64,7 @@ export default function Task({id, start, finish, card, onScale, onLink}: TaskPro
         },
         canDrop: ({ taskId }) => taskId !== id,
         collect: monitor => ({
-            isOver: monitor.isOver(),
+            isOver: monitor.isOver() && monitor.canDrop(),
         }),
     })) as [{isOver: boolean}, ConnectDropTarget];
 
