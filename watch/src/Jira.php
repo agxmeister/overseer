@@ -65,11 +65,29 @@ class Jira
 
     private function formatIssue($issue): array
     {
+        $links = [
+            'inward' => [],
+            'outward' => [],
+        ];
+        foreach ($issue->fields->issuelinks as $link) {
+            if (isset($link->outwardIssue)) {
+                $links['outward'][] = [
+                    'key' => $link->outwardIssue->key,
+                    'type' => $link->type->name,
+                ];
+            } else if (isset($link->inwardIssue)) {
+                $links['inward'][] = [
+                    'key' => $link->inwardIssue->key,
+                    'type' => $link->type->name,
+                ];
+            }
+        }
         return [
             'key' => $issue->key,
             'summary' => $issue->fields->summary,
             'estimatedStartDate' => $issue->fields->customfield_10036,
             'estimatedFinishDate' => $issue->fields->customfield_10037,
+            'links' => $links,
         ];
     }
 
