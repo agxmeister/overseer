@@ -13,6 +13,7 @@ type Issue = {
     estimatedStartDate: string,
     estimatedFinishDate: string,
     summary: string,
+    links: {inward: [], outward: []},
 }
 
 export default function Page()
@@ -61,6 +62,7 @@ export default function Page()
             id={issue.key}
             start={issue.estimatedStartDate}
             finish={issue.estimatedFinishDate}
+            links={issue.links}
             card={<Card
                 key={issue.key}
                 id={issue.key}

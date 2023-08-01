@@ -9,6 +9,7 @@ export type TaskProps = {
     id: string,
     start: string,
     finish: string,
+    links: {inward: [], outward: []},
     card: ReactElement<CardProps>,
     onScale: Function,
     onLink: Function,
@@ -19,7 +20,7 @@ export enum ScaleDirection {
     Right = "right",
 }
 
-export default function Task({id, start, finish, card, onScale, onLink}: TaskProps)
+export default function Task({id, start, finish, links, card, onScale, onLink}: TaskProps)
 {
     const [{ isDraggingLeft }, dragLeft] = useDrag(() => ({
         type: ItemTypes.MARKER,
@@ -74,15 +75,25 @@ export default function Task({id, start, finish, card, onScale, onLink}: TaskPro
             gridColumn: `line-${start}-start/line-${finish ?? start}-end`,
             border: isOver ? '4px solid rgb(181, 12, 15)' : 'none',
         }}>
+            {links.inward.length > 0 ? (
+                <div className={styles.linkLeft} style={{
+                    gridColumn: "line-left-link",
+                }}/>
+            ) : null}
             <div ref={dragLeft} className={styles.marker} style={{
-                gridColumn: "1/1",
+                gridColumn: "line-left-marker",
                 opacity: isDraggingLeft ? 0 : 1,
             }}/>
             {card}
             <div ref={dragRight} className={styles.marker} style={{
-                gridColumn: "3/3",
+                gridColumn: "line-right-marker",
                 opacity: isDraggingRight ? 0 : 1,
             }}/>
+            {links.outward.length > 0 ? (
+                <div className={styles.linkRight} style={{
+                    gridColumn: "line-right-link"
+                }}/>
+            ) : null}
         </div>
     )
 }
