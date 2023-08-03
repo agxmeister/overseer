@@ -4,7 +4,7 @@ import useSWR from 'swr'
 import Map from "@/components/Map/Map";
 import Card from "@/components/Card/Card";
 import Task, {ScaleDirection} from "@/components/Task/Task";
-import React, {useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import Slot from "@/components/Slot/Slot";
 import {getDates} from "@/utils/date";
 
@@ -55,6 +55,13 @@ export default function Page()
             populateCache: false,
         });
     }
+    
+    const markers = useRef([] as {id: string, type: string, ref: HTMLDivElement|null}[]);
+    const addMarker = (id: string, type: string, ref: HTMLDivElement|null) => markers.current.push({
+        id: id,
+        type: type,
+        ref: ref,
+    });
 
     const tasks = data ? data.map((issue: Issue) =>
         <Task
@@ -70,6 +77,7 @@ export default function Page()
             />}
             onScale={onScale}
             onLink={onLink}
+            addMarker={addMarker}
         />
     ): [];
 

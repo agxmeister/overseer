@@ -1,5 +1,5 @@
 import styles from './Task.module.sass'
-import {ReactElement} from "react";
+import {ReactElement, useRef} from "react";
 import {useDrag, useDrop} from "react-dnd";
 import {CardProps} from "@/components/Card/Card";
 import {ItemTypes} from "@/constants/draggable";
@@ -13,6 +13,7 @@ export type TaskProps = {
     card: ReactElement<CardProps>,
     onScale: Function,
     onLink: Function,
+    addMarker: Function,
 }
 
 export enum ScaleDirection {
@@ -20,7 +21,7 @@ export enum ScaleDirection {
     Right = "right",
 }
 
-export default function Task({id, start, finish, links, card, onScale, onLink}: TaskProps)
+export default function Task({id, start, finish, links, card, onScale, onLink, addMarker}: TaskProps)
 {
     const [{ isDraggingLeft }, dragLeft] = useDrag(() => ({
         type: ItemTypes.MARKER,
@@ -69,6 +70,11 @@ export default function Task({id, start, finish, links, card, onScale, onLink}: 
         }),
     })) as [{isOver: boolean}, ConnectDropTarget];
 
+    const leftMarkerRef = useRef<HTMLDivElement|null>(null);
+    addMarker(id, 'left', leftMarkerRef);
+    const rightMarkerRef = useRef<HTMLDivElement|null>(null);
+    addMarker(id, 'right', leftMarkerRef);
+
     return (
         <div ref={drop} className={styles.task} style={{
             gridRow: `line-${id}-start/line-${id}-end`,
@@ -76,7 +82,7 @@ export default function Task({id, start, finish, links, card, onScale, onLink}: 
             border: isOver ? '4px solid rgb(181, 12, 15)' : 'none',
         }}>
             {links.inward.length > 0 ? (
-                <div className={styles.linkLeft} style={{
+                <div ref={leftMarkerRef} className={styles.linkLeft} style={{
                     gridColumn: "line-left-link",
                 }}/>
             ) : null}
@@ -90,7 +96,7 @@ export default function Task({id, start, finish, links, card, onScale, onLink}: 
                 opacity: isDraggingRight ? 0 : 1,
             }}/>
             {links.outward.length > 0 ? (
-                <div className={styles.linkRight} style={{
+                <div ref={rightMarkerRef} className={styles.linkRight} style={{
                     gridColumn: "line-right-link"
                 }}/>
             ) : null}
