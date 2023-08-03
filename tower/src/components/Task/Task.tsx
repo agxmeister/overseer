@@ -73,7 +73,7 @@ export default function Task({id, start, finish, links, card, onScale, onLink, a
     const leftMarkerRef = useRef<HTMLDivElement|null>(null);
     addMarker(id, 'left', leftMarkerRef);
     const rightMarkerRef = useRef<HTMLDivElement|null>(null);
-    addMarker(id, 'right', leftMarkerRef);
+    addMarker(id, 'right', rightMarkerRef);
 
     return (
         <div ref={drop} className={styles.task} style={{
