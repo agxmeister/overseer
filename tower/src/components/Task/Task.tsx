@@ -4,16 +4,25 @@ import {useDrag, useDrop} from "react-dnd";
 import {CardProps} from "@/components/Card/Card";
 import {ItemTypes} from "@/constants/draggable";
 import {ConnectDropTarget} from "react-dnd/src/types";
+import {Property} from "csstype";
+import {MarkerProps} from "@/components/Marker/Marker";
 
 export type TaskProps = {
     id: string,
+    markerLeft: ReactElement<MarkerProps>
+    markerRight: ReactElement<MarkerProps>
     start: string,
     finish: string,
-    links: {inward: [], outward: []},
+    links: {inward: Link[], outward: Link[]},
     card: ReactElement<CardProps>,
     onScale: Function,
     onLink: Function,
     addMarker: Function,
+}
+
+type Link = {
+    key: string,
+    type: string,
 }
 
 export enum ScaleDirection {
@@ -21,7 +30,7 @@ export enum ScaleDirection {
     Right = "right",
 }
 
-export default function Task({id, start, finish, links, card, onScale, onLink, addMarker}: TaskProps)
+export default function Task({id, markerLeft, markerRight, start, finish, links, card, onScale, onLink, addMarker}: TaskProps)
 {
     const [{ isDraggingLeft }, dragLeft] = useDrag(() => ({
         type: ItemTypes.MARKER,
@@ -86,6 +95,7 @@ export default function Task({id, start, finish, links, card, onScale, onLink, a
                     gridColumn: "line-left-link",
                 }}/>
             ) : null}
+            {markerLeft}
             <div ref={dragLeft} className={styles.marker} style={{
                 gridColumn: "line-left-marker",
                 opacity: isDraggingLeft ? 0 : 1,
@@ -95,6 +105,7 @@ export default function Task({id, start, finish, links, card, onScale, onLink, a
                 gridColumn: "line-right-marker",
                 opacity: isDraggingRight ? 0 : 1,
             }}/>
+            {markerRight}
             {links.outward.length > 0 ? (
                 <div ref={rightMarkerRef} className={styles.linkRight} style={{
                     gridColumn: "line-right-link"

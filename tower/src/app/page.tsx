@@ -1,19 +1,31 @@
 'use client'
 
 import useSWR from 'swr'
-import Map from "@/components/Map/Map";
+
+import {default as TaskMap} from "@/components/Map/Map";
 import Card from "@/components/Card/Card";
 import Task, {ScaleDirection} from "@/components/Task/Task";
-import React, {MutableRefObject, useEffect, useRef, useState} from "react";
+import React, {MutableRefObject, useRef, useState} from "react";
 import Slot from "@/components/Slot/Slot";
 import {getDates} from "@/utils/date";
+import Marker, {MarkerPosition} from "@/components/Marker/Marker";
+import Link from "@/components/Link/Link";
 
 type Issue = {
     key: string,
     estimatedStartDate: string,
     estimatedFinishDate: string,
     summary: string,
-    links: {inward: [], outward: []},
+    links: {inward: Link[], outward: Link[]},
+}
+type Link = {
+    key: string,
+    type: string,
+}
+
+type LinkDescription = {
+    start: string,
+    finish: string,
 }
 
 export default function Page()
@@ -63,10 +75,34 @@ export default function Page()
         ref: ref,
     });
 
+    const links = Array.from<[string, LinkDescription]>(data ? data.reduce((acc: Map<string, LinkDescription>, issue: Issue) => {
+        Object.entries(issue.links).reduce((acc, [type, links]) => {
+            links.reduce((acc, link) => {
+                const key = type === 'outward' ? `${issue.key}-${link.key}` : `${link.key}-${issue.key}`;
+                acc.set(key, {
+                    start: type === 'outward' ? issue.key : link.key,
+                    finish: type === 'outward' ? link.key : issue.key,
+                });
+                return acc;
+            }, acc);
+            return acc;
+        }, acc);
+        return acc;
+    }, new Map<string, LinkDescription>()) : new Map<string, LinkDescription>())
+        .map(([key, link]: [string, LinkDescription]) => (
+            <Link
+                key={key}
+                startMarkerId={link.start}
+                finishMarkerId={link.finish}
+            />
+        ));
+
     const tasks = data ? data.map((issue: Issue) =>
         <Task
             key={issue.key}
             id={issue.key}
+            markerLeft={<Marker position={MarkerPosition.Left}/>}
+            markerRight={<Marker position={MarkerPosition.Right}/>}
             start={issue.estimatedStartDate}
             finish={issue.estimatedFinishDate}
             links={issue.links}
@@ -86,7 +122,7 @@ export default function Page()
 
     return (
         <div tabIndex={0} onKeyDown={handleKeyDown}>
-            <Map scale={scale} dates={dates} tasks={tasks} slots={slots}/>
+            <TaskMap scale={scale} dates={dates} tasks={tasks} slots={slots} links={links}/>
         </div>
     );
 }

@@ -11,9 +11,10 @@ export type MapProps = {
     dates: string[],
     tasks: ReactElement<TaskProps>[],
     slots: ReactElement<SlotProps>[],
+    links: ReactElement<SlotProps>[],
 }
 
-export default function Map({scale, dates, tasks, slots}: MapProps)
+export default function Map({scale, dates, tasks, slots, links}: MapProps)
 {
     const ids = tasks.map(task => task.props.id);
     const size = (7 * scale).toFixed(1);
@@ -24,7 +25,8 @@ export default function Map({scale, dates, tasks, slots}: MapProps)
                 gridTemplateColumns: getLinesTemplate(dates, `${size}em`),
             }}>
                 {tasks.length > 0 ? tasks : "Loading"}
-                {slots.length > 0 ? slots: null}
+                {slots.length > 0 ? slots : null}
+                {links.length > 0 ? links : null}
             </div>
         </DndProvider>
     );
