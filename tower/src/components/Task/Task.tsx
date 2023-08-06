@@ -4,7 +4,6 @@ import {useDrag, useDrop} from "react-dnd";
 import {CardProps} from "@/components/Card/Card";
 import {ItemTypes} from "@/constants/draggable";
 import {ConnectDropTarget} from "react-dnd/src/types";
-import {Property} from "csstype";
 import {MarkerProps} from "@/components/Marker/Marker";
 
 export type TaskProps = {
@@ -17,7 +16,6 @@ export type TaskProps = {
     card: ReactElement<CardProps>,
     onScale: Function,
     onLink: Function,
-    addMarker: Function,
 }
 
 type Link = {
@@ -30,7 +28,7 @@ export enum ScaleDirection {
     Right = "right",
 }
 
-export default function Task({id, markerLeft, markerRight, start, finish, links, card, onScale, onLink, addMarker}: TaskProps)
+export default function Task({id, markerLeft, markerRight, start, finish, links, card, onScale, onLink}: TaskProps)
 {
     const [{ isDraggingLeft }, dragLeft] = useDrag(() => ({
         type: ItemTypes.MARKER,
@@ -79,22 +77,12 @@ export default function Task({id, markerLeft, markerRight, start, finish, links,
         }),
     })) as [{isOver: boolean}, ConnectDropTarget];
 
-    const leftMarkerRef = useRef<HTMLDivElement|null>(null);
-    addMarker(id, 'left', leftMarkerRef);
-    const rightMarkerRef = useRef<HTMLDivElement|null>(null);
-    addMarker(id, 'right', rightMarkerRef);
-
     return (
         <div ref={drop} className={styles.task} style={{
             gridRow: `line-${id}-start/line-${id}-end`,
             gridColumn: `line-${start}-start/line-${finish ?? start}-end`,
             border: isOver ? '4px solid rgb(181, 12, 15)' : 'none',
         }}>
-            {links.inward.length > 0 ? (
-                <div ref={leftMarkerRef} className={styles.linkLeft} style={{
-                    gridColumn: "line-left-link",
-                }}/>
-            ) : null}
             {markerLeft}
             <div ref={dragLeft} className={styles.marker} style={{
                 gridColumn: "line-left-marker",
@@ -106,11 +94,6 @@ export default function Task({id, markerLeft, markerRight, start, finish, links,
                 opacity: isDraggingRight ? 0 : 1,
             }}/>
             {markerRight}
-            {links.outward.length > 0 ? (
-                <div ref={rightMarkerRef} className={styles.linkRight} style={{
-                    gridColumn: "line-right-link"
-                }}/>
-            ) : null}
         </div>
     )
 }
