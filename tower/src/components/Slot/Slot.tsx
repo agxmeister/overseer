@@ -2,7 +2,7 @@ import styles from './Slot.module.sass'
 import {useDrop} from "react-dnd";
 import {ConnectDropTarget} from "react-dnd/src/types";
 import {ItemTypes} from "@/constants/draggable";
-import {ScaleDirection} from "@/components/Task/Task";
+import {MarkerPosition} from "@/components/Marker/Marker";
 
 export type SlotProps = {
     id: string,
@@ -22,7 +22,7 @@ export default function Slot({id, position, onMutate}: SlotProps)
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        ...(direction === ScaleDirection.Left ?
+                        ...(direction === MarkerPosition.Left ?
                             {estimatedStartDate: position} :
                             {estimatedFinishDate: position})
                     }),

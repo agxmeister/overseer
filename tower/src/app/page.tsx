@@ -4,12 +4,12 @@ import useSWR from 'swr'
 
 import {default as TaskMap} from "@/components/Map/Map";
 import Card from "@/components/Card/Card";
-import Task, {ScaleDirection} from "@/components/Task/Task";
 import React, {MutableRefObject, useRef, useState} from "react";
 import Slot from "@/components/Slot/Slot";
 import {getDates} from "@/utils/date";
 import Marker, {MarkerPosition} from "@/components/Marker/Marker";
 import Link from "@/components/Link/Link";
+import Task from "@/components/Task/Task";
 
 type Issue = {
     key: string,
@@ -50,7 +50,7 @@ export default function Page()
     const onMutate = (fetcher: Function, mutation: {taskId: string, direction: string, date: string}) => {
         const optimisticData = data.map((issue: Issue) =>
             issue.key === mutation.taskId ?
-                (mutation.direction === ScaleDirection.Left ?
+                (mutation.direction === MarkerPosition.Left ?
                     {...issue, estimatedStartDate: mutation.date} :
                     {...issue, estimatedFinishDate: mutation.date}) :
                 issue);
@@ -101,19 +101,16 @@ export default function Page()
         <Task
             key={issue.key}
             id={issue.key}
-            markerLeft={<Marker position={MarkerPosition.Left}/>}
-            markerRight={<Marker position={MarkerPosition.Right}/>}
+            markerLeft={<Marker id={issue.key} position={MarkerPosition.Left} onScale={onScale}/>}
+            markerRight={<Marker id={issue.key} position={MarkerPosition.Right} onScale={onScale}/>}
             start={issue.estimatedStartDate}
             finish={issue.estimatedFinishDate}
-            links={issue.links}
             card={<Card
                 key={issue.key}
                 id={issue.key}
                 title={issue.summary}
             />}
-            onScale={onScale}
             onLink={onLink}
-            addMarker={addMarker}
         />
     ): [];
 

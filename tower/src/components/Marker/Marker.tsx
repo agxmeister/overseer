@@ -1,5 +1,6 @@
 import styles from "@/components/MArker/Marker.module.sass";
-import {useRef} from "react";
+import {useDrag} from "react-dnd";
+import {ItemTypes} from "@/constants/draggable";
 
 export enum MarkerPosition {
     Left = "left",
@@ -7,15 +8,29 @@ export enum MarkerPosition {
 }
 
 export type MarkerProps = {
+    id: string
     position: MarkerPosition
+    onScale: Function
 }
 
-export default function Marker({ position }: MarkerProps)
+export default function Marker({ id, position, onScale }: MarkerProps)
 {
-    const ref = useRef<HTMLDivElement|null>(null);
+    const [{ isDragging }, drag] = useDrag(() => ({
+        type: ItemTypes.MARKER,
+        item: () => {
+            onScale(id);
+            return {taskId: id, direction: position};
+        },
+        end: () => {
+            onScale(null);
+        },
+        collect: monitor => ({isDragging: monitor.isDragging()}),
+    }));
+
     return (
-        <div ref={ref} className={styles.marker} style={{
+        <div ref={drag} className={styles.marker} style={{
             gridColumn: `line-${position}-marker`,
+            opacity: isDragging ? 0 : 1,
         }}/>
     );
 }

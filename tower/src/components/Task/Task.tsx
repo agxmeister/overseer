@@ -1,10 +1,10 @@
 import styles from './Task.module.sass'
-import {ReactElement, useRef} from "react";
-import {useDrag, useDrop} from "react-dnd";
+import {ReactElement} from "react";
+import {useDrop} from "react-dnd";
 import {CardProps} from "@/components/Card/Card";
 import {ItemTypes} from "@/constants/draggable";
 import {ConnectDropTarget} from "react-dnd/src/types";
-import {MarkerProps} from "@/components/Marker/Marker";
+import {MarkerPosition, MarkerProps} from "@/components/Marker/Marker";
 
 export type TaskProps = {
     id: string,
@@ -12,9 +12,7 @@ export type TaskProps = {
     markerRight: ReactElement<MarkerProps>
     start: string,
     finish: string,
-    links: {inward: Link[], outward: Link[]},
     card: ReactElement<CardProps>,
-    onScale: Function,
     onLink: Function,
 }
 
@@ -23,37 +21,8 @@ type Link = {
     type: string,
 }
 
-export enum ScaleDirection {
-    Left = "left",
-    Right = "right",
-}
-
-export default function Task({id, markerLeft, markerRight, start, finish, links, card, onScale, onLink}: TaskProps)
+export default function Task({id, markerLeft, markerRight, start, finish, card, onLink}: TaskProps)
 {
-    const [{ isDraggingLeft }, dragLeft] = useDrag(() => ({
-        type: ItemTypes.MARKER,
-        item: () => {
-            onScale(id);
-            return {taskId: id, direction: ScaleDirection.Left};
-        },
-        end: () => {
-            onScale(null);
-        },
-        collect: monitor => ({isDraggingLeft: monitor.isDragging()}),
-    }));
-
-    const [{ isDraggingRight }, dragRight] = useDrag(() => ({
-        type: ItemTypes.MARKER,
-        item: () => {
-            onScale(id);
-            return {taskId: id, direction: ScaleDirection.Right};
-        },
-        end: () => {
-            onScale(null);
-        },
-        collect: monitor => ({isDraggingRight: monitor.isDragging()}),
-    }));
-
     const [{ isOver }, drop] = useDrop(() => ({
         accept: ItemTypes.MARKER,
         drop: ({ taskId, direction }: {taskId: string, direction: string}) => {
@@ -64,8 +33,8 @@ export default function Task({id, markerLeft, markerRight, start, finish, links,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        inwardJiraId: direction === ScaleDirection.Left ? id : taskId,
-                        outwardJiraId: direction === ScaleDirection.Left ? taskId : id,
+                        inwardJiraId: direction === MarkerPosition.Left ? id : taskId,
+                        outwardJiraId: direction === MarkerPosition.Left ? taskId : id,
                         type: 'Precedes',
                     }),
                 });
@@ -84,15 +53,7 @@ export default function Task({id, markerLeft, markerRight, start, finish, links,
             border: isOver ? '4px solid rgb(181, 12, 15)' : 'none',
         }}>
             {markerLeft}
-            <div ref={dragLeft} className={styles.marker} style={{
-                gridColumn: "line-left-marker",
-                opacity: isDraggingLeft ? 0 : 1,
-            }}/>
             {card}
-            <div ref={dragRight} className={styles.marker} style={{
-                gridColumn: "line-right-marker",
-                opacity: isDraggingRight ? 0 : 1,
-            }}/>
             {markerRight}
         </div>
     )
