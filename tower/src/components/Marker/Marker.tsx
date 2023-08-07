@@ -28,7 +28,7 @@ export default function Marker({ id, position, onSize }: MarkerProps)
     }));
 
     return (
-        <div ref={drag} className={styles.marker} style={{
+        <div id={`marker-${id}-${position}`} ref={drag} className={styles.marker} style={{
             gridColumn: `line-${position}-marker`,
             opacity: isDragging ? 0 : 1,
         }}/>
