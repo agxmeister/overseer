@@ -10,19 +10,19 @@ export enum MarkerPosition {
 export type MarkerProps = {
     id: string
     position: MarkerPosition
-    onScale: Function
+    onSize: Function
 }
 
-export default function Marker({ id, position, onScale }: MarkerProps)
+export default function Marker({ id, position, onSize }: MarkerProps)
 {
     const [{ isDragging }, drag] = useDrag(() => ({
         type: ItemTypes.MARKER,
         item: () => {
-            onScale(id);
+            onSize(id);
             return {taskId: id, direction: position};
         },
         end: () => {
-            onScale(null);
+            onSize(null);
         },
         collect: monitor => ({isDragging: monitor.isDragging()}),
     }));

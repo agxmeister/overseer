@@ -4,7 +4,7 @@ import useSWR from 'swr'
 
 import {default as TaskMap} from "@/components/Map/Map";
 import Card from "@/components/Card/Card";
-import React, {MutableRefObject, useRef, useState} from "react";
+import React, {useState} from "react";
 import Slot from "@/components/Slot/Slot";
 import {getDates} from "@/utils/date";
 import Marker, {MarkerPosition} from "@/components/Marker/Marker";
@@ -41,9 +41,9 @@ export default function Page()
 
     const dates = getDates(new Date("2023-07-25"), new Date("2023-09-05"));
 
-    const [scaleTaskId, setScaleTaskId] = useState<string|null>(null);
-    const onScale = (taskId: string) => {
-        setScaleTaskId(taskId);
+    const [sizeTaskId, setSizeTaskId] = useState<string|null>(null);
+    const onSize = (taskId: string) => {
+        setSizeTaskId(taskId);
     }
 
     const {data, mutate} = useSWR('http://localhost:8080/api/v1/tasks', (api: string) => fetch(api).then(res => res.json()));
@@ -94,25 +94,52 @@ export default function Page()
         <Task
             key={issue.key}
             id={issue.key}
-            markerLeft={<Marker id={issue.key} position={MarkerPosition.Left} onScale={onScale}/>}
-            markerRight={<Marker id={issue.key} position={MarkerPosition.Right} onScale={onScale}/>}
+            markerLeft={
+                <Marker
+                    id={issue.key}
+                    position={MarkerPosition.Left}
+                    onSize={onSize}
+                />
+            }
+            markerRight={
+                <Marker
+                    id={issue.key}
+                    position={MarkerPosition.Right}
+                    onSize={onSize}
+                />
+            }
             start={issue.estimatedStartDate}
             finish={issue.estimatedFinishDate}
-            card={<Card
-                key={issue.key}
-                id={issue.key}
-                title={issue.summary}
-            />}
+            card={
+                <Card
+                    key={issue.key}
+                    id={issue.key}
+                    title={issue.summary}
+                />
+            }
             onLink={onLink}
         />
     ): [];
 
-    const slots = scaleTaskId !== null ? dates
-        .map(date => <Slot key={date} id={scaleTaskId} position={date} onMutate={onMutate}/>) : [];
+    const slots = sizeTaskId !== null ? dates
+        .map(date =>
+            <Slot
+                key={date}
+                id={sizeTaskId}
+                position={date}
+                onMutate={onMutate}
+            />
+        ) : [];
 
     return (
         <div tabIndex={0} onKeyDown={handleKeyDown}>
-            <TaskMap scale={scale} dates={dates} tasks={tasks} slots={slots} links={links}/>
+            <TaskMap
+                scale={scale}
+                dates={dates}
+                tasks={tasks}
+                slots={slots}
+                links={links}
+            />
         </div>
     );
 }
