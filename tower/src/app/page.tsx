@@ -68,13 +68,6 @@ export default function Page()
         });
     }
 
-    const markers = [] as {id: string, type: string, ref: MutableRefObject<HTMLDivElement | null>}[];
-    const addMarker = (id: string, type: string, ref: MutableRefObject<HTMLDivElement | null>) => markers.push({
-        id: id,
-        type: type,
-        ref: ref,
-    });
-
     const links = Array.from<[string, LinkDescription]>(data ? data.reduce((acc: Map<string, LinkDescription>, issue: Issue) => {
         Object.entries(issue.links).reduce((acc, [type, links]) => {
             links.reduce((acc, link) => {
