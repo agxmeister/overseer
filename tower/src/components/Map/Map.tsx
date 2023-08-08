@@ -1,6 +1,6 @@
 import styles from './Map.module.sass'
 import {getLinesTemplate} from "@/utils/grid";
-import {ReactElement} from "react";
+import {createContext, ReactElement} from "react";
 import {TaskProps} from "@/components/Task/Task";
 import {SlotProps} from "@/components/Slot/Slot";
 import {DndProvider} from "react-dnd";
@@ -14,6 +14,8 @@ export type MapProps = {
     links: ReactElement<SlotProps>[],
 }
 
+export const ScaleContext = createContext(1);
+
 export default function Map({scale, dates, tasks, slots, links}: MapProps)
 {
     const ids = tasks.map(task => task.props.id);
@@ -24,9 +26,11 @@ export default function Map({scale, dates, tasks, slots, links}: MapProps)
                 gridTemplateRows: getLinesTemplate(ids, `${size}em`),
                 gridTemplateColumns: getLinesTemplate(dates, `${size}em`),
             }}>
-                {tasks.length > 0 ? tasks : "Loading"}
-                {slots.length > 0 ? slots : null}
-                {links.length > 0 ? links : null}
+                <ScaleContext.Provider value={scale}>
+                    {tasks.length > 0 ? tasks : "Loading"}
+                    {slots.length > 0 ? slots : null}
+                    {links.length > 0 ? links : null}
+                </ScaleContext.Provider>
             </div>
         </DndProvider>
     );
