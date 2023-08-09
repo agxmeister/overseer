@@ -60,6 +60,17 @@ export default function Link({ startMarkerId, finishMarkerId }: LinkProps)
                     transform: `translate(${canvasStartPoint.x}px, ${canvasStartPoint.y}px)`,
                 }}
             >
+                <defs>
+                    <marker
+                        id='head'
+                        viewBox="-10 -10 20 20"
+                        orient="auto"
+                        markerWidth="20"
+                        markerHeight="20"
+                    >
+                        <polygon points="-10,-5 0,0 -10,5" />
+                    </marker>
+                </defs>
                 <line
                     stroke={"rgb(0, 0, 0)"}
                     strokeWidth={2}
@@ -67,6 +78,7 @@ export default function Link({ startMarkerId, finishMarkerId }: LinkProps)
                     y1={coords.fromY - canvasStartPoint.y}
                     x2={coords.toX - canvasStartPoint.x}
                     y2={coords.toY - canvasStartPoint.y}
+                    markerEnd={"url(#head)"}
                 />
             </svg>
         </div>
