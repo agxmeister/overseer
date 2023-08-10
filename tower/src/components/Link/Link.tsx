@@ -22,19 +22,27 @@ export default function Link({ startMarkerId, finishMarkerId }: LinkProps)
     const boxRef = useRef<HTMLDivElement|null>(null);
 
     useEffect(() => {
-        const boxX = boxRef.current?.parentElement?.offsetLeft ?? 0;
-        const boxY = boxRef.current?.parentElement?.offsetTop ?? 0;
         const startRef = document.getElementById(`marker-${startMarkerId}-right`);
-        const startX = startRef?.offsetLeft ?? 0;
-        const startY = startRef?.offsetTop ?? 0;
         const finishRef = document.getElementById(`marker-${finishMarkerId}-left`);
-        const finishX = finishRef?.offsetLeft ?? 0;
-        const finishY = finishRef?.offsetTop ?? 0;
+        const parentRef = boxRef.current?.parentElement;
+        if (!startRef || !finishRef || !parentRef) {
+            return;
+        }
+
+        const startX = startRef.offsetLeft + startRef.offsetWidth;
+        const startY = startRef.offsetTop + startRef.offsetHeight / 2;
+
+        const finishX = finishRef.offsetLeft;
+        const finishY = finishRef.offsetTop + finishRef.offsetHeight / 2;
+
+        const offsetX = parentRef.offsetLeft;
+        const offsetY = parentRef.offsetTop;
+
         setCoords({
-            fromX: startX - boxX,
-            fromY: startY - boxY,
-            toX: finishX - boxX,
-            toY: finishY - boxY,
+            fromX: startX - offsetX,
+            fromY: startY - offsetY,
+            toX: finishX - offsetX,
+            toY: finishY - offsetY,
         });
         console.log(`Link from ${startMarkerId} (${startX},${startY}) to ${finishMarkerId} (${finishX},${finishY})`);
     }, [scale]);
