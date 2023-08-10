@@ -1,3 +1,4 @@
+import styles from './Link.module.sass'
 import {useContext, useEffect, useRef, useState} from "react";
 import {ScaleContext} from "@/components/Map/Map";
 
@@ -73,7 +74,7 @@ export default function Link({ startMarkerId, finishMarkerId }: LinkProps)
         }].reduce((acc, point) => `${acc}${acc ? ' ' : ''}${point.x},${point.y}`, "");
 
     return (
-        <div ref={boxRef}>
+        <div className={styles.link} ref={boxRef}>
             <svg
                 width={canvasWidth}
                 height={canvasHeight}
