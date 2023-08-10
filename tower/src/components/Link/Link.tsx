@@ -53,13 +53,13 @@ export default function Link({ startMarkerId, finishMarkerId }: LinkProps)
     }
 
     const canvasStartPoint = {
-        x: Math.min(coords.fromX, coords.toX) - 8,
-        y: Math.min(coords.fromY, coords.toY) - 8,
+        x: Math.min(coords.fromX, coords.toX) - 34,
+        y: Math.min(coords.fromY, coords.toY) - 34,
     };
-    const canvasWidth = Math.abs(coords.toX - coords.fromX) + 16;
-    const canvasHeight = Math.abs(coords.toY - coords.fromY) + 16;
+    const canvasWidth = Math.abs(coords.toX - coords.fromX) + 68;
+    const canvasHeight = Math.abs(coords.toY - coords.fromY) + 68;
 
-    const points = [{
+    const points = ((coords.fromX + 64) < coords.toX ? [{
             x: coords.fromX + 2 - canvasStartPoint.x,
             y: coords.fromY - canvasStartPoint.y,
         }, {
@@ -71,7 +71,25 @@ export default function Link({ startMarkerId, finishMarkerId }: LinkProps)
         }, {
             x: coords.toX - 4 - canvasStartPoint.x,
             y: coords.toY - canvasStartPoint.y,
-        }].reduce((acc, point) => `${acc}${acc ? ' ' : ''}${point.x},${point.y}`, "");
+        }] : [{
+            x: coords.fromX + 2 - canvasStartPoint.x,
+            y: coords.fromY - canvasStartPoint.y,
+        }, {
+            x: coords.fromX + 32 - canvasStartPoint.x,
+            y: coords.fromY - canvasStartPoint.y,
+        }, {
+            x: coords.fromX + 32 - canvasStartPoint.x,
+            y: coords.fromY - canvasStartPoint.y + (coords.toY - coords.fromY) / 2,
+        }, {
+            x: coords.toX - 32 - canvasStartPoint.x,
+            y: coords.fromY - canvasStartPoint.y + (coords.toY - coords.fromY) / 2,
+        }, {
+            x: coords.toX - 32 - canvasStartPoint.x,
+            y: coords.toY - canvasStartPoint.y,
+        }, {
+            x: coords.toX - 4 - canvasStartPoint.x,
+            y: coords.toY - canvasStartPoint.y,
+        }]).reduce((acc, point) => `${acc}${acc ? ' ' : ''}${point.x},${point.y}`, "");
 
     return (
         <div className={styles.link} ref={boxRef}>
