@@ -52,11 +52,25 @@ export default function Link({ startMarkerId, finishMarkerId }: LinkProps)
     }
 
     const canvasStartPoint = {
-        x: Math.min(coords.fromX, coords.toX),
-        y: Math.min(coords.fromY, coords.toY),
+        x: Math.min(coords.fromX, coords.toX) - 8,
+        y: Math.min(coords.fromY, coords.toY) - 8,
     };
-    const canvasWidth = Math.abs(coords.toX - coords.fromX);
-    const canvasHeight = Math.abs(coords.toY - coords.fromY);
+    const canvasWidth = Math.abs(coords.toX - coords.fromX) + 16;
+    const canvasHeight = Math.abs(coords.toY - coords.fromY) + 16;
+
+    const points = [{
+            x: coords.fromX + 2 - canvasStartPoint.x,
+            y: coords.fromY - canvasStartPoint.y,
+        }, {
+            x: coords.fromX - canvasStartPoint.x + (coords.toX - coords.fromX) / 2,
+            y: coords.fromY - canvasStartPoint.y,
+        }, {
+            x: coords.fromX - canvasStartPoint.x + (coords.toX - coords.fromX) / 2,
+            y: coords.toY - canvasStartPoint.y,
+        }, {
+            x: coords.toX - 4 - canvasStartPoint.x,
+            y: coords.toY - canvasStartPoint.y,
+        }].reduce((acc, point) => `${acc}${acc ? ' ' : ''}${point.x},${point.y}`, "");
 
     return (
         <div ref={boxRef}>
@@ -76,16 +90,14 @@ export default function Link({ startMarkerId, finishMarkerId }: LinkProps)
                         markerWidth="20"
                         markerHeight="20"
                     >
-                        <polygon points="-10,-5 0,0 -10,5" />
+                        <polygon points="-7,-3 1,0 -7,3" />
                     </marker>
                 </defs>
-                <line
+                <polyline
                     stroke={"rgb(0, 0, 0)"}
                     strokeWidth={2}
-                    x1={coords.fromX - canvasStartPoint.x}
-                    y1={coords.fromY - canvasStartPoint.y}
-                    x2={coords.toX - canvasStartPoint.x}
-                    y2={coords.toY - canvasStartPoint.y}
+                    fill={"none"}
+                    points={points}
                     markerEnd={"url(#head)"}
                 />
             </svg>
