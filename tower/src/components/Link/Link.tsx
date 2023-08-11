@@ -1,6 +1,6 @@
 import styles from './Link.module.sass'
 import {useContext, useEffect, useRef, useState} from "react";
-import {ScaleContext} from "@/components/Map/Map";
+import {MapContext} from "@/components/Map/Map";
 
 type LinkProps = {
     startMarkerId: string,
@@ -16,7 +16,7 @@ type Coords = {
 
 export default function Link({ startMarkerId, finishMarkerId }: LinkProps)
 {
-    const scale = useContext(ScaleContext);
+    const [scale, tasks] = useContext(MapContext);
 
     const [coords, setCoords] = useState<Coords|null>(null);
 
@@ -45,8 +45,7 @@ export default function Link({ startMarkerId, finishMarkerId }: LinkProps)
             toX: finishX - offsetX,
             toY: finishY - offsetY,
         });
-        console.log(`Link from ${startMarkerId} (${startX},${startY}) to ${finishMarkerId} (${finishX},${finishY})`);
-    }, [scale]);
+    }, [scale, tasks]);
 
     if (!coords) {
         return <div ref={boxRef}/>

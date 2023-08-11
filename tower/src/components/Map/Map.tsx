@@ -14,7 +14,7 @@ export type MapProps = {
     links: ReactElement<SlotProps>[],
 }
 
-export const ScaleContext = createContext(1);
+export const MapContext = createContext([1, []] as [number, ReactElement<TaskProps>[]]);
 
 export default function Map({scale, dates, tasks, slots, links}: MapProps)
 {
@@ -26,11 +26,11 @@ export default function Map({scale, dates, tasks, slots, links}: MapProps)
                 gridTemplateRows: getLinesTemplate(ids, `${size}em`),
                 gridTemplateColumns: getLinesTemplate(dates, `${size}em`),
             }}>
-                <ScaleContext.Provider value={scale}>
+                <MapContext.Provider value={[scale, tasks]}>
                     {tasks.length > 0 ? tasks : "Loading"}
                     {slots.length > 0 ? slots : null}
                     {links.length > 0 ? links : null}
-                </ScaleContext.Provider>
+                </MapContext.Provider>
             </div>
         </DndProvider>
     );
