@@ -85,6 +85,7 @@ class Jira
         return [
             'key' => $issue->key,
             'summary' => $issue->fields->summary,
+            'estimatedDuration' => (int)$issue->fields->customfield_10038,
             'estimatedStartDate' => $issue->fields->customfield_10036,
             'estimatedFinishDate' => $issue->fields->customfield_10037,
             'links' => $links,
