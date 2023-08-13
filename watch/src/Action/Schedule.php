@@ -15,7 +15,7 @@ class Schedule
 
     public function __invoke(Request $request, Response $response, $args): Response
     {
-        $tree = $this->builder->getTree($this->jira->getIssues(''));
+        $tree = $this->builder->getGraph($this->jira->getIssues(''));
         $response->getBody()->write(json_encode($tree->getSchedule()));
         return $response
             ->withHeader('Content-Type', 'application/json')

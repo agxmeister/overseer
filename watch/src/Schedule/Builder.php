@@ -4,12 +4,20 @@ namespace Watch\Schedule;
 
 class Builder
 {
-    public function getTree($issues): Node
+    public function getGraph($issues): Node
     {
-        $node = new Node('finish');
+        $milestoneNode = new Node('finish');
         foreach ($issues as $issue) {
-            $node->link(new Node($issue['key']));
+            $issueNode = new Node($issue['key'], $issue['estimatedDuration']);
+            $milestoneNode->follow($issueNode);
         }
-        return $node;
+        $point = 0;
+        do {
+            $nodes = array_filter($milestoneNode->getPreceders(), fn(Node $node) => $node->getFinish() <= $point);
+            $node = $milestoneNode->getLongestPreceder();
+            $node->unprecede($milestoneNode);
+            $node->precede($milestoneNode->getShortestPreceder());
+        } while (count($nodes) > 2);
+        return $milestoneNode;
     }
 }
