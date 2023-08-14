@@ -15,5 +15,8 @@
         "psr-4": {
             "Watch\\": "src/"
         }
+    },
+    "scripts": {
+        "test": "vendor/bin/codecept run"
     }
 }
