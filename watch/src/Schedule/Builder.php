@@ -13,11 +13,11 @@ class Builder
         }
         $point = 0;
         do {
-            $nodes = array_filter($milestoneNode->getPreceders(), fn(Node $node) => $node->getFinish() <= $point);
+            $nodes = array_filter($milestoneNode->getPreceders(true), fn(Node $node) => $node->getFinish() <= $point);
             $node = $milestoneNode->getLongestPreceder();
             $node->unprecede($milestoneNode);
             $node->precede($milestoneNode->getShortestPreceder());
-        } while (count($nodes) > 2);
+        } while (count($nodes) - 1 > 2);
         return $milestoneNode;
     }
 }

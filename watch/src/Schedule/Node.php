@@ -6,6 +6,9 @@ class Node
 {
     private array $followers = [];
 
+    /**
+     * @var Node[]
+     */
     private array $preceders = [];
 
     public function __construct(private string $name, private int $length = 0)
@@ -53,17 +56,34 @@ class Node
         return $this->name;
     }
 
-    public function getPreceders(): array
+    public function getPreceders(bool $isRecursively = false): array
     {
-        return $this->preceders;
+        if (!$isRecursively) {
+            return $this->preceders;
+        }
+        $preceders = $this->preceders;
+        foreach ($this->preceders as $preceder) {
+            $preceders = array_merge($preceders, $preceder->getPreceders(true));
+        }
+        $preceders = array_unique($preceders);
+        usort($preceders, fn(Node $a, Node $b) => $a->getDistance() < $b->getDistance() ? -1 : ($a->getDistance() > $b->getDistance() ? 1 : 0));
+        return $preceders;
     }
 
-    public function getDistance(): int
+    public function getDistance(bool $isRecursively = false): int
     {
         if (count($this->followers) === 0) {
+            return $this->getLength($isRecursively);
+        }
+        return max(array_map(fn(Node $node) => $node->getDistance(), $this->followers)) + $this->getLength($isRecursively);
+    }
+
+    public function getLength(bool $isRecursively = false): int
+    {
+        if (!$isRecursively || empty($this->preceders)) {
             return $this->length;
         }
-        return max(array_map(fn(Node $node) => $node->getDistance(), $this->followers)) + $this->length;
+        return max(array_map(fn(Node $node) => $node->getDistance(), $this->getPreceders(true)));
     }
 
     public function getFinish(): int
@@ -75,7 +95,7 @@ class Node
     {
         return array_reduce(
             $this->preceders,
-            fn(Node|null $acc, Node $preceder) => is_null($acc) ? $preceder : ($acc->getDistance() < $preceder->getDistance() ? $preceder : $acc),
+            fn(Node|null $acc, Node $preceder) => is_null($acc) ? $preceder : ($acc->getDistance(true) < $preceder->getDistance(true) ? $preceder : $acc),
         );
     }
 
@@ -83,7 +103,7 @@ class Node
     {
         return array_reduce(
             $this->preceders,
-            fn(Node|null $acc, Node $preceder) => is_null($acc) ? $preceder : ($acc->getDistance() > $preceder->getDistance() ? $preceder : $acc),
+            fn(Node|null $acc, Node $preceder) => is_null($acc) ? $preceder : ($acc->getDistance(true) > $preceder->getDistance(true) ? $preceder : $acc),
         );
     }
 
@@ -93,5 +113,10 @@ class Node
             return $this->getName();
         }
         return array_map(fn(Node $node) => $node->getSchedule(), $this->preceders);
+    }
+
+    public function __toString(): string
+    {
+        return $this->getName();
     }
 }
