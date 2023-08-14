@@ -3,13 +3,12 @@ namespace Tests;
 
 use Tests\Support\ApiTester;
 
-class HelloCest
+class TasksCest
 {    
     public function tryApi(ApiTester $I)
     {
-        $I->sendGet('/hello');
+        $I->sendGet('/tasks');
         $I->seeResponseCodeIs(200);
         $I->seeResponseIsJson();
-        $I->seeResponseContains('"Hello, World!"');
     }
 }
