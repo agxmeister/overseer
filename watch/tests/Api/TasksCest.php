@@ -1,11 +1,11 @@
 <?php
-namespace Tests;
+namespace Tests\Api;
 
 use Tests\Support\ApiTester;
 
 class TasksCest
 {    
-    public function tryApi(ApiTester $I)
+    public function getTasks(ApiTester $I): void
     {
         $I->sendGet('/tasks');
         $I->seeResponseCodeIs(200);

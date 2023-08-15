@@ -4,7 +4,7 @@ support_namespace: Support
 suites:
     api:
         actor: ApiTester
-        path: .
+        path: ./Api
         modules:
             enabled:
                 - REST:
@@ -12,6 +12,11 @@ suites:
                     depends: PhpBrowser
         step_decorators:
             - \Codeception\Step\AsJson
+    unit:
+        actor: UnitTester
+        path: ./Unit
+        modules:
+            enabled: []
 
 paths:
     tests: tests
