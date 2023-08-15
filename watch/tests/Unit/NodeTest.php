@@ -98,4 +98,29 @@ class NodeTest extends Unit
         $this->assertEquals(34, $node4->getDistance());
         $this->assertEquals(34, $node4->getDistance(true));
     }
+
+    public function testPreceders()
+    {
+        $node1 = new Node("Test1", 10);
+        $node2 = new Node("Test2", 11);
+        $node3 = new Node("Test3", 12);
+        $node4 = new Node("Test4", 13);
+        $node5 = new Node("Test5", 14);
+        $node2->precede($node1);
+        $node3->precede($node1);
+        $node5->precede($node1);
+        $node2->precede($node5);
+        $node4->precede($node2);
+        $node4->precede($node3);
+        $this->assertEquals([$node2, $node3, $node5], $node1->getPreceders());
+        $this->assertEquals([$node3, $node5, $node2, $node4], $node1->getPreceders(true));
+        $this->assertEquals([$node4], $node2->getPreceders());
+        $this->assertEquals([$node4], $node2->getPreceders(true));
+        $this->assertEquals([$node4], $node3->getPreceders());
+        $this->assertEquals([$node4], $node3->getPreceders(true));
+        $this->assertEquals([], $node4->getPreceders());
+        $this->assertEquals([], $node4->getPreceders(true));
+        $this->assertEquals([$node2], $node5->getPreceders());
+        $this->assertEquals([$node2, $node4], $node5->getPreceders(true));
+    }
 }
