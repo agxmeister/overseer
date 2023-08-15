@@ -65,25 +65,25 @@ class Node
         foreach ($this->preceders as $preceder) {
             $preceders = array_merge($preceders, $preceder->getPreceders(true));
         }
-        $preceders = array_unique($preceders);
+        $preceders = array_unique($preceders, SORT_REGULAR);
         usort($preceders, fn(Node $a, Node $b) => $a->getDistance() < $b->getDistance() ? -1 : ($a->getDistance() > $b->getDistance() ? 1 : 0));
         return $preceders;
     }
 
-    public function getDistance(bool $isRecursively = false): int
+    public function getDistance(bool $withPreceders = false): int
     {
         if (count($this->followers) === 0) {
-            return $this->getLength($isRecursively);
+            return $this->getLength($withPreceders);
         }
-        return max(array_map(fn(Node $node) => $node->getDistance(), $this->followers)) + $this->getLength($isRecursively);
+        return max(array_map(fn(Node $node) => $node->getDistance(), $this->followers)) + $this->getLength($withPreceders);
     }
 
-    public function getLength(bool $isRecursively = false): int
+    public function getLength(bool $withPreceders = false): int
     {
-        if (!$isRecursively || empty($this->preceders)) {
+        if (!$withPreceders || empty($this->preceders)) {
             return $this->length;
         }
-        return max(array_map(fn(Node $node) => $node->getDistance(), $this->getPreceders(true)));
+        return max(array_map(fn(Node $node) => $node->getDistance(), $this->getPreceders(true))) - $this->getDistance() + $this->length;
     }
 
     public function getFinish(): int
@@ -113,10 +113,5 @@ class Node
             return $this->getName();
         }
         return array_map(fn(Node $node) => $node->getSchedule(), $this->preceders);
-    }
-
-    public function __toString(): string
-    {
-        return $this->getName();
     }
 }
