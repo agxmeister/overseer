@@ -56,6 +56,11 @@ class Node
         return $this->name;
     }
 
+    public function hasPreceders(): bool
+    {
+        return !empty($this->preceders);
+    }
+
     public function getPreceders(bool $isRecursively = false): array
     {
         if (!$isRecursively) {
@@ -86,32 +91,29 @@ class Node
         return max(array_map(fn(Node $node) => $node->getDistance(), $this->getPreceders(true))) - $this->getDistance() + $this->length;
     }
 
-    public function getFinish(): int
+    public function getCompletion(): int
     {
-        return $this->getDistance() - $this->length;
+        return $this->getDistance() - $this->getLength();
     }
 
-    public function getLongestPreceder(): Node
+    public function getLongestPreceder(): Node|null
     {
-        return array_reduce(
-            $this->preceders,
-            fn(Node|null $acc, Node $preceder) => is_null($acc) ? $preceder : ($acc->getDistance(true) < $preceder->getDistance(true) ? $preceder : $acc),
-        );
+        if (empty($this->preceders)) {
+            return null;
+        }
+        return Utils::getLongestNode($this->preceders);
     }
 
-    public function getShortestPreceder(): Node
+    public function getShortestPreceder(): Node|null
     {
-        return array_reduce(
-            $this->preceders,
-            fn(Node|null $acc, Node $preceder) => is_null($acc) ? $preceder : ($acc->getDistance(true) > $preceder->getDistance(true) ? $preceder : $acc),
-        );
+        if (empty($this->preceders)) {
+            return null;
+        }
+        return Utils::getShortestNode($this->preceders);
     }
 
     public function getSchedule(): array|string
     {
-        if (count($this->preceders) === 0) {
-            return $this->getName();
-        }
-        return array_map(fn(Node $node) => $node->getSchedule(), $this->preceders);
+        return array_map(fn(Node $node) => [$node->getName(), $node->getLength(), $node->getDistance()], $this->getPreceders(true));
     }
 }
