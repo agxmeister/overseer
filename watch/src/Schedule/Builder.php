@@ -9,7 +9,7 @@ class Builder
         $milestoneNode = new Node('finish');
         foreach ($issues as $issue) {
             $issueNode = new Node($issue['key'], $issue['estimatedDuration']);
-            $milestoneNode->follow($issueNode);
+            $milestoneNode->follow($issueNode, Link::TYPE_SCHEDULE);
         }
         $point = 0;
         while ($point < 100) {
@@ -17,8 +17,10 @@ class Builder
             $numberOfTasksInParallel = count($nodes);
             while ($numberOfTasksInParallel > 2) {
                 $longestNode = Utils::getLongestNode($nodes);
+                $followers = $longestNode->getFollowers(Link::TYPE_SCHEDULE);
+                array_walk($followers, fn(Node $follower) => $longestNode->unprecede($follower));
                 $shortestNode = Utils::getShortestNode($nodes);
-                $longestNode->precede($shortestNode);
+                $longestNode->precede($shortestNode, Link::TYPE_SCHEDULE);
                 $numberOfTasksInParallel--;
             }
             $point++;

@@ -24,7 +24,7 @@ class Node
             return;
         }
         $this->preceders[] = new Link($node, $type);
-        $node->precede($this);
+        $node->precede($this, $type);
     }
 
     public function unfollow(Node $node): void
@@ -43,7 +43,7 @@ class Node
             return;
         }
         $this->followers[] = new Link($node, $type);
-        $node->follow($this);
+        $node->follow($this, $type);
     }
 
     public function unprecede(Node $node): void
@@ -69,9 +69,14 @@ class Node
     /**
      * @return Node[]
      */
-    public function getFollowers(): array
+    public function getFollowers(string|null $type = null): array
     {
-        return array_map(fn(Link $link) => $link->getNode(), $this->followers);
+        return array_map(
+            fn(Link $link) => $link->getNode(),
+            is_null($type) ?
+                $this->followers :
+                array_filter($this->followers, fn(Link $link) => $link->getType() === $type)
+        );
     }
 
     /**
