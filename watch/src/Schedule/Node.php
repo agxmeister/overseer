@@ -4,10 +4,13 @@ namespace Watch\Schedule;
 
 class Node
 {
+    /**
+     * @var Link[]
+     */
     private array $followers = [];
 
     /**
-     * @var Node[]
+     * @var Link[]
      */
     private array $preceders = [];
 
@@ -15,39 +18,41 @@ class Node
     {
     }
 
-    public function follow(Node $node): void
+    public function follow(Node $node, string $type = Link::TYPE_SEQUENCE): void
     {
-        if (in_array($node, $this->preceders)) {
+        if ($this->hasLink($this->preceders, $node)) {
             return;
         }
-        $this->preceders[] = $node;
+        $this->preceders[] = new Link($node, $type);
         $node->precede($this);
     }
 
     public function unfollow(Node $node): void
     {
-        if (!in_array($node, $this->preceders)) {
+        $link = $this->getLink($this->preceders, $node);
+        if (is_null($link)) {
             return;
         }
-        $this->preceders = array_filter($this->preceders, fn(Node $n) => $n !== $node);
+        $this->preceders = array_filter($this->preceders, fn(Link $l) => $l !== $link);
         $node->unprecede($this);
     }
 
-    public function precede(Node $node): void
+    public function precede(Node $node, string $type = Link::TYPE_SEQUENCE): void
     {
-        if (in_array($node, $this->followers)) {
+        if ($this->hasLink($this->followers, $node)) {
             return;
         }
-        $this->followers[] = $node;
+        $this->followers[] = new Link($node, $type);
         $node->follow($this);
     }
 
     public function unprecede(Node $node): void
     {
-        if (!in_array($node, $this->followers)) {
+        $link = $this->getLink($this->followers, $node);
+        if (is_null($link)) {
             return;
         }
-        $this->followers = array_filter($this->followers, fn(Node $n) => $n !== $node);
+        $this->followers = array_filter($this->followers, fn(Link $l) => $l !== $link);
         $node->unfollow($this);
     }
 
@@ -61,14 +66,26 @@ class Node
         return !empty($this->preceders);
     }
 
+    /**
+     * @return Node[]
+     */
+    public function getFollowers(): array
+    {
+        return array_map(fn(Link $link) => $link->getNode(), $this->followers);
+    }
+
+    /**
+     * @param bool $isRecursively
+     * @return Node[]
+     */
     public function getPreceders(bool $isRecursively = false): array
     {
+        $preceders = array_map(fn(Link $link) => $link->getNode(), $this->preceders);
         if (!$isRecursively) {
-            return $this->preceders;
+            return $preceders;
         }
-        $preceders = $this->preceders;
         foreach ($this->preceders as $preceder) {
-            $preceders = array_merge($preceders, $preceder->getPreceders(true));
+            $preceders = [...$preceders, ...$preceder->getNode()->getPreceders(true)];
         }
         $preceders = array_unique($preceders, SORT_REGULAR);
         usort($preceders, fn(Node $a, Node $b) => $a->getDistance() < $b->getDistance() ? -1 : ($a->getDistance() > $b->getDistance() ? 1 : 0));
@@ -80,7 +97,7 @@ class Node
         if (count($this->followers) === 0) {
             return $this->getLength($withPreceders);
         }
-        return max(array_map(fn(Node $node) => $node->getDistance(), $this->followers)) + $this->getLength($withPreceders);
+        return max(array_map(fn(Node $node) => $node->getDistance(), $this->getFollowers())) + $this->getLength($withPreceders);
     }
 
     public function getLength(bool $withPreceders = false): int
@@ -101,7 +118,7 @@ class Node
         if (empty($this->preceders)) {
             return null;
         }
-        return Utils::getLongestNode($this->preceders);
+        return Utils::getLongestNode($this->getPreceders());
     }
 
     public function getShortestPreceder(): Node|null
@@ -109,11 +126,23 @@ class Node
         if (empty($this->preceders)) {
             return null;
         }
-        return Utils::getShortestNode($this->preceders);
+        return Utils::getShortestNode($this->getPreceders());
     }
 
     public function getSchedule(): array|string
     {
         return array_map(fn(Node $node) => [$node->getName(), $node->getLength(), $node->getDistance()], $this->getPreceders(true));
+    }
+
+    private function getLink(array $links, Node $node, string|null $type = null): Link|null
+    {
+        return array_reduce($links, fn(Link|null $acc, Link $link) => (
+            $link->getNode() === $node && (is_null($type) || $link->getType() === $type)
+        ) ? $link : $acc);
+    }
+
+    private function hasLink(array $links, Node $node, string|null $type = null): bool
+    {
+        return !is_null($this->getLink($links, $node, $type));
     }
 }
