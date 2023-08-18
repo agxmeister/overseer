@@ -39,14 +39,14 @@ export default function Page()
         }
     };
 
-    const dates = getDates(new Date("2023-07-25"), new Date("2023-09-05"));
+    const dates = getDates(new Date("2023-08-01"), new Date("2023-08-31"));
 
     const [sizeTaskId, setSizeTaskId] = useState<string|null>(null);
     const onSize = (taskId: string) => {
         setSizeTaskId(taskId);
     }
 
-    const {data, mutate} = useSWR('http://localhost:8080/api/v1/tasks', (api: string) => fetch(api).then(res => res.json()));
+    const {data, mutate} = useSWR('http://localhost:8080/api/v1/schedule', (api: string) => fetch(api).then(res => res.json()));
     const onMutate = (fetcher: Function, mutation: {taskId: string, direction: string, date: string}) => {
         const optimisticData = data.map((issue: Issue) =>
             issue.key === mutation.taskId ?

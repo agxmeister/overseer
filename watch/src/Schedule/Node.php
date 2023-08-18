@@ -115,7 +115,7 @@ class Node
 
     public function getCompletion(): int
     {
-        return $this->getDistance() - $this->getLength();
+        return $this->getDistance() - $this->getLength() + 1;
     }
 
     public function getLongestPreceder(): Node|null

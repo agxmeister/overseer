@@ -15,8 +15,8 @@ class Schedule
 
     public function __invoke(Request $request, Response $response, $args): Response
     {
-        $tree = $this->builder->getGraph($this->jira->getIssues(''));
-        $response->getBody()->write(json_encode($tree->getSchedule()));
+        $issues = $this->builder->getSchedule($this->jira->getIssues(''), "2023-08-31");
+        $response->getBody()->write(json_encode($issues));
         return $response
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Access-Control-Allow-Origin', '*');

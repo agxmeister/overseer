@@ -4,7 +4,7 @@ namespace Watch\Schedule;
 
 class Builder
 {
-    public function getGraph($issues): Node
+    public function getSchedule(array $issues, string $date): array
     {
         $milestoneNode = new Node('finish');
         foreach ($issues as $issue) {
@@ -25,7 +25,27 @@ class Builder
             }
             $point++;
         }
-        return $milestoneNode;
+
+        $nodes = [];
+        foreach ($milestoneNode->getPreceders(true) as $node) {
+            $nodes[$node->getName()] = $node;
+        }
+        return array_map(function (array $issue) use ($nodes, $date) {
+            /** @var Node $node */
+            $node = $nodes[$issue['key']] ?? null;
+            if (is_null($node)) {
+                return $issue;
+            }
+            $distance = $node->getDistance();
+            $completion = $node->getCompletion();
+            $startDate = (new \DateTime($date))->modify("-{$distance} day");
+            $finishDate = (new \DateTime($date))->modify("-{$completion} day");
+            return [
+                ...$issue,
+                'estimatedStartDate' => $startDate->format("Y-m-d"),
+                'estimatedFinishDate' => $finishDate->format("Y-m-d"),
+            ];
+        }, $issues);
     }
 
     private function isOngoingAt(Node $node, int $point): bool
