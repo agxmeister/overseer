@@ -6,30 +6,40 @@ class Builder
 {
     public function getSchedule(array $issues, string $date): array
     {
+        $nodes = [];
         $milestoneNode = new Node('finish');
+
         foreach ($issues as $issue) {
-            $issueNode = new Node($issue['key'], $issue['estimatedDuration']);
-            $milestoneNode->follow($issueNode, Link::TYPE_SCHEDULE);
+            $node = new Node($issue['key'], $issue['estimatedDuration']);
+            $nodes[$node->getName()] = $node;
+            $milestoneNode->follow($node, Link::TYPE_SCHEDULE);
         }
+
+        foreach ($issues as $issue) {
+            foreach ($issue['links']['inward'] as $link) {
+                $preceder = $nodes[$link['key']] ?? null;
+                $follower = $nodes[$issue['key']] ?? null;
+                if (!is_null($preceder) && !is_null($follower)) {
+                    $follower->follow($preceder);
+                }
+            }
+        }
+
         $point = 0;
         while ($point < 100) {
-            $nodes = array_filter($milestoneNode->getPreceders(true), fn(Node $node) => $this->isOngoingAt($node, $point));
-            $numberOfTasksInParallel = count($nodes);
+            $ongoingNodes = array_filter($milestoneNode->getPreceders(true), fn(Node $node) => $this->isOngoingAt($node, $point));
+            $numberOfTasksInParallel = count($ongoingNodes);
             while ($numberOfTasksInParallel > 2) {
-                $longestNode = Utils::getLongestNode($nodes);
+                $longestNode = Utils::getLongestNode($ongoingNodes);
                 $followers = $longestNode->getFollowers(Link::TYPE_SCHEDULE);
                 array_walk($followers, fn(Node $follower) => $longestNode->unprecede($follower));
-                $shortestNode = Utils::getShortestNode($nodes);
+                $shortestNode = Utils::getShortestNode($ongoingNodes);
                 $longestNode->precede($shortestNode, Link::TYPE_SCHEDULE);
                 $numberOfTasksInParallel--;
             }
             $point++;
         }
 
-        $nodes = [];
-        foreach ($milestoneNode->getPreceders(true) as $node) {
-            $nodes[$node->getName()] = $node;
-        }
         return array_map(function (array $issue) use ($nodes, $date) {
             /** @var Node $node */
             $node = $nodes[$issue['key']] ?? null;
