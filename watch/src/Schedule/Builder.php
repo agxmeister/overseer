@@ -2,9 +2,11 @@
 
 namespace Watch\Schedule;
 
+use Watch\Schedule\Strategy\Strategy;
+
 class Builder
 {
-    public function getSchedule(array $issues, string $date): array
+    public function getSchedule(array $issues, string $date, Strategy $strategy): array
     {
         $nodes = [];
         foreach ($issues as $issue) {
@@ -12,7 +14,7 @@ class Builder
             $nodes[$node->getName()] = $node;
         }
 
-        $milestoneNode = new Node('finish');
+        $milestone = new Node('finish');
         foreach ($issues as $issue) {
             foreach ($issue['links']['inward'] as $link) {
                 $preceder = $nodes[$link['key']] ?? null;
@@ -24,34 +26,12 @@ class Builder
             if (empty($issue['links']['outward'])) {
                 $node = $nodes[$issue['key']] ?? null;
                 if (!is_null($nodes)) {
-                    $milestoneNode->follow($node, Link::TYPE_SCHEDULE);
+                    $milestone->follow($node, Link::TYPE_SCHEDULE);
                 }
             }
         }
 
-        $point = 0;
-        while ($point < 100) {
-            $ongoingNodes = array_filter($milestoneNode->getPreceders(true), fn(Node $node) => $this->isOngoingAt($node, $point));
-            $completingNodes = array_filter($milestoneNode->getPreceders(true), fn(Node $node) => $this->isCompletingAt($node, $point));
-            $point++;
-            if (empty($ongoingNodes) || empty($completingNodes)) {
-                continue;
-            }
-            $numberOfTasksInParallel = count($ongoingNodes);
-            while ($numberOfTasksInParallel > 2) {
-                $longestNode = Utils::getLongestSequence($completingNodes);
-                $shortestNode = Utils::getShortestSequence($ongoingNodes);
-                if ($longestNode === $shortestNode) {
-                    break;
-                }
-                $followers = $longestNode->getFollowers([Link::TYPE_SCHEDULE]);
-                array_walk($followers, fn(Node $follower) => $longestNode->unprecede($follower));
-                $longestNode->precede($shortestNode, Link::TYPE_SCHEDULE);
-                $ongoingNodes = array_filter($ongoingNodes, fn(Node $node) => $node !== $longestNode);
-                $completingNodes = array_filter($completingNodes, fn(Node $node) => $node !== $longestNode);
-                $numberOfTasksInParallel--;
-            }
-        }
+        $strategy->schedule($milestone);
 
         return array_map(function (array $issue) use ($nodes, $date) {
             /** @var Node $node */
@@ -69,14 +49,5 @@ class Builder
                 'estimatedFinishDate' => $finishDate->format("Y-m-d"),
             ];
         }, $issues);
-    }
-
-    private function isOngoingAt(Node $node, int $point): bool
-    {
-        return $node->getCompletion() <= $point && $node->getDistance() > $point;
-    }
-    private function isCompletingAt(Node $node, int $point): bool
-    {
-        return $node->getCompletion() === $point;
     }
 }
