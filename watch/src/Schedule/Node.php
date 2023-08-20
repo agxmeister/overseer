@@ -125,22 +125,6 @@ class Node
         return $this->getDistance() - $this->getLength() + 1;
     }
 
-    public function getLongestPreceder(): Node|null
-    {
-        if (empty($this->preceders)) {
-            return null;
-        }
-        return Utils::getLongestNode($this->getPreceders());
-    }
-
-    public function getShortestPreceder(): Node|null
-    {
-        if (empty($this->preceders)) {
-            return null;
-        }
-        return Utils::getShortestNode($this->getPreceders());
-    }
-
     public function getSchedule(): array|string
     {
         return array_map(fn(Node $node) => [$node->getName(), $node->getLength(), $node->getDistance()], $this->getPreceders(true));

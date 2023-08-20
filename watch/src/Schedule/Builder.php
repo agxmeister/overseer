@@ -39,8 +39,8 @@ class Builder
             }
             $numberOfTasksInParallel = count($ongoingNodes);
             while ($numberOfTasksInParallel > 2) {
-                $longestNode = Utils::getLongestNode($completingNodes);
-                $shortestNode = Utils::getShortestNode($ongoingNodes);
+                $longestNode = Utils::getLongestSequence($completingNodes);
+                $shortestNode = Utils::getShortestSequence($ongoingNodes);
                 if ($longestNode === $shortestNode) {
                     break;
                 }
