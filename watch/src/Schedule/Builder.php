@@ -7,20 +7,24 @@ class Builder
     public function getSchedule(array $issues, string $date): array
     {
         $nodes = [];
-        $milestoneNode = new Node('finish');
-
         foreach ($issues as $issue) {
             $node = new Node($issue['key'], $issue['estimatedDuration']);
             $nodes[$node->getName()] = $node;
-            $milestoneNode->follow($node, Link::TYPE_SCHEDULE);
         }
 
+        $milestoneNode = new Node('finish');
         foreach ($issues as $issue) {
             foreach ($issue['links']['inward'] as $link) {
                 $preceder = $nodes[$link['key']] ?? null;
                 $follower = $nodes[$issue['key']] ?? null;
                 if (!is_null($preceder) && !is_null($follower)) {
                     $follower->follow($preceder);
+                }
+            }
+            if (empty($issue['links']['outward'])) {
+                $node = $nodes[$issue['key']] ?? null;
+                if (!is_null($nodes)) {
+                    $milestoneNode->follow($node, Link::TYPE_SCHEDULE);
                 }
             }
         }
