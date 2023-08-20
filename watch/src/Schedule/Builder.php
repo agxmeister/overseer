@@ -26,15 +26,18 @@ class Builder
         }
 
         $point = 0;
-        while ($point < 100) {
+        while ($point < 10) {
             $ongoingNodes = array_filter($milestoneNode->getPreceders(true), fn(Node $node) => $this->isOngoingAt($node, $point));
+            $completingNodes = array_filter($milestoneNode->getPreceders(true), fn(Node $node) => $this->isCompletingAt($node, $point));
             $numberOfTasksInParallel = count($ongoingNodes);
             while ($numberOfTasksInParallel > 2) {
-                $longestNode = Utils::getLongestNode($ongoingNodes);
-                $followers = $longestNode->getFollowers(Link::TYPE_SCHEDULE);
+                $longestNode = Utils::getLongestNode($completingNodes);
+                $followers = $longestNode->getFollowers([Link::TYPE_SCHEDULE]);
                 array_walk($followers, fn(Node $follower) => $longestNode->unprecede($follower));
                 $shortestNode = Utils::getShortestNode($ongoingNodes);
                 $longestNode->precede($shortestNode, Link::TYPE_SCHEDULE);
+                $ongoingNodes = array_filter($ongoingNodes, fn(Node $node) => $node !== $longestNode);
+                $completingNodes = array_filter($completingNodes, fn(Node $node) => $node !== $longestNode);
                 $numberOfTasksInParallel--;
             }
             $point++;
@@ -61,5 +64,9 @@ class Builder
     private function isOngoingAt(Node $node, int $point): bool
     {
         return $node->getCompletion() <= $point && $node->getDistance() > $point;
+    }
+    private function isCompletingAt(Node $node, int $point): bool
+    {
+        return $node->getCompletion() === $point;
     }
 }

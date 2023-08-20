@@ -67,50 +67,57 @@ class Node
     }
 
     /**
+     * @param string[] $types
      * @return Node[]
      */
-    public function getFollowers(string|null $type = null): array
+    public function getFollowers(array $types = []): array
     {
-        return array_map(
-            fn(Link $link) => $link->getNode(),
-            is_null($type) ?
-                $this->followers :
-                array_filter($this->followers, fn(Link $link) => $link->getType() === $type)
-        );
+        return array_map(fn(Link $link) => $link->getNode(), array_filter(
+            $this->followers,
+            fn(Link $link) => empty($types) || in_array($link->getType(), $types)
+        ));
     }
 
     /**
      * @param bool $isRecursively
+     * @param string[] $types
      * @return Node[]
      */
-    public function getPreceders(bool $isRecursively = false): array
+    public function getPreceders(bool $isRecursively = false, array $types = []): array
     {
-        $preceders = array_map(fn(Link $link) => $link->getNode(), $this->preceders);
+        $links = array_filter(
+            $this->preceders,
+            fn(Link $link) => empty($types) || in_array($link->getType(), $types)
+        );
+        $preceders = array_map(fn(Link $link) => $link->getNode(), $links);
         if (!$isRecursively) {
             return $preceders;
         }
-        foreach ($this->preceders as $preceder) {
-            $preceders = [...$preceders, ...$preceder->getNode()->getPreceders(true)];
+        foreach ($links as $link) {
+            $preceders = [...$preceders, ...$link->getNode()->getPreceders(true)];
         }
-        $preceders = array_unique($preceders, SORT_REGULAR);
-        usort($preceders, fn(Node $a, Node $b) => $a->getDistance() < $b->getDistance() ? -1 : ($a->getDistance() > $b->getDistance() ? 1 : 0));
-        return $preceders;
+        return array_unique($preceders, SORT_REGULAR);
     }
 
-    public function getDistance(bool $withPreceders = false): int
+    public function getDistance(bool $withPreceders = false, array $types = []): int
     {
-        if (count($this->followers) === 0) {
-            return $this->getLength($withPreceders);
+        $followers = $this->getFollowers();
+        if (empty($followers)) {
+            return $this->getLength($withPreceders, $types);
         }
-        return max(array_map(fn(Node $node) => $node->getDistance(), $this->getFollowers())) + $this->getLength($withPreceders);
+        return max(array_map(fn(Node $node) => $node->getDistance(), $followers)) + $this->getLength($withPreceders, $types);
     }
 
-    public function getLength(bool $withPreceders = false): int
+    public function getLength(bool $withPreceders = false, array $types = []): int
     {
-        if (!$withPreceders || empty($this->preceders)) {
+        if (!$withPreceders) {
             return $this->length;
         }
-        return max(array_map(fn(Node $node) => $node->getDistance(), $this->getPreceders(true))) - $this->getDistance() + $this->length;
+        $preceders = $this->getPreceders(true, $types);
+        if (empty($preceders)) {
+            return $this->length;
+        }
+        return max(array_map(fn(Node $node) => $node->getDistance(), $preceders)) - $this->getDistance() + $this->length;
     }
 
     public function getCompletion(): int
