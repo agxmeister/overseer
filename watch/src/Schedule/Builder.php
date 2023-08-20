@@ -26,21 +26,27 @@ class Builder
         }
 
         $point = 0;
-        while ($point < 10) {
+        while ($point < 100) {
             $ongoingNodes = array_filter($milestoneNode->getPreceders(true), fn(Node $node) => $this->isOngoingAt($node, $point));
             $completingNodes = array_filter($milestoneNode->getPreceders(true), fn(Node $node) => $this->isCompletingAt($node, $point));
+            $point++;
+            if (empty($ongoingNodes) || empty($completingNodes)) {
+                continue;
+            }
             $numberOfTasksInParallel = count($ongoingNodes);
             while ($numberOfTasksInParallel > 2) {
                 $longestNode = Utils::getLongestNode($completingNodes);
+                $shortestNode = Utils::getShortestNode($ongoingNodes);
+                if ($longestNode === $shortestNode) {
+                    break;
+                }
                 $followers = $longestNode->getFollowers([Link::TYPE_SCHEDULE]);
                 array_walk($followers, fn(Node $follower) => $longestNode->unprecede($follower));
-                $shortestNode = Utils::getShortestNode($ongoingNodes);
                 $longestNode->precede($shortestNode, Link::TYPE_SCHEDULE);
                 $ongoingNodes = array_filter($ongoingNodes, fn(Node $node) => $node !== $longestNode);
                 $completingNodes = array_filter($completingNodes, fn(Node $node) => $node !== $longestNode);
                 $numberOfTasksInParallel--;
             }
-            $point++;
         }
 
         return array_map(function (array $issue) use ($nodes, $date) {
