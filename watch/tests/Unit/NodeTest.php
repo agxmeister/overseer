@@ -2,6 +2,7 @@
 namespace Tests\Unit;
 
 use Codeception\Test\Unit;
+use Watch\Schedule\Link;
 use Watch\Schedule\Node;
 
 class NodeTest extends Unit
@@ -97,6 +98,21 @@ class NodeTest extends Unit
         $this->assertEquals(13, $node4->getLength(true));
         $this->assertEquals(34, $node4->getDistance());
         $this->assertEquals(34, $node4->getDistance(true));
+    }
+
+    public function testLengthAndDistanceWithPreceders()
+    {
+        $node1 = new Node("Test1", 10);
+        $node2 = new Node("Test2", 11);
+        $node3 = new Node("Test3", 12);
+        $node4 = new Node("Test4", 13);
+        $node1->follow($node2);
+        $node2->follow($node3);
+        $node2->follow($node4, Link::TYPE_SCHEDULE);
+        $this->assertEquals(24, $node2->getLength(true));
+        $this->assertEquals(23, $node2->getLength(true, [Link::TYPE_SEQUENCE]));
+        $this->assertEquals(34, $node2->getDistance(true));
+        $this->assertEquals(33, $node2->getDistance(true, [Link::TYPE_SEQUENCE]));
     }
 
     public function testPreceders()
