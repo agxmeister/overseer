@@ -10,6 +10,7 @@ import {getDates} from "@/utils/date";
 import Marker, {MarkerPosition} from "@/components/Marker/Marker";
 import Link from "@/components/Link/Link";
 import Task from "@/components/Task/Task";
+import Console from "@/components/Console/Console";
 
 type Issue = {
     key: string,
@@ -31,12 +32,40 @@ type LinkDescription = {
 export default function Page()
 {
     const [scale, setScale] = useState<number>(1);
-    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const handleScaleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
         if (['=', '+'].includes(event.key)) {
             setScale(scale + 0.1);
         } else if (['-', '_'].includes(event.key)) {
             setScale(scale - 0.1);
         }
+    };
+
+    const [lines, setLines] = useState<string[]>(['> ']);
+    const handleConsoleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+        switch (event.key) {
+            case 'Enter':
+                lines[0] = lines[0].slice(2);
+                lines.unshift('> ');
+                break;
+            case 'Backspace':
+                lines[0] = lines[0].slice(0, -1);
+                break;
+            case 'Shift':
+            case 'CapsLock':
+            case 'Escape':
+            case 'Control':
+            case 'Alt':
+            case 'Meta':
+            case 'Tab':
+            case 'ArrowUp':
+            case 'ArrowRight':
+            case 'ArrowDown':
+            case 'ArrowLeft':
+                break;
+            default:
+                lines[0] = lines[0] + event.key;
+        }
+        setLines([...lines]);
     };
 
     const dates = getDates(new Date("2023-08-01"), new Date("2023-08-31"));
@@ -132,14 +161,19 @@ export default function Page()
         ) : [];
 
     return (
-        <div tabIndex={0} onKeyDown={handleKeyDown}>
-            <TaskMap
-                scale={scale}
-                dates={dates}
-                tasks={tasks}
-                slots={slots}
-                links={links}
-            />
-        </div>
+        <>
+            <div tabIndex={0} onKeyDown={handleScaleKeyDown}>
+                <TaskMap
+                    scale={scale}
+                    dates={dates}
+                    tasks={tasks}
+                    slots={slots}
+                    links={links}
+                />
+            </div>
+            <div tabIndex={1} onKeyDown={handleConsoleKeyDown}>
+                <Console lines={lines}/>
+            </div>
+        </>
     );
 }
