@@ -10,14 +10,10 @@ class Basic implements Strategy
 {
     public function schedule(Node $milestone): void
     {
-        $point = 0;
-        while ($point < 100) {
+        $point = 1;
+        do {
             $ongoingNodes = array_filter($milestone->getPreceders(true), fn(Node $node) => $this->isOngoingAt($node, $point));
             $completingNodes = array_filter($milestone->getPreceders(true), fn(Node $node) => $this->isCompletingAt($node, $point));
-            $point++;
-            if (empty($ongoingNodes) || empty($completingNodes)) {
-                continue;
-            }
             $numberOfTasksInParallel = count($ongoingNodes);
             while ($numberOfTasksInParallel > 2) {
                 $longestNode = Utils::getLongestSequence($completingNodes);
@@ -32,12 +28,13 @@ class Basic implements Strategy
                 $completingNodes = array_filter($completingNodes, fn(Node $node) => $node !== $longestNode);
                 $numberOfTasksInParallel--;
             }
-        }
+            $point++;
+        } while ($point <= $milestone->getLength(true));
     }
 
     private function isOngoingAt(Node $node, int $point): bool
     {
-        return $node->getCompletion() <= $point && $node->getDistance() > $point;
+        return $node->getCompletion() <= $point && $node->getDistance() >= $point;
     }
 
     private function isCompletingAt(Node $node, int $point): bool

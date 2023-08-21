@@ -91,12 +91,12 @@ class Node
         );
         $preceders = array_map(fn(Link $link) => $link->getNode(), $links);
         if (!$isRecursively) {
-            return $preceders;
+            return [...$preceders];
         }
         foreach ($links as $link) {
             $preceders = [...$preceders, ...$link->getNode()->getPreceders(true)];
         }
-        return array_unique($preceders, SORT_REGULAR);
+        return [...array_unique($preceders, SORT_REGULAR)];
     }
 
     public function getDistance(bool $withPreceders = false, array $types = []): int
