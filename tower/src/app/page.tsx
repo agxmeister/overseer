@@ -40,36 +40,6 @@ export default function Page()
         }
     };
 
-    const [lines, setLines] = useState<string[]>(['> ']);
-    const handleConsoleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-        switch (event.key) {
-            case 'Enter':
-                lines[0] = lines[0].slice(2);
-                lines.unshift('> ');
-                break;
-            case 'Backspace':
-                if (lines[0].length > 2) {
-                    lines[0] = lines[0].slice(0, -1);
-                }
-                break;
-            case 'Shift':
-            case 'CapsLock':
-            case 'Escape':
-            case 'Control':
-            case 'Alt':
-            case 'Meta':
-            case 'Tab':
-            case 'ArrowUp':
-            case 'ArrowRight':
-            case 'ArrowDown':
-            case 'ArrowLeft':
-                break;
-            default:
-                lines[0] = lines[0] + event.key;
-        }
-        setLines([...lines]);
-    };
-
     const dates = getDates(new Date("2023-08-01"), new Date("2023-08-31"));
 
     const [sizeTaskId, setSizeTaskId] = useState<string|null>(null);
@@ -173,8 +143,8 @@ export default function Page()
                     links={links}
                 />
             </div>
-            <div tabIndex={1} onKeyDown={handleConsoleKeyDown}>
-                <Console lines={lines}/>
+            <div>
+                <Console/>
             </div>
         </>
     );
