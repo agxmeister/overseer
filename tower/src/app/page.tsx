@@ -144,7 +144,7 @@ export default function Page()
                 />
             </div>
             <div>
-                <Console/>
+                <Console setScale={setScale}/>
             </div>
         </>
     );

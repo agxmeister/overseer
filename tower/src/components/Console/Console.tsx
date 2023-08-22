@@ -1,7 +1,11 @@
 import styles from './Console.module.sass'
 import React, {useState} from "react";
 
-export default function Console()
+export type ConsoleProps = {
+    setScale: Function;
+}
+
+export default function Console({setScale}: ConsoleProps)
 {
     const [lines, setLines] = useState<string[]>(['> ']);
     const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -31,6 +35,22 @@ export default function Console()
     const run = (command: string) => {
         const args = command.split(' ');
         switch (args[0]) {
+            case 'set-scale':
+                if (!args[1]) {
+                    lines.unshift(`< Scale is not specified.`);
+                    break;
+                }
+                const scale = parseFloat(args[1]);
+                if (isNaN(scale)) {
+                    lines.unshift(`< Scale must be a number.`);
+                    break;
+                }
+                if (scale <= 0) {
+                    lines.unshift(`< Scale must be grater than 0.`);
+                    break;
+                }
+                setScale(scale);
+                break;
             default:
                 lines.unshift(`< Command "${args[0]}" is not supported.`);
         }
