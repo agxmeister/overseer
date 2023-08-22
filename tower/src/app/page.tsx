@@ -48,7 +48,9 @@ export default function Page()
                 lines.unshift('> ');
                 break;
             case 'Backspace':
-                lines[0] = lines[0].slice(0, -1);
+                if (lines[0].length > 2) {
+                    lines[0] = lines[0].slice(0, -1);
+                }
                 break;
             case 'Shift':
             case 'CapsLock':
