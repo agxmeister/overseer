@@ -29,6 +29,7 @@ export default function Console({setScale}: ConsoleProps)
                     break;
             }
         }
+        event.preventDefault();
         setLines([...lines]);
     }
 
