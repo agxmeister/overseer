@@ -8,6 +8,12 @@ export type ConsoleProps = {
 export default function Console({setScale}: ConsoleProps)
 {
     const [lines, setLines] = useState<string[]>(['> ']);
+    const [index, setIndex] = useState<number>(0);
+    const inputLines = lines
+        .filter((value: string, index: number) => index > 0 && value.startsWith('> '))
+        .filter((value: string, index: number, array: string[]) => array.indexOf(value) === index);
+    inputLines.unshift('> ');
+    let inputIndex = index;
     const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
         if (event.key.length === 1) {
             lines[0] = lines[0] + event.key;
@@ -19,11 +25,24 @@ export default function Console({setScale}: ConsoleProps)
                     }
                     run(lines[0].slice(2));
                     lines.unshift('> ');
+                    inputIndex = 0;
                     break;
                 case 'Backspace':
                     if (lines[0].length > 2) {
                         lines[0] = lines[0].slice(0, -1);
                     }
+                    break;
+                case 'ArrowUp':
+                    if (inputIndex < inputLines.length - 1) {
+                        inputIndex++;
+                    }
+                    lines[0] = inputLines[inputIndex];
+                    break;
+                case 'ArrowDown':
+                    if (inputIndex > 0) {
+                        inputIndex--;
+                    }
+                    lines[0] = inputLines[inputIndex];
                     break;
                 default:
                     break;
@@ -31,6 +50,7 @@ export default function Console({setScale}: ConsoleProps)
         }
         event.preventDefault();
         setLines([...lines]);
+        setIndex(inputIndex);
     }
 
     const run = (command: string) => {
