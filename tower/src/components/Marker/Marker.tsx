@@ -1,6 +1,6 @@
 import styles from "@/components/MArker/Marker.module.sass";
 import {useDrag} from "react-dnd";
-import {ItemTypes} from "@/constants/draggable";
+import {ItemType} from "@/constants/draggable";
 
 export enum MarkerPosition {
     Left = "left",
@@ -16,7 +16,7 @@ export type MarkerProps = {
 export default function Marker({ id, position, onSize }: MarkerProps)
 {
     const [{ isDragging }, drag] = useDrag(() => ({
-        type: ItemTypes.MARKER,
+        type: ItemType.MARKER,
         item: () => {
             onSize(id);
             return {taskId: id, direction: position};

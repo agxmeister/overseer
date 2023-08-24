@@ -2,7 +2,7 @@ import styles from './Task.module.sass'
 import {ReactElement} from "react";
 import {useDrop} from "react-dnd";
 import {CardProps} from "@/components/Card/Card";
-import {ItemTypes} from "@/constants/draggable";
+import {ItemType} from "@/constants/draggable";
 import {ConnectDropTarget} from "react-dnd/src/types";
 import {MarkerPosition, MarkerProps} from "@/components/Marker/Marker";
 
@@ -24,7 +24,7 @@ type Link = {
 export default function Task({id, markerLeft, markerRight, start, finish, card, onLink}: TaskProps)
 {
     const [{ isOver }, drop] = useDrop(() => ({
-        accept: ItemTypes.MARKER,
+        accept: ItemType.MARKER,
         drop: ({ taskId, direction }: {taskId: string, direction: string}) => {
             onLink(() => {
                 return fetch(`http://localhost:8080/api/v1/links`, {

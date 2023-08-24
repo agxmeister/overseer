@@ -1,7 +1,7 @@
 import styles from './Slot.module.sass'
 import {useDrop} from "react-dnd";
 import {ConnectDropTarget} from "react-dnd/src/types";
-import {ItemTypes} from "@/constants/draggable";
+import {ItemType} from "@/constants/draggable";
 import {MarkerPosition} from "@/components/Marker/Marker";
 
 export type SlotProps = {
@@ -13,7 +13,7 @@ export type SlotProps = {
 export default function Slot({id, position, onMutate}: SlotProps)
 {
     const [{ isOver }, drop] = useDrop(() => ({
-        accept: ItemTypes.MARKER,
+        accept: ItemType.MARKER,
         drop: ({ taskId, direction }: {taskId: string, direction: string}) => {
             onMutate(() => {
                 return fetch(`http://localhost:8080/api/v1/task/${taskId}`, {
