@@ -11,6 +11,7 @@ import Marker, {MarkerPosition} from "@/components/Marker/Marker";
 import Link from "@/components/Link/Link";
 import Task from "@/components/Task/Task";
 import Console from "@/components/Console/Console";
+import {ApiUrl} from "@/constants/api";
 
 type Issue = {
     key: string,
@@ -47,7 +48,7 @@ export default function Page()
         setSizeTaskId(taskId);
     }
 
-    const [url, setUrl] = useState('http://localhost:8080/api/v1/schedule');
+    const [url, setUrl] = useState(ApiUrl.SCHEDULE);
 
     const {data, mutate} = useSWR(url, (api: string) => fetch(api).then(res => res.json()));
     const onMutate = (fetcher: Function, mutation: {taskId: string, direction: string, date: string}) => {

@@ -1,5 +1,6 @@
 import styles from './Console.module.sass'
 import React, {useState} from "react";
+import {ApiUrl} from "@/constants/api";
 
 export type ConsoleProps = {
     setScale: Function;
@@ -80,10 +81,10 @@ export default function Console({setScale, setUrl}: ConsoleProps)
                 }
                 switch (args[1]) {
                     case 'schedule':
-                        setUrl('http://localhost:8080/api/v1/schedule');
+                        setUrl(ApiUrl.SCHEDULE);
                         break;
                     case 'tasks':
-                        setUrl('http://localhost:8080/api/v1/tasks');
+                        setUrl(ApiUrl.TASKS);
                         break;
                     default:
                         lines.unshift(`< Subject is unknown.`);
