@@ -47,7 +47,9 @@ export default function Page()
         setSizeTaskId(taskId);
     }
 
-    const {data, mutate} = useSWR('http://localhost:8080/api/v1/schedule', (api: string) => fetch(api).then(res => res.json()));
+    const [url, setUrl] = useState('http://localhost:8080/api/v1/schedule');
+
+    const {data, mutate} = useSWR(url, (api: string) => fetch(api).then(res => res.json()));
     const onMutate = (fetcher: Function, mutation: {taskId: string, direction: string, date: string}) => {
         const optimisticData = data.map((issue: Issue) =>
             issue.key === mutation.taskId ?
@@ -144,7 +146,7 @@ export default function Page()
                 />
             </div>
             <div>
-                <Console setScale={setScale}/>
+                <Console setScale={setScale} setUrl={setUrl}/>
             </div>
         </>
     );

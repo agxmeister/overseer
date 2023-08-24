@@ -3,9 +3,10 @@ import React, {useState} from "react";
 
 export type ConsoleProps = {
     setScale: Function;
+    setUrl: Function;
 }
 
-export default function Console({setScale}: ConsoleProps)
+export default function Console({setScale, setUrl}: ConsoleProps)
 {
     const [lines, setLines] = useState<string[]>(['> ']);
     const [index, setIndex] = useState<number>(0);
@@ -71,6 +72,23 @@ export default function Console({setScale}: ConsoleProps)
                     break;
                 }
                 setScale(scale);
+                break;
+            case 'display':
+                if (!args[1]) {
+                    lines.unshift(`< Subject is not specified.`);
+                    break;
+                }
+                switch (args[1]) {
+                    case 'schedule':
+                        setUrl('http://localhost:8080/api/v1/schedule');
+                        break;
+                    case 'tasks':
+                        setUrl('http://localhost:8080/api/v1/tasks');
+                        break;
+                    default:
+                        lines.unshift(`< Subject is unknown.`);
+                        break;
+                }
                 break;
             default:
                 lines.unshift(`< Command "${args[0]}" is not supported.`);
