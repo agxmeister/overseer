@@ -16,8 +16,10 @@ class Schedule
 
     public function __invoke(Request $request, Response $response, $args): Response
     {
+        $params = $request->getQueryParams();
+        $date = $params['date'];
         $strategy = new Basic();
-        $issues = $this->builder->getSchedule($this->jira->getIssues(''), "2023-08-31", $strategy);
+        $issues = $this->builder->getSchedule($this->jira->getIssues(''), $date, $strategy);
         $response->getBody()->write(json_encode($issues));
         return $response
             ->withHeader('Content-Type', 'application/json')

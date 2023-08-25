@@ -48,7 +48,7 @@ export default function Page()
         setSizeTaskId(taskId);
     }
 
-    const [url, setUrl] = useState(ApiUrl.SCHEDULE);
+    const [url, setUrl] = useState(ApiUrl.TASKS);
 
     const {data, mutate} = useSWR(url, (api: string) => fetch(api).then(res => res.json()));
     const onMutate = (fetcher: Function, mutation: {taskId: string, direction: string, date: string}) => {

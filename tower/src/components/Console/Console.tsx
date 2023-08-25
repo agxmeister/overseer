@@ -81,7 +81,12 @@ export default function Console({setScale, setUrl}: ConsoleProps)
                 }
                 switch (args[1]) {
                     case 'schedule':
-                        setUrl(ApiUrl.SCHEDULE);
+                        if (!args[2]) {
+                            lines.unshift(`< Date is not specified.`);
+                            break;
+                        }
+                        const date = args[2];
+                        setUrl(ApiUrl.SCHEDULE.replace('{date}', date));
                         break;
                     case 'tasks':
                         setUrl(ApiUrl.TASKS);
