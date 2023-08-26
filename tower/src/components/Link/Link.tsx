@@ -16,7 +16,7 @@ type Coords = {
 
 export default function Link({ startMarkerId, finishMarkerId }: LinkProps)
 {
-    const [scale, tasks] = useContext(MapContext);
+    const {scale, tasks} = useContext(MapContext);
 
     const [coords, setCoords] = useState<Coords|null>(null);
 
