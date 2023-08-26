@@ -1,8 +1,8 @@
 import styles from './Console.module.sass'
 import React, {useState} from "react";
 import {ApiUrl} from "@/constants/api";
-import {getDates} from "@/utils/date";
 import scale from "@/commands/scale";
+import dates from "@/commands/dates";
 
 export type ConsoleProps = {
     setScale: Function;
@@ -65,11 +65,7 @@ export default function Console({setScale, setUrl, setDates}: ConsoleProps)
                 lines.unshift(...scale(args, setScale));
                 break;
             case 'dates':
-                if (!args[1] || !args[2]) {
-                    lines.unshift(`< Dates are not specified.`);
-                    break;
-                }
-                setDates(getDates(new Date(args[1]), new Date(args[2])));
+                lines.unshift(...dates(args, setDates));
                 break;
             case 'display':
                 if (!args[1]) {
