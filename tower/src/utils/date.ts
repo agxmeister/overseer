@@ -1,6 +1,7 @@
-export function getDates(currentDate: Date, endDate: Date): Array<string>
+export function getDates(startDate: Date, endDate: Date): Array<string>
 {
     const dates = [];
+    const currentDate = new Date(startDate.getTime());
     while (currentDate < endDate) {
         dates.push(format(currentDate));
         currentDate.setDate(currentDate.getDate() + 1);

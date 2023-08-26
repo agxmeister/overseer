@@ -42,7 +42,8 @@ export default function Page()
     };
 
     const now = new Date();
-    const dates = getDates(shiftDate(now, -15), shiftDate(now, 15));
+    const initialDates = getDates(shiftDate(now, -15), shiftDate(now, 15));
+    const [dates, setDates] = useState<string[]>(initialDates);
 
     const [sizeTaskId, setSizeTaskId] = useState<string|null>(null);
     const onSize = (taskId: string) => {
@@ -148,7 +149,7 @@ export default function Page()
                 />
             </div>
             <div>
-                <Console setScale={setScale} setUrl={setUrl}/>
+                <Console setScale={setScale} setUrl={setUrl} setDates={setDates}/>
             </div>
         </>
     );

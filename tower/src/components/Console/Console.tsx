@@ -1,13 +1,15 @@
 import styles from './Console.module.sass'
 import React, {useState} from "react";
 import {ApiUrl} from "@/constants/api";
+import {getDates} from "@/utils/date";
 
 export type ConsoleProps = {
     setScale: Function;
     setUrl: Function;
+    setDates: Function;
 }
 
-export default function Console({setScale, setUrl}: ConsoleProps)
+export default function Console({setScale, setUrl, setDates}: ConsoleProps)
 {
     const [lines, setLines] = useState<string[]>(['> ']);
     const [index, setIndex] = useState<number>(0);
@@ -58,7 +60,7 @@ export default function Console({setScale, setUrl}: ConsoleProps)
     const run = (command: string) => {
         const args = command.split(' ');
         switch (args[0]) {
-            case 'set-scale':
+            case 'scale':
                 if (!args[1]) {
                     lines.unshift(`< Scale is not specified.`);
                     break;
@@ -73,6 +75,13 @@ export default function Console({setScale, setUrl}: ConsoleProps)
                     break;
                 }
                 setScale(scale);
+                break;
+            case 'dates':
+                if (!args[1] || !args[2]) {
+                    lines.unshift(`< Dates are not specified.`);
+                    break;
+                }
+                setDates(getDates(new Date(args[1]), new Date(args[2])));
                 break;
             case 'display':
                 if (!args[1]) {
