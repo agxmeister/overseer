@@ -1,4 +1,4 @@
-import {format} from "./date";
+import {format, shiftDate} from "./date";
 import {describe} from "node:test";
 import {getLinesTemplate} from "./grid";
 
@@ -9,6 +9,17 @@ describe('date.format', () => {
         '2023-11-11',
     ])('convert date to string', (date) => {
         expect(format(new Date(date))).toEqual(date);
+    })
+})
+
+describe('date.shiftDate', () => {
+    it.each([
+        {date: new Date('2023-01-01'), shift: 2, shiftedDate: new Date('2023-01-03')},
+        {date: new Date('2023-11-03'), shift: -2, shiftedDate: new Date('2023-11-01')},
+        {date: new Date('2023-01-30'), shift: 2, shiftedDate: new Date('2023-02-01')},
+        {date: new Date('2023-11-01'), shift: -2, shiftedDate: new Date('2023-10-30')},
+    ])('shift date', ({date, shift, shiftedDate}) => {
+        expect(format(shiftDate(date, shift))).toEqual(format(shiftedDate));
     })
 })
 

@@ -6,7 +6,7 @@ import {default as TaskMap} from "@/components/Map/Map";
 import Card from "@/components/Card/Card";
 import React, {useState} from "react";
 import Slot from "@/components/Slot/Slot";
-import {getDates} from "@/utils/date";
+import {getDates, shiftDate} from "@/utils/date";
 import Marker, {MarkerPosition} from "@/components/Marker/Marker";
 import Link from "@/components/Link/Link";
 import Task from "@/components/Task/Task";
@@ -41,7 +41,8 @@ export default function Page()
         }
     };
 
-    const dates = getDates(new Date("2023-08-01"), new Date("2023-08-31"));
+    const now = new Date();
+    const dates = getDates(shiftDate(now, -15), shiftDate(now, 15));
 
     const [sizeTaskId, setSizeTaskId] = useState<string|null>(null);
     const onSize = (taskId: string) => {

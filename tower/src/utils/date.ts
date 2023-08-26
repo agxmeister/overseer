@@ -13,3 +13,10 @@ export function format(date: Date): string {
     const day = date.getDate();
     return `${date.getFullYear()}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
 }
+
+export function shiftDate(date: Date, shift: number): Date
+{
+    const shiftedDate = new Date(date.getTime());
+    shiftedDate.setDate(date.getDate() + shift);
+    return shiftedDate;
+}
