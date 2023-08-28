@@ -9,9 +9,9 @@ use Watch\Action\Preflight;
 
 return function (App $app) {
     $app->get('/api/v1/tasks', Tasks::class);
+    $app->get('/api/v1/schedule', Schedule::class);
     $app->options('/api/v1/task/{taskId}', Preflight::class);
     $app->post('/api/v1/task/{taskId}', Task::class);
     $app->options('/api/v1/links', Preflight::class);
     $app->post('/api/v1/links', Links::class);
-    $app->get('/api/v1/schedule', Schedule::class);
 };

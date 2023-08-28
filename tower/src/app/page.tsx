@@ -50,9 +50,9 @@ export default function Page()
         setSizeTaskId(taskId);
     }
 
-    const [url, setUrl] = useState(ApiUrl.TASKS);
+    const [schedule, setSchedule] = useState<Issue[]>([]);
 
-    const {data, mutate} = useSWR(url, (api: string) => fetch(api).then(res => res.json()));
+    const {data, mutate} = useSWR(ApiUrl.TASKS, (api: string) => fetch(api).then(res => res.json()));
     const onMutate = (fetcher: Function, mutation: {taskId: string, direction: string, date: string}) => {
         const optimisticData = data.map((issue: Issue) =>
             issue.key === mutation.taskId ?
@@ -96,7 +96,12 @@ export default function Page()
             />
         ));
 
-    const tasks = data ? data.map((issue: Issue) =>
+    const scheduledIssues = data ? data.map((issue: Issue) => ({
+        ...issue,
+        ...schedule.find(current => current.key === issue.key)
+    })) : [];
+
+    const tasks = scheduledIssues.map((issue: Issue) =>
         <Task
             key={issue.key}
             id={issue.key}
@@ -125,7 +130,7 @@ export default function Page()
             }
             onLink={onLink}
         />
-    ): [];
+    );
 
     const slots = sizeTaskId !== null ? dates
         .map(date =>
@@ -152,7 +157,7 @@ export default function Page()
                 <Console setters={{
                     setScale: setScale,
                     setDates: setDates,
-                    setUrl: setUrl,
+                    setSchedule: setSchedule,
                 }}/>
             </div>
         </>
