@@ -149,7 +149,11 @@ export default function Page()
                 />
             </div>
             <div>
-                <Console setScale={setScale} setUrl={setUrl} setDates={setDates}/>
+                <Console setters={{
+                    setScale: setScale,
+                    setDates: setDates,
+                    setUrl: setUrl,
+                }}/>
             </div>
         </>
     );
