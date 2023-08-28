@@ -5,9 +5,9 @@ export default function scale(args: string[], setScale: Function): string[]
         const scale = getScaleArg(args);
         setScale(scale);
     } catch (err) {
-        lines.unshift(err);
+        lines.unshift(`${err}`);
     }
-    return lines.map(line => `< ${line}`);
+    return lines;
 }
 
 function getScaleArg(args: string[]): number

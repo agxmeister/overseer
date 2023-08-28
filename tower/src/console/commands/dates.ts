@@ -8,9 +8,9 @@ export default function dates(args: string[], setDates: Function): string[]
         const endDate = getEndDateArg(args);
         setDates(getDates(beginDate, endDate));
     } catch (err) {
-        lines.unshift(err);
+        lines.unshift(`${err}`);
     }
-    return lines.map(line => `< ${line}`);
+    return lines;
 }
 
 function getBeginDateArg(args: string[]): Date

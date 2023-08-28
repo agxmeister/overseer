@@ -1,8 +1,6 @@
 import styles from './Console.module.sass'
 import React, {useState} from "react";
-import {ApiUrl} from "@/constants/api";
-import scale from "@/commands/scale";
-import dates from "@/commands/dates";
+import run from "@/console/run";
 
 export type ConsoleProps = {
     setScale: Function;
@@ -28,7 +26,11 @@ export default function Console({setScale, setUrl, setDates}: ConsoleProps)
                     if (lines[0] === '> ') {
                         break;
                     }
-                    run(lines[0].slice(2));
+                    lines.unshift(...run(lines[0].slice(2), {
+                        setScale: setScale,
+                        setDates: setDates,
+                        setUrl: setUrl,
+                    }));
                     lines.unshift('> ');
                     inputIndex = 0;
                     break;
@@ -56,42 +58,6 @@ export default function Console({setScale, setUrl, setDates}: ConsoleProps)
         event.preventDefault();
         setLines([...lines]);
         setIndex(inputIndex);
-    }
-
-    const run = (command: string) => {
-        const args = command.split(' ');
-        switch (args[0]) {
-            case 'scale':
-                lines.unshift(...scale(args, setScale));
-                break;
-            case 'dates':
-                lines.unshift(...dates(args, setDates));
-                break;
-            case 'display':
-                if (!args[1]) {
-                    lines.unshift(`< Subject is not specified.`);
-                    break;
-                }
-                switch (args[1]) {
-                    case 'schedule':
-                        if (!args[2]) {
-                            lines.unshift(`< Date is not specified.`);
-                            break;
-                        }
-                        const date = args[2];
-                        setUrl(ApiUrl.SCHEDULE.replace('{date}', date));
-                        break;
-                    case 'tasks':
-                        setUrl(ApiUrl.TASKS);
-                        break;
-                    default:
-                        lines.unshift(`< Subject is unknown.`);
-                        break;
-                }
-                break;
-            default:
-                lines.unshift(`< Command "${args[0]}" is not supported.`);
-        }
     }
 
     return (
