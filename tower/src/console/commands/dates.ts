@@ -1,4 +1,5 @@
 import {getDates} from "@/utils/date";
+import {getDateArg} from "@/console/utils";
 
 export default function dates(args: string[], setDates: Function): string[]
 {
@@ -27,13 +28,4 @@ function getEndDateArg(args: string[]): Date
         throw `End date is not specified.`;
     }
     return getDateArg(args[2]);
-}
-
-function getDateArg(arg: string): Date
-{
-    const date = new Date(arg);
-    if (isNaN(date.getTime())) {
-        throw `Date must conform the format yyyy-mm-dd, but "${arg}" given.`;
-    }
-    return date;
 }

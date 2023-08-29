@@ -3,6 +3,7 @@ import {useDrop} from "react-dnd";
 import {ConnectDropTarget} from "react-dnd/src/types";
 import {ItemType} from "@/constants/draggable";
 import {MarkerPosition} from "@/components/Marker/Marker";
+import {ApiUrl} from "@/constants/api";
 
 export type SlotProps = {
     id: string,
@@ -16,7 +17,7 @@ export default function Slot({id, position, onMutate}: SlotProps)
         accept: ItemType.MARKER,
         drop: ({ taskId, direction }: {taskId: string, direction: string}) => {
             onMutate(() => {
-                return fetch(`http://localhost:8080/api/v1/task/${taskId}`, {
+                return fetch(ApiUrl.TASK.replace('{taskId}', taskId), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
