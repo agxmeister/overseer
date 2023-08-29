@@ -28,7 +28,11 @@ export default function Slot({id, position, onMutate}: SlotProps)
                             {estimatedFinishDate: position})
                     }),
                 }).then(res => res.json());
-            }, {taskId: taskId, direction: direction, date: position});
+            }, {
+                taskId: taskId,
+                begin: direction === MarkerPosition.Left ? position : null,
+                end: direction === MarkerPosition.Right ? position : null,
+            });
         },
         collect: monitor => ({
             isOver: monitor.isOver(),

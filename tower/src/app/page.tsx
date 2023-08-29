@@ -53,15 +53,13 @@ export default function Page()
     const [schedule, setSchedule] = useState<Issue[]>([]);
 
     const {data, mutate} = useSWR(ApiUrl.TASKS, (api: string) => fetch(api).then(res => res.json()));
-    const onMutate = (fetcher: Function, mutation: {taskId: string, direction?: string, date?: string, begin?: string, end?: string}) => {
-        const begin = mutation.begin ?? mutation.direction === MarkerPosition.Left ? mutation.date : null;
-        const end = mutation.end ?? mutation.direction === MarkerPosition.Right ? mutation.date : null;
+    const onMutate = (fetcher: Function, mutation: {taskId: string, begin?: string, end?: string}) => {
         const optimisticData = data.map((issue: Issue) =>
             issue.key === mutation.taskId ?
                 {
                     ...issue,
-                    estimatedStartDate: begin ?? issue.estimatedStartDate,
-                    estimatedFinishDate: end ?? issue.estimatedFinishDate,
+                    estimatedStartDate: mutation.begin ?? issue.estimatedStartDate,
+                    estimatedFinishDate: mutation.end ?? issue.estimatedFinishDate,
                 } :
                 issue);
         mutate(fetcher,{
