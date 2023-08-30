@@ -34,20 +34,23 @@ class Builder
         $strategy->schedule($milestone);
 
         return array_map(function (array $issue) use ($nodes, $date) {
+            $result = [
+                'key' => $issue['key'],
+                'estimatedStartDate' => $issue['estimatedStartDate'],
+                'estimatedFinishDate' => $issue['estimatedFinishDate'],
+            ];
             /** @var Node $node */
             $node = $nodes[$issue['key']] ?? null;
             if (is_null($node)) {
-                return $issue;
+                return $result;
             }
             $distance = $node->getDistance();
             $completion = $node->getCompletion();
             $startDate = (new \DateTime($date))->modify("-{$distance} day");
             $finishDate = (new \DateTime($date))->modify("-{$completion} day");
-            return [
-                ...$issue,
-                'estimatedStartDate' => $startDate->format("Y-m-d"),
-                'estimatedFinishDate' => $finishDate->format("Y-m-d"),
-            ];
+            $result['estimatedStartDate'] = $startDate->format("Y-m-d");
+            $result['estimatedFinishDate'] = $finishDate->format("Y-m-d");
+            return $result;
         }, $issues);
     }
 }

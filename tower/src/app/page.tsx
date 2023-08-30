@@ -19,6 +19,7 @@ type Issue = {
     estimatedFinishDate: string,
     summary: string,
     links: {inward: Link[], outward: Link[]},
+    corrected?: boolean,
 }
 type Link = {
     key: string,
@@ -98,10 +99,22 @@ export default function Page()
             />
         ));
 
-    const scheduledIssues = data ? data.map((issue: Issue) => ({
-        ...issue,
-        ...schedule.find(current => current.key === issue.key)
-    })) : [];
+    const scheduledIssues = data ? data.map((issue: Issue) => {
+        const correction = schedule.find(current => current.key === issue.key);
+        if (!correction) {
+            return {
+                ...issue,
+                corrected: false,
+            }
+        }
+        return {
+            ...issue,
+            ...correction,
+            corrected:
+                issue.estimatedStartDate !== correction.estimatedStartDate ||
+                issue.estimatedFinishDate !== correction.estimatedFinishDate,
+        }
+    }) : [];
 
     const tasks = scheduledIssues.map((issue: Issue) =>
         <Task
@@ -128,6 +141,7 @@ export default function Page()
                     key={issue.key}
                     id={issue.key}
                     title={issue.summary}
+                    corrected={issue.corrected}
                 />
             }
             onLink={onLink}
