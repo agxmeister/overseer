@@ -36,8 +36,8 @@ class Builder
         return array_map(function (array $issue) use ($nodes, $date) {
             $result = [
                 'key' => $issue['key'],
-                'estimatedStartDate' => $issue['estimatedStartDate'],
-                'estimatedFinishDate' => $issue['estimatedFinishDate'],
+                'estimatedBeginDate' => $issue['estimatedBeginDate'],
+                'estimatedEndDate' => $issue['estimatedEndDate'],
             ];
             /** @var Node $node */
             $node = $nodes[$issue['key']] ?? null;
@@ -48,8 +48,8 @@ class Builder
             $completion = $node->getCompletion();
             $startDate = (new \DateTime($date))->modify("-{$distance} day");
             $finishDate = (new \DateTime($date))->modify("-{$completion} day");
-            $result['estimatedStartDate'] = $startDate->format("Y-m-d");
-            $result['estimatedFinishDate'] = $finishDate->format("Y-m-d");
+            $result['estimatedBeginDate'] = $startDate->format("Y-m-d");
+            $result['estimatedEndDate'] = $finishDate->format("Y-m-d");
             return $result;
         }, $issues);
     }

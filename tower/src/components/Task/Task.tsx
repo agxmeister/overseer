@@ -11,8 +11,8 @@ export type TaskProps = {
     id: string,
     markerLeft: ReactElement<MarkerProps>
     markerRight: ReactElement<MarkerProps>
-    start: string,
-    finish: string,
+    begin: string,
+    end: string,
     card: ReactElement<CardProps>,
     onLink: Function,
 }
@@ -22,7 +22,7 @@ type Link = {
     type: string,
 }
 
-export default function Task({id, markerLeft, markerRight, start, finish, card, onLink}: TaskProps)
+export default function Task({id, markerLeft, markerRight, begin, end, card, onLink}: TaskProps)
 {
     const {dates} = useContext(MapContext);
 
@@ -51,18 +51,18 @@ export default function Task({id, markerLeft, markerRight, start, finish, card, 
 
     const minDate = dates[0];
     const maxDate = dates[dates.length - 1];
-    const startLineName = start >= minDate ? start : minDate;
-    const endLineName = finish <= maxDate ? finish : maxDate;
+    const startLineName = begin >= minDate ? begin : minDate;
+    const endLineName = end <= maxDate ? end : maxDate;
 
-    return finish >= minDate && start <= maxDate ? (
+    return end >= minDate && begin <= maxDate ? (
         <div ref={drop} className={styles.task} style={{
             gridRow: `line-${id}-start/line-${id}-end`,
             gridColumn: `line-${startLineName}-start/line-${endLineName}-end`,
             border: isOver ? '4px solid rgb(181, 12, 15)' : 'none',
         }}>
-            {start >= minDate ? markerLeft : null}
+            {begin >= minDate ? markerLeft : null}
             {card}
-            {finish <= maxDate ? markerRight : null}
+            {end <= maxDate ? markerRight : null}
         </div>
     ) : null;
 }

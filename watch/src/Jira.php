@@ -82,18 +82,18 @@ class Jira
                 ];
             }
         }
-        $estimatedStartDate = $issue->fields->customfield_10036 ?? date('Y-m-d');
-        $estimatedFinishDate =
+        $estimatedBeginDate = $issue->fields->customfield_10036 ?? date('Y-m-d');
+        $estimatedEndDate =
             $issue->fields->customfield_10037 &&
-            $issue->fields->customfield_10037 >= $estimatedStartDate ?
+            $issue->fields->customfield_10037 >= $estimatedBeginDate ?
                 $issue->fields->customfield_10037 :
-                $estimatedStartDate;
+                $estimatedBeginDate;
         return [
             'key' => $issue->key,
             'summary' => $issue->fields->summary,
             'estimatedDuration' => (int)$issue->fields->customfield_10038,
-            'estimatedStartDate' =>$estimatedStartDate,
-            'estimatedFinishDate' => $estimatedFinishDate,
+            'estimatedBeginDate' =>$estimatedBeginDate,
+            'estimatedEndDate' => $estimatedEndDate,
             'links' => $links,
         ];
     }
@@ -101,8 +101,8 @@ class Jira
     private function fieldsMapping($field): string
     {
         $mapping = [
-            "estimatedStartDate" => "customfield_10036",
-            "estimatedFinishDate" => "customfield_10037",
+            "estimatedBeginDate" => "customfield_10036",
+            "estimatedEndDate" => "customfield_10037",
         ];
         return $mapping[$field];
     }

@@ -16,8 +16,8 @@ export default function task(args: string[], onMutate: Function): string[]
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    estimatedStartDate: format(beginDate),
-                    estimatedFinishDate: format(endDate),
+                    estimatedBeginDate: format(beginDate),
+                    estimatedEndDate: format(endDate),
                 }),
             }).then(res => res.json())
         }, {taskId: taskId, begin: format(beginDate), end: format(endDate)});

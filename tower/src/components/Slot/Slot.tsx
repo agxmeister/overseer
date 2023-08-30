@@ -24,8 +24,8 @@ export default function Slot({id, position, onMutate}: SlotProps)
                     },
                     body: JSON.stringify({
                         ...(direction === MarkerPosition.Left ?
-                            {estimatedStartDate: position} :
-                            {estimatedFinishDate: position})
+                            {estimatedBeginDate: position} :
+                            {estimatedEndDate: position})
                     }),
                 }).then(res => res.json());
             }, {

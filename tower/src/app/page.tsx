@@ -15,8 +15,8 @@ import {ApiUrl} from "@/constants/api";
 
 type Issue = {
     key: string,
-    estimatedStartDate: string,
-    estimatedFinishDate: string,
+    estimatedBeginDate: string,
+    estimatedEndDate: string,
     summary: string,
     links: {inward: Link[], outward: Link[]},
     corrected?: boolean,
@@ -59,8 +59,8 @@ export default function Page()
             issue.key === mutation.taskId ?
                 {
                     ...issue,
-                    estimatedStartDate: mutation.begin ?? issue.estimatedStartDate,
-                    estimatedFinishDate: mutation.end ?? issue.estimatedFinishDate,
+                    estimatedBeginDate: mutation.begin ?? issue.estimatedBeginDate,
+                    estimatedEndDate: mutation.end ?? issue.estimatedEndDate,
                 } :
                 issue);
         mutate(fetcher,{
@@ -111,8 +111,8 @@ export default function Page()
             ...issue,
             ...correction,
             corrected:
-                issue.estimatedStartDate !== correction.estimatedStartDate ||
-                issue.estimatedFinishDate !== correction.estimatedFinishDate,
+                issue.estimatedBeginDate !== correction.estimatedBeginDate ||
+                issue.estimatedEndDate !== correction.estimatedEndDate,
         }
     }) : [];
 
@@ -134,8 +134,8 @@ export default function Page()
                     onSize={onSize}
                 />
             }
-            start={issue.estimatedStartDate}
-            finish={issue.estimatedFinishDate}
+            begin={issue.estimatedBeginDate}
+            end={issue.estimatedEndDate}
             card={
                 <Card
                     key={issue.key}
