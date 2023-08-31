@@ -54,22 +54,30 @@ export default function Page()
     const [schedule, setSchedule] = useState<Issue[]>([]);
 
     const {data, mutate} = useSWR(ApiUrl.TASKS, (api: string) => fetch(api).then(res => res.json()));
+
     const onMutate = (fetcher: Function, mutation: {taskId: string, begin?: string, end?: string}) => {
-        const optimisticData = data.map((issue: Issue) =>
-            issue.key === mutation.taskId ?
-                {
-                    ...issue,
-                    estimatedBeginDate: mutation.begin ?? issue.estimatedBeginDate,
-                    estimatedEndDate: mutation.end ?? issue.estimatedEndDate,
-                } :
-                issue);
-        mutate(fetcher,{
-            optimisticData: optimisticData,
-            populateCache: (mutatedIssue, issues) => {
-                return issues.map((issue: Issue) => issue.key === mutatedIssue.key ? mutatedIssue : issue);
-            },
-            revalidate: false
-        });
+        const correction = schedule.find(current => current.key === mutation.taskId);
+        if (correction) {
+            correction.estimatedBeginDate = mutation.begin ?? correction.estimatedBeginDate;
+            correction.estimatedEndDate = mutation.end ?? correction.estimatedEndDate;
+            setSchedule(schedule);
+        } else {
+            const optimisticData = data.map((issue: Issue) =>
+                issue.key === mutation.taskId ?
+                    {
+                        ...issue,
+                        estimatedBeginDate: mutation.begin ?? issue.estimatedBeginDate,
+                        estimatedEndDate: mutation.end ?? issue.estimatedEndDate,
+                    } :
+                    issue);
+            mutate(fetcher,{
+                optimisticData: optimisticData,
+                populateCache: (mutatedIssue, issues) => {
+                    return issues.map((issue: Issue) => issue.key === mutatedIssue.key ? mutatedIssue : issue);
+                },
+                revalidate: false
+            });
+        }
     }
     const onLink = (fetcher: Function) => {
         mutate(fetcher,{
@@ -101,18 +109,10 @@ export default function Page()
 
     const scheduledIssues = data ? data.map((issue: Issue) => {
         const correction = schedule.find(current => current.key === issue.key);
-        if (!correction) {
-            return {
-                ...issue,
-                corrected: false,
-            }
-        }
         return {
             ...issue,
-            ...correction,
-            corrected:
-                issue.estimatedBeginDate !== correction.estimatedBeginDate ||
-                issue.estimatedEndDate !== correction.estimatedEndDate,
+            ...(correction ? correction : {}),
+            corrected: !!correction,
         }
     }) : [];
 

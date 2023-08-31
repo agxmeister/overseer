@@ -8,9 +8,9 @@ export enum MarkerPosition {
 }
 
 export type MarkerProps = {
-    id: string
-    position: MarkerPosition
-    onSize: Function
+    id: string,
+    position: MarkerPosition,
+    onSize: Function,
 }
 
 export default function Marker({ id, position, onSize }: MarkerProps)
