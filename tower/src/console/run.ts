@@ -28,10 +28,10 @@ export default async function run(command: string, context: Context, setters: Se
             lines.unshift(...dates(args, setters.setDates));
             break;
         case 'schedule':
-            lines.unshift(...schedule(args, context.issues, context.schedule, setters.setSchedule, setters.onMutate));
+            lines.unshift(...await schedule(args, context.issues, context.schedule, setters.setSchedule, setters.onMutate));
             break;
         case 'task':
-            lines.unshift(...task(args, setters.onMutate));
+            lines.unshift(...await task(args, setters.onMutate));
             break;
         default:
             lines.unshift(`Command "${args[0]}" is not supported.`);

@@ -8,7 +8,7 @@ enum Action {
     Apply = "apply",
 }
 
-export default function schedule(args: string[], issues: Issue[], schedule: Issue[], setSchedule: Function, onMutate: Function): string[]
+export default async function schedule(args: string[], issues: Issue[], schedule: Issue[], setSchedule: Function, onMutate: Function): Promise<string[]>
 {
     const lines = [];
     try {
@@ -16,14 +16,19 @@ export default function schedule(args: string[], issues: Issue[], schedule: Issu
         switch (action) {
             case Action.Create:
                 const date = getDateArg(args);
-                fetch(ApiUrl.SCHEDULE.replace('{date}', format(date)))
+                await fetch(ApiUrl.SCHEDULE.replace('{date}', format(date)))
                     .then(res => res.json())
                     .then(data => setSchedule(data));
                 break;
             case Action.Apply:
-                issues.forEach(issue => {
-                    lines.unshift(...task(['task', issue.key, `begin=${issue.estimatedBeginDate}`, `end=${issue.estimatedEndDate}`], onMutate));
-                });
+                const promises = [];
+                for (const issue of issues) {
+                    const promise = task(['task', issue.key, `begin=${issue.estimatedBeginDate}`, `end=${issue.estimatedEndDate}`], onMutate);
+                    promise.then(output => lines.unshift(...output))
+                    promises.push(promise);
+                }
+                await Promise.all(promises);
+                setSchedule([]);
                 break;
         }
     } catch (err) {

@@ -39,7 +39,7 @@ export default function Page()
 
     const {data, mutate} = useSWR(ApiUrl.TASKS, (api: string) => fetch(api).then(res => res.json()));
 
-    const onMutate = (fetcher: Function, mutation: {taskId: string, begin?: string, end?: string}, force: boolean = false) => {
+    const onMutate = async (fetcher: Function, mutation: {taskId: string, begin?: string, end?: string}, force: boolean = false) => {
         const correction = schedule.find(current => current.key === mutation.taskId);
         if (correction && !force) {
             correction.estimatedBeginDate = mutation.begin ?? correction.estimatedBeginDate;
@@ -54,12 +54,9 @@ export default function Page()
                         estimatedEndDate: mutation.end ?? issue.estimatedEndDate,
                     } :
                     issue);
-            mutate(fetcher,{
+            await mutate(fetcher,{
                 optimisticData: optimisticData,
-                populateCache: (mutatedIssue, issues) => {
-                    return issues.map((issue: Issue) => issue.key === mutatedIssue.key ? mutatedIssue : issue);
-                },
-                revalidate: false
+                populateCache: false,
             });
         }
     }
