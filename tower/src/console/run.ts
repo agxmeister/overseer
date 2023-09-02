@@ -2,6 +2,12 @@ import scale from "@/console/commands/scale";
 import dates from "@/console/commands/dates";
 import schedule from "@/console/commands/schedule";
 import task from "@/console/commands/task";
+import {Issue} from "@/types/Issue";
+
+export type Context = {
+    issues: Issue[],
+    schedule: Issue[],
+}
 
 export type Setters = {
     setScale: Function,
@@ -10,7 +16,7 @@ export type Setters = {
     onMutate: Function,
 }
 
-export default function run(command: string, setters: Setters): string[]
+export default function run(command: string, context: Context, setters: Setters): string[]
 {
     const lines = [];
     const args = command.split(' ');
@@ -22,7 +28,7 @@ export default function run(command: string, setters: Setters): string[]
             lines.unshift(...dates(args, setters.setDates));
             break;
         case 'schedule':
-            lines.unshift(...schedule(args, setters.setSchedule));
+            lines.unshift(...schedule(args, context.issues, context.schedule, setters.setSchedule, setters.onMutate));
             break;
         case 'task':
             lines.unshift(...task(args, setters.onMutate));

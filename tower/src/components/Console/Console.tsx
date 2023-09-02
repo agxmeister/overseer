@@ -1,12 +1,13 @@
 import styles from './Console.module.sass'
 import React, {useState} from "react";
-import run, {Setters} from "@/console/run";
+import run, {Context, Setters} from "@/console/run";
 
 export type ConsoleProps = {
+    context: Context;
     setters: Setters;
 }
 
-export default function Console({setters}: ConsoleProps)
+export default function Console({context, setters}: ConsoleProps)
 {
     const [lines, setLines] = useState<string[]>(['> ']);
     const [index, setIndex] = useState<number>(0);
@@ -24,7 +25,7 @@ export default function Console({setters}: ConsoleProps)
                     if (lines[0] === '> ') {
                         break;
                     }
-                    lines.unshift(...run(lines[0].slice(2), setters));
+                    lines.unshift(...run(lines[0].slice(2), context, setters));
                     lines.unshift('> ');
                     inputIndex = 0;
                     break;

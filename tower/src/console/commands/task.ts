@@ -20,7 +20,7 @@ export default function task(args: string[], onMutate: Function): string[]
                     estimatedEndDate: format(endDate),
                 }),
             }).then(res => res.json())
-        }, {taskId: taskId, begin: format(beginDate), end: format(endDate)});
+        }, {taskId: taskId, begin: format(beginDate), end: format(endDate)}, true);
     } catch (err) {
         lines.unshift(`${err}`);
     }

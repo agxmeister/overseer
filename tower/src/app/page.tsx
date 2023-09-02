@@ -12,24 +12,8 @@ import Link from "@/components/Link/Link";
 import Task from "@/components/Task/Task";
 import Console from "@/components/Console/Console";
 import {ApiUrl} from "@/constants/api";
-
-type Issue = {
-    key: string,
-    estimatedBeginDate: string,
-    estimatedEndDate: string,
-    summary: string,
-    links: {inward: Link[], outward: Link[]},
-    corrected?: boolean,
-}
-type Link = {
-    key: string,
-    type: string,
-}
-
-type LinkDescription = {
-    start: string,
-    finish: string,
-}
+import {Issue} from "@/types/Issue";
+import {LinkDescription} from "@/types/LinkDescription";
 
 export default function Page()
 {
@@ -55,9 +39,9 @@ export default function Page()
 
     const {data, mutate} = useSWR(ApiUrl.TASKS, (api: string) => fetch(api).then(res => res.json()));
 
-    const onMutate = (fetcher: Function, mutation: {taskId: string, begin?: string, end?: string}) => {
+    const onMutate = (fetcher: Function, mutation: {taskId: string, begin?: string, end?: string}, force: boolean = false) => {
         const correction = schedule.find(current => current.key === mutation.taskId);
-        if (correction) {
+        if (correction && !force) {
             correction.estimatedBeginDate = mutation.begin ?? correction.estimatedBeginDate;
             correction.estimatedEndDate = mutation.end ?? correction.estimatedEndDate;
             setSchedule(schedule);
@@ -170,12 +154,18 @@ export default function Page()
                 />
             </div>
             <div>
-                <Console setters={{
-                    setScale: setScale,
-                    setDates: setDates,
-                    setSchedule: setSchedule,
-                    onMutate: onMutate,
-                }}/>
+                <Console
+                    context={{
+                        issues: scheduledIssues,
+                        schedule: schedule,
+                    }}
+                    setters={{
+                        setScale: setScale,
+                        setDates: setDates,
+                        setSchedule: setSchedule,
+                        onMutate: onMutate,
+                    }}
+                />
             </div>
         </>
     );
