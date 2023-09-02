@@ -17,15 +17,23 @@ export default function Console({context, setters}: ConsoleProps)
     inputLines.unshift('> ');
     let inputIndex = index;
     const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-        if (event.key.length === 1) {
-            lines[0] = lines[0] + event.key;
+        handleInput(event.key).then(() => {
+            setLines([...lines]);
+            setIndex(inputIndex);
+        })
+        event.preventDefault();
+    }
+
+    const handleInput = async (key: string) => {
+        if (key.length === 1) {
+            lines[0] = lines[0] + key;
         } else {
-            switch (event.key) {
+            switch (key) {
                 case 'Enter':
                     if (lines[0] === '> ') {
                         break;
                     }
-                    lines.unshift(...run(lines[0].slice(2), context, setters));
+                    lines.unshift(...await run(lines[0].slice(2), context, setters));
                     lines.unshift('> ');
                     inputIndex = 0;
                     break;
@@ -50,9 +58,6 @@ export default function Console({context, setters}: ConsoleProps)
                     break;
             }
         }
-        event.preventDefault();
-        setLines([...lines]);
-        setIndex(inputIndex);
     }
 
     return (

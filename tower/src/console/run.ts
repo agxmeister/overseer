@@ -16,7 +16,7 @@ export type Setters = {
     onMutate: Function,
 }
 
-export default function run(command: string, context: Context, setters: Setters): string[]
+export default async function run(command: string, context: Context, setters: Setters): Promise<string[]>
 {
     const lines = [];
     const args = command.split(' ');
