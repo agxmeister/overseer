@@ -14,9 +14,12 @@ import Console from "@/components/Console/Console";
 import {ApiUrl} from "@/constants/api";
 import {Issue} from "@/types/Issue";
 import {LinkDescription} from "@/types/LinkDescription";
+import {Mode, Schedule} from "@/types/Schedule";
 
 export default function Page()
 {
+    const [mode, setMode] = useState<string>(Mode.View);
+
     const [scale, setScale] = useState<number>(1);
     const handleScaleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
         if (['=', '+'].includes(event.key)) {
@@ -35,11 +38,15 @@ export default function Page()
         setSizeTaskId(taskId);
     }
 
-    const [schedule, setSchedule] = useState<Issue[]>([]);
+    const [schedule, setSchedule] = useState<Schedule[]>([]);
 
     const {data, mutate} = useSWR(ApiUrl.TASKS, (api: string) => fetch(api).then(res => res.json()));
 
     const onMutate = async (fetcher: Function, mutation: {taskId: string, begin?: string, end?: string}, force: boolean = false) => {
+        if (mode === Mode.Edit && !force && !schedule.find(current => current.key === mutation.taskId)) {
+            schedule.push({key: mutation.taskId});
+            setSchedule(schedule);
+        }
         const correction = schedule.find(current => current.key === mutation.taskId);
         if (correction && !force) {
             correction.estimatedBeginDate = mutation.begin ?? correction.estimatedBeginDate;
@@ -92,7 +99,16 @@ export default function Page()
         const correction = schedule.find(current => current.key === issue.key);
         return {
             ...issue,
-            ...(correction ? correction : {}),
+            ...(correction ?
+                Object.entries(correction)
+                    .filter(([_, value]) => value)
+                    .reduce((obj, [key, value]) => {
+                        return {
+                            ...obj,
+                            [key]: value
+                        };
+                    }, {}) :
+                {}),
             corrected: !!correction,
         }
     }) : [];
@@ -159,6 +175,7 @@ export default function Page()
                     setters={{
                         setScale: setScale,
                         setDates: setDates,
+                        setMode: setMode,
                         setSchedule: setSchedule,
                         onMutate: onMutate,
                     }}

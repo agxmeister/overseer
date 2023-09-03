@@ -3,15 +3,17 @@ import dates from "@/console/commands/dates";
 import schedule from "@/console/commands/schedule";
 import task from "@/console/commands/task";
 import {Issue} from "@/types/Issue";
+import {Schedule} from "@/types/Schedule";
 
 export type Context = {
     issues: Issue[],
-    schedule: Issue[],
+    schedule: Schedule[],
 }
 
 export type Setters = {
     setScale: Function,
     setDates: Function,
+    setMode: Function,
     setSchedule: Function,
     onMutate: Function,
 }
@@ -28,7 +30,7 @@ export default async function run(command: string, context: Context, setters: Se
             lines.unshift(...dates(args, setters.setDates));
             break;
         case 'schedule':
-            lines.unshift(...await schedule(args, context.issues, context.schedule, setters.setSchedule, setters.onMutate));
+            lines.unshift(...await schedule(args, context.issues, context.schedule, setters.setMode, setters.setSchedule, setters.onMutate));
             break;
         case 'task':
             lines.unshift(...await task(args, setters.onMutate));
