@@ -6,6 +6,7 @@ import task from "@/console/commands/task";
 enum Action {
     Create = "create",
     Apply = "apply",
+    Rollback = "rollback",
 }
 
 export default async function schedule(args: string[], issues: Issue[], schedule: Issue[], setSchedule: Function, onMutate: Function): Promise<string[]>
@@ -28,6 +29,9 @@ export default async function schedule(args: string[], issues: Issue[], schedule
                     promises.push(promise);
                 }
                 await Promise.all(promises);
+                setSchedule([]);
+                break;
+            case Action.Rollback:
                 setSchedule([]);
                 break;
         }
