@@ -2,25 +2,14 @@ import {getDateArg} from "@/console/utils";
 import {format} from "@/utils/date";
 import {ApiUrl} from "@/constants/api";
 
-export default async function task(args: string[], onMutate: Function): Promise<string[]>
+export default async function task(args: string[], onTaskResize: Function): Promise<string[]>
 {
     const lines = [];
     try {
         const taskId = getTaskIdArg(args);
         const beginDate = getBeginDateArg(args);
         const endDate = getEndDateArg(args);
-        await onMutate(() => {
-            return fetch(ApiUrl.TASK.replace('{taskId}', taskId), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    estimatedBeginDate: format(beginDate),
-                    estimatedEndDate: format(endDate),
-                }),
-            }).then(res => res.json())
-        }, {taskId: taskId, begin: format(beginDate), end: format(endDate)}, true);
+        await onTaskResize({taskId: taskId, begin: format(beginDate), end: format(endDate)});
     } catch (err) {
         lines.unshift(`${err}`);
     }

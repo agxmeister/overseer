@@ -44,31 +44,40 @@ export default function Page()
 
     const {data, mutate} = useSWR(ApiUrl.TASKS, (api: string) => fetch(api).then(res => res.json()));
 
-    const onMutate = async (mutation: {taskId: string, begin?: string, end?: string}, force: boolean = false) => {
-        if (mode === Mode.Edit && !force && !schedule.find(current => current.key === mutation.taskId)) {
-            schedule.push({key: mutation.taskId});
-            setSchedule(schedule);
-        }
-        const correction = schedule.find(current => current.key === mutation.taskId);
-        if (correction && !force) {
-            correction.estimatedBeginDate = mutation.begin ?? correction.estimatedBeginDate;
-            correction.estimatedEndDate = mutation.end ?? correction.estimatedEndDate;
-            setSchedule(schedule);
-        } else {
-            const optimisticData = data.map((issue: Issue) =>
-                issue.key === mutation.taskId ?
-                    {
-                        ...issue,
-                        estimatedBeginDate: mutation.begin ?? issue.estimatedBeginDate,
-                        estimatedEndDate: mutation.end ?? issue.estimatedEndDate,
-                    } :
-                    issue);
-            await mutate(() => setTaskDates(mutation.taskId, mutation.begin, mutation.end), {
-                optimisticData: optimisticData,
-                populateCache: false,
-            });
+    const onTask = async (mutation: {taskId: string, begin?: string, end?: string}) => {
+        switch (mode) {
+            case Mode.Edit:
+                await onTaskSchedule(mutation);
+                break;
+            case Mode.View:
+                await onTaskResize(mutation);
+                break;
         }
     }
+
+    const onTaskSchedule = async (mutation: {taskId: string, begin?: string, end?: string}) => {
+        setSchedule([...schedule.filter(item => item.key !== mutation.taskId), {
+            key: mutation.taskId,
+            estimatedBeginDate: mutation.begin,
+            estimatedEndDate: mutation.end,
+        }]);
+    }
+
+    const onTaskResize = async (mutation: {taskId: string, begin?: string, end?: string}) => {
+        const optimisticData = data.map((issue: Issue) =>
+            issue.key === mutation.taskId ? {
+                ...issue,
+                estimatedBeginDate: mutation.begin ?? issue.estimatedBeginDate,
+                estimatedEndDate: mutation.end ?? issue.estimatedEndDate,
+            } : {
+                ...issue,
+            });
+        await mutate(() => setTaskDates(mutation.taskId, mutation.begin, mutation.end), {
+            optimisticData: optimisticData,
+            populateCache: false,
+        });
+    }
+
     const onLink = (fetcher: Function) => {
         mutate(fetcher,{
             populateCache: false,
@@ -144,7 +153,7 @@ export default function Page()
                 key={date}
                 id={sizeTaskId}
                 position={date}
-                onMutate={onMutate}
+                onTask={onTask}
             />
         ) : [];
 
@@ -170,7 +179,7 @@ export default function Page()
                         setDates: setDates,
                         setMode: setMode,
                         setSchedule: setSchedule,
-                        onMutate: onMutate,
+                        onTaskResize: onTaskResize,
                     }}
                 />
             </div>

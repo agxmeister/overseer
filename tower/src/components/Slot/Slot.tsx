@@ -8,15 +8,15 @@ import {ApiUrl} from "@/constants/api";
 export type SlotProps = {
     id: string,
     position: string,
-    onMutate: Function,
+    onTask: Function,
 }
 
-export default function Slot({id, position, onMutate}: SlotProps)
+export default function Slot({id, position, onTask}: SlotProps)
 {
     const [{ isOver }, drop] = useDrop(() => ({
         accept: ItemType.MARKER,
         drop: ({ taskId, direction }: {taskId: string, direction: string}) => {
-            onMutate({
+            onTask({
                 taskId: taskId,
                 begin: direction === MarkerPosition.Left ? position : undefined,
                 end: direction === MarkerPosition.Right ? position : undefined,
