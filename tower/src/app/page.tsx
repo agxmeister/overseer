@@ -15,6 +15,7 @@ import {ApiUrl} from "@/constants/api";
 import {Issue} from "@/types/Issue";
 import {LinkDescription} from "@/types/LinkDescription";
 import {Mode, Schedule} from "@/types/Schedule";
+import {clean} from "@/utils/misc";
 
 export default function Page()
 {
@@ -99,16 +100,7 @@ export default function Page()
         const correction = schedule.find(current => current.key === issue.key);
         return {
             ...issue,
-            ...(correction ?
-                Object.entries(correction)
-                    .filter(([_, value]) => value)
-                    .reduce((obj, [key, value]) => {
-                        return {
-                            ...obj,
-                            [key]: value
-                        };
-                    }, {}) :
-                {}),
+            ...(correction ? clean(correction): {}),
             corrected: !!correction,
         }
     }) : [];
