@@ -16,22 +16,10 @@ export default function Slot({id, position, onMutate}: SlotProps)
     const [{ isOver }, drop] = useDrop(() => ({
         accept: ItemType.MARKER,
         drop: ({ taskId, direction }: {taskId: string, direction: string}) => {
-            onMutate(() => {
-                return fetch(ApiUrl.TASK.replace('{taskId}', taskId), {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        ...(direction === MarkerPosition.Left ?
-                            {estimatedBeginDate: position} :
-                            {estimatedEndDate: position})
-                    }),
-                }).then(res => res.json());
-            }, {
+            onMutate({
                 taskId: taskId,
-                begin: direction === MarkerPosition.Left ? position : null,
-                end: direction === MarkerPosition.Right ? position : null,
+                begin: direction === MarkerPosition.Left ? position : undefined,
+                end: direction === MarkerPosition.Right ? position : undefined,
             });
         },
         collect: monitor => ({

@@ -16,6 +16,7 @@ import {Issue} from "@/types/Issue";
 import {LinkDescription} from "@/types/LinkDescription";
 import {Mode, Schedule} from "@/types/Schedule";
 import {clean} from "@/utils/misc";
+import {setDates as setTaskDates} from "@/api/task";
 
 export default function Page()
 {
@@ -43,7 +44,7 @@ export default function Page()
 
     const {data, mutate} = useSWR(ApiUrl.TASKS, (api: string) => fetch(api).then(res => res.json()));
 
-    const onMutate = async (fetcher: Function, mutation: {taskId: string, begin?: string, end?: string}, force: boolean = false) => {
+    const onMutate = async (mutation: {taskId: string, begin?: string, end?: string}, force: boolean = false) => {
         if (mode === Mode.Edit && !force && !schedule.find(current => current.key === mutation.taskId)) {
             schedule.push({key: mutation.taskId});
             setSchedule(schedule);
@@ -62,7 +63,7 @@ export default function Page()
                         estimatedEndDate: mutation.end ?? issue.estimatedEndDate,
                     } :
                     issue);
-            await mutate(fetcher,{
+            await mutate(() => setTaskDates(mutation.taskId, mutation.begin, mutation.end), {
                 optimisticData: optimisticData,
                 populateCache: false,
             });
