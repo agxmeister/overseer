@@ -8,8 +8,8 @@ export function addLink(outwardTaskId: string, inwardTaskId: string, type: strin
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            outwardJiraId: outwardTaskId,
-            inwardJiraId: inwardTaskId,
+            outwardTaskId: outwardTaskId,
+            inwardTaskId: inwardTaskId,
             type: type,
         }),
     });
