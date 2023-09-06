@@ -15,7 +15,7 @@ class Links
     public function __invoke(Request $request, Response $response, $args): Response
     {
         $params = json_decode(file_get_contents('php://input'));
-        $this->jira->addLink($params->inwardTaskId, $params->outwardTaskId, $params->type);
+        $this->jira->addLink($params->outwardTaskId, $params->inwardTaskId, $params->type);
         return $response
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Access-Control-Allow-Origin', '*')

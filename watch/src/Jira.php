@@ -50,10 +50,10 @@ class Jira
     {
         $this->getClient()->post("issueLink", [
             'json' => [
-                'inwardIssue' => [
+                'outwardIssue' => [
                     'key' => $outwardJiraId,
                 ],
-                'outwardIssue' => [
+                'inwardIssue' => [
                     'key' => $inwardJiraId,
                 ],
                 'type' => [

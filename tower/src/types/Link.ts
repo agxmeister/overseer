@@ -4,5 +4,5 @@ export type Link = {
 }
 
 export enum Type {
-    Precedes = "Precedes",
+    Follows = "Follows",
 }

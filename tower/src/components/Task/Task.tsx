@@ -30,8 +30,8 @@ export default function Task({id, markerLeft, markerRight, begin, end, card, onL
         accept: ItemType.MARKER,
         drop: ({ taskId, direction }: {taskId: string, direction: string}) => {
             onLink(
+                direction === MarkerPosition.Left ? id : taskId,
                 direction === MarkerPosition.Left ? taskId : id,
-                direction === MarkerPosition.Left ? id : taskId
             );
         },
         canDrop: ({ taskId }) => taskId !== id,

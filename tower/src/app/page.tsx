@@ -81,7 +81,7 @@ export default function Page()
     }
 
     const onLink = (outwardTaskId: string, inwardTaskId: string) => {
-        mutate(() => addLink(outwardTaskId, inwardTaskId, LinkType.Precedes),{
+        mutate(() => addLink(outwardTaskId, inwardTaskId, LinkType.Follows),{
             populateCache: false,
         });
     }
@@ -89,10 +89,10 @@ export default function Page()
     const links = Array.from<[string, LinkDescription]>(data ? data.reduce((acc: Map<string, LinkDescription>, issue: Issue) => {
         Object.entries(issue.links).reduce((acc, [type, links]) => {
             links.reduce((acc, link) => {
-                const key = type === 'outward' ? `${issue.key}-${link.key}` : `${link.key}-${issue.key}`;
+                const key = type === 'inward' ? `${issue.key}-${link.key}` : `${link.key}-${issue.key}`;
                 acc.set(key, {
-                    start: type === 'outward' ? issue.key : link.key,
-                    finish: type === 'outward' ? link.key : issue.key,
+                    start: type === 'inward' ? issue.key : link.key,
+                    finish: type === 'inward' ? link.key : issue.key,
                 });
                 return acc;
             }, acc);
