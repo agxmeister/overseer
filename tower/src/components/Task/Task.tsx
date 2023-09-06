@@ -29,19 +29,10 @@ export default function Task({id, markerLeft, markerRight, begin, end, card, onL
     const [{ isOver }, drop] = useDrop(() => ({
         accept: ItemType.MARKER,
         drop: ({ taskId, direction }: {taskId: string, direction: string}) => {
-            onLink(() => {
-                return fetch(`http://localhost:8080/api/v1/links`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        inwardJiraId: direction === MarkerPosition.Left ? id : taskId,
-                        outwardJiraId: direction === MarkerPosition.Left ? taskId : id,
-                        type: 'Precedes',
-                    }),
-                });
-            });
+            onLink(
+                direction === MarkerPosition.Left ? taskId : id,
+                direction === MarkerPosition.Left ? id : taskId
+            );
         },
         canDrop: ({ taskId }) => taskId !== id,
         collect: monitor => ({

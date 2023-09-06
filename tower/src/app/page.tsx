@@ -17,6 +17,8 @@ import {LinkDescription} from "@/types/LinkDescription";
 import {Mode, Schedule} from "@/types/Schedule";
 import {clean} from "@/utils/misc";
 import {setDates as setTaskDates} from "@/api/task";
+import {addLink} from "@/api/links";
+import {Type as LinkType} from "@/types/Link";
 
 export default function Page()
 {
@@ -78,8 +80,8 @@ export default function Page()
         });
     }
 
-    const onLink = (fetcher: Function) => {
-        mutate(fetcher,{
+    const onLink = (outwardTaskId: string, inwardTaskId: string) => {
+        mutate(() => addLink(outwardTaskId, inwardTaskId, LinkType.Precedes),{
             populateCache: false,
         });
     }
