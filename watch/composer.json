@@ -10,7 +10,8 @@
         "codeception/codeception": "^5.0",
         "codeception/module-rest": "*",
         "codeception/module-phpbrowser": "*",
-        "codeception/module-asserts": "*"
+        "codeception/module-asserts": "*",
+        "codeception/stub": "^4.1"
     },
     "autoload": {
         "psr-4": {
