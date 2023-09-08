@@ -6,7 +6,7 @@ use Watch\Schedule\Link;
 use Watch\Schedule\Node;
 use Watch\Schedule\Strategy\Basic;
 
-class UtilsTest extends Unit
+class BasicTest extends Unit
 {
     public function testSchedule()
     {
