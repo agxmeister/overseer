@@ -53,12 +53,14 @@ export default function Console({context, setters}: ConsoleProps)
                         inputIndex++;
                     }
                     lines[0] = inputLines[inputIndex];
+                    inputPosition = lines[0].length - 2;
                     break;
                 case 'ArrowDown':
                     if (inputIndex > 0) {
                         inputIndex--;
                     }
                     lines[0] = inputLines[inputIndex];
+                    inputPosition = lines[0].length - 2;
                     break;
                 case 'ArrowLeft':
                     if (inputPosition > 0) {
