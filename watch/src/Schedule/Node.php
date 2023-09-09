@@ -14,7 +14,7 @@ class Node
      */
     private array $preceders = [];
 
-    public function __construct(private string $name, private int $length = 0)
+    public function __construct(protected string $name, private int $length)
     {
     }
 
