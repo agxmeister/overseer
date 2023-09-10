@@ -109,14 +109,22 @@ class BuilderTest extends Unit
                     'estimatedBeginDate' => '2023-09-05',
                     'estimatedEndDate' => '2023-09-08',
                     'links' => [
-                        'inward' => ['K-02'],
+                        'outward' => [
+                            [
+                                'key' => 'K-02'
+                            ],
+                        ],
                     ],
                 ], [
                     'key' => 'K-02',
                     'estimatedBeginDate' => '2023-09-01',
                     'estimatedEndDate' => '2023-09-04',
                     'links' => [
-                        'outward' => ['K-01'],
+                        'inward' => [
+                            [
+                                'key' => 'K-01'
+                            ],
+                        ],
                     ],
                 ],
             ],

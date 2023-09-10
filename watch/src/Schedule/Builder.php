@@ -54,16 +54,20 @@ class Builder
             $result['estimatedEndDate'] = $finishDate->format("Y-m-d");
 
             $inwardLinks = array_values(array_map(
-                fn(Node $preceder) => $preceder->getName(),
+                fn(Node $follower) => [
+                    'key' => $follower->getName(),
+                ],
                 array_filter(
-                    $node->getPreceders(false, [Link::TYPE_SCHEDULE]),
+                    $node->getFollowers([Link::TYPE_SCHEDULE]),
                     fn(Node $node) => !is_a($node, Milestone::class)
                 )
             ));
             $outwardLinks = array_values(array_map(
-                fn(Node $follower) => $follower->getName(),
+                fn(Node $preceder) => [
+                    'key' => $preceder->getName(),
+                ],
                 array_filter(
-                    $node->getFollowers([Link::TYPE_SCHEDULE]),
+                    $node->getPreceders(false, [Link::TYPE_SCHEDULE]),
                     fn(Node $node) => !is_a($node, Milestone::class)
                 )
             ));
