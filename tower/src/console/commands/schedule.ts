@@ -21,7 +21,10 @@ export default async function schedule(args: string[], issues: Issue[], schedule
                 const date = getDateArg(args);
                 await fetch(ApiUrl.SCHEDULE.replace('{date}', format(date)))
                     .then(res => res.json())
-                    .then(data => setSchedule(data));
+                    .then(data => {
+                        setSchedule(data);
+                        setMode(Mode.Edit);
+                    });
                 break;
             case Action.Apply:
                 const promises = [];
@@ -32,9 +35,11 @@ export default async function schedule(args: string[], issues: Issue[], schedule
                 }
                 await Promise.all(promises);
                 setSchedule([]);
+                setMode(Mode.View);
                 break;
             case Action.Rollback:
                 setSchedule([]);
+                setMode(Mode.View);
                 break;
             case Action.Mode:
                 const mode = getModeArg(args);
