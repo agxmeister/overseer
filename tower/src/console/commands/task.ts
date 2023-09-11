@@ -1,15 +1,24 @@
-import {getDateArg} from "@/console/utils";
+import {getActionArg, getDateArg, getNamedArg} from "@/console/utils";
 import {format} from "@/utils/date";
-import {ApiUrl} from "@/constants/api";
+
+enum Action {
+    Resize = "resize",
+    Link = "link",
+}
 
 export default async function task(args: string[], onTaskResize: Function): Promise<string[]>
 {
     const lines = [];
     try {
-        const taskId = getTaskIdArg(args);
-        const beginDate = getBeginDateArg(args);
-        const endDate = getEndDateArg(args);
-        await onTaskResize({taskId: taskId, begin: format(beginDate), end: format(endDate)});
+        const action = getActionArg(args, Object.values<string>(Action));
+        switch (action) {
+            case Action.Resize:
+                const taskId = getTaskIdArg(args);
+                const beginDate = getDateArg(getNamedArg(args, 'begin'));
+                const endDate = getDateArg(getNamedArg(args, 'end'));
+                await onTaskResize({taskId: taskId, begin: format(beginDate), end: format(endDate)});
+                break;
+        }
     } catch (err) {
         lines.unshift(`${err}`);
     }
@@ -18,26 +27,8 @@ export default async function task(args: string[], onTaskResize: Function): Prom
 
 function getTaskIdArg(args: string[]): string
 {
-    if (!args[1]) {
+    if (!args[2]) {
         throw `Task ID is not specified.`;
     }
-    return args[1];
-}
-
-function getBeginDateArg(args: string[]): Date
-{
-    const startDateDeclaration = args.find(arg => arg.startsWith('begin='));
-    if (!startDateDeclaration) {
-        throw `Begin date is not specified.`;
-    }
-    return getDateArg(startDateDeclaration.slice(6));
-}
-
-function getEndDateArg(args: string[]): Date
-{
-    const startDateDeclaration = args.find(arg => arg.startsWith('end='));
-    if (!startDateDeclaration) {
-        throw `End date is not specified.`;
-    }
-    return getDateArg(startDateDeclaration.slice(4));
+    return args[2];
 }

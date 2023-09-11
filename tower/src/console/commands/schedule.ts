@@ -3,6 +3,7 @@ import {ApiUrl} from "@/constants/api";
 import {Issue} from "@/types/Issue";
 import task from "@/console/commands/task";
 import {Mode, Schedule} from "@/types/Schedule";
+import {getActionArg} from "@/console/utils";
 
 enum Action {
     Create = "create",
@@ -15,7 +16,7 @@ export default async function schedule(args: string[], issues: Issue[], schedule
 {
     const lines = [];
     try {
-        const action = getActionArg(args);
+        const action = getActionArg(args, Object.values<string>(Action));
         switch (action) {
             case Action.Create:
                 const date = getDateArg(args);
@@ -50,17 +51,6 @@ export default async function schedule(args: string[], issues: Issue[], schedule
         lines.unshift(`${err}`);
     }
     return lines;
-}
-
-function getActionArg(args: string[]): string
-{
-    if (!args[1]) {
-        throw `Action is not specified.`;
-    }
-    if (!Object.values<string>(Action).includes(args[1])) {
-        throw `Action must be one of [${Object.values(Action).join(', ')}], but "${args[1]}" given.`;
-    }
-    return args[1];
 }
 
 function getModeArg(args: string[]): string
