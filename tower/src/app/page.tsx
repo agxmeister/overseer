@@ -58,10 +58,14 @@ export default function Page()
     }
 
     const onTaskSchedule = async (mutation: {taskId: string, begin?: string, end?: string}) => {
+        const correction = schedule.find(item => item.key === mutation.taskId);
         setSchedule([...schedule.filter(item => item.key !== mutation.taskId), {
+            ...(correction ? clean(correction): {}),
             key: mutation.taskId,
-            estimatedBeginDate: mutation.begin,
-            estimatedEndDate: mutation.end,
+            ...clean({
+                estimatedBeginDate: mutation.begin,
+                estimatedEndDate: mutation.end,
+            })
         }]);
     }
 
@@ -86,7 +90,20 @@ export default function Page()
         });
     }
 
-    const links = Array.from<[string, LinkDescription]>(data ? data.reduce((acc: Map<string, LinkDescription>, issue: Issue) => {
+    const scheduledIssues = data ? data.map((issue: Issue) => {
+        const correction = schedule.find(current => current.key === issue.key);
+        return {
+            ...issue,
+            ...(correction ? clean(correction): {}),
+            links: {
+                inward: issue.links.inward.concat(correction ? correction.links?.inward ?? [] : []),
+                outward: issue.links.outward.concat(correction ? correction.links?.outward ?? [] : []),
+            },
+            corrected: !!correction,
+        }
+    }) : [];
+
+    const links = Array.from<[string, LinkDescription]>(scheduledIssues ? scheduledIssues.reduce((acc: Map<string, LinkDescription>, issue: Issue) => {
         Object.entries(issue.links).reduce((acc, [type, links]) => {
             links.reduce((acc, link) => {
                 const key = type === 'inward' ? `${issue.key}-${link.key}` : `${link.key}-${issue.key}`;
@@ -107,15 +124,6 @@ export default function Page()
                 finishMarkerId={link.finish}
             />
         ));
-
-    const scheduledIssues = data ? data.map((issue: Issue) => {
-        const correction = schedule.find(current => current.key === issue.key);
-        return {
-            ...issue,
-            ...(correction ? clean(correction): {}),
-            corrected: !!correction,
-        }
-    }) : [];
 
     const tasks = scheduledIssues.map((issue: Issue) =>
         <Task
