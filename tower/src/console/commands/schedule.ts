@@ -30,7 +30,7 @@ export default async function schedule(args: string[], issues: Issue[], schedule
             case Action.Apply:
                 const promises = [];
                 for (const issue of issues) {
-                    const promise = task(['task', issue.key, `begin=${issue.estimatedBeginDate}`, `end=${issue.estimatedEndDate}`], onTaskResize);
+                    const promise = task(['task', 'resize', issue.key, `begin=${issue.estimatedBeginDate}`, `end=${issue.estimatedEndDate}`], onTaskResize);
                     promise.then(output => lines.unshift(...output))
                     promises.push(promise);
                 }
