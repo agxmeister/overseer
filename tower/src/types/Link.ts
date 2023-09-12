@@ -1,4 +1,5 @@
 export type Link = {
+    id: number,
     key: string,
     type: string,
 }

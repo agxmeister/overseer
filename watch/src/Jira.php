@@ -72,11 +72,13 @@ class Jira
         foreach ($issue->fields->issuelinks as $link) {
             if (isset($link->outwardIssue)) {
                 $links['outward'][] = [
+                    'id' => $link->id,
                     'key' => $link->outwardIssue->key,
                     'type' => $link->type->name,
                 ];
             } else if (isset($link->inwardIssue)) {
                 $links['inward'][] = [
+                    'id' => $link->id,
                     'key' => $link->inwardIssue->key,
                     'type' => $link->type->name,
                 ];
