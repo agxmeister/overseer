@@ -4,9 +4,10 @@ import {format} from "@/utils/date";
 enum Action {
     Resize = "resize",
     Link = "link",
+    Unlink = "unlink",
 }
 
-export default async function task(args: string[], onTaskResize: Function, onLink: Function): Promise<string[]>
+export default async function task(args: string[], onTaskResize: Function, onLink: Function, onUnlink: Function): Promise<string[]>
 {
     const lines = [];
     try {
@@ -19,9 +20,16 @@ export default async function task(args: string[], onTaskResize: Function, onLin
                 await onTaskResize({taskId: taskId, begin: format(beginDate), end: format(endDate)});
                 break;
             case Action.Link:
-                const fromTaskId = getNamedArg(args, 'from');
-                const toTaskId = getNamedArg(args, 'to');
-                await onLink(fromTaskId, toTaskId);
+                await onLink(
+                    getNamedArg(args, 'from'),
+                    getNamedArg(args, 'to')
+                );
+                break;
+            case Action.Unlink:
+                await onUnlink(
+                    getNamedArg(args, 'from'),
+                    getNamedArg(args, 'to')
+                );
                 break;
         }
     } catch (err) {

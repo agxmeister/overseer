@@ -17,6 +17,7 @@ export type Setters = {
     setSchedule: Function,
     onTaskResize: Function,
     onLink: Function,
+    onUnlink: Function,
 }
 
 export default async function run(command: string, context: Context, setters: Setters): Promise<string[]>
@@ -31,10 +32,10 @@ export default async function run(command: string, context: Context, setters: Se
             lines.unshift(...dates(args, setters.setDates));
             break;
         case 'schedule':
-            lines.unshift(...await schedule(args, context.issues, context.schedule, setters.setMode, setters.setSchedule, setters.onTaskResize, setters.onLink));
+            lines.unshift(...await schedule(args, context.issues, context.schedule, setters.setMode, setters.setSchedule, setters.onTaskResize, setters.onLink, setters.onUnlink));
             break;
         case 'task':
-            lines.unshift(...await task(args, setters.onTaskResize, setters.onLink));
+            lines.unshift(...await task(args, setters.onTaskResize, setters.onLink, setters.onUnlink));
             break;
         default:
             lines.unshift(`Command "${args[0]}" is not supported.`);

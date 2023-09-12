@@ -17,8 +17,8 @@ import {LinkDescription} from "@/types/LinkDescription";
 import {Mode, Schedule} from "@/types/Schedule";
 import {clean} from "@/utils/misc";
 import {setDates as setTaskDates} from "@/api/task";
-import {addLink} from "@/api/links";
-import {Type as LinkType} from "@/types/Link";
+import {addLink, removeLink} from "@/api/links";
+import {Type as LinkType, Link as LinkObject} from "@/types/Link";
 
 export default function Page()
 {
@@ -86,6 +86,20 @@ export default function Page()
 
     const onLink = async (outwardTaskId: string, inwardTaskId: string) => {
         await mutate(() => addLink(outwardTaskId, inwardTaskId, LinkType.Follows),{
+            populateCache: false,
+        });
+    }
+
+    const onUnlink = async (outwardTaskId: string, inwardTaskId: string) => {
+        const task = data.find((issue: Issue) => issue.key === outwardTaskId);
+        if (!task) {
+            throw `Task "${outwardTaskId}" not found.`;
+        }
+        const link = task.links.inward.find((link: LinkObject) => link.key === inwardTaskId);
+        if (!link) {
+            throw `Task "${outwardTaskId}" is not linked with task "${inwardTaskId}".`;
+        }
+        await mutate(() => removeLink(link.id),{
             populateCache: false,
         });
     }
@@ -191,6 +205,7 @@ export default function Page()
                         setSchedule: setSchedule,
                         onTaskResize: onTaskResize,
                         onLink: onLink,
+                        onUnlink: onUnlink,
                     }}
                 />
             </div>

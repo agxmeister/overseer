@@ -46,7 +46,7 @@ class Jira
         ]);
     }
 
-    public function addLink($outwardJiraId, $inwardJiraId, $type)
+    public function addLink($outwardJiraId, $inwardJiraId, $type): void
     {
         $this->getClient()->post("issueLink", [
             'json' => [
@@ -61,6 +61,11 @@ class Jira
                 ],
             ],
         ]);
+    }
+
+    public function removeLink($linkId): void
+    {
+        $this->getClient()->delete("issueLink/$linkId");
     }
 
     private function formatIssue($issue): array
