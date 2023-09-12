@@ -84,8 +84,8 @@ export default function Page()
         });
     }
 
-    const onLink = (outwardTaskId: string, inwardTaskId: string) => {
-        mutate(() => addLink(outwardTaskId, inwardTaskId, LinkType.Follows),{
+    const onLink = async (outwardTaskId: string, inwardTaskId: string) => {
+        await mutate(() => addLink(outwardTaskId, inwardTaskId, LinkType.Follows),{
             populateCache: false,
         });
     }
@@ -190,6 +190,7 @@ export default function Page()
                         setMode: setMode,
                         setSchedule: setSchedule,
                         onTaskResize: onTaskResize,
+                        onLink: onLink,
                     }}
                 />
             </div>

@@ -6,7 +6,7 @@ enum Action {
     Link = "link",
 }
 
-export default async function task(args: string[], onTaskResize: Function): Promise<string[]>
+export default async function task(args: string[], onTaskResize: Function, onLink: Function): Promise<string[]>
 {
     const lines = [];
     try {
@@ -17,6 +17,11 @@ export default async function task(args: string[], onTaskResize: Function): Prom
                 const beginDate = getDateArg(getNamedArg(args, 'begin'));
                 const endDate = getDateArg(getNamedArg(args, 'end'));
                 await onTaskResize({taskId: taskId, begin: format(beginDate), end: format(endDate)});
+                break;
+            case Action.Link:
+                const fromTaskId = getNamedArg(args, 'from');
+                const toTaskId = getNamedArg(args, 'to');
+                await onLink(fromTaskId, toTaskId);
                 break;
         }
     } catch (err) {
