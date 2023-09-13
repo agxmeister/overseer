@@ -11,13 +11,13 @@ export type Context = {
 }
 
 export type Setters = {
-    setScale: Function,
-    setDates: Function,
-    setMode: Function,
-    setSchedule: Function,
-    onTaskResize: Function,
-    onLink: Function,
-    onUnlink: Function,
+    setScale: (scale: number) => void,
+    setDates: (dates: string[]) => void,
+    setMode: (mode: string) => void,
+    setSchedule: (schedule: Schedule[]) => void,
+    onTaskResize: (mutation: {taskId: string, begin?: string, end?: string}) => Promise<void>,
+    onLink: (from: string, to: string) => Promise<void>,
+    onUnlink: (linkId: number) => Promise<void>,
 }
 
 export default async function run(command: string, context: Context, setters: Setters): Promise<string[]>
@@ -32,10 +32,10 @@ export default async function run(command: string, context: Context, setters: Se
             lines.unshift(...dates(args, setters.setDates));
             break;
         case 'schedule':
-            lines.unshift(...await schedule(args, context.issues, context.schedule, setters.setMode, setters.setSchedule, setters.onTaskResize, setters.onLink, setters.onUnlink));
+            lines.unshift(...await schedule(args, context, setters));
             break;
         case 'task':
-            lines.unshift(...await task(args, context.issues, setters.onTaskResize, setters.onLink, setters.onUnlink));
+            lines.unshift(...await task(args, context, setters));
             break;
         default:
             lines.unshift(`Command "${args[0]}" is not supported.`);

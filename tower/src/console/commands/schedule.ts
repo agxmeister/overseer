@@ -1,9 +1,9 @@
 import {format} from "@/utils/date";
 import {ApiUrl} from "@/constants/api";
-import {Issue} from "@/types/Issue";
 import task from "@/console/commands/task";
-import {Mode, Schedule} from "@/types/Schedule";
+import {Mode} from "@/types/Schedule";
 import {getActionArg} from "@/console/utils";
+import {Context, Setters} from "@/console/run";
 
 enum Action {
     Create = "create",
@@ -12,7 +12,7 @@ enum Action {
     Mode = "mode",
 }
 
-export default async function schedule(args: string[], issues: Issue[], schedule: Schedule[], setMode: Function, setSchedule: Function, onTaskResize: Function, onLink: Function, onUnlink: Function): Promise<string[]>
+export default async function schedule(args: string[], context: Context, setters: Setters): Promise<string[]>
 {
     const lines = [];
     try {
@@ -23,28 +23,34 @@ export default async function schedule(args: string[], issues: Issue[], schedule
                 await fetch(ApiUrl.SCHEDULE.replace('{date}', format(date)))
                     .then(res => res.json())
                     .then(data => {
-                        setSchedule(data);
-                        setMode(Mode.Edit);
+                        setters.setSchedule(data);
+                        setters.setMode(Mode.Edit);
                     });
                 break;
             case Action.Apply:
                 const promises = [];
-                for (const issue of issues) {
-                    const promise = task(['task', 'resize', issue.key, `begin=${issue.estimatedBeginDate}`, `end=${issue.estimatedEndDate}`], issues, onTaskResize, onLink, onUnlink);
+                for (const issue of context.issues) {
+                    const promise = task([
+                        'task',
+                        'resize',
+                        issue.key,
+                        `begin=${issue.estimatedBeginDate}`,
+                        `end=${issue.estimatedEndDate}`
+                    ], context, setters);
                     promise.then(output => lines.unshift(...output))
                     promises.push(promise);
                 }
                 await Promise.all(promises);
-                setSchedule([]);
-                setMode(Mode.View);
+                setters.setSchedule([]);
+                setters.setMode(Mode.View);
                 break;
             case Action.Rollback:
-                setSchedule([]);
-                setMode(Mode.View);
+                setters.setSchedule([]);
+                setters.setMode(Mode.View);
                 break;
             case Action.Mode:
                 const mode = getModeArg(args);
-                setMode(mode);
+                setters.setMode(mode);
                 break;
         }
     } catch (err) {

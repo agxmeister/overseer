@@ -2,6 +2,7 @@ import {getActionArg, getDateArg, getNamedArg} from "@/console/utils";
 import {format} from "@/utils/date";
 import {Issue} from "@/types/Issue";
 import {Link as LinkObject} from "@/types/Link";
+import {Context, Setters} from "@/console/run";
 
 enum Action {
     Resize = "resize",
@@ -9,7 +10,7 @@ enum Action {
     Unlink = "unlink",
 }
 
-export default async function task(args: string[], issues: Issue[], onTaskResize: Function, onLink: Function, onUnlink: Function): Promise<string[]>
+export default async function task(args: string[], context: Context, setters: Setters): Promise<string[]>
 {
     const lines = [];
     try {
@@ -19,19 +20,19 @@ export default async function task(args: string[], issues: Issue[], onTaskResize
                 const taskId = getTaskIdArg(args);
                 const beginDate = getDateArg(getNamedArg(args, 'begin'));
                 const endDate = getDateArg(getNamedArg(args, 'end'));
-                await onTaskResize({taskId: taskId, begin: format(beginDate), end: format(endDate)});
+                await setters.onTaskResize({taskId: taskId, begin: format(beginDate), end: format(endDate)});
                 break;
             case Action.Link:
-                await onLink(
+                await setters.onLink(
                     getNamedArg(args, 'from'),
-                    getNamedArg(args, 'to')
+                    getNamedArg(args, 'to'),
                 );
                 break;
             case Action.Unlink:
-                await onUnlink(getLinkId(
+                await setters.onUnlink(getLinkId(
                     getNamedArg(args, 'from'),
                     getNamedArg(args, 'to'),
-                    issues,
+                    context.issues,
                 ));
                 break;
         }
