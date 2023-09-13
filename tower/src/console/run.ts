@@ -35,7 +35,7 @@ export default async function run(command: string, context: Context, setters: Se
             lines.unshift(...await schedule(args, context.issues, context.schedule, setters.setMode, setters.setSchedule, setters.onTaskResize, setters.onLink, setters.onUnlink));
             break;
         case 'task':
-            lines.unshift(...await task(args, setters.onTaskResize, setters.onLink, setters.onUnlink));
+            lines.unshift(...await task(args, context.issues, setters.onTaskResize, setters.onLink, setters.onUnlink));
             break;
         default:
             lines.unshift(`Command "${args[0]}" is not supported.`);

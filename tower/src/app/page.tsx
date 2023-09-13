@@ -90,16 +90,8 @@ export default function Page()
         });
     }
 
-    const onUnlink = async (outwardTaskId: string, inwardTaskId: string) => {
-        const task = data.find((issue: Issue) => issue.key === outwardTaskId);
-        if (!task) {
-            throw `Task "${outwardTaskId}" not found.`;
-        }
-        const link = task.links.inward.find((link: LinkObject) => link.key === inwardTaskId);
-        if (!link) {
-            throw `Task "${outwardTaskId}" is not linked with task "${inwardTaskId}".`;
-        }
-        await mutate(() => removeLink(link.id),{
+    const onUnlink = async (linkId: number) => {
+        await mutate(() => removeLink(linkId),{
             populateCache: false,
         });
     }

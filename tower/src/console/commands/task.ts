@@ -1,5 +1,7 @@
 import {getActionArg, getDateArg, getNamedArg} from "@/console/utils";
 import {format} from "@/utils/date";
+import {Issue} from "@/types/Issue";
+import {Link as LinkObject} from "@/types/Link";
 
 enum Action {
     Resize = "resize",
@@ -7,7 +9,7 @@ enum Action {
     Unlink = "unlink",
 }
 
-export default async function task(args: string[], onTaskResize: Function, onLink: Function, onUnlink: Function): Promise<string[]>
+export default async function task(args: string[], issues: Issue[], onTaskResize: Function, onLink: Function, onUnlink: Function): Promise<string[]>
 {
     const lines = [];
     try {
@@ -26,10 +28,11 @@ export default async function task(args: string[], onTaskResize: Function, onLin
                 );
                 break;
             case Action.Unlink:
-                await onUnlink(
+                await onUnlink(getLinkId(
                     getNamedArg(args, 'from'),
-                    getNamedArg(args, 'to')
-                );
+                    getNamedArg(args, 'to'),
+                    issues,
+                ));
                 break;
         }
     } catch (err) {
@@ -44,4 +47,17 @@ function getTaskIdArg(args: string[]): string
         throw `Task ID is not specified.`;
     }
     return args[2];
+}
+
+function getLinkId(from: string, to: string, issues: Issue[]): number
+{
+    const issue = issues.find((issue: Issue) => issue.key === from);
+    if (!issue) {
+        throw `Task "${from}" not found.`;
+    }
+    const link = issue.links.inward.find((link: LinkObject) => link.key === to);
+    if (!link) {
+        throw `Task "${from}" is not linked with task "${to}".`;
+    }
+    return link.id;
 }
