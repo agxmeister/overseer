@@ -5,5 +5,6 @@ export type Link = {
 }
 
 export enum Type {
+    Depends = "Depends",
     Follows = "Follows",
 }

@@ -85,7 +85,7 @@ export default function Page()
     }
 
     const onLink = async (outwardTaskId: string, inwardTaskId: string) => {
-        await mutate(() => addLink(outwardTaskId, inwardTaskId, LinkType.Follows),{
+        await mutate(() => addLink(outwardTaskId, inwardTaskId, LinkType.Depends),{
             populateCache: false,
         });
     }
