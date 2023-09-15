@@ -1,13 +1,14 @@
 import {getDates} from "@/utils/date";
 import {getDateArg} from "@/console/utils";
+import {Setters} from "@/console/run";
 
-export default function dates(args: string[], setDates: Function): string[]
+export default async function dates(args: string[], setters: Setters): Promise<string[]>
 {
     const lines = [];
     try {
         const beginDate = getBeginDateArg(args);
         const endDate = getEndDateArg(args);
-        setDates(getDates(beginDate, endDate));
+        setters.setDates(getDates(beginDate, endDate));
     } catch (err) {
         lines.unshift(`${err}`);
     }

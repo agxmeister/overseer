@@ -1,9 +1,11 @@
-export default function scale(args: string[], setScale: Function): string[]
+import {Setters} from "@/console/run";
+
+export default async function scale(args: string[], setters: Setters): Promise<string[]>
 {
     const lines = [];
     try {
         const scale = getScaleArg(args);
-        setScale(scale);
+        setters.setScale(scale);
     } catch (err) {
         lines.unshift(`${err}`);
     }

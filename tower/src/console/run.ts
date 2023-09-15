@@ -26,10 +26,10 @@ export default async function run(command: string, context: Context, setters: Se
     const args = command.split(' ');
     switch (args[0]) {
         case 'scale':
-            lines.unshift(...scale(args, setters.setScale));
+            lines.unshift(...await scale(args, setters));
             break;
         case 'dates':
-            lines.unshift(...dates(args, setters.setDates));
+            lines.unshift(...await dates(args, setters));
             break;
         case 'schedule':
             lines.unshift(...await schedule(args, context, setters));
