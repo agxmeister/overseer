@@ -37,7 +37,28 @@ export default async function schedule(args: string[], context: Context, setters
                         `begin=${issue.estimatedBeginDate}`,
                         `end=${issue.estimatedEndDate}`
                     ], context, setters);
-                    promise.then(output => lines.unshift(...output))
+                    promise.then(output => lines.unshift(...output));
+
+                    for (const link of issue.links.outward) {
+                        const promise = task([
+                            'task',
+                            'link',
+                            `from=${link.key}`,
+                            `to=${issue.key}`
+                        ], context, setters);
+                        promise.then(output => lines.unshift(...output));
+                    }
+
+                    for (const link of issue.links.inward) {
+                        const promise = task([
+                            'task',
+                            'link',
+                            `from=${issue.key}`,
+                            `to=${link.key}`
+                        ], context, setters);
+                        promise.then(output => lines.unshift(...output));
+                    }
+
                     promises.push(promise);
                 }
                 await Promise.all(promises);
