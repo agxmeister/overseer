@@ -56,6 +56,7 @@ class Builder
             $inwardLinks = array_values(array_map(
                 fn(Node $follower) => [
                     'key' => $follower->getName(),
+                    'type' => 'Follows',
                 ],
                 array_filter(
                     $node->getFollowers([Link::TYPE_SCHEDULE]),
@@ -65,6 +66,7 @@ class Builder
             $outwardLinks = array_values(array_map(
                 fn(Node $preceder) => [
                     'key' => $preceder->getName(),
+                    'type' => 'Follows',
                 ],
                 array_filter(
                     $node->getPreceders(false, [Link::TYPE_SCHEDULE]),

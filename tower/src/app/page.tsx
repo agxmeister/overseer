@@ -116,6 +116,7 @@ export default function Page()
                 acc.set(key, {
                     start: type === 'inward' ? issue.key : link.key,
                     finish: type === 'inward' ? link.key : issue.key,
+                    type: link.type,
                 });
                 return acc;
             }, acc);
@@ -128,6 +129,7 @@ export default function Page()
                 key={key}
                 startMarkerId={link.start}
                 finishMarkerId={link.finish}
+                type={link.type}
             />
         ));
 

@@ -5,6 +5,7 @@ import {MapContext} from "@/components/Map/Map";
 type LinkProps = {
     startMarkerId: string,
     finishMarkerId: string,
+    type: string,
 }
 
 type Coords = {
@@ -14,7 +15,7 @@ type Coords = {
     toY: number,
 }
 
-export default function Link({ startMarkerId, finishMarkerId }: LinkProps)
+export default function Link({ startMarkerId, finishMarkerId, type }: LinkProps)
 {
     const {scale, tasks} = useContext(MapContext);
 
