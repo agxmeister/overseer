@@ -16,14 +16,18 @@ class Builder
 
         $milestone = new Milestone('finish');
         foreach ($issues as $issue) {
-            foreach ($issue['links']['inward'] as $link) {
+            $inwards = array_filter($issue['links']['inward'], fn($link) => $link['type'] === 'Depends');
+            foreach ($inwards as $link) {
+                if ($link['type'] !== 'Depends') {
+                    continue;
+                }
                 $follower = $nodes[$link['key']] ?? null;
                 $preceder = $nodes[$issue['key']] ?? null;
                 if (!is_null($preceder) && !is_null($follower)) {
                     $follower->follow($preceder);
                 }
             }
-            if (empty($issue['links']['inward'])) {
+            if (empty($inwards)) {
                 $node = $nodes[$issue['key']] ?? null;
                 if (!is_null($nodes)) {
                     $milestone->follow($node, Link::TYPE_SCHEDULE);
