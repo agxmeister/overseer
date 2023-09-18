@@ -4,6 +4,7 @@ import task from "@/console/commands/task";
 import {Mode} from "@/types/Schedule";
 import {getActionArg} from "@/console/utils";
 import {Context, Setters} from "@/console/run";
+import {Link} from "@/types/Link";
 
 enum Action {
     Create = "create",
@@ -29,6 +30,25 @@ export default async function schedule(args: string[], context: Context, setters
                 break;
             case Action.Apply:
                 const promises = [];
+
+                const links = context.issues.reduce(
+                    (acc: Link[], issue) => acc.concat(issue.links.outward, issue.links.inward),
+                    []
+                )
+                    .filter(link => link.id)
+                    .filter(link => link.type === 'Follows')
+                    .filter((link, index, self) =>
+                        self.findIndex(current => current.id === link.id) === index);
+
+                for (const link of links) {
+                    const promise = task([
+                        'task',
+                        'unlink',
+                        `id=${link.id}`
+                    ], context, setters);
+                    promise.then(output => lines.unshift(...output));
+                }
+
                 for (const issue of context.issues) {
                     const promise = task([
                         'task',
