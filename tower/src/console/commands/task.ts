@@ -1,7 +1,7 @@
 import {getActionArg, getDateArg, getNamedArg} from "@/console/utils";
 import {format} from "@/utils/date";
 import {Issue} from "@/types/Issue";
-import {Link as LinkObject} from "@/types/Link";
+import {Link as LinkObject, Type as LinkType} from "@/types/Link";
 import {Context, Setters} from "@/console/run";
 
 enum Action {
@@ -26,14 +26,17 @@ export default async function task(args: string[], context: Context, setters: Se
                 await setters.onLink(
                     getNamedArg(args, 'from'),
                     getNamedArg(args, 'to'),
+                    LinkType.Follows,
                 );
                 break;
             case Action.Unlink:
-                await setters.onUnlink(getLinkId(
-                    getNamedArg(args, 'from'),
-                    getNamedArg(args, 'to'),
-                    context.issues,
-                ));
+                await setters.onUnlink(hasLinkIdArg(args) ?
+                    getLinkIdArg(args) :
+                    getLinkId(
+                        getNamedArg(args, 'from'),
+                        getNamedArg(args, 'to'),
+                        context.issues,
+                    ));
                 break;
         }
     } catch (err) {
@@ -48,6 +51,21 @@ function getTaskIdArg(args: string[]): string
         throw `Task ID is not specified.`;
     }
     return args[2];
+}
+
+function hasLinkIdArg(args: string[]): boolean
+{
+    const declaration = args.find(arg => arg.startsWith(`id=`));
+    return !!declaration;
+}
+
+function getLinkIdArg(args: string[]): number
+{
+    const linkId = parseFloat(getNamedArg(args, 'id'));
+    if (isNaN(linkId)) {
+        throw `Link ID must be a number, but "${linkId}" given.`
+    }
+    return linkId;
 }
 
 function getLinkId(from: string, to: string, issues: Issue[]): number

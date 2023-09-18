@@ -18,7 +18,7 @@ import {Mode, Schedule} from "@/types/Schedule";
 import {clean} from "@/utils/misc";
 import {setDates as setTaskDates} from "@/api/task";
 import {addLink, removeLink} from "@/api/links";
-import {Type as LinkType, Link as LinkObject} from "@/types/Link";
+import {Type as LinkType} from "@/types/Link";
 
 export default function Page()
 {
@@ -84,8 +84,8 @@ export default function Page()
         });
     }
 
-    const onLink = async (outwardTaskId: string, inwardTaskId: string) => {
-        await mutate(() => addLink(outwardTaskId, inwardTaskId, LinkType.Depends),{
+    const onLink = async (outwardTaskId: string, inwardTaskId: string, type: string = LinkType.Depends) => {
+        await mutate(() => addLink(outwardTaskId, inwardTaskId, type),{
             populateCache: false,
         });
     }

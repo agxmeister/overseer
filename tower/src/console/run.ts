@@ -16,7 +16,7 @@ export type Setters = {
     setMode: (mode: string) => void,
     setSchedule: (schedule: Schedule[]) => void,
     onTaskResize: (mutation: {taskId: string, begin?: string, end?: string}) => Promise<void>,
-    onLink: (from: string, to: string) => Promise<void>,
+    onLink: (from: string, to: string, type: string) => Promise<void>,
     onUnlink: (linkId: number) => Promise<void>,
 }
 
