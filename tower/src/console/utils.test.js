@@ -1,4 +1,4 @@
-import {getActionArg, getDateArg, getNamedArg} from "./utils";
+import {getActionArg, getDateArg, getNamedArg, getNamedNumberArg, hasNamedArg} from "./utils";
 import {describe} from "node:test";
 
 describe('getActionArg', () => {
@@ -39,6 +39,37 @@ describe('getNamedArg', () => {
     ])('missed named parameter in the list of arguments', ({args, name}) => {
         expect(() => getNamedArg(args, name))
             .toThrow(`Parameter "${name}" is not specified.`);
+    });
+})
+
+describe('hasNamedArg', () => {
+    it.each([
+        {args: ['test', 'p1=v1'], name: 'p1', expected: true},
+        {args: ['test', 'a', 'p1=v1'], name: 'p1', expected: true},
+        {args: ['test', 'a', 'p1=v1', 'b'], name: 'p1', expected: true},
+        {args: ['test', 'a', 'p1=', 'b'], name: 'p1', expected: true},
+        {args: ['test', 'a', 'p1', 'b'], name: 'p1', expected: false},
+        {args: ['test', 'a', 'b'], name: 'p1', expected: false},
+    ])('check existence of the named parameter in the list of arguments', ({args, name, expected}) => {
+        expect(hasNamedArg(args, name)).toEqual(expected);
+    });
+})
+
+describe('getNamedNumberArg', () => {
+    it.each([
+        {args: ['test', 'p1=0'], name: 'p1', expected: 0},
+        {args: ['test', 'p1=1'], name: 'p1', expected: 1},
+        {args: ['test', 'p1=1.1'], name: 'p1', expected: 1.1},
+    ])('get the named number parameter from the list of arguments', ({args, name, expected}) => {
+        expect(getNamedNumberArg(args, name)).toEqual(expected);
+    });
+
+    it.each([
+        {args: ['test', 'a', 'p1='], name: 'p1', actual: ''},
+        {args: ['test', 'a', 'p1=a'], name: 'p1', actual: 'a'},
+    ])('not a number named parameter in the list of arguments', ({args, name, actual}) => {
+        expect(() => getNamedNumberArg(args, name))
+            .toThrow(`Parameter "${name}" must be a number, but "${actual}" given.`);
     });
 })
 

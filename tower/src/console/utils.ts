@@ -18,6 +18,21 @@ export function getNamedArg(args: string[], name: string): string
     return declaration.slice(name.length + 1);
 }
 
+export function getNamedNumberArg(args: string[], name: string): number
+{
+    const arg = getNamedArg(args, name);
+    const numberArg = parseFloat(arg);
+    if (isNaN(numberArg)) {
+        throw `Parameter "${name}" must be a number, but "${arg}" given.`
+    }
+    return numberArg;
+}
+
+export function hasNamedArg(args: string[], name: string): boolean
+{
+    return !!args.find(arg => arg.startsWith(`${name}=`));
+}
+
 export function getDateArg(arg: string): Date
 {
     const date = new Date(arg);

@@ -1,4 +1,4 @@
-import {getActionArg, getDateArg, getNamedArg} from "@/console/utils";
+import {getActionArg, getDateArg, getNamedArg, getNamedNumberArg, hasNamedArg} from "@/console/utils";
 import {format} from "@/utils/date";
 import {Issue} from "@/types/Issue";
 import {Link as LinkObject, Type as LinkType} from "@/types/Link";
@@ -49,35 +49,16 @@ function getTaskIdArg(args: string[]): string
 
 function getLinkId(args: string[], context: Context): number
 {
-    if (!hasLinkIdArg(args) && !hasLinkFromToArgs(args)) {
+    if (!(hasNamedArg(args, 'id') || (hasNamedArg(args, 'from') && hasNamedArg(args, 'to')))) {
         throw 'Either parameter "id" or parameters "from" and "to" must be specified.';
     }
-    return hasLinkIdArg(args) ?
-        getLinkIdArg(args) :
+    return hasNamedArg(args, 'id') ?
+        getNamedNumberArg(args, 'id') :
         getLinkIdByFromTo(
             getNamedArg(args, 'from'),
             getNamedArg(args, 'to'),
             context.issues,
         );
-}
-
-function hasLinkIdArg(args: string[]): boolean
-{
-    return !!args.find(arg => arg.startsWith(`id=`));
-}
-
-function hasLinkFromToArgs(args: string[]): boolean
-{
-    return !!args.find(arg => arg.startsWith(`from=`)) && !!args.find(arg => arg.startsWith(`to=`));
-}
-
-function getLinkIdArg(args: string[]): number
-{
-    const linkId = parseFloat(getNamedArg(args, 'id'));
-    if (isNaN(linkId)) {
-        throw `Link id must be a number, but "${linkId}" given.`
-    }
-    return linkId;
 }
 
 function getLinkIdByFromTo(from: string, to: string, issues: Issue[]): number
