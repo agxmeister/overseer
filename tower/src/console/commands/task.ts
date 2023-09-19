@@ -30,13 +30,7 @@ export default async function task(args: string[], context: Context, setters: Se
                 );
                 break;
             case Action.Unlink:
-                await setters.onUnlink(hasLinkIdArg(args) ?
-                    getLinkIdArg(args) :
-                    getLinkId(
-                        getNamedArg(args, 'from'),
-                        getNamedArg(args, 'to'),
-                        context.issues,
-                    ));
+                await setters.onUnlink(getLinkId(args, context));
                 break;
         }
     } catch (err) {
@@ -48,27 +42,45 @@ export default async function task(args: string[], context: Context, setters: Se
 function getTaskIdArg(args: string[]): string
 {
     if (!args[2]) {
-        throw `Task ID is not specified.`;
+        throw `Task id is not specified.`;
     }
     return args[2];
 }
 
+function getLinkId(args: string[], context: Context): number
+{
+    if (!hasLinkIdArg(args) && !hasLinkFromToArgs(args)) {
+        throw 'Either parameter "id" or parameters "from" and "to" must be specified.';
+    }
+    return hasLinkIdArg(args) ?
+        getLinkIdArg(args) :
+        getLinkIdByFromTo(
+            getNamedArg(args, 'from'),
+            getNamedArg(args, 'to'),
+            context.issues,
+        );
+}
+
 function hasLinkIdArg(args: string[]): boolean
 {
-    const declaration = args.find(arg => arg.startsWith(`id=`));
-    return !!declaration;
+    return !!args.find(arg => arg.startsWith(`id=`));
+}
+
+function hasLinkFromToArgs(args: string[]): boolean
+{
+    return !!args.find(arg => arg.startsWith(`from=`)) && !!args.find(arg => arg.startsWith(`to=`));
 }
 
 function getLinkIdArg(args: string[]): number
 {
     const linkId = parseFloat(getNamedArg(args, 'id'));
     if (isNaN(linkId)) {
-        throw `Link ID must be a number, but "${linkId}" given.`
+        throw `Link id must be a number, but "${linkId}" given.`
     }
     return linkId;
 }
 
-function getLinkId(from: string, to: string, issues: Issue[]): number
+function getLinkIdByFromTo(from: string, to: string, issues: Issue[]): number
 {
     const issue = issues.find((issue: Issue) => issue.key === from);
     if (!issue) {
