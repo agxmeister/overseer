@@ -31,23 +31,49 @@ export default async function schedule(args: string[], context: Context, setters
             case Action.Apply:
                 const promises = [];
 
-                const links = context.issues.reduce(
+                context.issues.reduce(
                     (acc: Link[], issue) => acc.concat(issue.links.outward, issue.links.inward),
                     []
                 )
                     .filter(link => link.id)
                     .filter(link => link.type === 'Follows')
                     .filter((link, index, self) =>
-                        self.findIndex(current => current.id === link.id) === index);
+                        self.findIndex(current => current.id === link.id) === index)
+                    .forEach(link => {
+                        const promise = task([
+                            'task',
+                            'unlink',
+                            `id=${link.id}`
+                        ], context, setters);
+                        promises.push(promise);
+                        promise.then(output => lines.unshift(...output));
+                    });
 
-                for (const link of links) {
-                    const promise = task([
-                        'task',
-                        'unlink',
-                        `id=${link.id}`
-                    ], context, setters);
-                    promise.then(output => lines.unshift(...output));
-                }
+                context.issues.reduce(
+                    (acc: {from: string, to: string}[], issue) => acc.concat(
+                        issue.links.outward
+                            .filter(link => !link.id)
+                            .filter(link => link.type === 'Follows')
+                            .map(link => ({from: link.key, to: issue.key})),
+                        issue.links.inward
+                            .filter(link => !link.id)
+                            .filter(link => link.type === 'Follows')
+                            .map(link => ({from: issue.key, to: link.key})),
+                    ),
+                    []
+                )
+                    .filter((data, index, self) =>
+                        self.findIndex(current => current.from === data.from && current.to === data.to) === index)
+                    .forEach(data => {
+                        const promise = task([
+                            'task',
+                            'link',
+                            `from=${data.from}`,
+                            `to=${data.to}`
+                        ], context, setters);
+                        promises.push(promise);
+                        promise.then(output => lines.unshift(...output));
+                    });
 
                 for (const issue of context.issues) {
                     const promise = task([
@@ -57,30 +83,10 @@ export default async function schedule(args: string[], context: Context, setters
                         `begin=${issue.estimatedBeginDate}`,
                         `end=${issue.estimatedEndDate}`
                     ], context, setters);
-                    promise.then(output => lines.unshift(...output));
-
-                    for (const link of issue.links.outward) {
-                        const promise = task([
-                            'task',
-                            'link',
-                            `from=${link.key}`,
-                            `to=${issue.key}`
-                        ], context, setters);
-                        promise.then(output => lines.unshift(...output));
-                    }
-
-                    for (const link of issue.links.inward) {
-                        const promise = task([
-                            'task',
-                            'link',
-                            `from=${issue.key}`,
-                            `to=${link.key}`
-                        ], context, setters);
-                        promise.then(output => lines.unshift(...output));
-                    }
-
                     promises.push(promise);
+                    promise.then(output => lines.unshift(...output));
                 }
+
                 await Promise.all(promises);
                 setters.setSchedule([]);
                 setters.setMode(Mode.View);
