@@ -1,6 +1,7 @@
 import styles from './Link.module.sass'
 import {useContext, useEffect, useRef, useState} from "react";
 import {MapContext} from "@/components/Map/Map";
+import {Type} from "@/types/Link";
 
 type LinkProps = {
     startMarkerId: string,
@@ -91,6 +92,8 @@ export default function Link({ startMarkerId, finishMarkerId, type }: LinkProps)
             y: coords.toY - canvasStartPoint.y,
         }]).reduce((acc, point) => `${acc}${acc ? ' ' : ''}${point.x},${point.y}`, "");
 
+    const color = type === Type.Depends ? "rgb(39, 39, 39)" : "rgb(234, 234, 234)";
+
     return (
         <div className={styles.link} ref={boxRef}>
             <svg
@@ -103,21 +106,24 @@ export default function Link({ startMarkerId, finishMarkerId, type }: LinkProps)
             >
                 <defs>
                     <marker
-                        id='head'
+                        id={`head-${startMarkerId}-${finishMarkerId}`}
                         viewBox="-10 -10 20 20"
                         orient="auto"
                         markerWidth="20"
                         markerHeight="20"
                     >
-                        <polygon points="-7,-3 1,0 -7,3" />
+                        <polygon
+                            fill={color}
+                            points="-7,-3 1,0 -7,3"
+                        />
                     </marker>
                 </defs>
                 <polyline
-                    stroke={"rgb(0, 0, 0)"}
+                    stroke={color}
                     strokeWidth={2}
                     fill={"none"}
                     points={points}
-                    markerEnd={"url(#head)"}
+                    markerEnd={`url(#head-${startMarkerId}-${finishMarkerId})`}
                 />
             </svg>
         </div>
