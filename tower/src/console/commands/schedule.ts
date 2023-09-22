@@ -29,8 +29,7 @@ export default async function schedule(args: string[], context: Context, setters
                     });
                 break;
             case Action.Apply:
-                const promises = [];
-
+                const unlinkPromises: Promise<string[]>[] = [];
                 context.issues.reduce(
                     (acc: Link[], issue) => acc.concat(issue.links.outward, issue.links.inward),
                     []
@@ -45,10 +44,12 @@ export default async function schedule(args: string[], context: Context, setters
                             'unlink',
                             `id=${link.id}`
                         ], context, setters);
-                        promises.push(promise);
+                        unlinkPromises.push(promise);
                         promise.then(output => lines.unshift(...output));
                     });
+                await Promise.all(unlinkPromises);
 
+                const linkAndResizePromises: Promise<string[]>[] = [];
                 context.issues.reduce(
                     (acc: {from: string, to: string}[], issue) => acc.concat(
                         issue.links.outward
@@ -71,10 +72,9 @@ export default async function schedule(args: string[], context: Context, setters
                             `from=${data.from}`,
                             `to=${data.to}`
                         ], context, setters);
-                        promises.push(promise);
+                        linkAndResizePromises.push(promise);
                         promise.then(output => lines.unshift(...output));
                     });
-
                 for (const issue of context.issues) {
                     const promise = task([
                         'task',
@@ -83,11 +83,11 @@ export default async function schedule(args: string[], context: Context, setters
                         `begin=${issue.estimatedBeginDate}`,
                         `end=${issue.estimatedEndDate}`
                     ], context, setters);
-                    promises.push(promise);
+                    linkAndResizePromises.push(promise);
                     promise.then(output => lines.unshift(...output));
                 }
-
-                await Promise.all(promises);
+                await Promise.all(linkAndResizePromises);
+                
                 setters.setSchedule([]);
                 setters.setMode(Mode.View);
                 break;
