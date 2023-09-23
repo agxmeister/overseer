@@ -8,34 +8,9 @@ class Builder
 {
     public function getSchedule(array $issues, string $date, Strategy $strategy): array
     {
-        $nodes = [];
-        foreach ($issues as $issue) {
-            $node = new Node($issue['key'], $issue['estimatedDuration']);
-            $nodes[$node->getName()] = $node;
-        }
-
-        $milestone = new Milestone('finish');
-        foreach ($issues as $issue) {
-            $inwards = array_filter($issue['links']['inward'], fn($link) => $link['type'] === 'Depends');
-            foreach ($inwards as $link) {
-                if ($link['type'] !== 'Depends') {
-                    continue;
-                }
-                $follower = $nodes[$link['key']] ?? null;
-                $preceder = $nodes[$issue['key']] ?? null;
-                if (!is_null($preceder) && !is_null($follower)) {
-                    $follower->follow($preceder);
-                }
-            }
-            if (empty($inwards)) {
-                $node = $nodes[$issue['key']] ?? null;
-                if (!is_null($nodes)) {
-                    $milestone->follow($node, Link::TYPE_SCHEDULE);
-                }
-            }
-        }
-
+        $milestone = Utils::getMilestone($issues);
         $strategy->schedule($milestone);
+        $nodes = $milestone->getPreceders(true);
 
         return array_map(function (array $issue) use ($nodes, $date) {
             $result = [
@@ -45,7 +20,7 @@ class Builder
             ];
 
             /** @var Node $node */
-            $node = $nodes[$issue['key']] ?? null;
+            $node = array_reduce($nodes, fn($acc, Node $node) => $node->getName() === $issue['key'] ? $node : $acc);
             if (is_null($node)) {
                 return $result;
             }

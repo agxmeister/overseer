@@ -35,4 +35,36 @@ class Utils
             )
         );
     }
+
+    static public function getMilestone(array $issues): Milestone
+    {
+        $nodes = [];
+        foreach ($issues as $issue) {
+            $node = new Node($issue['key'], $issue['estimatedDuration']);
+            $nodes[$node->getName()] = $node;
+        }
+
+        $milestone = new Milestone('finish');
+        foreach ($issues as $issue) {
+            $inwards = array_filter($issue['links']['inward'], fn($link) => $link['type'] === 'Depends');
+            foreach ($inwards as $link) {
+                if ($link['type'] !== 'Depends') {
+                    continue;
+                }
+                $follower = $nodes[$link['key']] ?? null;
+                $preceder = $nodes[$issue['key']] ?? null;
+                if (!is_null($preceder) && !is_null($follower)) {
+                    $follower->follow($preceder);
+                }
+            }
+            if (empty($inwards)) {
+                $node = $nodes[$issue['key']] ?? null;
+                if (!is_null($nodes)) {
+                    $milestone->follow($node, Link::TYPE_SCHEDULE);
+                }
+            }
+        }
+
+        return $milestone;
+    }
 }
