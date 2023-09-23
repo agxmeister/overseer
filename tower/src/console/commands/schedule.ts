@@ -8,6 +8,7 @@ import {Link} from "@/types/Link";
 
 enum Action {
     Create = "create",
+    Reset = "reset",
     Apply = "apply",
     Rollback = "rollback",
     Mode = "mode",
@@ -15,7 +16,7 @@ enum Action {
 
 export default async function schedule(args: string[], context: Context, setters: Setters): Promise<string[]>
 {
-    const lines = [];
+    const lines: string[] = [];
     try {
         const action = getActionArg(args, Object.values<string>(Action));
         switch (action) {
@@ -28,28 +29,16 @@ export default async function schedule(args: string[], context: Context, setters
                         setters.setMode(Mode.Edit);
                     });
                 break;
+            case Action.Reset:
+                await unlink(context, setters, lines);
+                setters.setSchedule([]);
+                setters.setMode(Mode.View);
+                break;
             case Action.Apply:
-                const unlinkPromises: Promise<string[]>[] = [];
-                context.issues.reduce(
-                    (acc: Link[], issue) => acc.concat(issue.links.outward, issue.links.inward),
-                    []
-                )
-                    .filter(link => link.id)
-                    .filter(link => link.type === 'Follows')
-                    .filter((link, index, self) =>
-                        self.findIndex(current => current.id === link.id) === index)
-                    .forEach(link => {
-                        const promise = task([
-                            'task',
-                            'unlink',
-                            `id=${link.id}`
-                        ], context, setters);
-                        unlinkPromises.push(promise);
-                        promise.then(output => lines.unshift(...output));
-                    });
-                await Promise.all(unlinkPromises);
+                await unlink(context, setters, lines);
 
-                const linkAndResizePromises: Promise<string[]>[] = [];
+                const promises: Promise<string[]>[] = [];
+
                 context.issues.reduce(
                     (acc: {from: string, to: string}[], issue) => acc.concat(
                         issue.links.outward
@@ -72,9 +61,10 @@ export default async function schedule(args: string[], context: Context, setters
                             `from=${data.from}`,
                             `to=${data.to}`
                         ], context, setters);
-                        linkAndResizePromises.push(promise);
+                        promises.push(promise);
                         promise.then(output => lines.unshift(...output));
                     });
+
                 for (const issue of context.issues) {
                     const promise = task([
                         'task',
@@ -83,10 +73,11 @@ export default async function schedule(args: string[], context: Context, setters
                         `begin=${issue.estimatedBeginDate}`,
                         `end=${issue.estimatedEndDate}`
                     ], context, setters);
-                    linkAndResizePromises.push(promise);
+                    promises.push(promise);
                     promise.then(output => lines.unshift(...output));
                 }
-                await Promise.all(linkAndResizePromises);
+
+                await Promise.all(promises);
                 
                 setters.setSchedule([]);
                 setters.setMode(Mode.View);
@@ -104,6 +95,29 @@ export default async function schedule(args: string[], context: Context, setters
         lines.unshift(`${err}`);
     }
     return lines;
+}
+
+async function unlink(context: Context, setters: Setters, lines: string[])
+{
+    const promises: Promise<string[]>[] = [];
+    context.issues.reduce(
+        (acc: Link[], issue) => acc.concat(issue.links.outward, issue.links.inward),
+        []
+    )
+        .filter(link => link.id)
+        .filter(link => link.type === 'Follows')
+        .filter((link, index, self) =>
+            self.findIndex(current => current.id === link.id) === index)
+        .forEach(link => {
+            const promise = task([
+                'task',
+                'unlink',
+                `id=${link.id}`
+            ], context, setters);
+            promises.push(promise);
+            promise.then(output => lines.unshift(...output));
+        });
+    await Promise.all(promises);
 }
 
 function getModeArg(args: string[]): string
