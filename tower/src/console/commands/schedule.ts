@@ -1,10 +1,9 @@
-import {format} from "@/utils/date";
-import {ApiUrl} from "@/constants/api";
 import task from "@/console/commands/task";
 import {Mode} from "@/types/Schedule";
 import {getActionArg} from "@/console/utils";
 import {Context, Setters} from "@/console/run";
 import {Link} from "@/types/Link";
+import {getSchedule} from "@/api/schedule";
 
 enum Action {
     Create = "create",
@@ -21,9 +20,7 @@ export default async function schedule(args: string[], context: Context, setters
         const action = getActionArg(args, Object.values<string>(Action));
         switch (action) {
             case Action.Create:
-                const date = getDateArg(args);
-                await fetch(ApiUrl.SCHEDULE.replace('{date}', format(date)))
-                    .then(res => res.json())
+                await getSchedule(getDateArg(args))
                     .then(data => {
                         setters.setSchedule(data);
                         setters.setMode(Mode.Edit);

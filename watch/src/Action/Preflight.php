@@ -11,6 +11,7 @@ class Preflight
     {
         return $response
             ->withHeader('Access-Control-Allow-Origin', '*')
-            ->withHeader('Access-Control-Allow-Headers', 'Content-Type');
+            ->withHeader('Access-Control-Allow-Headers', 'Content-Type')
+            ->withHeader('Access-Control-Allow-Methods', 'POST, PUT, DELETE');
     }
 }
