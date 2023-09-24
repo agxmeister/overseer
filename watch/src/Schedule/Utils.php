@@ -48,9 +48,6 @@ class Utils
         foreach ($issues as $issue) {
             $inwards = array_filter($issue['links']['inward'], fn($link) => $link['type'] === 'Depends');
             foreach ($inwards as $link) {
-                if ($link['type'] !== 'Depends') {
-                    continue;
-                }
                 $follower = $nodes[$link['key']] ?? null;
                 $preceder = $nodes[$issue['key']] ?? null;
                 if (!is_null($preceder) && !is_null($follower)) {
