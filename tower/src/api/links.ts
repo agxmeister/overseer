@@ -18,7 +18,7 @@ export function addLink(outwardTaskId: string, inwardTaskId: string, type: strin
 export function removeLink(linkId: number)
 {
     return fetch(ApiUrl.LINK.replace('{linkId}', `${linkId}`), {
-        method: 'POST',
+        method: 'DELETE',
         headers: {
             'Content-Type': 'application/json'
         },

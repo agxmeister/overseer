@@ -15,7 +15,7 @@ return function (App $app) {
     $app->options('/api/v1/links', Preflight::class);
     $app->post('/api/v1/links', Links::class);
     $app->options('/api/v1/link/{linkId}', Preflight::class);
-    $app->post('/api/v1/link/{linkId}', Link::class);
+    $app->delete('/api/v1/link/{linkId}', Link::class);
     $app->options('/api/v1/schedule', Preflight::class);
     $app->put('/api/v1/schedule', Schedule::class);
 };
