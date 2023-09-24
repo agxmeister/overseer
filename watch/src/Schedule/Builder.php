@@ -6,14 +6,24 @@ use Watch\Schedule\Strategy\Strategy;
 
 class Builder
 {
-    public function __construct(private Formatter $formatter)
+    private array|null $issues = null;
+    private Milestone|null $milestone = null;
+
+    public function run(array $issues): self
     {
+        $this->issues = $issues;
+        $this->milestone = Utils::getMilestone($issues);
+        return $this;
     }
 
-    public function getSchedule(array $issues, string $date, Strategy $strategy): array
+    public function schedule(Strategy $strategy): self
     {
-        $milestone = Utils::getMilestone($issues);
-        $strategy->schedule($milestone);
-        return $this->formatter->getSchedule($issues, $milestone, $date);
+        $strategy->schedule($this->milestone);
+        return $this;
+    }
+
+    public function release(Formatter $formatter, $date): array
+    {
+        return $formatter->getSchedule($this->issues, $this->milestone, $date);
     }
 }

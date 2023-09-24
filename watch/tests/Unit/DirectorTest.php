@@ -4,19 +4,21 @@ namespace Tests\Unit;
 use Exception;
 use Codeception\Test\Unit;
 use Watch\Schedule\Builder;
+use Watch\Schedule\Director;
+use Watch\Schedule\Formatter;
 use Watch\Schedule\Link;
 use Watch\Schedule\Node;
 use Watch\Schedule\Strategy\Strategy;
 
-class BuilderTest extends Unit
+class DirectorTest extends Unit
 {
     /**
      * @throws Exception
      */
     public function testGetScheduleUnlimited()
     {
-        $builder = new Builder();
-        $schedule = $builder->getSchedule(
+        $director = new Director(new Builder());
+        $schedule = $director->create(
             [
                 [
                     'key' => 'K-01',
@@ -33,7 +35,10 @@ class BuilderTest extends Unit
                     'estimatedEndDate' => null,
                     'links' => [
                         'inward' => [
-                            ['key' => 'K-01']
+                            [
+                                'key' => 'K-01',
+                                'type' => 'Depends',
+                            ]
                         ],
                     ],
                 ], [
@@ -48,6 +53,7 @@ class BuilderTest extends Unit
             ],
             '2023-09-09',
             $this->makeEmpty(Strategy::class),
+            new Formatter(),
         );
         $this->assertEquals(
             [
@@ -74,8 +80,8 @@ class BuilderTest extends Unit
      */
     public function testGetScheduleLimited()
     {
-        $builder = new Builder();
-        $schedule = $builder->getSchedule(
+        $builder = new Director(new Builder());
+        $schedule = $builder->create(
             [
                 [
                     'key' => 'K-01',
@@ -101,6 +107,7 @@ class BuilderTest extends Unit
                 $preceders[1]->unprecede($node);
                 $preceders[1]->precede($preceders[0], Link::TYPE_SCHEDULE);
             }]),
+            new Formatter(),
         );
         $this->assertEquals(
             [
@@ -111,7 +118,8 @@ class BuilderTest extends Unit
                     'links' => [
                         'outward' => [
                             [
-                                'key' => 'K-02'
+                                'key' => 'K-02',
+                                'type' => 'Follows',
                             ],
                         ],
                     ],
@@ -122,7 +130,8 @@ class BuilderTest extends Unit
                     'links' => [
                         'inward' => [
                             [
-                                'key' => 'K-01'
+                                'key' => 'K-01',
+                                'type' => 'Follows',
                             ],
                         ],
                     ],
