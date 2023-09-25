@@ -2,7 +2,7 @@
 namespace Tests\Unit;
 
 use Codeception\Test\Unit;
-use Watch\Schedule\Node;
+use Watch\Schedule\Model\Node;
 use Watch\Schedule\Utils;
 
 class UtilsTest extends Unit

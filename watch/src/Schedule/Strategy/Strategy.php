@@ -2,7 +2,7 @@
 
 namespace Watch\Schedule\Strategy;
 
-use Watch\Schedule\Node;
+use Watch\Schedule\Model\Node;
 
 interface Strategy
 {

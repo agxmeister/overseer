@@ -2,8 +2,8 @@
 namespace Tests\Unit\Strategy;
 
 use Codeception\Test\Unit;
-use Watch\Schedule\Link;
-use Watch\Schedule\Node;
+use Watch\Schedule\Model\Link;
+use Watch\Schedule\Model\Node;
 use Watch\Schedule\Strategy\Basic;
 
 class BasicTest extends Unit

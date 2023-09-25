@@ -1,6 +1,6 @@
 <?php
 
-namespace Watch\Schedule;
+namespace Watch\Schedule\Model;
 
 class Node
 {

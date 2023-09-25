@@ -1,13 +1,13 @@
 <?php
 namespace Tests\Unit;
 
-use Exception;
 use Codeception\Test\Unit;
+use Exception;
+use Watch\Schedule\Model\Link;
+use Watch\Schedule\Model\Node;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Director;
 use Watch\Schedule\Formatter;
-use Watch\Schedule\Link;
-use Watch\Schedule\Node;
 use Watch\Schedule\Strategy\Strategy;
 
 class DirectorTest extends Unit

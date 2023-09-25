@@ -2,6 +2,10 @@
 
 namespace Watch\Schedule;
 
+use Watch\Schedule\Model\Link;
+use Watch\Schedule\Model\Milestone;
+use Watch\Schedule\Model\Node;
+
 class Utils
 {
     /**

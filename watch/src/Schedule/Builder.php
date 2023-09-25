@@ -2,6 +2,7 @@
 
 namespace Watch\Schedule;
 
+use Watch\Schedule\Model\Milestone;
 use Watch\Schedule\Strategy\Strategy;
 
 class Builder
