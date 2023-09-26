@@ -2,6 +2,7 @@
 
 namespace Watch\Schedule;
 
+use DateTime;
 use Watch\Schedule\Strategy\Strategy;
 
 class Director
@@ -10,11 +11,13 @@ class Director
     {
     }
 
-    public function create(array $issues, string $date, Strategy $strategy, Formatter $formatter): array
+    public function create(array $issues, DateTime $date, Strategy $strategy): array
     {
         return $this->builder
             ->run($issues)
-            ->schedule($strategy)
-            ->release($formatter, $date);
+            ->distribute($strategy)
+            ->schedule($date)
+            ->link()
+            ->release();
     }
 }

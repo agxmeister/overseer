@@ -2,12 +2,12 @@
 namespace Tests\Unit;
 
 use Codeception\Test\Unit;
+use DateTime;
 use Exception;
 use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Node;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Director;
-use Watch\Schedule\Formatter;
 use Watch\Schedule\Strategy\Strategy;
 
 class DirectorTest extends Unit
@@ -51,9 +51,8 @@ class DirectorTest extends Unit
                     ],
                 ]
             ],
-            '2023-09-09',
+            new DateTime('2023-09-09'),
             $this->makeEmpty(Strategy::class),
-            new Formatter(),
         );
         $this->assertEquals(
             [
@@ -101,13 +100,12 @@ class DirectorTest extends Unit
                     ],
                 ],
             ],
-            '2023-09-09',
+            new DateTime('2023-09-09'),
             $this->makeEmpty(Strategy::class, ['schedule' => function (Node $node) {
                 $preceders = $node->getPreceders();
                 $preceders[1]->unprecede($node);
                 $preceders[1]->precede($preceders[0], Link::TYPE_SCHEDULE);
             }]),
-            new Formatter(),
         );
         $this->assertEquals(
             [
