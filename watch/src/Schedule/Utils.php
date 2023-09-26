@@ -40,6 +40,15 @@ class Utils
         );
     }
 
+    static public function getUnique(array $nodes): array
+    {
+        $hash = [];
+        foreach ($nodes as $node) {
+            $hash[$node->getName()] = $node;
+        }
+        return array_values($hash);
+    }
+
     static public function getMilestone(array $issues): Milestone
     {
         $nodes = [];
@@ -50,12 +59,13 @@ class Utils
 
         $milestone = new Milestone('finish');
         foreach ($issues as $issue) {
-            $inwards = array_filter($issue['links']['inward'], fn($link) => $link['type'] === 'Depends');
+            $inwards = $issue['links']['inward'];
             foreach ($inwards as $link) {
                 $follower = $nodes[$link['key']] ?? null;
                 $preceder = $nodes[$issue['key']] ?? null;
                 if (!is_null($preceder) && !is_null($follower)) {
-                    $follower->follow($preceder);
+                    $type = $link['type'] === 'Depends' ? Link::TYPE_SEQUENCE : Link::TYPE_SCHEDULE;
+                    $follower->follow($preceder, $type);
                 }
             }
             if (empty($inwards)) {

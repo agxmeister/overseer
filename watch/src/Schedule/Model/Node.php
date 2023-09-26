@@ -2,6 +2,8 @@
 
 namespace Watch\Schedule\Model;
 
+use Watch\Schedule\Utils;
+
 class Node
 {
     /**
@@ -96,7 +98,7 @@ class Node
         foreach ($links as $link) {
             $preceders = [...$preceders, ...$link->getNode()->getPreceders(true)];
         }
-        return [...array_unique($preceders, SORT_REGULAR)];
+        return Utils::getUnique($preceders);
     }
 
     public function getDistance(bool $withPreceders = false, array $types = []): int
