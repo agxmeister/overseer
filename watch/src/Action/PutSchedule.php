@@ -9,7 +9,7 @@ use Watch\Jira;
 use Watch\Schedule\Director;
 use Watch\Schedule\Strategy\Basic;
 
-class Schedule
+class PutSchedule
 {
     public function __construct(private Jira $jira, private Director $director)
     {

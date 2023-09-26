@@ -11,6 +11,14 @@ class Director
     {
     }
 
+    public function get(array $issues): array
+    {
+        return $this->builder
+            ->run($issues)
+            ->link()
+            ->release();
+    }
+
     public function create(array $issues, DateTime $date, Strategy $strategy): array
     {
         return $this->builder
