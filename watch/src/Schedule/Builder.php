@@ -50,7 +50,7 @@ class Builder
         return $this;
     }
 
-    public function link(): self
+    public function addLinks(): self
     {
         $this->applyDiffToResult(array_filter(array_map(function (array $issue) {
             /** @var Node $node */
@@ -96,6 +96,19 @@ class Builder
         return $this;
     }
 
+    public function addCriticalChain(): self
+    {
+        $nodes = $this->milestone->getPreceders(true);
+        $longestNode = Utils::getLongestSequence($nodes);
+        $criticalChainNodes = [$longestNode, ...$longestNode->getPreceders(true)];
+        foreach ($criticalChainNodes as $criticalChainNode) {
+            $this->addToResult($criticalChainNode->getName(), [
+                'isCritical' => true,
+            ]);
+        }
+        return $this;
+    }
+
     public function release(): array
     {
         return array_values($this->result);
@@ -109,14 +122,21 @@ class Builder
         );
     }
 
-    private function applyDiffToResult($diff): void
+    private function applyDiffToResult(array $diff): void
     {
         foreach ($diff as $item) {
-            if (!isset($this->result[$item['key']])) {
-                $this->result[$item['key']] = $item;
-            } else {
-                $this->result[$item['key']] = array_merge($this->result[$item['key']], $item);
+            if (!isset($item['key'])) {
+                continue;
             }
+            $this->addToResult($item['key'], $item);
         }
+    }
+
+    private function addToResult(string $key, array $values): void
+    {
+        $this->result[$key] = [
+            ...($this->result[$key] ?? ['key' => $key]),
+            ...array_filter($values, fn($key) => $key !== 'key', ARRAY_FILTER_USE_KEY)
+        ];
     }
 }

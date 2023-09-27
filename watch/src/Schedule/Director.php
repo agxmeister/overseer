@@ -15,7 +15,8 @@ class Director
     {
         return $this->builder
             ->run($issues)
-            ->link()
+            ->addLinks()
+            ->addCriticalChain()
             ->release();
     }
 
@@ -25,7 +26,8 @@ class Director
             ->run($issues)
             ->distribute($strategy)
             ->schedule($date)
-            ->link()
+            ->addLinks()
+            ->addCriticalChain()
             ->release();
     }
 }
