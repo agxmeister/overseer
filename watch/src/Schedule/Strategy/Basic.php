@@ -16,8 +16,8 @@ class Basic implements Strategy
             $completingNodes = array_filter($milestone->getPreceders(true), fn(Node $node) => $this->isCompletingAt($node, $point));
             $numberOfTasksInParallel = count($ongoingNodes);
             while ($numberOfTasksInParallel > 2) {
-                $longestNode = Utils::getLongestSequence($completingNodes);
-                $shortestNode = Utils::getShortestSequence($ongoingNodes);
+                $longestNode = Utils::getLongestSequence($completingNodes, [Link::TYPE_SEQUENCE]);
+                $shortestNode = Utils::getShortestSequence($ongoingNodes, [Link::TYPE_SEQUENCE]);
                 if ($longestNode === $shortestNode) {
                     break;
                 }

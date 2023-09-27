@@ -12,9 +12,8 @@ class Utils
      * @param Node[] $nodes
      * @return Node
      */
-    static public function getLongestSequence(array $nodes): Node
+    static public function getLongestSequence(array $nodes, array $types = []): Node
     {
-        $types = [Link::TYPE_SEQUENCE];
         return array_reduce($nodes, fn(Node|null $acc, Node $node) => is_null($acc) ?
             $node : (
             $acc->getDistance(true, $types) < $node->getDistance(true, $types) ?
@@ -28,9 +27,8 @@ class Utils
      * @param Node[] $nodes
      * @return Node
      */
-    static public function getShortestSequence(array $nodes): Node
+    static public function getShortestSequence(array $nodes, array $types = []): Node
     {
-        $types = [Link::TYPE_SEQUENCE];
         return array_reduce($nodes, fn(Node|null $acc, Node $node) => is_null($acc) ?
             $node : (
             $acc->getDistance(true, $types) > $node->getDistance(true, $types) ?
