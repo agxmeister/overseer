@@ -44,7 +44,7 @@ export default function Page()
 
     const [schedule, setSchedule] = useState<Schedule[]>([]);
 
-    const {data, mutate} = useSWR(ApiUrl.TASKS, (api: string) => fetch(api).then(res => res.json()));
+    const {data: issues, mutate: mutateIssues} = useSWR(ApiUrl.TASKS, (api: string) => fetch(api).then(res => res.json()));
 
     const onTask = async (mutation: {taskId: string, begin?: string, end?: string}) => {
         switch (mode) {
@@ -70,7 +70,7 @@ export default function Page()
     }
 
     const onTaskResize = async (mutation: {taskId: string, begin?: string, end?: string}) => {
-        const optimisticData = data.map((issue: Issue) =>
+        const optimisticData = issues.map((issue: Issue) =>
             issue.key === mutation.taskId ? {
                 ...issue,
                 estimatedBeginDate: mutation.begin ?? issue.estimatedBeginDate,
@@ -78,25 +78,25 @@ export default function Page()
             } : {
                 ...issue,
             });
-        await mutate(() => setTaskDates(mutation.taskId, mutation.begin, mutation.end), {
+        await mutateIssues(() => setTaskDates(mutation.taskId, mutation.begin, mutation.end), {
             optimisticData: optimisticData,
             populateCache: false,
         });
     }
 
     const onLink = async (outwardTaskId: string, inwardTaskId: string, type: string = LinkType.Depends) => {
-        await mutate(() => addLink(outwardTaskId, inwardTaskId, type),{
+        await mutateIssues(() => addLink(outwardTaskId, inwardTaskId, type),{
             populateCache: false,
         });
     }
 
     const onUnlink = async (linkId: number) => {
-        await mutate(() => removeLink(linkId),{
+        await mutateIssues(() => removeLink(linkId),{
             populateCache: false,
         });
     }
 
-    const scheduledIssues = data ? data.map((issue: Issue) => {
+    const scheduledIssues = issues ? issues.map((issue: Issue) => {
         const correction = schedule.find(current => current.key === issue.key);
         return {
             ...issue,
