@@ -15,7 +15,7 @@ import {ApiUrl} from "@/constants/api";
 import {Issue} from "@/types/Issue";
 import {LinkDescription} from "@/types/LinkDescription";
 import {Mode, Schedule} from "@/types/Schedule";
-import {clean} from "@/utils/misc";
+import {cleanObject, mergeArrays} from "@/utils/misc";
 import {setDates as setTaskDates} from "@/api/task";
 import {addLink, removeLink} from "@/api/links";
 import {Type as LinkType} from "@/types/Link";
@@ -45,6 +45,23 @@ export default function Page()
     const [schedule, setSchedule] = useState<Schedule[]>([]);
 
     const {data: issues, mutate: mutateIssues} = useSWR(ApiUrl.TASKS, (api: string) => fetch(api).then(res => res.json()));
+    const {data: plan, mutate: mutatePlan} = useSWR(ApiUrl.SCHEDULE, (api: string) => fetch(api).then(res => res.json()));
+
+    const plannedIssues = issues && plan ? issues.map((issue: Issue) => {
+        const result = {...issue};
+        const correction = plan.find((item: Schedule) => item.key === issue.key);
+        if (!correction) {
+            return result;
+        }
+        return {
+            ...issue,
+            ...correction,
+            links: {
+                inward: mergeArrays(issue.links.inward, correction.links?.inward ?? [], (a, b) => a.key === b.key),
+                outward: mergeArrays(issue.links.outward, correction.links?.outward ?? [], (a, b) => a.key === b.key),
+            },
+        }
+    }) : [];
 
     const onTask = async (mutation: {taskId: string, begin?: string, end?: string}) => {
         switch (mode) {
@@ -60,9 +77,9 @@ export default function Page()
     const onTaskSchedule = async (mutation: {taskId: string, begin?: string, end?: string}) => {
         const correction = schedule.find(item => item.key === mutation.taskId);
         setSchedule([...schedule.filter(item => item.key !== mutation.taskId), {
-            ...(correction ? clean(correction): {}),
+            ...(correction ? cleanObject(correction): {}),
             key: mutation.taskId,
-            ...clean({
+            ...cleanObject({
                 estimatedBeginDate: mutation.begin,
                 estimatedEndDate: mutation.end,
             })
@@ -96,11 +113,11 @@ export default function Page()
         });
     }
 
-    const scheduledIssues = issues ? issues.map((issue: Issue) => {
+    const scheduledIssues = plannedIssues ? plannedIssues.map((issue: Issue) => {
         const correction = schedule.find(current => current.key === issue.key);
         return {
             ...issue,
-            ...(correction ? clean(correction): {}),
+            ...(correction ? cleanObject(correction): {}),
             links: {
                 inward: issue.links.inward.concat(correction ? correction.links?.inward ?? [] : []),
                 outward: issue.links.outward.concat(correction ? correction.links?.outward ?? [] : []),

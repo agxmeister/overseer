@@ -1,4 +1,4 @@
-export function clean(input: Object): Object
+export function cleanObject(input: Object): Object
 {
     return Object.entries(input)
         .filter(([_, value]) => value)
@@ -7,3 +7,5 @@ export function clean(input: Object): Object
             [key]: value
         }), {});
 }
+
+export const mergeArrays = (a: any[], b: any[], cmp: (a: any, b: any) => boolean) => [...a, ...b.filter((bItem: any) => !a.find((aItem: any) => cmp(aItem, bItem)))];

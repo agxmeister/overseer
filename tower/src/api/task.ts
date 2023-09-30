@@ -1,6 +1,6 @@
 import {ApiUrl} from "@/constants/api";
 import {Issue} from "@/types/Issue";
-import {clean} from "@/utils/misc";
+import {cleanObject} from "@/utils/misc";
 
 export function setDates(taskId: string, estimatedBeginDate?: string, estimatedEndDate?: string): Promise<Issue>
 {
@@ -9,7 +9,7 @@ export function setDates(taskId: string, estimatedBeginDate?: string, estimatedE
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(clean({
+        body: JSON.stringify(cleanObject({
             estimatedBeginDate: estimatedBeginDate,
             estimatedEndDate: estimatedEndDate,
         })),

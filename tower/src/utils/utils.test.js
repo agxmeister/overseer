@@ -1,7 +1,7 @@
 import {format, shiftDate} from "./date";
 import {describe} from "node:test";
 import {getLinesTemplate} from "./grid";
-import {clean} from "./misc";
+import {cleanObject} from "./misc";
 
 describe('date.format', () => {
     it.each([
@@ -47,6 +47,6 @@ describe('misc.clean', () => {
         {input: {a: undefined, b: 2}, output: {b: 2}},
         {input: {a: 1, b: undefined, c: "3"}, output: {a: 1, c: "3"}},
     ])('clean object from undefined properties', ({input, output}) => {
-        expect(clean(input)).toEqual(output);
+        expect(cleanObject(input)).toEqual(output);
     })
 })
