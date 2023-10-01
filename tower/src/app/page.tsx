@@ -19,6 +19,8 @@ import {cleanObject, mergeArrays} from "@/utils/misc";
 import {setDates as setTaskDates} from "@/api/task";
 import {addLink, removeLink} from "@/api/links";
 import {Type as LinkType} from "@/types/Link";
+import {Edits} from "@/types/Edits";
+import {Edit} from "@sinclair/typebox/value";
 
 export default function Page()
 {
@@ -41,11 +43,12 @@ export default function Page()
     const onSize = (taskId: string) => {
         setSizeTaskId(taskId);
     }
-
-    const [schedule, setSchedule] = useState<Schedule[]>([]);
+    
+    const [edits, setEdits] = useState<Edits>({schedule: []});
+    const setSchedule = (schedule: Schedule[]) => setEdits({...edits, schedule: schedule});
 
     const {data: issues, mutate: mutateIssues} = useSWR(ApiUrl.TASKS, (api: string) => fetch(api).then(res => res.json()));
-    const {data: plan, mutate: mutatePlan} = useSWR(ApiUrl.SCHEDULE, (api: string) => fetch(api).then(res => res.json()));
+    const {data: plan} = useSWR(ApiUrl.SCHEDULE, (api: string) => fetch(api).then(res => res.json()));
 
     const plannedIssues = issues && plan ? issues.map((issue: Issue) => {
         const result = {...issue};
@@ -75,8 +78,8 @@ export default function Page()
     }
 
     const onTaskSchedule = async (mutation: {taskId: string, begin?: string, end?: string}) => {
-        const correction = schedule.find(item => item.key === mutation.taskId);
-        setSchedule([...schedule.filter(item => item.key !== mutation.taskId), {
+        const correction = edits.schedule.find(item => item.key === mutation.taskId);
+        setSchedule([...edits.schedule.filter(item => item.key !== mutation.taskId), {
             ...(correction ? cleanObject(correction): {}),
             key: mutation.taskId,
             ...cleanObject({
@@ -114,7 +117,7 @@ export default function Page()
     }
 
     const scheduledIssues = plannedIssues ? plannedIssues.map((issue: Issue) => {
-        const correction = schedule.find(current => current.key === issue.key);
+        const correction = edits.schedule.find(current => current.key === issue.key);
         return {
             ...issue,
             ...(correction ? cleanObject(correction): {}),
@@ -207,7 +210,7 @@ export default function Page()
                 <Console
                     context={{
                         issues: scheduledIssues,
-                        schedule: schedule,
+                        schedule: edits.schedule,
                     }}
                     setters={{
                         setScale: setScale,
