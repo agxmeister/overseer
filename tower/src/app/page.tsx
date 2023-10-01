@@ -43,7 +43,7 @@ export default function Page()
     const onSize = (taskId: string) => {
         setSizeTaskId(taskId);
     }
-    
+
     const [edits, setEdits] = useState<Edits>({schedule: []});
     const setSchedule = (schedule: Schedule[]) => setEdits({...edits, schedule: schedule});
 
@@ -110,8 +110,8 @@ export default function Page()
         });
     }
 
-    const onUnlink = async (linkId: number) => {
-        await mutateIssues(() => removeLink(linkId),{
+    const onUnlink = async (from: string, to: string, type: string) => {
+        await mutateIssues(() => removeLink(from, to, type),{
             populateCache: false,
         });
     }

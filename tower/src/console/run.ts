@@ -17,7 +17,7 @@ export type Setters = {
     setSchedule: (schedule: Schedule[]) => void,
     onTaskResize: (mutation: {taskId: string, begin?: string, end?: string}) => Promise<void>,
     onLink: (from: string, to: string, type: string) => Promise<void>,
-    onUnlink: (linkId: number) => Promise<void>,
+    onUnlink: (from: string, to: string, type: string) => Promise<void>,
 }
 
 export default async function run(command: string, context: Context, setters: Setters): Promise<string[]>

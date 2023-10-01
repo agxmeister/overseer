@@ -15,9 +15,13 @@ export function addLink(outwardTaskId: string, inwardTaskId: string, type: strin
     });
 }
 
-export function removeLink(linkId: number)
+export function removeLink(from: string, to: string, type: string)
 {
-    return fetch(ApiUrl.LINK.replace('{linkId}', `${linkId}`), {
+    const url = ApiUrl.LINK
+        .replace('{from}', `${from}`)
+        .replace('{to}', `${to}`)
+        .replace('{type}', `${type}`);
+    return fetch(url, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json'

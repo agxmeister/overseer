@@ -30,7 +30,7 @@ export default async function task(args: string[], context: Context, setters: Se
                 );
                 break;
             case Action.Unlink:
-                await setters.onUnlink(getLinkId(args, context));
+                await setters.onUnlink(...getUnlinkArgs(args, context));
                 break;
         }
     } catch (err) {
@@ -47,29 +47,16 @@ function getTaskIdArg(args: string[]): string
     return args[2];
 }
 
-function getLinkId(args: string[], context: Context): number
+function getUnlinkArgs(args: string[], context: Context): [string, string, string]
 {
-    if (!(hasNamedArg(args, 'id') || (hasNamedArg(args, 'from') && hasNamedArg(args, 'to')))) {
-        throw 'Either parameter "id" or parameters "from" and "to" must be specified.';
-    }
-    return hasNamedArg(args, 'id') ?
-        getNamedNumberArg(args, 'id') :
-        getLinkIdByFromTo(
-            getNamedArg(args, 'from'),
-            getNamedArg(args, 'to'),
-            context.issues,
-        );
-}
-
-function getLinkIdByFromTo(from: string, to: string, issues: Issue[]): number
-{
-    const issue = issues.find((issue: Issue) => issue.key === from);
-    if (!issue) {
+    const from = getNamedArg(args, 'from');
+    if (!context.issues.find((issue: Issue) => issue.key === from)) {
         throw `Task "${from}" not found.`;
     }
-    const link = issue.links.inward.find((link: LinkObject) => link.key === to);
-    if (!link) {
-        throw `Task "${from}" is not linked with task "${to}".`;
+    const to = getNamedArg(args, 'to');
+    if (!context.issues.find((issue: Issue) => issue.key === to)) {
+        throw `Task "${to}" not found.`;
     }
-    return link.id;
+    const type = getNamedArg(args, 'type');
+    return [from, to, type];
 }

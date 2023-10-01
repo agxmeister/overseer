@@ -14,7 +14,14 @@ class Link
 
     public function __invoke(Request $request, Response $response, $args): Response
     {
-        $linkId = $args['linkId'];
+        $from = $args['from'];
+        $to = $args['to'];
+        $type = $args['type'];
+        $issue = $this->jira->getIssueRaw($from);
+        $linkId = array_reduce(
+            $issue->fields->issuelinks,
+            fn($acc, $link) => isset($link->inwardIssue) && $link->inwardIssue->key === $to && $link->type->name === $type ? $link->id : $acc,
+        );
         $this->jira->removeLink($linkId);
         return $response
             ->withHeader('Content-Type', 'application/json')

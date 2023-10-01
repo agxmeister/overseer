@@ -11,11 +11,15 @@ class Jira
     {
     }
 
-    public function getIssue($jiraId): array
+    public function getIssueRaw($jiraId): mixed
     {
         $response = $this->getClient()->get("issue/$jiraId");
-        $issueData = json_decode($response->getBody());
-        return $this->formatIssue($issueData);
+        return json_decode($response->getBody());
+    }
+
+    public function getIssue($jiraId): array
+    {
+        return $this->formatIssue($this->getIssueRaw($jiraId));
     }
 
     public function getIssues($jql): mixed
