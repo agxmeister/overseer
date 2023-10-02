@@ -39,24 +39,22 @@ export default async function schedule(args: string[], context: Context, setters
                 context.issues.reduce(
                     (acc: {from: string, to: string}[], issue) => acc.concat(
                         issue.links.outward
-                            .filter(link => !link.id)
                             .filter(link => link.type === 'Follows')
                             .map(link => ({from: link.key, to: issue.key})),
                         issue.links.inward
-                            .filter(link => !link.id)
                             .filter(link => link.type === 'Follows')
                             .map(link => ({from: issue.key, to: link.key})),
                     ),
                     []
                 )
-                    .filter((data, index, self) =>
-                        self.findIndex(current => current.from === data.from && current.to === data.to) === index)
-                    .forEach(data => {
+                    .filter((item, index, self) =>
+                        self.findIndex(current => current.from === item.from && current.to === item.to) === index)
+                    .forEach(item => {
                         const promise = task([
                             'task',
                             'link',
-                            `from=${data.from}`,
-                            `to=${data.to}`
+                            `from=${item.from}`,
+                            `to=${item.to}`
                         ], context, setters);
                         promises.push(promise);
                         promise.then(output => lines.unshift(...output));
@@ -97,23 +95,32 @@ export default async function schedule(args: string[], context: Context, setters
 async function unlink(context: Context, setters: Setters, lines: string[])
 {
     const promises: Promise<string[]>[] = [];
+
     context.issues.reduce(
-        (acc: Link[], issue) => acc.concat(issue.links.outward, issue.links.inward),
+        (acc: {from: string, to: string}[], issue) => acc.concat(
+            issue.links.inward
+                .filter(link => link.type === 'Follows')
+                .map(link => ({from: issue.key, to: link.key})),
+            issue.links.outward
+                .filter(link => link.type === 'Follows')
+                .map(link => ({from: link.key, to: issue.key})),
+        ),
         []
     )
-        .filter(link => link.id)
-        .filter(link => link.type === 'Follows')
-        .filter((link, index, self) =>
-            self.findIndex(current => current.id === link.id) === index)
-        .forEach(link => {
+        .filter((item, index, self) =>
+            self.findIndex(current => current.from === item.from && current.to === item.to) === index)
+        .forEach(item => {
             const promise = task([
                 'task',
                 'unlink',
-                `id=${link.id}`
+                `from=${item.from}`,
+                `to=${item.to}`,
+                'type=Follows',
             ], context, setters);
             promises.push(promise);
             promise.then(output => lines.unshift(...output));
         });
+
     await Promise.all(promises);
 }
 
