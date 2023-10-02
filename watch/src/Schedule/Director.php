@@ -15,6 +15,7 @@ class Director
     {
         return $this->builder
             ->run($issues)
+            ->addDates()
             ->addLinks()
             ->addCriticalChain()
             ->release();

@@ -50,6 +50,23 @@ class Builder
         return $this;
     }
 
+    public function addDates(): self
+    {
+        $this->applyDiffToResult(array_filter(array_map(function (array $issue) {
+            /** @var Node $node */
+            $node = $this->getNode($issue['key']);
+            if (is_null($node)) {
+                return null;
+            }
+            return [
+                'key' => $issue['key'],
+                'estimatedBeginDate' => $issue['estimatedBeginDate'],
+                'estimatedEndDate' => $issue['estimatedEndDate'],
+            ];
+        }, $this->issues), fn($item) => !is_null($item)));
+        return $this;
+    }
+
     public function addLinks(): self
     {
         $this->applyDiffToResult(array_filter(array_map(function (array $issue) {
