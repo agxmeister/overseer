@@ -60,10 +60,12 @@ class DirectorTest extends Unit
                     'key' => 'K-01',
                     'estimatedBeginDate' => '2023-09-05',
                     'estimatedEndDate' => '2023-09-08',
+                    'isCritical' => true,
                 ], [
                     'key' => 'K-02',
                     'estimatedBeginDate' => '2023-09-01',
                     'estimatedEndDate' => '2023-09-04',
+                    'isCritical' => true,
                 ], [
                     'key' => 'K-03',
                     'estimatedBeginDate' => '2023-09-01',
@@ -121,6 +123,7 @@ class DirectorTest extends Unit
                             ],
                         ],
                     ],
+                    'isCritical' => true,
                 ], [
                     'key' => 'K-02',
                     'estimatedBeginDate' => '2023-09-01',
@@ -133,6 +136,7 @@ class DirectorTest extends Unit
                             ],
                         ],
                     ],
+                    'isCritical' => true,
                 ],
             ],
             $schedule,
