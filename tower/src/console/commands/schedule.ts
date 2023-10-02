@@ -67,8 +67,8 @@ export default async function schedule(args: string[], context: Context, setters
                         'task',
                         'resize',
                         issue.key,
-                        `begin=${issue.estimatedBeginDate}`,
-                        `end=${issue.estimatedEndDate}`
+                        `begin=${issue.begin}`,
+                        `end=${issue.end}`
                     ], context, setters);
                     promises.push(promise);
                     promise.then(output => lines.unshift(...output));

@@ -2,8 +2,8 @@ import {Link} from "@/types/Link";
 
 export type Schedule = {
     key: string,
-    estimatedBeginDate?: string,
-    estimatedEndDate?: string,
+    begin?: string,
+    end?: string,
     links?: {inward?: Link[], outward?: Link[]},
 }
 

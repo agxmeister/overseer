@@ -2,7 +2,7 @@ import {ApiUrl} from "@/constants/api";
 import {Issue} from "@/types/Issue";
 import {cleanObject} from "@/utils/misc";
 
-export function setDates(taskId: string, estimatedBeginDate?: string, estimatedEndDate?: string): Promise<Issue>
+export function setDates(taskId: string, begin?: string, end?: string): Promise<Issue>
 {
     return fetch(ApiUrl.TASK.replace('{taskId}', taskId), {
         method: 'POST',
@@ -10,8 +10,8 @@ export function setDates(taskId: string, estimatedBeginDate?: string, estimatedE
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(cleanObject({
-            estimatedBeginDate: estimatedBeginDate,
-            estimatedEndDate: estimatedEndDate,
+            begin: begin,
+            end: end,
         })),
     }).then(res => res.json());
 }

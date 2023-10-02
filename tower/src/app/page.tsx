@@ -83,8 +83,8 @@ export default function Page()
             ...(correction ? cleanObject(correction): {}),
             key: mutation.taskId,
             ...cleanObject({
-                estimatedBeginDate: mutation.begin,
-                estimatedEndDate: mutation.end,
+                begin: mutation.begin,
+                end: mutation.end,
             })
         }]);
     }
@@ -93,8 +93,8 @@ export default function Page()
         const optimisticData = issues.map((issue: Issue) =>
             issue.key === mutation.taskId ? {
                 ...issue,
-                estimatedBeginDate: mutation.begin ?? issue.estimatedBeginDate,
-                estimatedEndDate: mutation.end ?? issue.estimatedEndDate,
+                begin: mutation.begin ?? issue.begin,
+                end: mutation.end ?? issue.end,
             } : {
                 ...issue,
             });
@@ -171,8 +171,8 @@ export default function Page()
                     onSize={onSize}
                 />
             }
-            begin={issue.estimatedBeginDate}
-            end={issue.estimatedEndDate}
+            begin={issue.begin}
+            end={issue.end}
             card={
                 <Card
                     key={issue.key}

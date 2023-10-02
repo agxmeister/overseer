@@ -43,8 +43,8 @@ class Builder
             $finishDate = (clone $date)->modify("-{$completion} day");
             return [
                 'key' => $issue['key'],
-                'estimatedBeginDate' => $startDate->format("Y-m-d"),
-                'estimatedEndDate' => $finishDate->format("Y-m-d"),
+                'begin' => $startDate->format("Y-m-d"),
+                'end' => $finishDate->format("Y-m-d"),
             ];
         }, $this->issues), fn($item) => !is_null($item)));
         return $this;
@@ -60,8 +60,8 @@ class Builder
             }
             return [
                 'key' => $issue['key'],
-                'estimatedBeginDate' => $issue['estimatedBeginDate'],
-                'estimatedEndDate' => $issue['estimatedEndDate'],
+                'begin' => $issue['begin'],
+                'end' => $issue['end'],
             ];
         }, $this->issues), fn($item) => !is_null($item)));
         return $this;

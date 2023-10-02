@@ -22,17 +22,17 @@ class DirectorTest extends Unit
             [
                 [
                     'key' => 'K-01',
-                    'estimatedDuration' => '4',
-                    'estimatedBeginDate' => null,
-                    'estimatedEndDate' => null,
+                    'duration' => '4',
+                    'begin' => null,
+                    'end' => null,
                     'links' => [
                         'inward' => [],
                     ],
                 ], [
                     'key' => 'K-02',
-                    'estimatedDuration' => '4',
-                    'estimatedBeginDate' => null,
-                    'estimatedEndDate' => null,
+                    'duration' => '4',
+                    'begin' => null,
+                    'end' => null,
                     'links' => [
                         'inward' => [
                             [
@@ -43,9 +43,9 @@ class DirectorTest extends Unit
                     ],
                 ], [
                     'key' => 'K-03',
-                    'estimatedDuration' => '8',
-                    'estimatedBeginDate' => null,
-                    'estimatedEndDate' => null,
+                    'duration' => '8',
+                    'begin' => null,
+                    'end' => null,
                     'links' => [
                         'inward' => [],
                     ],
@@ -58,18 +58,18 @@ class DirectorTest extends Unit
             [
                 [
                     'key' => 'K-01',
-                    'estimatedBeginDate' => '2023-09-05',
-                    'estimatedEndDate' => '2023-09-08',
+                    'begin' => '2023-09-05',
+                    'end' => '2023-09-08',
                     'isCritical' => true,
                 ], [
                     'key' => 'K-02',
-                    'estimatedBeginDate' => '2023-09-01',
-                    'estimatedEndDate' => '2023-09-04',
+                    'begin' => '2023-09-01',
+                    'end' => '2023-09-04',
                     'isCritical' => true,
                 ], [
                     'key' => 'K-03',
-                    'estimatedBeginDate' => '2023-09-01',
-                    'estimatedEndDate' => '2023-09-08',
+                    'begin' => '2023-09-01',
+                    'end' => '2023-09-08',
                 ]
             ],
             $schedule,
@@ -86,17 +86,17 @@ class DirectorTest extends Unit
             [
                 [
                     'key' => 'K-01',
-                    'estimatedDuration' => '4',
-                    'estimatedBeginDate' => null,
-                    'estimatedEndDate' => null,
+                    'duration' => '4',
+                    'begin' => null,
+                    'end' => null,
                     'links' => [
                         'inward' => [],
                     ],
                 ], [
                     'key' => 'K-02',
-                    'estimatedDuration' => '4',
-                    'estimatedBeginDate' => null,
-                    'estimatedEndDate' => null,
+                    'duration' => '4',
+                    'begin' => null,
+                    'end' => null,
                     'links' => [
                         'inward' => [],
                     ],
@@ -113,8 +113,8 @@ class DirectorTest extends Unit
             [
                 [
                     'key' => 'K-01',
-                    'estimatedBeginDate' => '2023-09-05',
-                    'estimatedEndDate' => '2023-09-08',
+                    'begin' => '2023-09-05',
+                    'end' => '2023-09-08',
                     'links' => [
                         'outward' => [
                             [
@@ -126,8 +126,8 @@ class DirectorTest extends Unit
                     'isCritical' => true,
                 ], [
                     'key' => 'K-02',
-                    'estimatedBeginDate' => '2023-09-01',
-                    'estimatedEndDate' => '2023-09-04',
+                    'begin' => '2023-09-01',
+                    'end' => '2023-09-04',
                     'links' => [
                         'inward' => [
                             [

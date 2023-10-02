@@ -102,9 +102,9 @@ class Jira
         return [
             'key' => $issue->key,
             'summary' => $issue->fields->summary,
-            'estimatedDuration' => (int)$issue->fields->customfield_10038,
-            'estimatedBeginDate' =>$estimatedBeginDate,
-            'estimatedEndDate' => $estimatedEndDate,
+            'duration' => (int)$issue->fields->customfield_10038,
+            'begin' => $estimatedBeginDate,
+            'end' => $estimatedEndDate,
             'links' => $links,
         ];
     }
@@ -112,8 +112,8 @@ class Jira
     private function fieldsMapping($field): string
     {
         $mapping = [
-            "estimatedBeginDate" => "customfield_10036",
-            "estimatedEndDate" => "customfield_10037",
+            "begin" => "customfield_10036",
+            "end" => "customfield_10037",
         ];
         return $mapping[$field];
     }
