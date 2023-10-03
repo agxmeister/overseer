@@ -11,15 +11,10 @@ class Jira
     {
     }
 
-    public function getIssueRaw($jiraId): mixed
-    {
-        $response = $this->getClient()->get("issue/$jiraId");
-        return json_decode($response->getBody());
-    }
-
     public function getIssue($jiraId): array
     {
-        return $this->formatIssue($this->getIssueRaw($jiraId));
+        $response = $this->getClient()->get("issue/$jiraId");
+        return $this->convert(json_decode($response->getBody()));
     }
 
     public function getIssues($jql): mixed
@@ -29,12 +24,7 @@ class Jira
                 'jql' => $jql,
             ],
         ]);
-        $data = json_decode($response->getBody());
-        $issues = [];
-        foreach ($data->issues as $issueData) {
-            $issues[] = $this->formatIssue($issueData);
-        }
-        return $issues;
+        return array_map(fn($issueRaw) => $this->convert($issueRaw), json_decode($response->getBody())->issues);
     }
 
     public function setIssue($jiraId, $fields): void
@@ -72,40 +62,44 @@ class Jira
         $this->getClient()->delete("issueLink/$linkId");
     }
 
-    private function formatIssue($issue): array
+    private function convert($issue): array
     {
-        $links = [
-            'inward' => [],
-            'outward' => [],
-        ];
-        foreach ($issue->fields->issuelinks as $link) {
-            if (isset($link->outwardIssue)) {
-                $links['outward'][] = [
-                    'id' => $link->id,
-                    'key' => $link->outwardIssue->key,
-                    'type' => $link->type->name,
-                ];
-            } else if (isset($link->inwardIssue)) {
-                $links['inward'][] = [
-                    'id' => $link->id,
-                    'key' => $link->inwardIssue->key,
-                    'type' => $link->type->name,
-                ];
-            }
-        }
-        $estimatedBeginDate = $issue->fields->customfield_10036 ?? date('Y-m-d');
-        $estimatedEndDate =
+        $begin = $issue->fields->customfield_10036 ?? date('Y-m-d');
+        $end =
             $issue->fields->customfield_10037 &&
-            $issue->fields->customfield_10037 >= $estimatedBeginDate ?
+            $issue->fields->customfield_10037 >= $begin ?
                 $issue->fields->customfield_10037 :
-                $estimatedBeginDate;
+                $begin;
         return [
             'key' => $issue->key,
             'summary' => $issue->fields->summary,
             'duration' => (int)$issue->fields->customfield_10038,
-            'begin' => $estimatedBeginDate,
-            'end' => $estimatedEndDate,
-            'links' => $links,
+            'begin' => $begin,
+            'end' => $end,
+            'links' => [
+                'outward' => array_values(array_map(
+                    fn($link) => [
+                        'id' => $link->id,
+                        'key' => $link->outwardIssue->key,
+                        'type' => $link->type->name,
+                    ],
+                    array_filter(
+                        $issue->fields->issuelinks,
+                        fn($link) => isset($link->outwardIssue)
+                    )
+                )),
+                'inward' => array_values(array_map(
+                    fn($link) => [
+                        'id' => $link->id,
+                        'key' => $link->inwardIssue->key,
+                        'type' => $link->type->name,
+                    ],
+                    array_filter(
+                        $issue->fields->issuelinks,
+                        fn($link) => isset($link->inwardIssue)
+                    )
+                )),
+            ],
         ];
     }
 
