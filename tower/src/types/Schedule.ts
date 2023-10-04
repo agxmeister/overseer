@@ -1,10 +1,7 @@
-import {Link} from "@/types/Link";
+import {Issue} from "@/types/Issue";
 
 export type Schedule = {
-    key: string,
-    begin?: string,
-    end?: string,
-    links?: {inward?: Link[], outward?: Link[]},
+    issues: Issue[],
 }
 
 export enum Mode {

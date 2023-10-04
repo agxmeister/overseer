@@ -44,24 +44,23 @@ export default function Page()
         setSizeTaskId(taskId);
     }
 
-    const [edits, setEdits] = useState<Edits>({schedule: []});
-    const setSchedule = (schedule: Schedule[]) => setEdits({...edits, schedule: schedule});
+    const [edits, setEdits] = useState<Edits>({schedule: {issues: []}});
+    const setSchedule = (schedule: Schedule) => setEdits({...edits, schedule: schedule});
 
-    const {data: issues, mutate: mutateIssues} = useSWR(ApiUrl.TASKS, (api: string) => fetch(api).then(res => res.json()));
     const {data: plan} = useSWR(ApiUrl.SCHEDULE, (api: string) => fetch(api).then(res => res.json()));
+    const {data: issues, mutate: mutateIssues} = useSWR(ApiUrl.TASKS, (api: string) => fetch(api).then(res => res.json()));
 
-    const plannedIssues = issues && plan ? issues.map((issue: Issue) => {
-        const result = {...issue};
-        const correction = plan.find((item: Schedule) => item.key === issue.key);
-        if (!correction) {
-            return result;
+    const plannedIssues = plan && issues ? plan.issues.map((issue: Issue) => {
+        const details = issues.find((item: Issue) => item.key === issue.key);
+        if (!details) {
+            return {...issue};
         }
         return {
             ...issue,
-            ...correction,
+            ...details,
             links: {
-                inward: mergeArrays(issue.links.inward, correction.links?.inward ?? [], (a, b) => a.key === b.key),
-                outward: mergeArrays(issue.links.outward, correction.links?.outward ?? [], (a, b) => a.key === b.key),
+                inward: mergeArrays(issue.links?.inward ?? [], details.links?.inward ?? [], (a, b) => a.key === b.key),
+                outward: mergeArrays(issue.links?.outward ?? [], details.links?.outward ?? [], (a, b) => a.key === b.key),
             },
         }
     }) : [];
@@ -78,15 +77,15 @@ export default function Page()
     }
 
     const onTaskSchedule = async (mutation: {taskId: string, begin?: string, end?: string}) => {
-        const correction = edits.schedule.find(item => item.key === mutation.taskId);
-        setSchedule([...edits.schedule.filter(item => item.key !== mutation.taskId), {
+        const correction = edits.schedule.issues.find(item => item.key === mutation.taskId);
+        setSchedule({issues: [...edits.schedule.issues.filter(item => item.key !== mutation.taskId), {
             ...(correction ? cleanObject(correction): {}),
             key: mutation.taskId,
             ...cleanObject({
                 begin: mutation.begin,
                 end: mutation.end,
             })
-        }]);
+        }]});
     }
 
     const onTaskResize = async (mutation: {taskId: string, begin?: string, end?: string}) => {
@@ -117,19 +116,28 @@ export default function Page()
     }
 
     const scheduledIssues = plannedIssues ? plannedIssues.map((issue: Issue) => {
-        const correction = edits.schedule.find(current => current.key === issue.key);
+        const correction = edits.schedule.issues.find(current => current.key === issue.key);
+        if (!correction) {
+            return {
+                ...issue,
+                corrected: false,
+            }
+        }
         return {
             ...issue,
-            ...(correction ? cleanObject(correction): {}),
+            ...cleanObject(correction),
             links: {
-                inward: issue.links.inward.concat(correction ? correction.links?.inward ?? [] : []),
-                outward: issue.links.outward.concat(correction ? correction.links?.outward ?? [] : []),
+                inward: mergeArrays(issue.links?.inward ?? [], correction.links?.inward ?? [], (a, b) => a.key === b.key),
+                outward: mergeArrays(issue.links?.outward ?? [], correction.links?.outward ?? [], (a, b) => a.key === b.key),
             },
-            corrected: !!correction,
+            corrected: true,
         }
     }) : [];
 
     const links = Array.from<[string, LinkDescription]>(scheduledIssues ? scheduledIssues.reduce((acc: Map<string, LinkDescription>, issue: Issue) => {
+        if (!issue.links) {
+            return acc;
+        }
         Object.entries(issue.links).reduce((acc, [type, links]) => {
             links.reduce((acc, link) => {
                 const key = type === 'inward' ? `${issue.key}-${link.key}` : `${link.key}-${issue.key}`;
@@ -171,13 +179,13 @@ export default function Page()
                     onSize={onSize}
                 />
             }
-            begin={issue.begin}
-            end={issue.end}
+            begin={issue.begin ?? ''}
+            end={issue.end ?? ''}
             card={
                 <Card
                     key={issue.key}
                     id={issue.key}
-                    title={issue.summary}
+                    title={issue.summary ?? ''}
                     corrected={issue.corrected}
                 />
             }

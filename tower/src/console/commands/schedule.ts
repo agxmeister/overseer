@@ -28,7 +28,7 @@ export default async function schedule(args: string[], context: Context, setters
                 break;
             case Action.Reset:
                 await unlink(context, setters, lines);
-                setters.setSchedule([]);
+                setters.setSchedule({issues: []});
                 setters.setMode(Mode.View);
                 break;
             case Action.Apply:
@@ -38,10 +38,10 @@ export default async function schedule(args: string[], context: Context, setters
 
                 context.issues.reduce(
                     (acc: {from: string, to: string}[], issue) => acc.concat(
-                        issue.links.outward
+                        (issue.links?.outward ?? [])
                             .filter(link => link.type === 'Follows')
                             .map(link => ({from: link.key, to: issue.key})),
-                        issue.links.inward
+                        (issue.links?.inward ?? [])
                             .filter(link => link.type === 'Follows')
                             .map(link => ({from: issue.key, to: link.key})),
                     ),
@@ -74,11 +74,11 @@ export default async function schedule(args: string[], context: Context, setters
 
                 await Promise.all(promises);
                 
-                setters.setSchedule([]);
+                setters.setSchedule({issues: []});
                 setters.setMode(Mode.View);
                 break;
             case Action.Rollback:
-                setters.setSchedule([]);
+                setters.setSchedule({issues: []});
                 setters.setMode(Mode.View);
                 break;
             case Action.Mode:
@@ -98,10 +98,10 @@ async function unlink(context: Context, setters: Setters, lines: string[])
 
     context.issues.reduce(
         (acc: {from: string, to: string}[], issue) => acc.concat(
-            issue.links.inward
+            (issue.links?.inward ?? [])
                 .filter(link => link.type === 'Follows')
                 .map(link => ({from: issue.key, to: link.key})),
-            issue.links.outward
+            (issue.links?.outward ?? [])
                 .filter(link => link.type === 'Follows')
                 .map(link => ({from: link.key, to: issue.key})),
         ),

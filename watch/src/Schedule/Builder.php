@@ -10,6 +10,8 @@ use Watch\Schedule\Strategy\Strategy;
 
 class Builder
 {
+    const VOLUME_ISSUES = 'issues';
+
     private array|null $issues = null;
     private Milestone|null $milestone = null;
 
@@ -19,7 +21,9 @@ class Builder
     {
         $this->issues = $issues;
         $this->milestone = Utils::getMilestone($issues);
-        $this->result = [];
+        $this->result = [
+            self::VOLUME_ISSUES => [],
+        ];
         return $this;
     }
 
@@ -31,7 +35,7 @@ class Builder
 
     public function schedule(DateTime $date): self
     {
-        $this->applyDiffToResult(array_filter(array_map(function (array $issue) use ($date) {
+        $this->applyDiffToResult(self::VOLUME_ISSUES, array_filter(array_map(function (array $issue) use ($date) {
             /** @var Node $node */
             $node = $this->getNode($issue['key']);
             if (is_null($node)) {
@@ -52,7 +56,7 @@ class Builder
 
     public function addDates(): self
     {
-        $this->applyDiffToResult(array_filter(array_map(function (array $issue) {
+        $this->applyDiffToResult(self::VOLUME_ISSUES, array_filter(array_map(function (array $issue) {
             /** @var Node $node */
             $node = $this->getNode($issue['key']);
             if (is_null($node)) {
@@ -69,7 +73,7 @@ class Builder
 
     public function addLinks(): self
     {
-        $this->applyDiffToResult(array_filter(array_map(function (array $issue) {
+        $this->applyDiffToResult(self::VOLUME_ISSUES, array_filter(array_map(function (array $issue) {
             /** @var Node $node */
             $node = $this->getNode($issue['key']);
             if (is_null($node)) {
@@ -119,7 +123,7 @@ class Builder
         $longestNode = Utils::getLongestSequence($nodes);
         $criticalChainNodes = [$longestNode, ...$longestNode->getPreceders(true)];
         foreach ($criticalChainNodes as $criticalChainNode) {
-            $this->addToResult($criticalChainNode->getName(), [
+            $this->addToResult(self::VOLUME_ISSUES, $criticalChainNode->getName(), [
                 'isCritical' => true,
             ]);
         }
@@ -128,7 +132,7 @@ class Builder
 
     public function release(): array
     {
-        return array_values($this->result);
+        return array_map(fn($values) => array_values($values), $this->result);
     }
 
     private function getNode($key): Node|null
@@ -139,20 +143,20 @@ class Builder
         );
     }
 
-    private function applyDiffToResult(array $diff): void
+    private function applyDiffToResult(string $volume, array $diff): void
     {
         foreach ($diff as $item) {
             if (!isset($item['key'])) {
                 continue;
             }
-            $this->addToResult($item['key'], $item);
+            $this->addToResult($volume, $item['key'], $item);
         }
     }
 
-    private function addToResult(string $key, array $values): void
+    private function addToResult(string $volume, string $key, array $values): void
     {
-        $this->result[$key] = [
-            ...($this->result[$key] ?? ['key' => $key]),
+        $this->result[$volume][$key] = [
+            ...($this->result[$volume][$key] ?? ['key' => $key]),
             ...array_filter($values, fn($key) => $key !== 'key', ARRAY_FILTER_USE_KEY)
         ];
     }

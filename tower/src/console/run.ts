@@ -7,14 +7,14 @@ import {Schedule} from "@/types/Schedule";
 
 export type Context = {
     issues: Issue[],
-    schedule: Schedule[],
+    schedule: Schedule,
 }
 
 export type Setters = {
     setScale: (scale: number) => void,
     setDates: (dates: string[]) => void,
     setMode: (mode: string) => void,
-    setSchedule: (schedule: Schedule[]) => void,
+    setSchedule: (schedule: Schedule) => void,
     onTaskResize: (mutation: {taskId: string, begin?: string, end?: string}) => Promise<void>,
     onLink: (from: string, to: string, type: string) => Promise<void>,
     onUnlink: (from: string, to: string, type: string) => Promise<void>,

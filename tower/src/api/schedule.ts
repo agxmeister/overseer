@@ -2,7 +2,7 @@ import {Schedule} from "@/types/Schedule";
 import {ApiUrl} from "@/constants/api";
 import {format} from "@/utils/date";
 
-export function getSchedule(date: Date): Promise<Schedule[]>
+export function getSchedule(date: Date): Promise<Schedule>
 {
     return fetch(ApiUrl.SCHEDULE, {
         method: 'PUT',
