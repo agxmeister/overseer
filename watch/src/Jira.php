@@ -3,6 +3,8 @@
 namespace Watch;
 
 use GuzzleHttp\Client;
+use Watch\Schedule\Model\Link;
+
 class Jira
 {
     private Client $client;
@@ -51,7 +53,7 @@ class Jira
                     'key' => $inwardJiraId,
                 ],
                 'type' => [
-                    'name' => $type,
+                    'name' => $this->getLinkNameByType($type),
                 ],
             ],
         ]);
@@ -81,7 +83,7 @@ class Jira
                     fn($link) => [
                         'id' => $link->id,
                         'key' => $link->outwardIssue->key,
-                        'type' => $link->type->name,
+                        'type' => $this->getLinkTypeByName($link->type->name),
                     ],
                     array_filter(
                         $issue->fields->issuelinks,
@@ -92,7 +94,7 @@ class Jira
                     fn($link) => [
                         'id' => $link->id,
                         'key' => $link->inwardIssue->key,
-                        'type' => $link->type->name,
+                        'type' => $this->getLinkTypeByName($link->type->name),
                     ],
                     array_filter(
                         $issue->fields->issuelinks,
@@ -110,6 +112,16 @@ class Jira
             "end" => "customfield_10037",
         ];
         return $mapping[$field];
+    }
+
+    private function getLinkTypeByName($name): string
+    {
+        return $name === 'Depends' ? Link::TYPE_SEQUENCE : Link::TYPE_SCHEDULE;
+    }
+
+    private function getLinkNameByType($type): string
+    {
+        return $type === Link::TYPE_SEQUENCE ? 'Depends' : 'Follows';
     }
 
     private function getClient(): Client

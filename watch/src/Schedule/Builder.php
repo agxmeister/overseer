@@ -79,26 +79,29 @@ class Builder
             if (is_null($node)) {
                 return null;
             }
+
             $inwardLinks = array_values(array_map(
-                fn(Node $follower) => [
-                    'key' => $follower->getName(),
-                    'type' => 'Follows',
+                fn(Link $link) => [
+                    'key' => $link->getNode()->getName(),
+                    'type' => $link->getType(),
                 ],
                 array_filter(
-                    $node->getFollowers([Link::TYPE_SCHEDULE]),
-                    fn(Node $node) => !is_a($node, Milestone::class)
+                    $node->getFollowLinks(),
+                    fn(Link $link) => !is_a($link->getNode(), Milestone::class)
                 )
             ));
+
             $outwardLinks = array_values(array_map(
-                fn(Node $preceder) => [
-                    'key' => $preceder->getName(),
-                    'type' => 'Follows',
+                fn(Link $link) => [
+                    'key' => $link->getNode()->getName(),
+                    'type' => $link->getType(),
                 ],
                 array_filter(
-                    $node->getPreceders(false, [Link::TYPE_SCHEDULE]),
-                    fn(Node $node) => !is_a($node, Milestone::class)
+                    $node->getPrecedeLinks(),
+                    fn(Link $link) => !is_a($link->getNode(), Milestone::class)
                 )
             ));
+
             $links = [];
             if ($inwardLinks) {
                 $links['inward'] = $inwardLinks;

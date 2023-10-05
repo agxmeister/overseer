@@ -92,7 +92,7 @@ export default function Link({ startMarkerId, finishMarkerId, type }: LinkProps)
             y: coords.toY - canvasStartPoint.y,
         }]).reduce((acc, point) => `${acc}${acc ? ' ' : ''}${point.x},${point.y}`, "");
 
-    const color = type === Type.Depends ? "rgb(39, 39, 39)" : "rgb(234, 234, 234)";
+    const color = type === Type.Sequence ? "rgb(39, 39, 39)" : "rgb(234, 234, 234)";
 
     return (
         <div className={styles.link} ref={boxRef}>

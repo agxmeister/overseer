@@ -80,6 +80,14 @@ class Node
         ));
     }
 
+    public function getFollowLinks(array $types = []): array
+    {
+        return array_filter(
+            $this->followers,
+            fn(Link $link) => empty($types) || in_array($link->getType(), $types)
+        );
+    }
+
     /**
      * @param bool $isRecursively
      * @param string[] $types
@@ -99,6 +107,14 @@ class Node
             $preceders = [...$preceders, ...$link->getNode()->getPreceders(true)];
         }
         return Utils::getUnique($preceders);
+    }
+
+    public function getPrecedeLinks(array $types = []): array
+    {
+        return array_filter(
+            $this->preceders,
+            fn(Link $link) => empty($types) || in_array($link->getType(), $types)
+        );
     }
 
     public function getDistance(bool $withPreceders = false, array $types = []): int

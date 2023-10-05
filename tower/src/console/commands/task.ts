@@ -26,7 +26,7 @@ export default async function task(args: string[], context: Context, setters: Se
                 await setters.onLink(
                     getNamedArg(args, 'from'),
                     getNamedArg(args, 'to'),
-                    LinkType.Follows,
+                    LinkType.Schedule,
                 );
                 break;
             case Action.Unlink:

@@ -62,8 +62,7 @@ class Utils
                 $follower = $nodes[$link['key']] ?? null;
                 $preceder = $nodes[$issue['key']] ?? null;
                 if (!is_null($preceder) && !is_null($follower)) {
-                    $type = $link['type'] === 'Depends' ? Link::TYPE_SEQUENCE : Link::TYPE_SCHEDULE;
-                    $follower->follow($preceder, $type);
+                    $follower->follow($preceder, $link['type']);
                 }
             }
             if (empty($inwards)) {

@@ -103,7 +103,7 @@ export default function Page()
         });
     }
 
-    const onLink = async (outwardTaskId: string, inwardTaskId: string, type: string = LinkType.Depends) => {
+    const onLink = async (outwardTaskId: string, inwardTaskId: string, type: string = LinkType.Sequence) => {
         await mutateIssues(() => addLink(outwardTaskId, inwardTaskId, type),{
             populateCache: false,
         });

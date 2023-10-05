@@ -18,7 +18,7 @@ class Tasks
             array_map(
                 fn($issue) => array_filter(
                     $issue,
-                    fn($key) => in_array($key, ['key', 'summary', 'begin', 'end', 'links']),
+                    fn($key) => in_array($key, ['key', 'summary', 'begin', 'end']),
                     ARRAY_FILTER_USE_KEY
                 ),
                 $this->jira->getIssues('')

@@ -8,7 +8,7 @@ class Link
     const TYPE_RESOURCE = 'resource';
     const TYPE_SCHEDULE = 'schedule';
 
-    public function __construct(private Node $node, private string $type = self::TYPE_SEQUENCE)
+    public function __construct(private readonly Node $node, private readonly string $type = self::TYPE_SEQUENCE)
     {
     }
 
