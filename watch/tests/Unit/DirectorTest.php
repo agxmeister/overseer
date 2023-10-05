@@ -27,6 +27,12 @@ class DirectorTest extends Unit
                     'end' => null,
                     'links' => [
                         'inward' => [],
+                        'outward' => [
+                            [
+                                'key' => 'K-02',
+                                'type' => 'sequence',
+                            ],
+                        ],
                     ],
                 ], [
                     'key' => 'K-02',
@@ -37,9 +43,10 @@ class DirectorTest extends Unit
                         'inward' => [
                             [
                                 'key' => 'K-01',
-                                'type' => 'Depends',
-                            ]
+                                'type' => 'sequence',
+                            ],
                         ],
+                        'outward' => [],
                     ],
                 ], [
                     'key' => 'K-03',
@@ -48,29 +55,48 @@ class DirectorTest extends Unit
                     'end' => null,
                     'links' => [
                         'inward' => [],
+                        'outward' => [],
                     ],
-                ]
+                ],
             ],
             new DateTime('2023-09-09'),
             $this->makeEmpty(Strategy::class),
         );
         $this->assertEquals(
             [
-                [
-                    'key' => 'K-01',
-                    'begin' => '2023-09-05',
-                    'end' => '2023-09-08',
-                    'isCritical' => true,
-                ], [
-                    'key' => 'K-02',
-                    'begin' => '2023-09-01',
-                    'end' => '2023-09-04',
-                    'isCritical' => true,
-                ], [
-                    'key' => 'K-03',
-                    'begin' => '2023-09-01',
-                    'end' => '2023-09-08',
-                ]
+                'issues' => [
+                    [
+                        'key' => 'K-01',
+                        'begin' => '2023-09-05',
+                        'end' => '2023-09-08',
+                        'isCritical' => true,
+                        'links' => [
+                            'outward' => [
+                                [
+                                    'key' => 'K-02',
+                                    'type' => 'sequence',
+                                ],
+                            ],
+                        ],
+                    ], [
+                        'key' => 'K-02',
+                        'begin' => '2023-09-01',
+                        'end' => '2023-09-04',
+                        'isCritical' => true,
+                        'links' => [
+                            'inward' => [
+                                [
+                                    'key' => 'K-01',
+                                    'type' => 'sequence',
+                                ],
+                            ],
+                        ],
+                    ], [
+                        'key' => 'K-03',
+                        'begin' => '2023-09-01',
+                        'end' => '2023-09-08',
+                    ],
+                ],
             ],
             $schedule,
         );
@@ -91,6 +117,7 @@ class DirectorTest extends Unit
                     'end' => null,
                     'links' => [
                         'inward' => [],
+                        'outward' => [],
                     ],
                 ], [
                     'key' => 'K-02',
@@ -99,6 +126,7 @@ class DirectorTest extends Unit
                     'end' => null,
                     'links' => [
                         'inward' => [],
+                        'outward' => [],
                     ],
                 ],
             ],
@@ -111,32 +139,34 @@ class DirectorTest extends Unit
         );
         $this->assertEquals(
             [
-                [
-                    'key' => 'K-01',
-                    'begin' => '2023-09-05',
-                    'end' => '2023-09-08',
-                    'links' => [
-                        'outward' => [
-                            [
-                                'key' => 'K-02',
-                                'type' => 'Follows',
+                'issues' => [
+                    [
+                        'key' => 'K-01',
+                        'begin' => '2023-09-05',
+                        'end' => '2023-09-08',
+                        'links' => [
+                            'outward' => [
+                                [
+                                    'key' => 'K-02',
+                                    'type' => 'schedule',
+                                ],
                             ],
                         ],
-                    ],
-                    'isCritical' => true,
-                ], [
-                    'key' => 'K-02',
-                    'begin' => '2023-09-01',
-                    'end' => '2023-09-04',
-                    'links' => [
-                        'inward' => [
-                            [
-                                'key' => 'K-01',
-                                'type' => 'Follows',
+                        'isCritical' => true,
+                    ], [
+                        'key' => 'K-02',
+                        'begin' => '2023-09-01',
+                        'end' => '2023-09-04',
+                        'links' => [
+                            'inward' => [
+                                [
+                                    'key' => 'K-01',
+                                    'type' => 'schedule',
+                                ],
                             ],
                         ],
+                        'isCritical' => true,
                     ],
-                    'isCritical' => true,
                 ],
             ],
             $schedule,
