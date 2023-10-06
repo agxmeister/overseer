@@ -20,7 +20,6 @@ import {setDates as setTaskDates} from "@/api/task";
 import {addLink, removeLink} from "@/api/links";
 import {Type as LinkType} from "@/types/Link";
 import {Edits} from "@/types/Edits";
-import {Edit} from "@sinclair/typebox/value";
 
 export default function Page()
 {
@@ -47,7 +46,7 @@ export default function Page()
     const [edits, setEdits] = useState<Edits>({schedule: {issues: []}});
     const setSchedule = (schedule: Schedule) => setEdits({...edits, schedule: schedule});
 
-    const {data: plan} = useSWR(ApiUrl.SCHEDULE, (api: string) => fetch(api).then(res => res.json()));
+    const {data: plan}: {data: {issues: Issue[], criticalChain: string[]}} = useSWR(ApiUrl.SCHEDULE, (api: string) => fetch(api).then(res => res.json()));
     const {data: issues, mutate: mutateIssues} = useSWR(ApiUrl.TASKS, (api: string) => fetch(api).then(res => res.json()));
 
     const plannedIssues = plan && issues ? plan.issues.map((issue: Issue) => {
@@ -161,6 +160,8 @@ export default function Page()
             />
         ));
 
+    const isCritical = (key: string): boolean => plan.criticalChain.includes(key);
+
     const tasks = scheduledIssues.map((issue: Issue) =>
         <Task
             key={issue.key}
@@ -186,6 +187,7 @@ export default function Page()
                     key={issue.key}
                     id={issue.key}
                     title={issue.summary ?? ''}
+                    critical={isCritical(issue.key)}
                     corrected={issue.corrected}
                 />
             }
