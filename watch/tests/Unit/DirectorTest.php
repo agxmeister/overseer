@@ -69,7 +69,6 @@ class DirectorTest extends Unit
                         'key' => 'K-01',
                         'begin' => '2023-09-05',
                         'end' => '2023-09-08',
-                        'isCritical' => true,
                         'links' => [
                             'outward' => [
                                 [
@@ -82,7 +81,6 @@ class DirectorTest extends Unit
                         'key' => 'K-02',
                         'begin' => '2023-09-01',
                         'end' => '2023-09-04',
-                        'isCritical' => true,
                         'links' => [
                             'inward' => [
                                 [
@@ -97,6 +95,7 @@ class DirectorTest extends Unit
                         'end' => '2023-09-08',
                     ],
                 ],
+                'criticalChain' => ['K-01', 'K-02'],
             ],
             $schedule,
         );
@@ -152,7 +151,6 @@ class DirectorTest extends Unit
                                 ],
                             ],
                         ],
-                        'isCritical' => true,
                     ], [
                         'key' => 'K-02',
                         'begin' => '2023-09-01',
@@ -165,9 +163,9 @@ class DirectorTest extends Unit
                                 ],
                             ],
                         ],
-                        'isCritical' => true,
                     ],
                 ],
+                'criticalChain' => ['K-01', 'K-02'],
             ],
             $schedule,
         );

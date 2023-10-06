@@ -11,6 +11,7 @@ use Watch\Schedule\Strategy\Strategy;
 class Builder
 {
     const VOLUME_ISSUES = 'issues';
+    const VOLUME_CRITICAL_CHAIN = 'criticalChain';
 
     private array|null $issues = null;
     private Milestone|null $milestone = null;
@@ -23,6 +24,7 @@ class Builder
         $this->milestone = Utils::getMilestone($issues);
         $this->result = [
             self::VOLUME_ISSUES => [],
+            self::VOLUME_CRITICAL_CHAIN => [],
         ];
         return $this;
     }
@@ -125,11 +127,11 @@ class Builder
         $nodes = $this->milestone->getPreceders(true);
         $longestNode = Utils::getLongestSequence($nodes);
         $criticalChainNodes = [$longestNode, ...$longestNode->getPreceders(true)];
-        foreach ($criticalChainNodes as $criticalChainNode) {
-            $this->addToResult(self::VOLUME_ISSUES, $criticalChainNode->getName(), [
-                'isCritical' => true,
-            ]);
-        }
+        $this->result[self::VOLUME_CRITICAL_CHAIN] = array_reduce(
+            $criticalChainNodes,
+            fn($acc, Node $node) => [...$acc, $node->getName()],
+            []
+        );
         return $this;
     }
 
