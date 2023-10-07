@@ -50,7 +50,7 @@ class DirectorTest extends Unit
                     ],
                 ], [
                     'key' => 'K-03',
-                    'duration' => '8',
+                    'duration' => '7',
                     'begin' => null,
                     'end' => null,
                     'links' => [
@@ -59,7 +59,7 @@ class DirectorTest extends Unit
                     ],
                 ],
             ],
-            new DateTime('2023-09-09'),
+            new DateTime('2023-09-21'),
             $this->makeEmpty(Strategy::class),
         );
         $this->assertEquals(
@@ -67,8 +67,8 @@ class DirectorTest extends Unit
                 'issues' => [
                     [
                         'key' => 'K-01',
-                        'begin' => '2023-09-05',
-                        'end' => '2023-09-08',
+                        'begin' => '2023-09-13',
+                        'end' => '2023-09-16',
                         'links' => [
                             'outward' => [
                                 [
@@ -79,8 +79,8 @@ class DirectorTest extends Unit
                         ],
                     ], [
                         'key' => 'K-02',
-                        'begin' => '2023-09-01',
-                        'end' => '2023-09-04',
+                        'begin' => '2023-09-09',
+                        'end' => '2023-09-12',
                         'links' => [
                             'inward' => [
                                 [
@@ -91,8 +91,8 @@ class DirectorTest extends Unit
                         ],
                     ], [
                         'key' => 'K-03',
-                        'begin' => '2023-09-01',
-                        'end' => '2023-09-08',
+                        'begin' => '2023-09-10',
+                        'end' => '2023-09-16',
                     ],
                 ],
                 'criticalChain' => ['K-01', 'K-02'],
@@ -129,7 +129,7 @@ class DirectorTest extends Unit
                     ],
                 ],
             ],
-            new DateTime('2023-09-09'),
+            new DateTime('2023-09-21'),
             $this->makeEmpty(Strategy::class, ['schedule' => function (Node $node) {
                 $preceders = $node->getPreceders();
                 $preceders[1]->unprecede($node);
@@ -141,8 +141,8 @@ class DirectorTest extends Unit
                 'issues' => [
                     [
                         'key' => 'K-01',
-                        'begin' => '2023-09-05',
-                        'end' => '2023-09-08',
+                        'begin' => '2023-09-13',
+                        'end' => '2023-09-16',
                         'links' => [
                             'outward' => [
                                 [
@@ -153,8 +153,8 @@ class DirectorTest extends Unit
                         ],
                     ], [
                         'key' => 'K-02',
-                        'begin' => '2023-09-01',
-                        'end' => '2023-09-04',
+                        'begin' => '2023-09-09',
+                        'end' => '2023-09-12',
                         'links' => [
                             'inward' => [
                                 [

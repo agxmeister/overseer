@@ -3,6 +3,7 @@
 namespace Watch\Schedule;
 
 use DateTime;
+use Watch\Schedule\Model\Buffer;
 use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Milestone;
 use Watch\Schedule\Model\Node;
@@ -89,7 +90,7 @@ class Builder
                 ],
                 array_filter(
                     $node->getFollowLinks(),
-                    fn(Link $link) => !is_a($link->getNode(), Milestone::class)
+                    fn(Link $link) => !is_a($link->getNode(), Milestone::class) && !is_a($link->getNode(), Buffer::class)
                 )
             ));
 
@@ -100,7 +101,7 @@ class Builder
                 ],
                 array_filter(
                     $node->getPrecedeLinks(),
-                    fn(Link $link) => !is_a($link->getNode(), Milestone::class)
+                    fn(Link $link) => !is_a($link->getNode(), Milestone::class) && !is_a($link->getNode(), Buffer::class)
                 )
             ));
 
@@ -124,14 +125,24 @@ class Builder
 
     public function addCriticalChain(): self
     {
-        $nodes = $this->milestone->getPreceders(true);
-        $longestNode = Utils::getLongestSequence($nodes);
-        $criticalChainNodes = [$longestNode, ...$longestNode->getPreceders(true)];
+        $criticalChain = Utils::getCriticalChain($this->milestone);
+        $criticalChainNodes = [$criticalChain, ...$criticalChain->getPreceders(true)];
         $this->result[self::VOLUME_CRITICAL_CHAIN] = array_reduce(
             $criticalChainNodes,
             fn($acc, Node $node) => [...$acc, $node->getName()],
             []
         );
+        return $this;
+    }
+
+    public function addMilestoneBuffer(): self
+    {
+        $criticalChain = Utils::getCriticalChain($this->milestone);
+        $buffer = new Buffer("{$this->milestone->getName()}-buffer", $criticalChain->getLength(true) / 2);
+        $nodes = $this->milestone->getPreceders();
+        array_walk($nodes, fn(Node $node) => $node->unprecede($this->milestone));
+        array_walk($nodes, fn(Node $node) => $node->precede($buffer, Link::TYPE_SCHEDULE));
+        $buffer->precede($this->milestone, Link::TYPE_SCHEDULE);
         return $this;
     }
 

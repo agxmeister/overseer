@@ -15,9 +15,10 @@ class Director
     {
         return $this->builder
             ->run($issues)
+            ->addCriticalChain()
+            ->addMilestoneBuffer()
             ->addDates()
             ->addLinks()
-            ->addCriticalChain()
             ->release();
     }
 
@@ -26,9 +27,10 @@ class Director
         return $this->builder
             ->run($issues)
             ->distribute($strategy)
+            ->addCriticalChain()
+            ->addMilestoneBuffer()
             ->schedule($date)
             ->addLinks()
-            ->addCriticalChain()
             ->release();
     }
 }

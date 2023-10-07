@@ -8,6 +8,12 @@ use Watch\Schedule\Model\Node;
 
 class Utils
 {
+    static public function getCriticalChain(Milestone $milestone): Node
+    {
+        $nodes = $milestone->getPreceders(true);
+        return self::getLongestSequence($nodes);
+    }
+
     /**
      * @param Node[] $nodes
      * @return Node
