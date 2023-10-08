@@ -17,7 +17,8 @@ class Director
             ->run($issues)
             ->addCriticalChain()
             ->addMilestoneBuffer()
-            ->addDates()
+            ->addIssuesDates()
+            ->addBuffersDates()
             ->addLinks()
             ->release();
     }

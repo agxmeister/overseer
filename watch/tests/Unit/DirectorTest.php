@@ -96,6 +96,7 @@ class DirectorTest extends Unit
                     ],
                 ],
                 'criticalChain' => ['K-01', 'K-02'],
+                'buffers' => [],
             ],
             $schedule,
         );
@@ -166,6 +167,7 @@ class DirectorTest extends Unit
                     ],
                 ],
                 'criticalChain' => ['K-01', 'K-02'],
+                'buffers' => [],
             ],
             $schedule,
         );

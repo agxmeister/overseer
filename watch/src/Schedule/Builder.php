@@ -13,9 +13,12 @@ class Builder
 {
     const VOLUME_ISSUES = 'issues';
     const VOLUME_CRITICAL_CHAIN = 'criticalChain';
+    const VOLUME_BUFFERS = 'buffers';
 
     private array|null $issues = null;
     private Milestone|null $milestone = null;
+
+    private array|null $buffers = null;
 
     private array|null $result = null;
 
@@ -23,9 +26,11 @@ class Builder
     {
         $this->issues = $issues;
         $this->milestone = Utils::getMilestone($issues);
+        $this->buffers = [];
         $this->result = [
             self::VOLUME_ISSUES => [],
             self::VOLUME_CRITICAL_CHAIN => [],
+            self::VOLUME_BUFFERS => [],
         ];
         return $this;
     }
@@ -57,7 +62,7 @@ class Builder
         return $this;
     }
 
-    public function addDates(): self
+    public function addIssuesDates(): self
     {
         $this->applyDiffToResult(self::VOLUME_ISSUES, array_filter(array_map(function (array $issue) {
             /** @var Node $node */
@@ -71,6 +76,25 @@ class Builder
                 'end' => $issue['end'],
             ];
         }, $this->issues), fn($item) => !is_null($item)));
+        return $this;
+    }
+
+    public function addBuffersDates(): self
+    {
+        $this->applyDiffToResult(self::VOLUME_BUFFERS, array_filter(array_map(function (Buffer $buffer) {
+            $end = max(...array_map(
+                fn(Node $node) => $this->getIssue($node->getName())['end'] ?? null,
+                $buffer->getPreceders()
+            ));
+            $date = new DateTime($end);
+            $startDate = (clone $date)->modify("1 day");
+            $finishDate = (clone $date)->modify("{$buffer->getLength()} day");
+            return [
+                'key' => $buffer->getName(),
+                'begin' => $startDate->format("Y-m-d"),
+                'end' => $finishDate->format("Y-m-d"),
+            ];
+        }, $this->buffers), fn($item) => !is_null($item)));
         return $this;
     }
 
@@ -143,6 +167,7 @@ class Builder
         array_walk($nodes, fn(Node $node) => $node->unprecede($this->milestone));
         array_walk($nodes, fn(Node $node) => $node->precede($buffer, Link::TYPE_SCHEDULE));
         $buffer->precede($this->milestone, Link::TYPE_SCHEDULE);
+        $this->buffers[] = $buffer;
         return $this;
     }
 
@@ -175,5 +200,10 @@ class Builder
             ...($this->result[$volume][$key] ?? ['key' => $key]),
             ...array_filter($values, fn($key) => $key !== 'key', ARRAY_FILTER_USE_KEY)
         ];
+    }
+
+    private function getIssue($key): array|null
+    {
+        return array_reduce($this->issues, fn($acc, $issue) => $issue['key'] === $key ? $issue : $acc);
     }
 }
