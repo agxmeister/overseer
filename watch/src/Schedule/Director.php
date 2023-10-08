@@ -18,8 +18,9 @@ class Director
             ->addCriticalChain()
             ->addMilestoneBuffer()
             ->addIssuesDates()
+            ->addIssuesLinks()
             ->addBuffersDates()
-            ->addLinks()
+            ->addBuffersLinks()
             ->release();
     }
 
@@ -31,7 +32,7 @@ class Director
             ->addCriticalChain()
             ->addMilestoneBuffer()
             ->schedule($date)
-            ->addLinks()
+            ->addIssuesLinks()
             ->release();
     }
 }
