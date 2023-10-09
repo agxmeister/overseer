@@ -46,7 +46,7 @@ export default function Page()
     const [edits, setEdits] = useState<Edits>({schedule: {issues: []}});
     const setSchedule = (schedule: Schedule) => setEdits({...edits, schedule: schedule});
 
-    const {data: plan}: {data: {issues: Issue[], criticalChain: string[]}} = useSWR(ApiUrl.SCHEDULE, (api: string) => fetch(api).then(res => res.json()));
+    const {data: plan}: {data: {issues: Issue[], criticalChain: string[], buffers: Issue[]}} = useSWR(ApiUrl.SCHEDULE, (api: string) => fetch(api).then(res => res.json()));
     const {data: issues, mutate: mutateIssues} = useSWR(ApiUrl.TASKS, (api: string) => fetch(api).then(res => res.json()));
 
     const plannedIssues = plan && issues ? plan.issues.map((issue: Issue) => {
@@ -63,6 +63,27 @@ export default function Page()
             },
         }
     }) : [];
+
+    const scheduledIssues = plannedIssues ? plannedIssues.map((issue: Issue) => {
+        const correction = edits.schedule.issues.find(current => current.key === issue.key);
+        if (!correction) {
+            return {
+                ...issue,
+                corrected: false,
+            }
+        }
+        return {
+            ...issue,
+            ...cleanObject(correction),
+            links: {
+                inward: mergeArrays(issue.links?.inward ?? [], correction.links?.inward ?? [], (a, b) => a.key === b.key),
+                outward: mergeArrays(issue.links?.outward ?? [], correction.links?.outward ?? [], (a, b) => a.key === b.key),
+            },
+            corrected: true,
+        }
+    }) : [];
+
+    const scheduledBuffers = plan ? plan.buffers.map((buffer: Issue) => ({...buffer})) : [];
 
     const onTask = async (mutation: {taskId: string, begin?: string, end?: string}) => {
         switch (mode) {
@@ -113,25 +134,6 @@ export default function Page()
             populateCache: false,
         });
     }
-
-    const scheduledIssues = plannedIssues ? plannedIssues.map((issue: Issue) => {
-        const correction = edits.schedule.issues.find(current => current.key === issue.key);
-        if (!correction) {
-            return {
-                ...issue,
-                corrected: false,
-            }
-        }
-        return {
-            ...issue,
-            ...cleanObject(correction),
-            links: {
-                inward: mergeArrays(issue.links?.inward ?? [], correction.links?.inward ?? [], (a, b) => a.key === b.key),
-                outward: mergeArrays(issue.links?.outward ?? [], correction.links?.outward ?? [], (a, b) => a.key === b.key),
-            },
-            corrected: true,
-        }
-    }) : [];
 
     const links = Array.from<[string, LinkDescription]>(scheduledIssues ? scheduledIssues.reduce((acc: Map<string, LinkDescription>, issue: Issue) => {
         if (!issue.links) {
@@ -193,7 +195,22 @@ export default function Page()
             }
             onLink={onLink}
         />
-    );
+    ).concat(scheduledBuffers.map((buffer: Issue) =>
+        <Track
+            key={buffer.key}
+            id={buffer.key}
+            begin={buffer.begin ?? ''}
+            end={buffer.end ?? ''}
+            card={
+                <Card
+                    key={buffer.key}
+                    id={buffer.key}
+                    title={buffer.key}
+                />
+            }
+            onLink={onLink}
+        />
+    ));
 
     const slots = sizeTrackId !== null ? dates
         .map(date =>

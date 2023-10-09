@@ -9,8 +9,8 @@ import {MapContext} from "@/components/Map/Map";
 
 export type TrackProps = {
     id: string,
-    markerLeft: ReactElement<MarkerProps>
-    markerRight: ReactElement<MarkerProps>
+    markerLeft?: ReactElement<MarkerProps>
+    markerRight?: ReactElement<MarkerProps>
     begin: string,
     end: string,
     card: ReactElement<CardProps>,
