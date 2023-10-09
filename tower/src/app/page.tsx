@@ -2,14 +2,14 @@
 
 import useSWR from 'swr'
 
-import {default as TaskMap} from "@/components/Map/Map";
+import {default as TrackMap} from "@/components/Map/Map";
 import Card from "@/components/Card/Card";
 import React, {useState} from "react";
 import Slot from "@/components/Slot/Slot";
 import {getDates, shiftDate} from "@/utils/date";
 import Marker, {MarkerPosition} from "@/components/Marker/Marker";
 import Link from "@/components/Link/Link";
-import Task from "@/components/Task/Task";
+import Track from "@/components/Track/Track";
 import Console from "@/components/Console/Console";
 import {ApiUrl} from "@/constants/api";
 import {Issue} from "@/types/Issue";
@@ -38,9 +38,9 @@ export default function Page()
     const initialDates = getDates(shiftDate(now, -15), shiftDate(now, 15));
     const [dates, setDates] = useState<string[]>(initialDates);
 
-    const [sizeTaskId, setSizeTaskId] = useState<string|null>(null);
-    const onSize = (taskId: string) => {
-        setSizeTaskId(taskId);
+    const [sizeTrackId, setSizeTrackId] = useState<string|null>(null);
+    const onSize = (trackId: string) => {
+        setSizeTrackId(trackId);
     }
 
     const [edits, setEdits] = useState<Edits>({schedule: {issues: []}});
@@ -162,8 +162,8 @@ export default function Page()
 
     const isCritical = (key: string): boolean => plan.criticalChain.includes(key);
 
-    const tasks = scheduledIssues.map((issue: Issue) =>
-        <Task
+    const tracks = scheduledIssues.map((issue: Issue) =>
+        <Track
             key={issue.key}
             id={issue.key}
             markerLeft={
@@ -195,11 +195,11 @@ export default function Page()
         />
     );
 
-    const slots = sizeTaskId !== null ? dates
+    const slots = sizeTrackId !== null ? dates
         .map(date =>
             <Slot
                 key={date}
-                id={sizeTaskId}
+                id={sizeTrackId}
                 position={date}
                 onTask={onTask}
             />
@@ -208,10 +208,10 @@ export default function Page()
     return (
         <>
             <div tabIndex={0} onKeyDown={handleScaleKeyDown}>
-                <TaskMap
+                <TrackMap
                     scale={scale}
                     dates={dates}
-                    tasks={tasks}
+                    tracks={tracks}
                     slots={slots}
                     links={links}
                 />

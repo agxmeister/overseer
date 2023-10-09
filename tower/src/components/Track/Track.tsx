@@ -1,4 +1,4 @@
-import styles from './Task.module.sass'
+import styles from './Track.module.sass'
 import {ReactElement, useContext} from "react";
 import {useDrop} from "react-dnd";
 import {CardProps} from "@/components/Card/Card";
@@ -7,7 +7,7 @@ import {ConnectDropTarget} from "react-dnd/src/types";
 import {MarkerPosition, MarkerProps} from "@/components/Marker/Marker";
 import {MapContext} from "@/components/Map/Map";
 
-export type TaskProps = {
+export type TrackProps = {
     id: string,
     markerLeft: ReactElement<MarkerProps>
     markerRight: ReactElement<MarkerProps>
@@ -22,7 +22,7 @@ type Link = {
     type: string,
 }
 
-export default function Task({id, markerLeft, markerRight, begin, end, card, onLink}: TaskProps)
+export default function Track({id, markerLeft, markerRight, begin, end, card, onLink}: TrackProps)
 {
     const {dates} = useContext(MapContext);
 

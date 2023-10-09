@@ -18,7 +18,7 @@ type Coords = {
 
 export default function Link({ startMarkerId, finishMarkerId, type }: LinkProps)
 {
-    const {scale, tasks} = useContext(MapContext);
+    const {scale, tracks} = useContext(MapContext);
 
     const [coords, setCoords] = useState<Coords|null>(null);
 
@@ -47,7 +47,7 @@ export default function Link({ startMarkerId, finishMarkerId, type }: LinkProps)
             toX: finishX - offsetX,
             toY: finishY - offsetY,
         });
-    }, [scale, tasks]);
+    }, [scale, tracks]);
 
     if (!coords) {
         return <div ref={boxRef}/>
