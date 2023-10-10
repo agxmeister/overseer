@@ -1,5 +1,5 @@
 <?php
-namespace Tests\Unit;
+namespace Tests\Unit\Schedule;
 
 use Codeception\Test\Unit;
 use Watch\Schedule\Model\Link;

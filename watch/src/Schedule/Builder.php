@@ -12,6 +12,7 @@ use Watch\Schedule\Strategy\Strategy;
 class Builder
 {
     const VOLUME_ISSUES = 'issues';
+    const VOLUME_LINKS = 'links';
     const VOLUME_CRITICAL_CHAIN = 'criticalChain';
     const VOLUME_BUFFERS = 'buffers';
 
@@ -130,6 +131,31 @@ class Builder
                 'links' => $links,
             ];
         }, $this->buffers), fn($item) => !is_null($item)));
+        return $this;
+    }
+
+    public function addLinks():self
+    {
+        $this->result[self::VOLUME_LINKS] = \Watch\Utils::getUnique(
+            array_reduce(
+                $this->milestone->getPreceders(true),
+                fn($acc, Node $node) => [
+                    ...$acc,
+                    ...array_map(fn(Link $link) => [
+                        'from' => $node->getName(),
+                        'to' => $link->getNode()->getName(),
+                        'type' => $link->getType(),
+                    ], $node->getFollowLinks()),
+                    ...array_map(fn(Link $link) => [
+                        'from' => $link->getNode()->getName(),
+                        'to' => $node->getName(),
+                        'type' => $link->getType(),
+                    ], $node->getPrecedeLinks()),
+                ],
+                []
+            ),
+            fn($link) => implode('-', array_values($link))
+        );
         return $this;
     }
 

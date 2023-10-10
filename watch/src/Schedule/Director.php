@@ -21,6 +21,7 @@ class Director
             ->addIssuesLinks()
             ->addBuffersDates()
             ->addBuffersLinks()
+            ->addLinks()
             ->release();
     }
 
