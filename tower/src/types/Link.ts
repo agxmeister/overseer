@@ -1,6 +1,6 @@
 export type Link = {
-    id: number,
-    key: string,
+    from: string,
+    to: string,
     type: string,
 }
 

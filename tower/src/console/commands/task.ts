@@ -1,7 +1,7 @@
 import {getActionArg, getDateArg, getNamedArg, getNamedNumberArg, hasNamedArg} from "@/console/utils";
 import {format} from "@/utils/date";
 import {Issue} from "@/types/Issue";
-import {Link as LinkObject, Type as LinkType} from "@/types/Link";
+import {Type as LinkType} from "@/types/Link";
 import {Context, Setters} from "@/console/run";
 
 enum Action {

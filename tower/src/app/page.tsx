@@ -18,7 +18,7 @@ import {Mode, Schedule} from "@/types/Schedule";
 import {cleanObject, mergeArrays} from "@/utils/misc";
 import {setDates as setTaskDates} from "@/api/task";
 import {addLink, removeLink} from "@/api/links";
-import {Type as LinkType} from "@/types/Link";
+import {Link as LinkObject, Type as LinkType} from "@/types/Link";
 import {Edits} from "@/types/Edits";
 
 export default function Page()
@@ -46,7 +46,7 @@ export default function Page()
     const [edits, setEdits] = useState<Edits>({schedule: {issues: []}});
     const setSchedule = (schedule: Schedule) => setEdits({...edits, schedule: schedule});
 
-    const {data: plan}: {data: {issues: Issue[], criticalChain: string[], buffers: Issue[]}} = useSWR(ApiUrl.SCHEDULE, (api: string) => fetch(api).then(res => res.json()));
+    const {data: plan}: {data: {issues: Issue[], criticalChain: string[], buffers: Issue[], links: LinkObject[]}} = useSWR(ApiUrl.SCHEDULE, (api: string) => fetch(api).then(res => res.json()));
     const {data: issues, mutate: mutateIssues} = useSWR(ApiUrl.TASKS, (api: string) => fetch(api).then(res => res.json()));
 
     const plannedIssues = plan && issues ? plan.issues.map((issue: Issue) => {
@@ -135,32 +135,14 @@ export default function Page()
         });
     }
 
-    const links = Array.from<[string, LinkDescription]>(scheduledIssues ? scheduledIssues.reduce((acc: Map<string, LinkDescription>, issue: Issue) => {
-        if (!issue.links) {
-            return acc;
-        }
-        Object.entries(issue.links).reduce((acc, [type, links]) => {
-            links.reduce((acc, link) => {
-                const key = type === 'inward' ? `${issue.key}-${link.key}` : `${link.key}-${issue.key}`;
-                acc.set(key, {
-                    start: type === 'inward' ? issue.key : link.key,
-                    finish: type === 'inward' ? link.key : issue.key,
-                    type: link.type,
-                });
-                return acc;
-            }, acc);
-            return acc;
-        }, acc);
-        return acc;
-    }, new Map<string, LinkDescription>()) : new Map<string, LinkDescription>())
-        .map(([key, link]: [string, LinkDescription]) => (
-            <Link
-                key={key}
-                startMarkerId={link.start}
-                finishMarkerId={link.finish}
-                type={link.type}
-            />
-        ));
+    const links = plan ? plan.links.map((link: LinkObject) => (
+        <Link
+            key={`${link.from}-${link.to}`}
+            startMarkerId={link.from}
+            finishMarkerId={link.to}
+            type={link.type}
+        />
+    )) : [];
 
     const isCritical = (key: string): boolean => plan.criticalChain.includes(key);
 
