@@ -117,7 +117,7 @@ class DirectorTest extends Unit
             [
                 [
                     'key' => 'K-01',
-                    'duration' => '5',
+                    'duration' => '4',
                     'begin' => null,
                     'end' => null,
                     'links' => [
@@ -143,12 +143,12 @@ class DirectorTest extends Unit
                 'issues' => [
                     [
                         'key' => 'K-01',
-                        'begin' => '2023-09-12',
+                        'begin' => '2023-09-13',
                         'end' => '2023-09-16',
                     ], [
                         'key' => 'K-02',
-                        'begin' => '2023-09-08',
-                        'end' => '2023-09-11',
+                        'begin' => '2023-09-09',
+                        'end' => '2023-09-12',
                     ],
                 ],
                 'criticalChain' => ['K-01', 'K-02'],

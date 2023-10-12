@@ -17,8 +17,11 @@ class Basic implements Strategy
             $numberOfTasksInParallel = count($ongoingNodes);
             while ($numberOfTasksInParallel > 2) {
                 $longestNode = Utils::getLongestSequence($completingNodes, [Link::TYPE_SEQUENCE]);
-                $shortestNode = Utils::getShortestSequence($ongoingNodes, [Link::TYPE_SEQUENCE]);
-                if ($longestNode === $shortestNode) {
+                $shortestNode = Utils::getShortestSequence(
+                    array_filter($ongoingNodes, fn(Node $node) => $node->getName() !== $longestNode->getName()),
+                    [Link::TYPE_SEQUENCE]
+                );
+                if (is_null($longestNode) || is_null($shortestNode)) {
                     break;
                 }
                 $followers = $longestNode->getFollowers([Link::TYPE_SCHEDULE]);

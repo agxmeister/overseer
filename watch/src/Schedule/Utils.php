@@ -16,10 +16,14 @@ class Utils
 
     /**
      * @param Node[] $nodes
-     * @return Node
+     * @param array $types
+     * @return Node|null
      */
-    static public function getLongestSequence(array $nodes, array $types = []): Node
+    static public function getLongestSequence(array $nodes, array $types = []): Node|null
     {
+        if (sizeof($nodes) === 0) {
+            return null;
+        }
         return array_reduce($nodes, fn(Node|null $acc, Node $node) => is_null($acc) ?
             $node : (
             $acc->getDistance(true, $types) < $node->getDistance(true, $types) ?
@@ -31,10 +35,14 @@ class Utils
 
     /**
      * @param Node[] $nodes
-     * @return Node
+     * @param array $types
+     * @return Node|null
      */
-    static public function getShortestSequence(array $nodes, array $types = []): Node
+    static public function getShortestSequence(array $nodes, array $types = []): Node|null
     {
+        if (sizeof($nodes) === 0) {
+            return null;
+        }
         return array_reduce($nodes, fn(Node|null $acc, Node $node) => is_null($acc) ?
             $node : (
             $acc->getDistance(true, $types) > $node->getDistance(true, $types) ?
