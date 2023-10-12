@@ -4,9 +4,11 @@ import schedule from "@/console/commands/schedule";
 import task from "@/console/commands/task";
 import {Issue} from "@/types/Issue";
 import {Schedule} from "@/types/Schedule";
+import {Link} from "@/types/Link";
 
 export type Context = {
     issues: Issue[],
+    links: Link[],
     schedule: Schedule,
 }
 

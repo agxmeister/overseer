@@ -2,7 +2,7 @@ import task from "@/console/commands/task";
 import {Mode} from "@/types/Schedule";
 import {getActionArg} from "@/console/utils";
 import {Context, Setters} from "@/console/run";
-import {Type as LinkType} from "@/types/Link";
+import {Link, Type as LinkType} from "@/types/Link";
 import {getSchedule} from "@/api/schedule";
 
 enum Action {
@@ -36,25 +36,14 @@ export default async function schedule(args: string[], context: Context, setters
 
                 const promises: Promise<string[]>[] = [];
 
-                context.issues.reduce(
-                    (acc: {from: string, to: string}[], issue) => acc.concat(
-                        (issue.links?.outward ?? [])
-                            .filter(link => link.type === LinkType.Schedule)
-                            .map(link => ({from: link.key, to: issue.key})),
-                        (issue.links?.inward ?? [])
-                            .filter(link => link.type === LinkType.Schedule)
-                            .map(link => ({from: issue.key, to: link.key})),
-                    ),
-                    []
-                )
-                    .filter((item, index, self) =>
-                        self.findIndex(current => current.from === item.from && current.to === item.to) === index)
-                    .forEach(item => {
+                context.links
+                    .filter((link: Link) => link.type === LinkType.Schedule)
+                    .forEach(link => {
                         const promise = task([
                             'task',
                             'link',
-                            `from=${item.from}`,
-                            `to=${item.to}`
+                            `from=${link.from}`,
+                            `to=${link.to}`
                         ], context, setters);
                         promises.push(promise);
                         promise.then(output => lines.unshift(...output));
@@ -96,25 +85,14 @@ async function unlink(context: Context, setters: Setters, lines: string[])
 {
     const promises: Promise<string[]>[] = [];
 
-    context.issues.reduce(
-        (acc: {from: string, to: string}[], issue) => acc.concat(
-            (issue.links?.inward ?? [])
-                .filter(link => link.type === LinkType.Schedule)
-                .map(link => ({from: issue.key, to: link.key})),
-            (issue.links?.outward ?? [])
-                .filter(link => link.type === LinkType.Schedule)
-                .map(link => ({from: link.key, to: issue.key})),
-        ),
-        []
-    )
-        .filter((item, index, self) =>
-            self.findIndex(current => current.from === item.from && current.to === item.to) === index)
-        .forEach(item => {
+    context.links
+        .filter((link: Link) => link.type === LinkType.Schedule)
+        .forEach(link => {
             const promise = task([
                 'task',
                 'unlink',
-                `from=${item.from}`,
-                `to=${item.to}`,
+                `from=${link.from}`,
+                `to=${link.to}`,
                 `type=${LinkType.Schedule}`,
             ], context, setters);
             promises.push(promise);

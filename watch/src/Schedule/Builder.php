@@ -99,41 +99,6 @@ class Builder
         return $this;
     }
 
-    public function addIssuesLinks(): self
-    {
-        $this->applyDiffToResult(self::VOLUME_ISSUES, array_filter(array_map(function (array $issue) {
-            /** @var Node $node */
-            $node = $this->getNode($issue['key']);
-            if (is_null($node)) {
-                return null;
-            }
-            $links = $this->getLinks($node);
-            if (empty($links)) {
-                return null;
-            }
-            return [
-                'key' => $issue['key'],
-                'links' => $links,
-            ];
-        }, $this->issues), fn($item) => !is_null($item)));
-        return $this;
-    }
-
-    public function addBuffersLinks(): self
-    {
-        $this->applyDiffToResult(self::VOLUME_BUFFERS, array_filter(array_map(function (Buffer $buffer) {
-            $links = $this->getLinks($buffer);
-            if (empty($links)) {
-                return null;
-            }
-            return [
-                'key' => $buffer->getName(),
-                'links' => $links,
-            ];
-        }, $this->buffers), fn($item) => !is_null($item)));
-        return $this;
-    }
-
     public function addLinks():self
     {
         $this->result[self::VOLUME_LINKS] = \Watch\Utils::getUnique(
@@ -194,32 +159,6 @@ class Builder
             $this->milestone->getPreceders(true),
             fn($acc, Node $node) => $node->getName() === $key ? $node : $acc
         );
-    }
-
-    private function getLinks(Node $node): array
-    {
-        return array_filter([
-            'inward' => array_values(array_map(
-                fn(Link $link) => [
-                    'key' => $link->getNode()->getName(),
-                    'type' => $link->getType(),
-                ],
-                array_filter(
-                    $node->getFollowLinks(),
-                    fn(Link $link) => !is_a($link->getNode(), Milestone::class) && !is_a($link->getNode(), Buffer::class)
-                )
-            )),
-            'outward' => array_values(array_map(
-                fn(Link $link) => [
-                    'key' => $link->getNode()->getName(),
-                    'type' => $link->getType(),
-                ],
-                array_filter(
-                    $node->getPrecedeLinks(),
-                    fn(Link $link) => !is_a($link->getNode(), Milestone::class) && !is_a($link->getNode(), Buffer::class)
-                )
-            )),
-        ], fn($links) => !empty($links));
     }
 
     private function applyDiffToResult(string $volume, array $diff): void

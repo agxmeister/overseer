@@ -6,9 +6,8 @@ use DateTime;
 use Exception;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Director;
-use Watch\Schedule\Model\Link;
-use Watch\Schedule\Model\Node;
 use Watch\Schedule\Strategy\Strategy;
+use Watch\Schedule\Strategy\Test;
 
 class DirectorTest extends Unit
 {
@@ -69,26 +68,10 @@ class DirectorTest extends Unit
                         'key' => 'K-01',
                         'begin' => '2023-09-13',
                         'end' => '2023-09-16',
-                        'links' => [
-                            'outward' => [
-                                [
-                                    'key' => 'K-02',
-                                    'type' => 'sequence',
-                                ],
-                            ],
-                        ],
                     ], [
                         'key' => 'K-02',
                         'begin' => '2023-09-09',
                         'end' => '2023-09-12',
-                        'links' => [
-                            'inward' => [
-                                [
-                                    'key' => 'K-01',
-                                    'type' => 'sequence',
-                                ],
-                            ],
-                        ],
                     ], [
                         'key' => 'K-03',
                         'begin' => '2023-09-10',
@@ -97,6 +80,28 @@ class DirectorTest extends Unit
                 ],
                 'criticalChain' => ['K-01', 'K-02'],
                 'buffers' => [],
+                'links' => [
+                    [
+                        'from' => "finish-buffer",
+                        'to' => 'finish',
+                        'type' => 'schedule',
+                    ],
+                    [
+                        'from' => "K-01",
+                        'to' => 'finish-buffer',
+                        'type' => 'schedule',
+                    ],
+                    [
+                        'from' => "K-03",
+                        'to' => 'finish-buffer',
+                        'type' => 'schedule',
+                    ],
+                    [
+                        'from' => 'K-02',
+                        'to' => 'K-01',
+                        'type' => 'sequence',
+                    ],
+                ]
             ],
             $schedule,
         );
@@ -112,7 +117,7 @@ class DirectorTest extends Unit
             [
                 [
                     'key' => 'K-01',
-                    'duration' => '4',
+                    'duration' => '5',
                     'begin' => null,
                     'end' => null,
                     'links' => [
@@ -131,43 +136,40 @@ class DirectorTest extends Unit
                 ],
             ],
             new DateTime('2023-09-21'),
-            $this->makeEmpty(Strategy::class, ['schedule' => function (Node $node) {
-                $preceders = $node->getPreceders();
-                $preceders[1]->unprecede($node);
-                $preceders[1]->precede($preceders[0], Link::TYPE_SCHEDULE);
-            }]),
+            new Test(),
         );
         $this->assertEquals(
             [
                 'issues' => [
                     [
                         'key' => 'K-01',
-                        'begin' => '2023-09-13',
+                        'begin' => '2023-09-12',
                         'end' => '2023-09-16',
-                        'links' => [
-                            'outward' => [
-                                [
-                                    'key' => 'K-02',
-                                    'type' => 'schedule',
-                                ],
-                            ],
-                        ],
                     ], [
                         'key' => 'K-02',
-                        'begin' => '2023-09-09',
-                        'end' => '2023-09-12',
-                        'links' => [
-                            'inward' => [
-                                [
-                                    'key' => 'K-01',
-                                    'type' => 'schedule',
-                                ],
-                            ],
-                        ],
+                        'begin' => '2023-09-08',
+                        'end' => '2023-09-11',
                     ],
                 ],
                 'criticalChain' => ['K-01', 'K-02'],
                 'buffers' => [],
+                'links' => [
+                    [
+                        'from' => "finish-buffer",
+                        'to' => 'finish',
+                        'type' => 'schedule',
+                    ],
+                    [
+                        'from' => "K-01",
+                        'to' => 'finish-buffer',
+                        'type' => 'schedule',
+                    ],
+                    [
+                        'from' => 'K-02',
+                        'to' => 'K-01',
+                        'type' => 'schedule',
+                    ],
+                ],
             ],
             $schedule,
         );

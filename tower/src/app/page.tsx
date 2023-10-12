@@ -13,9 +13,8 @@ import Track from "@/components/Track/Track";
 import Console from "@/components/Console/Console";
 import {ApiUrl} from "@/constants/api";
 import {Issue} from "@/types/Issue";
-import {LinkDescription} from "@/types/LinkDescription";
 import {Mode, Schedule} from "@/types/Schedule";
-import {cleanObject, mergeArrays} from "@/utils/misc";
+import {cleanObject} from "@/utils/misc";
 import {setDates as setTaskDates} from "@/api/task";
 import {addLink, removeLink} from "@/api/links";
 import {Link as LinkObject, Type as LinkType} from "@/types/Link";
@@ -46,7 +45,7 @@ export default function Page()
     const [edits, setEdits] = useState<Edits>({schedule: {issues: []}});
     const setSchedule = (schedule: Schedule) => setEdits({...edits, schedule: schedule});
 
-    const {data: plan}: {data: {issues: Issue[], criticalChain: string[], buffers: Issue[], links: LinkObject[]}} = useSWR(ApiUrl.SCHEDULE, (api: string) => fetch(api).then(res => res.json()));
+    const {data: plan, mutate: mutatePlan}: {data: {issues: Issue[], criticalChain: string[], buffers: Issue[], links: LinkObject[]}, mutate: any} = useSWR(ApiUrl.SCHEDULE, (api: string) => fetch(api).then(res => res.json()));
     const {data: issues, mutate: mutateIssues} = useSWR(ApiUrl.TASKS, (api: string) => fetch(api).then(res => res.json()));
 
     const plannedIssues = plan && issues ? plan.issues.map((issue: Issue) => {
@@ -57,10 +56,6 @@ export default function Page()
         return {
             ...issue,
             ...details,
-            links: {
-                inward: mergeArrays(issue.links?.inward ?? [], details.links?.inward ?? [], (a, b) => a.key === b.key),
-                outward: mergeArrays(issue.links?.outward ?? [], details.links?.outward ?? [], (a, b) => a.key === b.key),
-            },
         }
     }) : [];
 
@@ -75,10 +70,6 @@ export default function Page()
         return {
             ...issue,
             ...cleanObject(correction),
-            links: {
-                inward: mergeArrays(issue.links?.inward ?? [], correction.links?.inward ?? [], (a, b) => a.key === b.key),
-                outward: mergeArrays(issue.links?.outward ?? [], correction.links?.outward ?? [], (a, b) => a.key === b.key),
-            },
             corrected: true,
         }
     }) : [];
@@ -124,13 +115,13 @@ export default function Page()
     }
 
     const onLink = async (outwardTaskId: string, inwardTaskId: string, type: string = LinkType.Sequence) => {
-        await mutateIssues(() => addLink(outwardTaskId, inwardTaskId, type),{
+        await mutatePlan(() => addLink(outwardTaskId, inwardTaskId, type),{
             populateCache: false,
         });
     }
 
     const onUnlink = async (from: string, to: string, type: string) => {
-        await mutateIssues(() => removeLink(from, to, type),{
+        await mutatePlan(() => removeLink(from, to, type),{
             populateCache: false,
         });
     }
@@ -219,6 +210,7 @@ export default function Page()
                 <Console
                     context={{
                         issues: scheduledIssues,
+                        links: plan ? plan.links : [],
                         schedule: edits.schedule,
                     }}
                     setters={{
