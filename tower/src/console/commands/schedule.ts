@@ -28,7 +28,7 @@ export default async function schedule(args: string[], context: Context, setters
                 break;
             case Action.Reset:
                 await unlink(context, setters, lines);
-                setters.setSchedule({issues: []});
+                setters.setSchedule({issues: [], criticalChain: [], buffers: [], links: []});
                 setters.setMode(Mode.View);
                 break;
             case Action.Apply:
@@ -63,11 +63,11 @@ export default async function schedule(args: string[], context: Context, setters
 
                 await Promise.all(promises);
                 
-                setters.setSchedule({issues: []});
+                setters.setSchedule({issues: [], criticalChain: [], buffers: [], links: []});
                 setters.setMode(Mode.View);
                 break;
             case Action.Rollback:
-                setters.setSchedule({issues: []});
+                setters.setSchedule({issues: [], criticalChain: [], buffers: [], links: []});
                 setters.setMode(Mode.View);
                 break;
             case Action.Mode:

@@ -84,7 +84,7 @@ class Builder
     {
         $this->applyDiffToResult(self::VOLUME_BUFFERS, array_filter(array_map(function (Buffer $buffer) {
             $end = max(...array_map(
-                fn(Node $node) => $this->getIssue($node->getName())['end'] ?? null,
+                fn(Node $node) => $this->getResult(self::VOLUME_ISSUES, $node->getName())['end'] ?? null,
                 $buffer->getPreceders()
             ));
             $date = new DateTime($end);
@@ -182,5 +182,10 @@ class Builder
     private function getIssue($key): array|null
     {
         return array_reduce($this->issues, fn($acc, $issue) => $issue['key'] === $key ? $issue : $acc);
+    }
+
+    private function getResult($volume, $key): array|null
+    {
+        return $this->result[$volume][$key] ?? null;
     }
 }

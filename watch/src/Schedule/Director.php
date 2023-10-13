@@ -31,6 +31,7 @@ class Director
             ->addCriticalChain()
             ->addMilestoneBuffer()
             ->schedule($date)
+            ->addBuffersDates()
             ->addLinks()
             ->release();
     }

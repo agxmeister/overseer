@@ -42,7 +42,7 @@ export default function Page()
         setSizeTrackId(trackId);
     }
 
-    const [edits, setEdits] = useState<Edits>({schedule: {issues: []}});
+    const [edits, setEdits] = useState<Edits>({schedule: {issues: [], criticalChain: [], buffers: [], links: []}});
     const setSchedule = (schedule: Schedule) => setEdits({...edits, schedule: schedule});
 
     const {data: plan, mutate: mutatePlan}: {data: {issues: Issue[], criticalChain: string[], buffers: Issue[], links: LinkObject[]}, mutate: any} = useSWR(ApiUrl.SCHEDULE, (api: string) => fetch(api).then(res => res.json()));
@@ -74,7 +74,20 @@ export default function Page()
         }
     }) : [];
 
-    const scheduledBuffers = plan ? plan.buffers.map((buffer: Issue) => ({...buffer})) : [];
+    const scheduledBuffers = plan ? plan.buffers.map((buffer: Issue) => {
+        const correction = edits.schedule.buffers.find(current => current.key === buffer.key);
+        if (!correction) {
+            return {
+                ...buffer,
+                corrected: false,
+            }
+        }
+        return {
+            ...buffer,
+            ...cleanObject(correction),
+            corrected: true,
+        }
+    }) : [];
 
     const onTask = async (mutation: {taskId: string, begin?: string, end?: string}) => {
         switch (mode) {
@@ -89,7 +102,7 @@ export default function Page()
 
     const onTaskSchedule = async (mutation: {taskId: string, begin?: string, end?: string}) => {
         const correction = edits.schedule.issues.find(item => item.key === mutation.taskId);
-        setSchedule({issues: [...edits.schedule.issues.filter(item => item.key !== mutation.taskId), {
+        setSchedule({...edits.schedule, issues: [...edits.schedule.issues.filter(item => item.key !== mutation.taskId), {
             ...(correction ? cleanObject(correction): {}),
             key: mutation.taskId,
             ...cleanObject({
@@ -193,6 +206,7 @@ export default function Page()
                     key={buffer.key}
                     id={buffer.key}
                     title={buffer.key}
+                    corrected={buffer.corrected}
                 />
             }
             onLink={onLink}
