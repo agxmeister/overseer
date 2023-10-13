@@ -172,6 +172,20 @@ export default function Page()
         <Track
             key={buffer.key}
             id={buffer.key}
+            markerLeft={
+                <Marker
+                    id={buffer.key}
+                    position={MarkerPosition.Left}
+                    onSize={onSize}
+                />
+            }
+            markerRight={
+                <Marker
+                    id={buffer.key}
+                    position={MarkerPosition.Right}
+                    onSize={onSize}
+                />
+            }
             begin={buffer.begin ?? ''}
             end={buffer.end ?? ''}
             card={
