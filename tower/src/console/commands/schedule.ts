@@ -4,6 +4,7 @@ import {getActionArg} from "@/console/utils";
 import {Context, Setters} from "@/console/run";
 import {Link, Type as LinkType} from "@/types/Link";
 import {getSchedule} from "@/api/schedule";
+import {Issue} from "@/types/Issue";
 
 enum Action {
     Create = "create",
@@ -36,8 +37,10 @@ export default async function schedule(args: string[], context: Context, setters
 
                 const promises: Promise<string[]>[] = [];
 
+                const issueKeys = context.issues.map((issue: Issue) => issue.key);
                 context.links
                     .filter((link: Link) => link.type === LinkType.Schedule)
+                    .filter((link: Link) => issueKeys.includes(link.from) && issueKeys.includes(link.to))
                     .forEach(link => {
                         const promise = task([
                             'task',
@@ -85,8 +88,10 @@ async function unlink(context: Context, setters: Setters, lines: string[])
 {
     const promises: Promise<string[]>[] = [];
 
+    const issueKeys = context.issues.map((issue: Issue) => issue.key);
     context.links
         .filter((link: Link) => link.type === LinkType.Schedule)
+        .filter((link: Link) => issueKeys.includes(link.from) && issueKeys.includes(link.to))
         .forEach(link => {
             const promise = task([
                 'task',
