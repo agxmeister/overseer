@@ -139,7 +139,7 @@ class Builder
     public function addMilestoneBuffer(): self
     {
         $criticalChain = Utils::getCriticalChain($this->milestone);
-        $buffer = new Buffer("{$this->milestone->getName()}-buffer", $criticalChain->getLength(true) / 2);
+        $buffer = new Buffer("{$this->milestone->getName()}-buffer", (int)ceil($criticalChain->getLength(true) / 2));
         $nodes = $this->milestone->getPreceders();
         array_walk($nodes, fn(Node $node) => $node->unprecede($this->milestone));
         array_walk($nodes, fn(Node $node) => $node->precede($buffer, Link::TYPE_SCHEDULE));
