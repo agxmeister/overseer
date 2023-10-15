@@ -126,10 +126,8 @@ class Builder
 
     public function addCriticalChain(): self
     {
-        $criticalChain = Utils::getCriticalChain($this->milestone);
-        $criticalChainNodes = [$criticalChain, ...$criticalChain->getPreceders(true)];
         $this->result[self::VOLUME_CRITICAL_CHAIN] = array_reduce(
-            $criticalChainNodes,
+            $this->getCriticalChainNodes(Utils::getCriticalChain($this->milestone)),
             fn($acc, Node $node) => [...$acc, $node->getName()],
             []
         );
@@ -159,6 +157,14 @@ class Builder
             $this->milestone->getPreceders(true),
             fn($acc, Node $node) => $node->getName() === $key ? $node : $acc
         );
+    }
+
+    private function getCriticalChainNodes(Node|null $node): array
+    {
+        if (is_null($node)) {
+            return [];
+        }
+        return [$node, ...$this->getCriticalChainNodes(Utils::getLongestSequence($node->getPreceders()))];
     }
 
     private function applyDiffToResult(string $volume, array $diff): void
