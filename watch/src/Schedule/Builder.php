@@ -83,7 +83,7 @@ class Builder
     public function addBuffersDates(): self
     {
         $this->applyDiffToResult(self::VOLUME_BUFFERS, array_filter(array_map(function (Buffer $buffer) {
-            $end = max(...array_map(
+            $end = max(array_map(
                 fn(Node $node) => $this->getResult(self::VOLUME_ISSUES, $node->getName())['end'] ?? null,
                 $buffer->getPreceders()
             ));

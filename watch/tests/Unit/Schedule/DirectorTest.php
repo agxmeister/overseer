@@ -79,7 +79,13 @@ class DirectorTest extends Unit
                     ],
                 ],
                 'criticalChain' => ['K-01', 'K-02'],
-                'buffers' => [],
+                'buffers' => [
+                    [
+                        'key' => 'finish-buffer',
+                        'begin' => '2023-09-17',
+                        'end' => '2023-09-20',
+                    ],
+                ],
                 'links' => [
                     [
                         'from' => "finish-buffer",
@@ -152,7 +158,13 @@ class DirectorTest extends Unit
                     ],
                 ],
                 'criticalChain' => ['K-01', 'K-02'],
-                'buffers' => [],
+                'buffers' => [
+                    [
+                        'key' => 'finish-buffer',
+                        'begin' => '2023-09-17',
+                        'end' => '2023-09-20',
+                    ],
+                ],
                 'links' => [
                     [
                         'from' => "finish-buffer",
