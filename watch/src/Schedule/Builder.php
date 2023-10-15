@@ -136,13 +136,31 @@ class Builder
 
     public function addMilestoneBuffer(): self
     {
-        $criticalChain = Utils::getCriticalChain($this->milestone);
-        $buffer = new Buffer("{$this->milestone->getName()}-buffer", (int)ceil($criticalChain->getLength(true) / 2));
-        $nodes = $this->milestone->getPreceders();
-        array_walk($nodes, fn(Node $node) => $node->unprecede($this->milestone));
-        array_walk($nodes, fn(Node $node) => $node->precede($buffer, Link::TYPE_SCHEDULE));
-        $buffer->precede($this->milestone, Link::TYPE_SCHEDULE);
-        $this->buffers[] = $buffer;
+        $this->buffers[] = $this->addBuffer(
+            "{$this->milestone->getName()}-buffer",
+            (int)ceil(Utils::getCriticalChain($this->milestone)->getLength(true) / 2),
+            $this->milestone,
+            $this->milestone->getPreceders(),
+        );
+        return $this;
+    }
+
+    public function addFeedingBuffers(): self
+    {
+        $criticalChainNodes = $this->getCriticalChainNodes(Utils::getCriticalChain($this->milestone));
+        foreach ($criticalChainNodes as $node) {
+            $preceders = $node->getPreceders();
+            $criticalPreceder = Utils::getLongestSequence($preceders);
+            $notCriticalPreceders = array_filter($preceders, fn(Node $node) => $node !== $criticalPreceder);
+            foreach ($notCriticalPreceders as $notCriticalPreceder) {
+                $this->buffers[] = $this->addBuffer(
+                    "{$notCriticalPreceder->getName()}-buffer",
+                    (int)ceil($notCriticalPreceder->getLength(true) / 2),
+                    $node,
+                    [$notCriticalPreceder],
+                );
+            }
+        }
         return $this;
     }
 
@@ -159,12 +177,25 @@ class Builder
         );
     }
 
+    /**
+     * @param Node|null $node
+     * @return Node[]
+     */
     private function getCriticalChainNodes(Node|null $node): array
     {
         if (is_null($node)) {
             return [];
         }
         return [$node, ...$this->getCriticalChainNodes(Utils::getLongestSequence($node->getPreceders()))];
+    }
+
+    private function addBuffer(string $name, int $length, Node $beforeNode, array $afterNodes): Buffer
+    {
+        $buffer = new Buffer($name, $length);
+        array_walk($afterNodes, fn(Node $afterNode) => $afterNode->unprecede($beforeNode));
+        array_walk($afterNodes, fn(Node $afterNode) => $afterNode->precede($buffer, Link::TYPE_SCHEDULE));
+        $buffer->precede($beforeNode, Link::TYPE_SCHEDULE);
+        return $buffer;
     }
 
     private function applyDiffToResult(string $volume, array $diff): void
