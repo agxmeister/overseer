@@ -57,7 +57,7 @@ class BuilderTest extends Unit
             ],
         );
         $builder->addCriticalChain();
-        $this->assertEquals(['K-01', 'K-03'], $builder->release()[Builder::VOLUME_CRITICAL_CHAIN]);
+        $this->assertEquals(['finish', 'K-01', 'K-03'], $builder->release()[Builder::VOLUME_CRITICAL_CHAIN]);
     }
 
     public function testAddFeedingBuffers()

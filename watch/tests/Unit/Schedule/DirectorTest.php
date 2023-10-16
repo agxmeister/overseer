@@ -74,16 +74,21 @@ class DirectorTest extends Unit
                         'end' => '2023-09-12',
                     ], [
                         'key' => 'K-03',
-                        'begin' => '2023-09-10',
-                        'end' => '2023-09-16',
+                        'begin' => '2023-09-06',
+                        'end' => '2023-09-12',
                     ],
                 ],
-                'criticalChain' => ['K-01', 'K-02'],
+                'criticalChain' => ['finish', 'K-01', 'K-02'],
                 'buffers' => [
                     [
                         'key' => 'finish-buffer',
                         'begin' => '2023-09-17',
                         'end' => '2023-09-20',
+                    ],
+                    [
+                        'key' => 'K-03-buffer',
+                        'begin' => '2023-09-13',
+                        'end' => '2023-09-16',
                     ],
                 ],
                 'links' => [
@@ -98,7 +103,7 @@ class DirectorTest extends Unit
                         'type' => 'schedule',
                     ],
                     [
-                        'from' => "K-03",
+                        'from' => "K-03-buffer",
                         'to' => 'finish-buffer',
                         'type' => 'schedule',
                     ],
@@ -106,6 +111,11 @@ class DirectorTest extends Unit
                         'from' => 'K-02',
                         'to' => 'K-01',
                         'type' => 'sequence',
+                    ],
+                    [
+                        'from' => 'K-03',
+                        'to' => 'K-03-buffer',
+                        'type' => 'schedule',
                     ],
                 ]
             ],
@@ -157,7 +167,7 @@ class DirectorTest extends Unit
                         'end' => '2023-09-12',
                     ],
                 ],
-                'criticalChain' => ['K-01', 'K-02'],
+                'criticalChain' => ['finish', 'K-01', 'K-02'],
                 'buffers' => [
                     [
                         'key' => 'finish-buffer',

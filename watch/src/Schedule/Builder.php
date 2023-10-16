@@ -127,7 +127,7 @@ class Builder
     public function addCriticalChain(): self
     {
         $this->result[self::VOLUME_CRITICAL_CHAIN] = array_reduce(
-            $this->getCriticalChainNodes(Utils::getCriticalChain($this->milestone)),
+            Utils::getCriticalChain($this->milestone),
             fn($acc, Node $node) => [...$acc, $node->getName()],
             []
         );
@@ -138,7 +138,7 @@ class Builder
     {
         $this->buffers[] = $this->addBuffer(
             "{$this->milestone->getName()}-buffer",
-            (int)ceil(Utils::getCriticalChain($this->milestone)->getLength(true) / 2),
+            (int)ceil($this->milestone->getLength(true) / 2),
             $this->milestone,
             $this->milestone->getPreceders(),
         );
@@ -147,8 +147,8 @@ class Builder
 
     public function addFeedingBuffers(): self
     {
-        $criticalChainNodes = $this->getCriticalChainNodes(Utils::getCriticalChain($this->milestone));
-        foreach ($criticalChainNodes as $node) {
+        $criticalChain = Utils::getCriticalChain($this->milestone);
+        foreach ($criticalChain as $node) {
             $preceders = $node->getPreceders();
             $criticalPreceder = Utils::getLongestSequence($preceders);
             $notCriticalPreceders = array_filter($preceders, fn(Node $node) => $node !== $criticalPreceder);
@@ -175,18 +175,6 @@ class Builder
             $this->milestone->getPreceders(true),
             fn($acc, Node $node) => $node->getName() === $key ? $node : $acc
         );
-    }
-
-    /**
-     * @param Node|null $node
-     * @return Node[]
-     */
-    private function getCriticalChainNodes(Node|null $node): array
-    {
-        if (is_null($node)) {
-            return [];
-        }
-        return [$node, ...$this->getCriticalChainNodes(Utils::getLongestSequence($node->getPreceders()))];
     }
 
     private function addBuffer(string $name, int $length, Node $beforeNode, array $afterNodes): Buffer
