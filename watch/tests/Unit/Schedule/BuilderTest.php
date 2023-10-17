@@ -2,6 +2,7 @@
 namespace Tests\Unit\Schedule;
 
 use Codeception\Test\Unit;
+use Tests\Support\Utils;
 use Watch\Schedule\Builder;
 
 class BuilderTest extends Unit
@@ -10,51 +11,11 @@ class BuilderTest extends Unit
     {
         $builder = new Builder();
         $builder->run(
-            [
-                [
-                    'key' => 'K-01',
-                    'duration' => '4',
-                    'begin' => null,
-                    'end' => null,
-                    'links' => [
-                        'inward' => [],
-                        'outward' => [
-                            [
-                                'key' => 'K-02',
-                                'type' => 'sequence',
-                            ],
-                        ],
-                    ],
-                ], [
-                    'key' => 'K-02',
-                    'duration' => '4',
-                    'begin' => null,
-                    'end' => null,
-                    'links' => [
-                        'inward' => [
-                            [
-                                'key' => 'K-01',
-                                'type' => 'sequence',
-                            ],
-                        ],
-                        'outward' => [],
-                    ],
-                ], [
-                    'key' => 'K-03',
-                    'duration' => '7',
-                    'begin' => null,
-                    'end' => null,
-                    'links' => [
-                        'inward' => [
-                            [
-                                'key' => 'K-01',
-                                'type' => 'sequence',
-                            ],
-                        ],
-                        'outward' => [],
-                    ],
-                ],
-            ],
+            Utils::getIssues('
+                K-01        xxxx
+                K-02    xxxx     K-01
+                K-03 xxxxxxx     K-01
+            '),
         );
         $builder->addCriticalChain();
         $this->assertEquals(['finish', 'K-01', 'K-03'], $builder->release()[Builder::VOLUME_CRITICAL_CHAIN]);
