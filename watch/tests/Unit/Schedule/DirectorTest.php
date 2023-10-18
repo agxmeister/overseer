@@ -20,9 +20,9 @@ class DirectorTest extends Unit
         $director = new Director(new Builder());
         $schedule = $director->create(
             Utils::getIssues('
-                K-01     xxxx
-                K-02 xxxx     K-01
-                K-03  xxxxxxx
+                K-01 |    xxxx|
+                K-02 |xxxx    | K-01
+                K-03 | xxxxxxx|
             '),
             new DateTime('2023-09-21'),
             $this->makeEmpty(Strategy::class),
@@ -97,8 +97,8 @@ class DirectorTest extends Unit
         $builder = new Director(new Builder());
         $schedule = $builder->create(
             Utils::getIssues('
-                K-01 xxxx
-                K-02 xxxx
+                K-01 |xxxx|
+                K-02 |xxxx|
             '),
             new DateTime('2023-09-21'),
             new Test(),

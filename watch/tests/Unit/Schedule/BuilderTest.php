@@ -12,9 +12,9 @@ class BuilderTest extends Unit
         $builder = new Builder();
         $builder->run(
             Utils::getIssues('
-                K-01        xxxx
-                K-02    xxxx     K-01
-                K-03 xxxxxxx     K-01
+                K-01 |       xxxx|
+                K-02 |   xxxx    | K-01
+                K-03 |xxxxxxx    | K-01
             '),
         );
         $builder->addCriticalChain();
@@ -25,51 +25,11 @@ class BuilderTest extends Unit
     {
         $builder = new Builder();
         $builder->run(
-            [
-                [
-                    'key' => 'K-01',
-                    'duration' => '4',
-                    'begin' => '2023-09-16',
-                    'end' => '2023-09-20',
-                    'links' => [
-                        'inward' => [],
-                        'outward' => [
-                            [
-                                'key' => 'K-02',
-                                'type' => 'sequence',
-                            ],
-                        ],
-                    ],
-                ], [
-                    'key' => 'K-02',
-                    'duration' => '4',
-                    'begin' => '2023-09-10',
-                    'end' => '2023-09-13',
-                    'links' => [
-                        'inward' => [
-                            [
-                                'key' => 'K-01',
-                                'type' => 'sequence',
-                            ],
-                        ],
-                        'outward' => [],
-                    ],
-                ], [
-                    'key' => 'K-03',
-                    'duration' => '7',
-                    'begin' => '2023-09-09',
-                    'end' => '2023-09-15',
-                    'links' => [
-                        'inward' => [
-                            [
-                                'key' => 'K-01',
-                                'type' => 'sequence',
-                            ],
-                        ],
-                        'outward' => [],
-                    ],
-                ],
-            ],
+            Utils::getIssues('
+                K-01 |       xxxx|
+                K-02 | xxxx      | K-01
+                K-03 |xxxxxxx    | K-01
+            ')
         );
         $builder
             ->addFeedingBuffers()
@@ -78,8 +38,8 @@ class BuilderTest extends Unit
         $this->assertEquals([
             [
                 'key' => 'K-02-buffer',
-                'begin' => '2023-09-14',
-                'end' => '2023-09-15',
+                'begin' => '2023-10-24',
+                'end' => '2023-10-25',
             ]
         ], $builder->release()[Builder::VOLUME_BUFFERS]);
     }
