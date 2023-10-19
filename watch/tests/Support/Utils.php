@@ -47,7 +47,7 @@ class Utils
         return array_values($issues);
     }
 
-    public static function getSchedule($description, $date)
+    public static function getSchedule($description)
     {
         $lines = [...array_filter(array_map(fn($line) => trim($line), explode("\n", $description)), fn($line) => strlen($line) > 0)];
 
@@ -55,21 +55,19 @@ class Utils
         $criticalChain = [];
         $buffers = [];
         $links = [];
-        $milestoneDate = new \DateTimeImmutable($date);
+
+        $milestoneAttributes = array_reduce($lines, function ($acc, $line) {
+            $data = explode('|', $line);
+            return in_array(trim($data[1])[0], ['!']) ? trim($data[2]) : $acc;
+        });
+        $milestoneDate = new \DateTimeImmutable($milestoneAttributes);
         $now = $milestoneDate->modify('+1 day');
+
         foreach ($lines as $line) {
             $issueData = explode('|', $line);
             $key = trim($issueData[0]);
             $duration = strlen(trim($issueData[1]));
-            $linkString = trim($issueData[2]);
-            if ($linkString) {
-                $linkData = explode(' ', $linkString);
-                $linkType = $linkData[0][0] === '-' ? 'sequence' : 'schedule';
-                $link = $linkData[1];
-            } else {
-                $linkType = null;
-                $link = null;
-            }
+            $attributes = trim($issueData[2]);
             $isScheduled = in_array(trim($issueData[1])[0], ['x', '*', '_']);
             $isCritical = in_array(trim($issueData[1])[0], ['!', 'x']);
             $isIssue = in_array(trim($issueData[1])[0], ['x', '*', '.']);
@@ -77,12 +75,22 @@ class Utils
             $isMilestone = in_array(trim($issueData[1])[0], ['!']);
             $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1])) + 1;
             $beginGap = $endGap + $duration - 1;
+
             if ($isIssue) {
                 $issues[] = [
                     'key' => $key,
                     'begin' => $isScheduled ? $now->modify("-{$beginGap} day")->format('Y-m-d') : null,
                     'end' => $isScheduled ? $now->modify("-{$endGap} day")->format('Y-m-d') : null,
                 ];
+            }
+
+            if (!$isMilestone && $attributes) {
+                $linkData = explode(' ', $attributes);
+                $linkType = $linkData[0][0] === '-' ? 'sequence' : 'schedule';
+                $link = $linkData[1];
+            } else {
+                $linkType = null;
+                $link = null;
             }
             if ($link) {
                 $links[] = [
@@ -91,6 +99,7 @@ class Utils
                     'type' => $linkType,
                 ];
             }
+
             if ($isBuffer) {
                 $buffers[] = [
                     'key' => $key,
@@ -98,6 +107,7 @@ class Utils
                     'end' => $now->modify("-{$endGap} day")->format('Y-m-d'),
                 ];
             }
+
             if ($isCritical) {
                 $criticalChain[] = $key;
             }

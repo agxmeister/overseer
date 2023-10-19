@@ -30,13 +30,13 @@ class DirectorTest extends Unit
 
         $this->assertEquals(
             Utils::getSchedule('
-                finish        |                !|
+                finish        |                !| 2023-09-21
                 finish-buffer |            ____ | ~> finish
                 K-01          |        xxxx     | ~> finish-buffer
                 K-03-buffer   |        ____     | ~> finish-buffer
                 K-02          |    xxxx         | -> K-01
                 K-03          | *******         | ~> K-03-buffer
-            ', '2023-09-21'),
+            '),
             $schedule,
         );
     }
@@ -57,11 +57,11 @@ class DirectorTest extends Unit
         );
         $this->assertEquals(
             Utils::getSchedule('
-                finish        |                !|
+                finish        |                !| 2023-09-21
                 finish-buffer |            ____ | ~> finish
                 K-01          |        xxxx     | ~> finish-buffer
                 K-02          |    xxxx         | ~> K-01
-            ', '2023-09-21'),
+            '),
             $schedule,
         );
     }
