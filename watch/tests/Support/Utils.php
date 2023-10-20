@@ -27,16 +27,7 @@ class Utils
                 continue;
             }
 
-            if ($attributes) {
-                $linkData = explode(' ', $attributes);
-                $to = $linkData[1];
-                $type = $linkData[0][0] === '-' ? 'sequence' : 'schedule';
-                $links[] = [
-                    'from' => $key,
-                    'to' => $to,
-                    'type' => $type,
-                ];
-            }
+            $links = [...$links, ...self::getLinks($key, $attributes)];
 
             $issues[$key] = [
                 'key' => $key,
@@ -104,16 +95,7 @@ class Utils
                 ];
             }
 
-            if (!$isMilestone && $attributes) {
-                $linkData = explode(' ', $attributes);
-                $to = $linkData[1];
-                $type = $linkData[0][0] === '-' ? 'sequence' : 'schedule';
-                $links[] = [
-                    'from' => $key,
-                    'to' => $to,
-                    'type' => $type,
-                ];
-            }
+            $links = [...$links, ...self::getLinks($key, $attributes)];
 
             if ($isCritical) {
                 $criticalChain[] = $key;
@@ -137,7 +119,30 @@ class Utils
         if (is_null($milestoneAttributes)) {
             return new \DateTimeImmutable();
         }
-        $milestoneDate = new \DateTimeImmutable($milestoneAttributes);
+        $dateAttributes = array_filter(array_map(fn($attribute) => trim($attribute), explode(',', $milestoneAttributes)), fn($attribute) => $attribute[0] === '#');
+        $dateAttribute = reset($dateAttributes);
+        $dataData = explode(' ', $dateAttribute);
+        $date = $dataData[1] ?? '';
+        $milestoneDate = new \DateTimeImmutable($date);
         return $milestoneDate->modify('+1 day');
+    }
+
+    private static function getLinks(string $from, string $attributes): array
+    {
+        $linkAttributes = array_filter(array_map(fn($attribute) => trim($attribute), explode(',', $attributes)), fn($attribute) => $attribute && in_array($attribute[0], ['&', '@']));
+        $links = [];
+        if (!empty($linkAttributes)) {
+            foreach ($linkAttributes as $linkAttribute) {
+                $linkData = explode(' ', $linkAttribute);
+                $to = $linkData[1];
+                $type = $linkData[0] === '&' ? 'sequence' : 'schedule';
+                $links[] = [
+                    'from' => $from,
+                    'to' => $to,
+                    'type' => $type,
+                ];
+            }
+        }
+        return $links;
     }
 }

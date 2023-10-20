@@ -21,7 +21,7 @@ class DirectorTest extends Unit
         $schedule = $director->create(
             Utils::getIssues('
                 K-01          |    ....|
-                K-02          |....    |          -> K-01
+                K-02          |....    |          & K-01
                 K-03          |....... |
             '),
             new DateTime('2023-09-21'),
@@ -30,12 +30,12 @@ class DirectorTest extends Unit
 
         $this->assertEquals(
             Utils::getSchedule('
-                finish        |                !| 2023-09-21
-                finish-buffer |            ____ | ~> finish
-                K-01          |        xxxx     | ~> finish-buffer
-                K-03-buffer   |        ____     | ~> finish-buffer
-                K-02          |    xxxx         | -> K-01
-                K-03          | *******         | ~> K-03-buffer
+                finish        |                !| # 2023-09-21
+                finish-buffer |            ____ | @ finish
+                K-01          |        xxxx     | @ finish-buffer
+                K-03-buffer   |        ____     | @ finish-buffer
+                K-02          |    xxxx         | & K-01
+                K-03          | *******         | @ K-03-buffer
             '),
             $schedule,
         );
@@ -57,10 +57,10 @@ class DirectorTest extends Unit
         );
         $this->assertEquals(
             Utils::getSchedule('
-                finish        |                !| 2023-09-21
-                finish-buffer |            ____ | ~> finish
-                K-01          |        xxxx     | ~> finish-buffer
-                K-02          |    xxxx         | ~> K-01
+                finish        |                !| # 2023-09-21
+                finish-buffer |            ____ | @ finish
+                K-01          |        xxxx     | @ finish-buffer
+                K-02          |    xxxx         | @ K-01
             '),
             $schedule,
         );
