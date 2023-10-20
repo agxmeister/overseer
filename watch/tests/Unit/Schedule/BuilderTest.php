@@ -12,9 +12,10 @@ class BuilderTest extends Unit
         $builder = new Builder();
         $builder->run(
             Utils::getIssues('
-                K-01 |       xxxx|
-                K-02 |   xxxx    | K-01
-                K-03 |xxxxxxx    | K-01
+                finish |           !| 2023-09-21
+                K-01   |       **** |
+                K-02   |   ****     | -> K-01
+                K-03   |*******     | -> K-01
             '),
         );
         $builder->addCriticalChain();
@@ -26,9 +27,10 @@ class BuilderTest extends Unit
         $builder = new Builder();
         $builder->run(
             Utils::getIssues('
-                K-01 |       xxxx|
-                K-02 | xxxx      | K-01
-                K-03 |xxxxxxx    | K-01
+                finish |           !| 2023-09-21
+                K-01   |       **** |
+                K-02   | ****       | -> K-01
+                K-03   |*******     | -> K-01
             ')
         );
         $builder
@@ -38,8 +40,8 @@ class BuilderTest extends Unit
         $this->assertEquals([
             [
                 'key' => 'K-02-buffer',
-                'begin' => '2023-10-24',
-                'end' => '2023-10-25',
+                'begin' => '2023-09-15',
+                'end' => '2023-09-16',
             ]
         ], $builder->release()[Builder::VOLUME_BUFFERS]);
     }

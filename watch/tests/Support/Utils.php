@@ -10,37 +10,54 @@ class Utils
 
         $issues = [];
         $links = [];
-        $now = new \DateTimeImmutable('2023-10-30');
+
+        $milestoneDate = self::getMilestoneDate($lines);
+
         foreach ($lines as $line) {
             $issueData = explode('|', $line);
             $key = trim($issueData[0]);
             $duration = strlen(trim($issueData[1]));
-            $link = trim($issueData[2]);
-            $isScheduled = trim($issueData[1])[0] === 'x';
+            $attributes = trim($issueData[2]);
+            $isScheduled = in_array(trim($issueData[1])[0], ['*']);
+            $isMilestone = in_array(trim($issueData[1])[0], ['!']);
             $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1])) + 1;
             $beginGap = $endGap + $duration - 1;
+
+            if ($isMilestone) {
+                continue;
+            }
+
+            if ($attributes) {
+                $linkData = explode(' ', $attributes);
+                $to = $linkData[1];
+                $type = $linkData[0][0] === '-' ? 'sequence' : 'schedule';
+                $links[] = [
+                    'from' => $key,
+                    'to' => $to,
+                    'type' => $type,
+                ];
+            }
+
             $issues[$key] = [
                 'key' => $key,
                 'duration' => $duration,
-                'begin' => $isScheduled ? $now->modify("-{$beginGap} day")->format('Y-m-d') : null,
-                'end' => $isScheduled ? $now->modify("-{$endGap} day")->format('Y-m-d') : null,
+                'begin' => $isScheduled ? $milestoneDate->modify("-{$beginGap} day")->format('Y-m-d') : null,
+                'end' => $isScheduled ? $milestoneDate->modify("-{$endGap} day")->format('Y-m-d') : null,
                 'links' => [
                     'inward' => [],
                     'outward' => [],
                 ]
             ];
-            if (!empty($link)) {
-                $links[] = ['from' => $key, 'to' => $link];
-            }
         }
+
         foreach($links as $link) {
             $issues[$link['from']]['links']['inward'][] = [
                 'key' => $link['to'],
-                'type' => 'sequence',
+                'type' => $link['type'],
             ];
             $issues[$link['to']]['links']['outward'][] = [
                 'key' => $link['from'],
-                'type' => 'sequence',
+                'type' => $link['type'],
             ];
         }
 
@@ -56,12 +73,7 @@ class Utils
         $buffers = [];
         $links = [];
 
-        $milestoneAttributes = array_reduce($lines, function ($acc, $line) {
-            $data = explode('|', $line);
-            return in_array(trim($data[1])[0], ['!']) ? trim($data[2]) : $acc;
-        });
-        $milestoneDate = new \DateTimeImmutable($milestoneAttributes);
-        $now = $milestoneDate->modify('+1 day');
+        $milestoneDate = self::getMilestoneDate($lines);
 
         foreach ($lines as $line) {
             $issueData = explode('|', $line);
@@ -79,32 +91,27 @@ class Utils
             if ($isIssue) {
                 $issues[] = [
                     'key' => $key,
-                    'begin' => $isScheduled ? $now->modify("-{$beginGap} day")->format('Y-m-d') : null,
-                    'end' => $isScheduled ? $now->modify("-{$endGap} day")->format('Y-m-d') : null,
-                ];
-            }
-
-            if (!$isMilestone && $attributes) {
-                $linkData = explode(' ', $attributes);
-                $linkType = $linkData[0][0] === '-' ? 'sequence' : 'schedule';
-                $link = $linkData[1];
-            } else {
-                $linkType = null;
-                $link = null;
-            }
-            if ($link) {
-                $links[] = [
-                    'from' => $key,
-                    'to' => $link,
-                    'type' => $linkType,
+                    'begin' => $isScheduled ? $milestoneDate->modify("-{$beginGap} day")->format('Y-m-d') : null,
+                    'end' => $isScheduled ? $milestoneDate->modify("-{$endGap} day")->format('Y-m-d') : null,
                 ];
             }
 
             if ($isBuffer) {
                 $buffers[] = [
                     'key' => $key,
-                    'begin' => $now->modify("-{$beginGap} day")->format('Y-m-d'),
-                    'end' => $now->modify("-{$endGap} day")->format('Y-m-d'),
+                    'begin' => $milestoneDate->modify("-{$beginGap} day")->format('Y-m-d'),
+                    'end' => $milestoneDate->modify("-{$endGap} day")->format('Y-m-d'),
+                ];
+            }
+
+            if (!$isMilestone && $attributes) {
+                $linkData = explode(' ', $attributes);
+                $to = $linkData[1];
+                $type = $linkData[0][0] === '-' ? 'sequence' : 'schedule';
+                $links[] = [
+                    'from' => $key,
+                    'to' => $to,
+                    'type' => $type,
                 ];
             }
 
@@ -119,5 +126,18 @@ class Utils
             'buffers' => $buffers,
             'links' => $links,
         ];
+    }
+
+    private static function getMilestoneDate(array $lines): \DateTimeInterface
+    {
+        $milestoneAttributes = array_reduce($lines, function ($acc, $line) {
+            $data = explode('|', $line);
+            return trim($data[1])[0] === '!' ? trim($data[2]) : $acc;
+        });
+        if (is_null($milestoneAttributes)) {
+            return new \DateTimeImmutable();
+        }
+        $milestoneDate = new \DateTimeImmutable($milestoneAttributes);
+        return $milestoneDate->modify('+1 day');
     }
 }
