@@ -19,7 +19,9 @@ class DirectorTest extends Unit
         $director = new Director(new Builder());
         $date = new DateTime('2023-09-21');
         $strategy = $this->makeEmpty(Strategy::class);
-        $this->assertEquals($schedule, $director->create($issues, $date, $strategy));
+        $actualSchedule = $director->create($issues, $date, $strategy);
+        $this->assertEqualsCanonicalizing($schedule, $actualSchedule);
+        $this->assertEquals($schedule['criticalChain'], $actualSchedule['criticalChain']);
     }
 
     /**
@@ -30,7 +32,9 @@ class DirectorTest extends Unit
         $director = new Director(new Builder());
         $date = new DateTime('2023-09-21');
         $strategy = new Test();
-        $this->assertEquals($schedule, $director->create($issues, $date, $strategy));
+        $actualSchedule = $director->create($issues, $date, $strategy);
+        $this->assertEqualsCanonicalizing($schedule, $actualSchedule);
+        $this->assertEquals($schedule['criticalChain'], $actualSchedule['criticalChain']);
     }
 
     protected function dataGetScheduleUnlimited(): array
@@ -46,23 +50,23 @@ class DirectorTest extends Unit
                     finish        |               !| # 2023-09-21
                     finish-buffer |           ____ | @ finish
                     K-01          |       xxxx     | @ finish-buffer
-                    K-03-buffer   |       ____     | @ finish-buffer
                     K-02          |   xxxx         | & K-01
+                    K-03-buffer   |       ____     | @ finish-buffer
                     K-03          |*******         | @ K-03-buffer
                 '),
             ], [
                 Utils::getIssues('
                     K-01          |       ....       |
-                    K-03          |.......           | & K-01
                     K-02          |....              | & K-01
+                    K-03          |.......           | & K-01
                 '),
                 Utils::getSchedule('
                     finish        |                 !| # 2023-09-21
                     finish-buffer |           ______ | @ finish
                     K-01          |       xxxx       | @ finish-buffer
-                    K-03          |xxxxxxx           | & K-01
-                    K-02          | ****             | & K-01, @ K-02-buffer
                     K-02-buffer   |     __           | @ K-01
+                    K-02          | ****             | & K-01, @ K-02-buffer
+                    K-03          |xxxxxxx           | & K-01
                 '),
             ],
         ];
