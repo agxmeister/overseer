@@ -36,7 +36,7 @@ class DirectorTest extends Unit
     protected function dataGetScheduleUnlimited(): array
     {
         return [
-            /*[
+            [
                 Utils::getIssues('
                     K-01          |    ....        |
                     K-02          |....            |          & K-01
@@ -50,7 +50,7 @@ class DirectorTest extends Unit
                     K-02          |   xxxx         | & K-01
                     K-03          |*******         | @ K-03-buffer
                 '),
-            ],*/ [
+            ], [
                 Utils::getIssues('
                     K-01          |       ....       |
                     K-03          |.......           | & K-01
@@ -61,8 +61,8 @@ class DirectorTest extends Unit
                     finish-buffer |           ______ | @ finish
                     K-01          |       xxxx       | @ finish-buffer
                     K-03          |xxxxxxx           | & K-01
-                    K-02-buffer   |     __           | @ K-01
                     K-02          | ****             | & K-01, @ K-02-buffer
+                    K-02-buffer   |     __           | @ K-01
                 '),
             ],
         ];

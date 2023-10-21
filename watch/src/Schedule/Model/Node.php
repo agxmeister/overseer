@@ -29,14 +29,14 @@ class Node
         $node->precede($this, $type);
     }
 
-    public function unfollow(Node $node): void
+    public function unfollow(Node $node, string|null $type = null): void
     {
-        $link = $this->getLink($this->preceders, $node);
+        $link = $this->getLink($this->preceders, $node, $type);
         if (is_null($link)) {
             return;
         }
         $this->preceders = array_filter($this->preceders, fn(Link $l) => $l !== $link);
-        $node->unprecede($this);
+        $node->unprecede($this, $type);
     }
 
     public function precede(Node $node, string $type = Link::TYPE_SEQUENCE): void
@@ -48,14 +48,14 @@ class Node
         $node->follow($this, $type);
     }
 
-    public function unprecede(Node $node): void
+    public function unprecede(Node $node, string|null $type = null): void
     {
-        $link = $this->getLink($this->followers, $node);
+        $link = $this->getLink($this->followers, $node, $type);
         if (is_null($link)) {
             return;
         }
         $this->followers = array_filter($this->followers, fn(Link $l) => $l !== $link);
-        $node->unfollow($this);
+        $node->unfollow($this, $type);
     }
 
     public function getName(): string

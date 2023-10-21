@@ -180,7 +180,7 @@ class Builder
     private function addBuffer(string $name, int $length, Node $beforeNode, array $afterNodes): Buffer
     {
         $buffer = new Buffer($name, $length);
-        array_walk($afterNodes, fn(Node $afterNode) => $afterNode->unprecede($beforeNode));
+        array_walk($afterNodes, fn(Node $afterNode) => $afterNode->unprecede($beforeNode, Link::TYPE_SCHEDULE));
         array_walk($afterNodes, fn(Node $afterNode) => $afterNode->precede($buffer, Link::TYPE_SCHEDULE));
         $buffer->precede($beforeNode, Link::TYPE_SCHEDULE);
         return $buffer;
