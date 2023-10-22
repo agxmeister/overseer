@@ -12,10 +12,10 @@ class BuilderTest extends Unit
         $builder = new Builder();
         $builder->run(
             Utils::getIssues('
-                finish |           !| # 2023-09-21
-                K-01   |       **** |
-                K-02   |   ****     | & K-01
-                K-03   |*******     | @ K-01
+                K-01   |       ****|
+                K-02   |   ****    | & K-01
+                K-03   |*******    | @ K-01
+                finish             ^ # 2023-09-21
             '),
         );
         $builder->addCriticalChain();
@@ -27,10 +27,10 @@ class BuilderTest extends Unit
         $builder = new Builder();
         $builder->run(
             Utils::getIssues('
-                finish |           !| # 2023-09-21
-                K-01   |       **** |
-                K-02   | ****       | & K-01
-                K-03   |*******     | @ K-01
+                K-01   |       ****|
+                K-02   | ****      | & K-01
+                K-03   |*******    | @ K-01
+                finish             ^ # 2023-09-21
             ')
         );
         $builder

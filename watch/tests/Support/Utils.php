@@ -4,28 +4,21 @@ namespace Tests\Support;
 
 class Utils
 {
-    public static function getIssues($description): array
+    public static function getIssues(string $description): array
     {
         $lines = [...array_filter(array_map(fn($line) => trim($line), explode("\n", $description)), fn($line) => strlen($line) > 0)];
 
-        $issues = [];
-        $links = [];
-
         $milestoneDate = self::getMilestoneDate($lines);
 
-        foreach ($lines as $line) {
+        $links = [];
+        $issues = array_reduce(array_filter($lines, fn($line) => !str_contains($line, '^')), function($issues, $line) use ($milestoneDate, &$links) {
             $issueData = explode('|', $line);
             $key = trim($issueData[0]);
             $duration = strlen(trim($issueData[1]));
             $attributes = trim($issueData[2]);
             $isScheduled = in_array(trim($issueData[1])[0], ['*']);
-            $isMilestone = in_array(trim($issueData[1])[0], ['!']);
             $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1])) + 1;
             $beginGap = $endGap + $duration - 1;
-
-            if ($isMilestone) {
-                continue;
-            }
 
             $links = [...$links, ...self::getLinks($key, $attributes)];
 
@@ -39,7 +32,9 @@ class Utils
                     'outward' => [],
                 ]
             ];
-        }
+
+            return $issues;
+        }, []);
 
         foreach($links as $link) {
             $issues[$link['from']]['links']['inward'][] = [
@@ -55,18 +50,13 @@ class Utils
         return array_values($issues);
     }
 
-    public static function getSchedule($description)
+    public static function getSchedule(string $description): array
     {
         $lines = [...array_filter(array_map(fn($line) => trim($line), explode("\n", $description)), fn($line) => strlen($line) > 0)];
 
-        $issues = [];
-        $criticalChain = [];
-        $buffers = [];
-        $links = [];
-
         $milestoneDate = self::getMilestoneDate($lines);
 
-        foreach ($lines as $line) {
+        return array_reduce(array_filter($lines, fn($line) => !str_contains($line, '^')), function ($schedule, $line) use ($milestoneDate) {
             $issueData = explode('|', $line);
             $key = trim($issueData[0]);
             $duration = strlen(trim($issueData[1]));
@@ -75,12 +65,11 @@ class Utils
             $isCritical = in_array(trim($issueData[1])[0], ['!', 'x']);
             $isIssue = in_array(trim($issueData[1])[0], ['x', '*', '.']);
             $isBuffer = in_array(trim($issueData[1])[0], ['_']);
-            $isMilestone = in_array(trim($issueData[1])[0], ['!']);
             $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1])) + 1;
             $beginGap = $endGap + $duration - 1;
 
             if ($isIssue) {
-                $issues[] = [
+                $schedule['issues'][] = [
                     'key' => $key,
                     'begin' => $isScheduled ? $milestoneDate->modify("-{$beginGap} day")->format('Y-m-d') : null,
                     'end' => $isScheduled ? $milestoneDate->modify("-{$endGap} day")->format('Y-m-d') : null,
@@ -88,43 +77,53 @@ class Utils
             }
 
             if ($isBuffer) {
-                $buffers[] = [
+                $schedule['buffers'][] = [
                     'key' => $key,
                     'begin' => $milestoneDate->modify("-{$beginGap} day")->format('Y-m-d'),
                     'end' => $milestoneDate->modify("-{$endGap} day")->format('Y-m-d'),
                 ];
             }
 
-            $links = [...$links, ...self::getLinks($key, $attributes)];
+            $schedule['links'] = [...$schedule['links'], ...self::getLinks($key, $attributes)];
 
             if ($isCritical) {
-                $criticalChain[] = $key;
+                $schedule['criticalChain'][] = $key;
             }
-        }
 
-        return [
-            'issues' => $issues,
-            'criticalChain' => $criticalChain,
-            'buffers' => $buffers,
-            'links' => $links,
-        ];
+            return $schedule;
+        }, [
+            'issues' => [],
+            'criticalChain' => [
+                array_reduce(
+                    array_filter($lines, fn($line) => str_contains($line, '^')),
+                    fn($acc, $line) => trim(explode('^', $line)[0] ?? '')
+                )
+            ],
+            'buffers' => [],
+            'links' => [],
+        ]);
     }
 
     private static function getMilestoneDate(array $lines): \DateTimeInterface
     {
-        $milestoneAttributes = array_reduce($lines, function ($acc, $line) {
-            $data = explode('|', $line);
-            return trim($data[1])[0] === '!' ? trim($data[2]) : $acc;
-        });
+        $milestoneAttributes = array_reduce(
+            array_filter($lines, fn($line) => str_contains($line, '^')),
+            fn($acc, $line) => trim(explode('^', $line)[1] ?? '')
+        );
         if (is_null($milestoneAttributes)) {
             return new \DateTimeImmutable();
         }
-        $dateAttributes = array_filter(array_map(fn($attribute) => trim($attribute), explode(',', $milestoneAttributes)), fn($attribute) => $attribute[0] === '#');
-        $dateAttribute = reset($dateAttributes);
-        $dataData = explode(' ', $dateAttribute);
-        $date = $dataData[1] ?? '';
-        $milestoneDate = new \DateTimeImmutable($date);
-        return $milestoneDate->modify('+1 day');
+        $dateAttribute =
+            array_reduce(
+                array_filter(
+                    array_map(
+                        fn($attribute) => trim($attribute),
+                        explode(',', $milestoneAttributes)
+                    ),
+                    fn($attribute) => str_starts_with($attribute, '#')),
+                fn($acc, $attribute) => $attribute
+            );
+        return new \DateTimeImmutable(explode(' ', $dateAttribute)[1] ?? '');
     }
 
     private static function getLinks(string $from, string $attributes): array
