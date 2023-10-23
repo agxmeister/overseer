@@ -56,14 +56,19 @@ class Utils
 
         $milestoneDate = self::getMilestoneDate($lines);
 
-        return array_reduce(array_filter($lines, fn($line) => !str_contains($line, '^')), function ($schedule, $line) use ($milestoneDate) {
+        $criticalChain = [$milestoneDate->format('Y-m-d') => array_reduce(
+            array_filter($lines, fn($line) => str_contains($line, '^')),
+            fn($acc, $line) => trim(explode('^', $line)[0] ?? '')
+        )];
+
+        $schedule = array_reduce(array_filter($lines, fn($line) => !str_contains($line, '^')), function ($schedule, $line) use ($milestoneDate, &$criticalChain) {
             $issueData = explode('|', $line);
             $key = trim($issueData[0]);
             $duration = strlen(trim($issueData[1]));
             $attributes = trim($issueData[2]);
             $isScheduled = in_array(trim($issueData[1])[0], ['x', '*', '_']);
-            $isCritical = in_array(trim($issueData[1])[0], ['!', 'x']);
             $isIssue = in_array(trim($issueData[1])[0], ['x', '*', '.']);
+            $isCritical = in_array(trim($issueData[1])[0], ['x']);
             $isBuffer = in_array(trim($issueData[1])[0], ['_']);
             $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1])) + 1;
             $beginGap = $endGap + $duration - 1;
@@ -74,6 +79,9 @@ class Utils
                     'begin' => $isScheduled ? $milestoneDate->modify("-{$beginGap} day")->format('Y-m-d') : null,
                     'end' => $isScheduled ? $milestoneDate->modify("-{$endGap} day")->format('Y-m-d') : null,
                 ];
+                if ($isCritical) {
+                    $criticalChain[$milestoneDate->modify("-{$endGap} day")->format('Y-m-d')] = $key;
+                }
             }
 
             if ($isBuffer) {
@@ -86,22 +94,17 @@ class Utils
 
             $schedule['links'] = [...$schedule['links'], ...self::getLinks($key, $attributes)];
 
-            if ($isCritical) {
-                $schedule['criticalChain'][] = $key;
-            }
-
             return $schedule;
         }, [
             'issues' => [],
-            'criticalChain' => [
-                array_reduce(
-                    array_filter($lines, fn($line) => str_contains($line, '^')),
-                    fn($acc, $line) => trim(explode('^', $line)[0] ?? '')
-                )
-            ],
             'buffers' => [],
             'links' => [],
         ]);
+
+        krsort($criticalChain);
+        $schedule['criticalChain'] = array_values($criticalChain);
+
+        return $schedule;
     }
 
     private static function getMilestoneDate(array $lines): \DateTimeInterface
