@@ -10,7 +10,9 @@ class Test implements Strategy
     public function schedule(Node $milestone): void
     {
         $preceders = $milestone->getPreceders();
-        $preceders[1]->unprecede($milestone);
-        $preceders[1]->precede($preceders[0], Link::TYPE_SCHEDULE);
+        for ($i = 0; $i < sizeof($preceders) - 1; $i++) {
+            $preceders[$i + 1]->unprecede($milestone);
+            $preceders[$i + 1]->precede($preceders[$i], Link::TYPE_SCHEDULE);
+        }
     }
 }

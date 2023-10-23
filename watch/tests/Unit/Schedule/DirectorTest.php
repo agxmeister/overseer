@@ -43,7 +43,7 @@ class DirectorTest extends Unit
             [
                 Utils::getIssues('
                     K-01          |    ....       |
-                    K-02          |....           |          & K-01
+                    K-02          |....           | & K-01
                     K-03          |.......        |
                 '),
                 Utils::getSchedule('
@@ -77,14 +77,27 @@ class DirectorTest extends Unit
         return [
             [
                 Utils::getIssues('
-                    K-01          |....         |
-                    K-02          |....         |
+                    K-01          |....        |
+                    K-02          |....        |
                 '),
                 Utils::getSchedule('
                     finish-buffer |        ____| @ finish
                     K-01          |    xxxx    | @ finish-buffer
                     K-02          |xxxx        | @ K-01
                     finish                     ^ # 2023-09-21
+                '),
+            ], [
+                Utils::getIssues('
+                    K-01          |....              |
+                    K-02          |....              |
+                    K-03          |....              |
+                '),
+                Utils::getSchedule('
+                    finish-buffer |            ______| @ finish
+                    K-01          |        xxxx      | @ finish-buffer
+                    K-02          |    xxxx          | @ K-01
+                    K-03          |xxxx              | @ K-02
+                    finish                           ^ # 2023-09-21
                 '),
             ],
         ];
