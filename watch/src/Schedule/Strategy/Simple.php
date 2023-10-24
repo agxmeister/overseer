@@ -5,7 +5,7 @@ namespace Watch\Schedule\Strategy;
 use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Node;
 
-class Test implements Strategy
+class Simple implements Strategy
 {
     public function schedule(Node $milestone): void
     {

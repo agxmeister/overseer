@@ -8,14 +8,14 @@ use Watch\Schedule\Builder;
 use Watch\Schedule\Director;
 use Watch\Schedule\Strategy\Basic;
 use Watch\Schedule\Strategy\Strategy;
-use Watch\Schedule\Strategy\Test;
+use Watch\Schedule\Strategy\Simple;
 
 class DirectorTest extends Unit
 {
     /**
-     * @dataProvider dataGetScheduleUnlimited
+     * @dataProvider dataCreateScheduleUnlimited
      */
-    public function testGetScheduleUnlimited($issues, $schedule)
+    public function testCreateScheduleUnlimited($issues, $schedule)
     {
         $director = new Director(new Builder());
         $date = new DateTime('2023-09-21');
@@ -24,20 +24,20 @@ class DirectorTest extends Unit
     }
 
     /**
-     * @dataProvider dataGetScheduleLimited
+     * @dataProvider dataCreateScheduleSimple
      */
-    public function testGetScheduleLimited($issues, $schedule)
+    public function testCreateScheduleSimple($issues, $schedule)
     {
         $director = new Director(new Builder());
         $date = new DateTime('2023-09-21');
-        $strategy = new Test();
+        $strategy = new Simple();
         $this->assertSchedule($schedule, $director->create($issues, $date, $strategy));
     }
 
     /**
-     * @dataProvider dataGetScheduleBasic
+     * @dataProvider dataCreateScheduleBasic
      */
-    public function testGetScheduleBasic($issues, $schedule)
+    public function testCreateScheduleBasic($issues, $schedule)
     {
         $director = new Director(new Builder());
         $date = new DateTime('2023-09-21');
@@ -64,7 +64,7 @@ class DirectorTest extends Unit
         }
     }
 
-    protected function dataGetScheduleUnlimited(): array
+    protected function dataCreateScheduleUnlimited(): array
     {
         return [
             [
@@ -99,7 +99,7 @@ class DirectorTest extends Unit
         ];
     }
 
-    protected function dataGetScheduleLimited(): array
+    protected function dataCreateScheduleSimple(): array
     {
         return [
             [
@@ -130,7 +130,7 @@ class DirectorTest extends Unit
         ];
     }
 
-    protected function dataGetScheduleBasic(): array
+    protected function dataCreateScheduleBasic(): array
     {
         return [
             [
