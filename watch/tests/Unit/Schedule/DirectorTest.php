@@ -2,13 +2,13 @@
 namespace Tests\Unit\Schedule;
 
 use Codeception\Test\Unit;
-use DateTime;
+use Watch\Schedule\Strategy\Limit\Basic;
+use Watch\Schedule\Strategy\Limit\Simple;
+use Watch\Schedule\Strategy\Limit\Strategy;
+use Watch\Schedule\Strategy\Schedule\LateStart;
 use Tests\Support\Utils;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Director;
-use Watch\Schedule\Strategy\Basic;
-use Watch\Schedule\Strategy\Strategy;
-use Watch\Schedule\Strategy\Simple;
 
 class DirectorTest extends Unit
 {
@@ -18,9 +18,9 @@ class DirectorTest extends Unit
     public function testCreateScheduleUnlimited($issues, $schedule)
     {
         $director = new Director(new Builder());
-        $date = new DateTime('2023-09-21');
-        $strategy = $this->makeEmpty(Strategy::class);
-        $this->assertSchedule($schedule, $director->create($issues, $date, $strategy));
+        $limitStrategy = $this->makeEmpty(Strategy::class);
+        $scheduleStrategy = new LateStart(new \DateTimeImmutable('2023-09-21'));
+        $this->assertSchedule($schedule, $director->create($issues, $limitStrategy, $scheduleStrategy));
     }
 
     /**
@@ -29,9 +29,9 @@ class DirectorTest extends Unit
     public function testCreateScheduleSimple($issues, $schedule)
     {
         $director = new Director(new Builder());
-        $date = new DateTime('2023-09-21');
-        $strategy = new Simple();
-        $this->assertSchedule($schedule, $director->create($issues, $date, $strategy));
+        $limitStrategy = new Simple();
+        $scheduleStrategy = new LateStart(new \DateTimeImmutable('2023-09-21'));
+        $this->assertSchedule($schedule, $director->create($issues, $limitStrategy, $scheduleStrategy));
     }
 
     /**
@@ -40,9 +40,9 @@ class DirectorTest extends Unit
     public function testCreateScheduleBasic($issues, $schedule)
     {
         $director = new Director(new Builder());
-        $date = new DateTime('2023-09-21');
-        $strategy = new Basic();
-        $this->assertSchedule($schedule, $director->create($issues, $date, $strategy));
+        $limitStrategy = new Basic();
+        $scheduleStrategy = new LateStart(new \DateTimeImmutable('2023-09-21'));
+        $this->assertSchedule($schedule, $director->create($issues, $limitStrategy, $scheduleStrategy));
     }
 
     protected function assertSchedule($expected, $actual)

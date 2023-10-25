@@ -16,7 +16,7 @@ class Node
      */
     private array $preceders = [];
 
-    public function __construct(protected string $name, private int $length)
+    public function __construct(protected readonly string $name, private readonly int $length, private array $attributes = [])
     {
     }
 
@@ -146,6 +146,16 @@ class Node
     public function getSchedule(): array|string
     {
         return array_map(fn(Node $node) => [$node->getName(), $node->getLength(), $node->getDistance()], $this->getPreceders(true));
+    }
+
+    public function getAttribute(string $name, mixed $default = null): mixed
+    {
+        return $this->attributes[$name] ?? $default;
+    }
+
+    public function setAttribute(string $name, mixed $value): void
+    {
+        $this->attributes[$name] = $value;
     }
 
     private function getLink(array $links, Node $node, string|null $type = null): Link|null

@@ -3,11 +3,12 @@
 namespace Watch\Schedule;
 
 use DateTime;
+use Watch\Schedule\Strategy\Limit\Strategy as LimitStrategy;
+use Watch\Schedule\Strategy\Schedule\Strategy as ScheduleStrategy;
 use Watch\Schedule\Model\Buffer;
 use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Milestone;
 use Watch\Schedule\Model\Node;
-use Watch\Schedule\Strategy\Strategy;
 
 class Builder
 {
@@ -16,7 +17,6 @@ class Builder
     const VOLUME_CRITICAL_CHAIN = 'criticalChain';
     const VOLUME_BUFFERS = 'buffers';
 
-    private array|null $issues = null;
     private Milestone|null $milestone = null;
 
     private array|null $buffers = null;
@@ -25,7 +25,6 @@ class Builder
 
     public function run(array $issues): self
     {
-        $this->issues = $issues;
         $this->milestone = Utils::getMilestone($issues);
         $this->buffers = [];
         $this->result = [
@@ -36,47 +35,28 @@ class Builder
         return $this;
     }
 
-    public function distribute(Strategy $strategy): self
+    public function setLimit(LimitStrategy $strategy): self
     {
-        $strategy->schedule($this->milestone);
+        $strategy->apply($this->milestone);
         return $this;
     }
 
-    public function schedule(DateTime $date): self
+    public function setSchedule(ScheduleStrategy $strategy): self
     {
-        $this->applyDiffToResult(self::VOLUME_ISSUES, array_filter(array_map(function (array $issue) use ($date) {
-            /** @var Node $node */
-            $node = $this->getNode($issue['key']);
-            if (is_null($node)) {
-                return null;
-            }
-            $distance = $node->getDistance();
-            $completion = $node->getCompletion();
-            $startDate = (clone $date)->modify("-{$distance} day");
-            $finishDate = (clone $date)->modify("-{$completion} day");
-            return [
-                'key' => $issue['key'],
-                'begin' => $startDate->format("Y-m-d"),
-                'end' => $finishDate->format("Y-m-d"),
-            ];
-        }, $this->issues), fn($item) => !is_null($item)));
+        $strategy->apply($this->milestone);
         return $this;
     }
 
     public function addIssuesDates(): self
     {
-        $this->applyDiffToResult(self::VOLUME_ISSUES, array_filter(array_map(function (array $issue) {
-            /** @var Node $node */
-            $node = $this->getNode($issue['key']);
-            if (is_null($node)) {
-                return null;
-            }
-            return [
-                'key' => $issue['key'],
-                'begin' => $issue['begin'],
-                'end' => $issue['end'],
-            ];
-        }, $this->issues), fn($item) => !is_null($item)));
+        $this->applyDiffToResult(self::VOLUME_ISSUES, array_map(
+            fn(Node $node) => [
+                'key' => $node->getName(),
+                'begin' => $node->getAttribute('begin'),
+                'end' => $node->getAttribute('end'),
+            ],
+            array_filter($this->milestone->getPreceders(true), fn(Node $node) => get_class($node) === Node::class)
+        ));
         return $this;
     }
 

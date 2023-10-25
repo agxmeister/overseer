@@ -1,6 +1,6 @@
 <?php
 
-namespace Watch\Schedule\Strategy;
+namespace Watch\Schedule\Strategy\Limit;
 
 use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Node;
@@ -8,7 +8,7 @@ use Watch\Schedule\Utils;
 
 class Basic implements Strategy
 {
-    public function schedule(Node $milestone): void
+    public function apply(Node $milestone): void
     {
         $point = 1;
         do {

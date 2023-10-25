@@ -70,7 +70,10 @@ class Utils
     {
         $nodes = [];
         foreach ($issues as $issue) {
-            $node = new Node($issue['key'], $issue['duration']);
+            $node = new Node($issue['key'], $issue['duration'], [
+                'begin' => $issue['begin'],
+                'end' => $issue['end'],
+            ]);
             $nodes[$node->getName()] = $node;
         }
 

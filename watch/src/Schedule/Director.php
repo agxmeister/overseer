@@ -2,12 +2,12 @@
 
 namespace Watch\Schedule;
 
-use DateTime;
-use Watch\Schedule\Strategy\Strategy;
+use Watch\Schedule\Strategy\Limit\Strategy as LimitStrategy;
+use Watch\Schedule\Strategy\Schedule\Strategy as ScheduleStrategy;
 
 class Director
 {
-    public function __construct(private Builder $builder)
+    public function __construct(private readonly Builder $builder)
     {
     }
 
@@ -24,15 +24,16 @@ class Director
             ->release();
     }
 
-    public function create(array $issues, DateTime $date, Strategy $strategy): array
+    public function create(array $issues, LimitStrategy $limitStrategy, ScheduleStrategy $scheduleStrategy): array
     {
         return $this->builder
             ->run($issues)
-            ->distribute($strategy)
+            ->setLimit($limitStrategy)
             ->addCriticalChain()
             ->addMilestoneBuffer()
             ->addFeedingBuffers()
-            ->schedule($date)
+            ->setSchedule($scheduleStrategy)
+            ->addIssuesDates()
             ->addBuffersDates()
             ->addLinks()
             ->release();

@@ -2,9 +2,9 @@
 namespace Tests\Unit\Schedule\Strategy;
 
 use Codeception\Test\Unit;
+use Watch\Schedule\Strategy\Limit\Basic;
 use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Node;
-use Watch\Schedule\Strategy\Basic;
 
 class BasicTest extends Unit
 {
@@ -20,7 +20,7 @@ class BasicTest extends Unit
         $node3->precede($milestone);
         $node4->precede($milestone);
         $strategy = new Basic();
-        $strategy->schedule($milestone);
+        $strategy->apply($milestone);
         $this->assertEquals(24, $milestone->getLength(true));
         $this->assertEquals([$node3], $node1->getPreceders(false, [Link::TYPE_SCHEDULE]));
         $this->assertEquals([$node4], $node2->getPreceders(false, [Link::TYPE_SCHEDULE]));
