@@ -4,39 +4,35 @@ namespace Tests\Unit\Schedule;
 use Codeception\Test\Unit;
 use Tests\Support\Utils;
 use Watch\Schedule\Builder;
+use Watch\Schedule\Builder\FromExisting as FromExistingBuilder;
 
 class BuilderTest extends Unit
 {
     public function testAddCriticalChain()
     {
-        $builder = new Builder();
-        $builder->run(
-            Utils::getIssues('
-                K-01   |       ****|
-                K-02   |   ****    | & K-01
-                K-03   |*******    | @ K-01
-                finish             ^ # 2023-09-21
-            '),
-        );
+        $builder = new FromExistingBuilder(Utils::getIssues('
+            K-01   |       ****|
+            K-02   |   ****    | & K-01
+            K-03   |*******    | @ K-01
+            finish             ^ # 2023-09-21
+        '));
+        $builder->run();
         $builder->addCriticalChain();
         $this->assertEquals(['finish', 'K-01', 'K-03'], $builder->release()[Builder::VOLUME_CRITICAL_CHAIN]);
     }
 
     public function testAddFeedingBuffers()
     {
-        $builder = new Builder();
-        $builder->run(
-            Utils::getIssues('
-                K-01   |       ****|
-                K-02   | ****      | & K-01
-                K-03   |*******    | @ K-01
-                finish             ^ # 2023-09-21
-            ')
-        );
+        $builder = new FromExistingBuilder(Utils::getIssues('
+            K-01   |       ****|
+            K-02   | ****      | & K-01
+            K-03   |*******    | @ K-01
+            finish             ^ # 2023-09-21
+        '));
+        $builder->run();
         $builder
             ->addFeedingBuffers()
-            ->addIssuesDates()
-            ->addBuffersDates();
+            ->addDates();
         $this->assertEquals([
             [
                 'key' => 'K-02-buffer',

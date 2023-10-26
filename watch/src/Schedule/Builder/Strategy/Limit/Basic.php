@@ -1,12 +1,13 @@
 <?php
 
-namespace Watch\Schedule\Strategy\Limit;
+namespace Watch\Schedule\Builder\Strategy\Limit;
 
+use Watch\Schedule\Builder\LimitStrategy;
 use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Node;
 use Watch\Schedule\Utils;
 
-class Basic implements Strategy
+class Basic implements LimitStrategy
 {
     public function apply(Node $milestone): void
     {

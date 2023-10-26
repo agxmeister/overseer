@@ -1,10 +1,11 @@
 <?php
 
-namespace Watch\Schedule\Strategy\Schedule;
+namespace Watch\Schedule\Builder\Strategy\Schedule;
 
+use Watch\Schedule\Builder\ScheduleStrategy;
 use Watch\Schedule\Model\Node;
 
-class LateStart implements Strategy
+class LateStart implements ScheduleStrategy
 {
     public function __construct(private readonly \DateTimeImmutable $date)
     {

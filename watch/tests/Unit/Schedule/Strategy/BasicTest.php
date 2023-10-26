@@ -2,7 +2,7 @@
 namespace Tests\Unit\Schedule\Strategy;
 
 use Codeception\Test\Unit;
-use Watch\Schedule\Strategy\Limit\Basic;
+use Watch\Schedule\Builder\Strategy\Limit\Basic;
 use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Node;
 

@@ -1,10 +1,10 @@
 <?php
 
-namespace Watch\Schedule\Strategy\Schedule;
+namespace Watch\Schedule\Builder;
 
 use Watch\Schedule\Model\Node;
 
-interface Strategy
+interface ScheduleStrategy
 {
     public function apply(Node $milestone): void;
 }

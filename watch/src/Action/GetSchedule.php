@@ -5,17 +5,19 @@ namespace Watch\Action;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Watch\Jira;
+use Watch\Schedule\Builder\FromExisting;
 use Watch\Schedule\Director;
 
 class GetSchedule
 {
-    public function __construct(private Jira $jira, private Director $director)
+    public function __construct(private readonly Jira $jira)
     {
     }
 
     public function __invoke(Request $request, Response $response, $args): Response
     {
-        $schedule = $this->director->get($this->jira->getIssues(''));
+        $director = new Director(new FromExisting($this->jira->getIssues('')));
+        $schedule = $director->build()->release();
         $response->getBody()->write(json_encode($schedule));
         return $response
             ->withHeader('Content-Type', 'application/json')

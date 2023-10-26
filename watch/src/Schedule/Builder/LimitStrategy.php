@@ -1,10 +1,10 @@
 <?php
 
-namespace Watch\Schedule\Strategy\Limit;
+namespace Watch\Schedule\Builder;
 
 use Watch\Schedule\Model\Node;
 
-interface Strategy
+interface LimitStrategy
 {
     public function apply(Node $milestone): void;
 }
