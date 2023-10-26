@@ -5,7 +5,7 @@ namespace Watch;
 use GuzzleHttp\Client;
 use Watch\Schedule\Model\Link;
 
-class Jira
+readonly class Jira
 {
     private Client $client;
 

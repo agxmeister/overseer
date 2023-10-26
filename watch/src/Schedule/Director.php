@@ -2,9 +2,9 @@
 
 namespace Watch\Schedule;
 
-class Director
+readonly class Director
 {
-    public function __construct(private readonly Builder $builder)
+    public function __construct(private Builder $builder)
     {
     }
 

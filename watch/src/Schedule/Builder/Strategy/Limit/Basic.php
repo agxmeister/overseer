@@ -7,7 +7,7 @@ use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Node;
 use Watch\Schedule\Utils;
 
-class Basic implements LimitStrategy
+readonly class Basic implements LimitStrategy
 {
     public function apply(Node $milestone): void
     {
