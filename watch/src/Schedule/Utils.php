@@ -6,6 +6,7 @@ use Watch\Schedule\Builder\LimitStrategy;
 use Watch\Schedule\Builder\ScheduleStrategy;
 use Watch\Schedule\Model\Buffer;
 use Watch\Schedule\Model\FeedingBuffer;
+use Watch\Schedule\Model\Issue;
 use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Milestone;
 use Watch\Schedule\Model\Node;
@@ -74,20 +75,11 @@ class Utils
         );
     }
 
-    static public function getUnique(array $nodes): array
-    {
-        $hash = [];
-        foreach ($nodes as $node) {
-            $hash[$node->getName()] = $node;
-        }
-        return array_values($hash);
-    }
-
     static public function getMilestone(array $issues, LimitStrategy $strategy = null): Milestone
     {
         $nodes = [];
         foreach ($issues as $issue) {
-            $node = new Node($issue['key'], $issue['duration'], [
+            $node = new Issue($issue['key'], $issue['duration'], [
                 'begin' => $issue['begin'],
                 'end' => $issue['end'],
             ]);

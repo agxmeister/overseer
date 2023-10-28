@@ -2,9 +2,9 @@
 
 namespace Watch\Schedule\Model;
 
-use Watch\Schedule\Utils;
+use Watch\Utils;
 
-class Node
+abstract class Node
 {
     /**
      * @var Link[]
@@ -106,7 +106,7 @@ class Node
         foreach ($links as $link) {
             $preceders = [...$preceders, ...$link->getNode()->getPreceders(true)];
         }
-        return Utils::getUnique($preceders);
+        return Utils::getUnique($preceders, fn(Node $node) => $node->getName());
     }
 
     public function getPrecedeLinks(array $types = []): array

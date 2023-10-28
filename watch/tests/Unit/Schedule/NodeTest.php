@@ -2,14 +2,14 @@
 namespace Tests\Unit\Schedule;
 
 use Codeception\Test\Unit;
+use Watch\Schedule\Model\Issue;
 use Watch\Schedule\Model\Link;
-use Watch\Schedule\Model\Node;
 
 class NodeTest extends Unit
 {
     public function testSingleLengthAndDistance()
     {
-        $node = new Node("Test", 10);
+        $node = new Issue("Test", 10);
         $this->assertEquals(10, $node->getLength());
         $this->assertEquals(10, $node->getDistance());
         $this->assertEquals(10, $node->getLength(true));
@@ -18,8 +18,8 @@ class NodeTest extends Unit
 
     public function testTwoInLineLengthAndDistance()
     {
-        $node1 = new Node("Test1", 10);
-        $node2 = new Node("Test2", 11);
+        $node1 = new Issue("Test1", 10);
+        $node2 = new Issue("Test2", 11);
         $node2->precede($node1);
         $this->assertEquals(10, $node1->getLength());
         $this->assertEquals(21, $node1->getLength(true));
@@ -33,9 +33,9 @@ class NodeTest extends Unit
 
     public function testThreeInLineLengthAndDistance()
     {
-        $node1 = new Node("Test1", 10);
-        $node2 = new Node("Test2", 11);
-        $node3 = new Node("Test3", 12);
+        $node1 = new Issue("Test1", 10);
+        $node2 = new Issue("Test2", 11);
+        $node3 = new Issue("Test3", 12);
         $node3->precede($node2);
         $node2->precede($node1);
         $this->assertEquals(10, $node1->getLength());
@@ -54,9 +54,9 @@ class NodeTest extends Unit
 
     public function testThreeInForkLengthAndDistance()
     {
-        $node1 = new Node("Test1", 10);
-        $node2 = new Node("Test2", 11);
-        $node3 = new Node("Test3", 12);
+        $node1 = new Issue("Test1", 10);
+        $node2 = new Issue("Test2", 11);
+        $node3 = new Issue("Test3", 12);
         $node2->precede($node1);
         $node3->precede($node1);
         $this->assertEquals(10, $node1->getLength());
@@ -75,10 +75,10 @@ class NodeTest extends Unit
 
     public function testFourInForkLengthAndDistance()
     {
-        $node1 = new Node("Test1", 10);
-        $node2 = new Node("Test2", 11);
-        $node3 = new Node("Test3", 12);
-        $node4 = new Node("Test4", 13);
+        $node1 = new Issue("Test1", 10);
+        $node2 = new Issue("Test2", 11);
+        $node3 = new Issue("Test3", 12);
+        $node4 = new Issue("Test4", 13);
         $node2->precede($node1);
         $node3->precede($node1);
         $node4->precede($node2);
@@ -102,10 +102,10 @@ class NodeTest extends Unit
 
     public function testLengthAndDistanceWithPreceders()
     {
-        $node1 = new Node("Test1", 10);
-        $node2 = new Node("Test2", 11);
-        $node3 = new Node("Test3", 12);
-        $node4 = new Node("Test4", 13);
+        $node1 = new Issue("Test1", 10);
+        $node2 = new Issue("Test2", 11);
+        $node3 = new Issue("Test3", 12);
+        $node4 = new Issue("Test4", 13);
         $node1->follow($node2);
         $node2->follow($node3);
         $node2->follow($node4, Link::TYPE_SCHEDULE);
@@ -117,11 +117,11 @@ class NodeTest extends Unit
 
     public function testPreceders()
     {
-        $node1 = new Node("Test1", 10);
-        $node2 = new Node("Test2", 11);
-        $node3 = new Node("Test3", 12);
-        $node4 = new Node("Test4", 13);
-        $node5 = new Node("Test5", 14);
+        $node1 = new Issue("Test1", 10);
+        $node2 = new Issue("Test2", 11);
+        $node3 = new Issue("Test3", 12);
+        $node4 = new Issue("Test4", 13);
+        $node5 = new Issue("Test5", 14);
         $node2->precede($node1);
         $node3->precede($node1);
         $node5->precede($node1);
