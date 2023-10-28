@@ -2,6 +2,6 @@
 
 namespace Watch\Schedule\Model;
 
-abstract class Buffer extends Node
+class FeedingBuffer extends Buffer
 {
 }

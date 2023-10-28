@@ -12,10 +12,9 @@ readonly class Director
     {
         return $this->builder
             ->run()
-            ->addCriticalChain()
+            ->addMilestone()
             ->addMilestoneBuffer()
             ->addFeedingBuffers()
-            ->addDates()
-            ->addLinks();
+            ->addDates();
     }
 }

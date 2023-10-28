@@ -2,6 +2,10 @@
 
 namespace Watch\Schedule;
 
+use Watch\Schedule\Builder\LimitStrategy;
+use Watch\Schedule\Builder\ScheduleStrategy;
+use Watch\Schedule\Model\Buffer;
+use Watch\Schedule\Model\FeedingBuffer;
 use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Milestone;
 use Watch\Schedule\Model\Node;
@@ -14,9 +18,22 @@ class Utils
      */
     static public function getCriticalChain(Node|null $node): array
     {
-        return !is_null($node) ?
-            [$node, ...self::getCriticalChain(Utils::getLongestSequence($node->getPreceders()))] :
-            [];
+        if (is_null($node)) {
+            return [];
+        }
+        return [$node, ...self::getCriticalChain(Utils::getLongestSequence(
+            array_filter(
+                array_filter(
+                    $node->getPreceders(),
+                    fn($node) => get_class($node) !== FeedingBuffer::class,
+                ),
+                fn(Node $node) => !array_reduce(
+                    $node->getFollowers(),
+                    fn($acc, Node $node) => $acc || get_class($node) === FeedingBuffer::class,
+                    false,
+                ),
+            )
+        ))];
     }
 
     /**
@@ -66,7 +83,7 @@ class Utils
         return array_values($hash);
     }
 
-    static public function getMilestone(array $issues): Milestone
+    static public function getMilestone(array $issues, LimitStrategy $strategy = null): Milestone
     {
         $nodes = [];
         foreach ($issues as $issue) {
@@ -95,6 +112,27 @@ class Utils
             }
         }
 
+        if (!is_null($strategy)) {
+            $strategy->apply($milestone);
+        }
+
         return $milestone;
+    }
+
+    static public function setDates(Milestone $milestone, ScheduleStrategy $strategy = null): void
+    {
+        if (!is_null($strategy)) {
+            $strategy->apply($milestone);
+            return;
+        }
+        foreach (array_filter($milestone->getPreceders(true), fn(Node $node) => $node instanceof Buffer) as $buffer) {
+            $end = max(array_map(
+                fn(Node $node) => $node->getAttribute('end') ?? null,
+                $buffer->getPreceders()
+            ));
+            $date = new \DateTimeImmutable($end);
+            $buffer->setAttribute('begin', $date->modify("1 day")->format("Y-m-d"));
+            $buffer->setAttribute('end', $date->modify("{$buffer->getLength()} day")->format("Y-m-d"));
+        }
     }
 }

@@ -3,6 +3,7 @@
 namespace Watch\Schedule\Builder;
 
 use Watch\Schedule\Builder;
+use Watch\Schedule\Utils;
 
 class FromScratch extends Builder
 {
@@ -11,17 +12,15 @@ class FromScratch extends Builder
         parent::__construct($issues);
     }
 
-    public function run(): self
+    public function addMilestone(): self
     {
-        parent::run();
-        $this->limitStrategy->apply($this->milestone);
+        $this->milestone = Utils::getMilestone($this->issues, $this->limitStrategy);
         return $this;
     }
 
     public function addDates(): self
     {
-        $this->scheduleStrategy->apply($this->milestone);
-        parent::addDates();
+        Utils::setDates($this->milestone, $this->scheduleStrategy);
         return $this;
     }
 }
