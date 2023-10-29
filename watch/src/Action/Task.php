@@ -17,7 +17,7 @@ class Task
         $taskId = $args['taskId'];
         $params = json_decode(file_get_contents('php://input'), true);
         $this->jira->setIssue($taskId, $params);
-        $response->getBody()->write(json_encode($this->jira->getIssue($taskId)));
+        $response->getBody()->write(json_encode(Utils::convertIssue($this->jira->getIssue($taskId))));
         return $response
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Access-Control-Allow-Origin', '*')

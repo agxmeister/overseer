@@ -16,11 +16,7 @@ class Tasks
     {
         $response->getBody()->write(json_encode(
             array_map(
-                fn($issue) => array_filter(
-                    $issue,
-                    fn($key) => in_array($key, ['key', 'summary', 'begin', 'end']),
-                    ARRAY_FILTER_USE_KEY
-                ),
+                fn($issue) => Utils::convertIssue($issue),
                 $this->jira->getIssues('')
             ),
         ));

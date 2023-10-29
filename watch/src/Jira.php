@@ -78,6 +78,7 @@ readonly class Jira
             'duration' => (int)$issue->fields->customfield_10038,
             'begin' => $begin,
             'end' => $end,
+            'status' => $issue->fields->status->name,
             'links' => [
                 'outward' => array_values(array_map(
                     fn($link) => [
