@@ -22,8 +22,9 @@ class PutSchedule
         $director = new Director(
             new FromScratch(
                 $this->jira->getIssues(''),
+                new \DateTimeImmutable(date('Y-m-d')),
                 new Basic(),
-                new LateStart(new \DateTimeImmutable($params->date))
+                new LateStart(new \DateTimeImmutable($params->date)),
             )
         );
         $issues = $director->build()->release();

@@ -13,7 +13,8 @@ class Utils
         $links = [];
         $issues = array_reduce(array_filter($lines, fn($line) => !str_contains($line, '^')), function($issues, $line) use ($milestoneDate, &$links) {
             $issueData = explode('|', $line);
-            $key = trim($issueData[0]);
+            $isCompleted = str_ends_with($issueData[0], '+');
+            $key = trim(rtrim($issueData[0], '+'));
             $duration = strlen(trim($issueData[1]));
             $attributes = trim($issueData[2]);
             $isScheduled = in_array(trim($issueData[1])[0], ['*']);
@@ -27,6 +28,7 @@ class Utils
                 'duration' => $duration,
                 'begin' => $isScheduled ? $milestoneDate->modify("-{$beginGap} day")->format('Y-m-d') : null,
                 'end' => $isScheduled ? $milestoneDate->modify("-{$endGap} day")->format('Y-m-d') : null,
+                'isCompleted' => $isCompleted,
                 'links' => [
                     'inward' => [],
                     'outward' => [],
@@ -69,7 +71,8 @@ class Utils
             $isScheduled = in_array(trim($issueData[1])[0], ['x', '*', '_']);
             $isIssue = in_array(trim($issueData[1])[0], ['x', '*', '.']);
             $isCritical = in_array(trim($issueData[1])[0], ['x']);
-            $isBuffer = in_array(trim($issueData[1])[0], ['_']);
+            $isBuffer = in_array(trim($issueData[1])[0], ['_', '!']);
+            $consumption = substr_count(trim($issueData[1]), '!');
             $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1])) + 1;
             $beginGap = $endGap + $duration - 1;
 
@@ -89,6 +92,7 @@ class Utils
                     'key' => $key,
                     'begin' => $milestoneDate->modify("-{$beginGap} day")->format('Y-m-d'),
                     'end' => $milestoneDate->modify("-{$endGap} day")->format('Y-m-d'),
+                    'consumption' => $consumption,
                 ];
             }
 

@@ -19,7 +19,7 @@ abstract class Builder
 
     protected Milestone|null $milestone;
 
-    public function __construct(protected readonly array $issues)
+    public function __construct(protected readonly array $issues, protected readonly \DateTimeImmutable $now)
     {
     }
 
@@ -45,6 +45,7 @@ abstract class Builder
                     'key' => $node->getName(),
                     'begin' => $node->getAttribute('begin'),
                     'end' => $node->getAttribute('end'),
+                    'consumption' => $node->getAttribute('consumption'),
                 ],
                 array_filter($this->milestone->getPreceders(true), fn(Node $node) => $node instanceof Buffer)
             )),
@@ -87,6 +88,7 @@ abstract class Builder
         $buffer = new MilestoneBuffer(
             "{$this->milestone->getName()}-buffer",
             (int)ceil($this->milestone->getLength(true) / 2),
+            ['consumption' => 0],
         );
         $this->addBuffer($buffer, $this->milestone, $this->milestone->getPreceders());
         return $this;
@@ -103,6 +105,7 @@ abstract class Builder
                 $buffer = new FeedingBuffer(
                     "{$notCriticalPreceder->getName()}-buffer",
                     (int)ceil($notCriticalPreceder->getLength(true) / 2),
+                    ['consumption' => 0],
                 );
                 $this->addBuffer($buffer, $node, [$notCriticalPreceder]);
             }
@@ -113,6 +116,35 @@ abstract class Builder
     public function addDates(): self
     {
         Utils::setDates($this->milestone);
+        return $this;
+    }
+
+    public function addBuffersConsumption(): self
+    {
+        $lateDays = array_reduce(
+            array_filter(
+                array_filter(
+                    Utils::getCriticalChain($this->milestone),
+                    fn(Node $node) => $node instanceof Issue
+                ),
+                fn(Node $node) =>
+                    $node->getAttribute('end') < $this->now->format('Y-m-d') &&
+                    !$node->getAttribute('isCompleted')
+            ),
+            fn(int $acc, Node $node) => $acc + (int)$this->now->diff(new \DateTimeImmutable($node->getAttribute('end')))->format('%a') - 1,
+            0,
+        );
+
+        $milestoneBuffer = array_reduce(
+            array_filter(
+                Utils::getCriticalChain($this->milestone),
+                fn(Node $node) => $node instanceof Buffer
+            ),
+            fn($acc, Node $node) => $node
+        );
+
+        $milestoneBuffer->setAttribute('consumption', $lateDays);
+
         return $this;
     }
 

@@ -4,6 +4,7 @@ namespace Tests\Unit\Schedule;
 use Codeception\Test\Unit;
 use Tests\Support\Utils;
 use Watch\Schedule\Builder\FromScratch as FromScratchBuilder;
+use Watch\Schedule\Builder\FromExisting as FromExistingBuilder;
 use Watch\Schedule\Builder\LimitStrategy;
 use Watch\Schedule\Builder\Strategy\Limit\Basic as BasicLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Limit\Simple as SimpleLimitStrategy;
@@ -20,6 +21,7 @@ class DirectorTest extends Unit
         $director = new Director(
             new FromScratchBuilder(
                 $issues,
+                new \DateTimeImmutable('2023-01-01'),
                 $this->makeEmpty(LimitStrategy::class),
                 new LateStartScheduleStrategy(new \DateTimeImmutable('2023-09-21'))
             )
@@ -35,6 +37,7 @@ class DirectorTest extends Unit
         $director = new Director(
             new FromScratchBuilder(
                 $issues,
+                new \DateTimeImmutable('2023-01-01'),
                 new SimpleLimitStrategy(),
                 new LateStartScheduleStrategy(new \DateTimeImmutable('2023-09-21'))
             )
@@ -50,8 +53,23 @@ class DirectorTest extends Unit
         $director = new Director(
             new FromScratchBuilder(
                 $issues,
+                new \DateTimeImmutable('2023-01-01'),
                 new BasicLimitStrategy(),
                 new LateStartScheduleStrategy(new \DateTimeImmutable('2023-09-21'))
+            )
+        );
+        $this->assertSchedule($schedule, $director->build()->release());
+    }
+
+    /**
+     * @dataProvider dataGetScheduleBasic
+     */
+    public function testGetScheduleBasic($issues, $schedule)
+    {
+        $director = new Director(
+            new FromExistingBuilder(
+                $issues,
+                new \DateTimeImmutable('2023-09-13'),
             )
         );
         $this->assertSchedule($schedule, $director->build()->release());
@@ -195,6 +213,27 @@ class DirectorTest extends Unit
                     K-03-buffer   |    __        | @ K-01
                     K-03          |****          | & K-01, @ K-03-buffer
                     finish                       ^ # 2023-09-21
+                '),
+            ],
+        ];
+    }
+
+    protected function dataGetScheduleBasic(): array
+    {
+        return [
+            [
+                Utils::getIssues('
+                    K-01          |        ****      | 
+                    K-02          |    ****          | @ K-01
+                    K-03         +|****              | @ K-02
+                    finish                           ^ # 2023-09-21
+                '),
+                Utils::getSchedule('
+                    finish-buffer |            !!____| @ finish
+                    K-01          |        xxxx      | @ finish-buffer
+                    K-02          |    xxxx          | @ K-01
+                    K-03          |xxxx              | @ K-02
+                    finish                           ^ # 2023-09-21
                 '),
             ],
         ];

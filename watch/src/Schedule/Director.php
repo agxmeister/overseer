@@ -15,6 +15,7 @@ readonly class Director
             ->addMilestone()
             ->addMilestoneBuffer()
             ->addFeedingBuffers()
-            ->addDates();
+            ->addDates()
+            ->addBuffersConsumption();
     }
 }

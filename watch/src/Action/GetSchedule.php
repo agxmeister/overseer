@@ -16,7 +16,10 @@ class GetSchedule
 
     public function __invoke(Request $request, Response $response, $args): Response
     {
-        $director = new Director(new FromExisting($this->jira->getIssues('')));
+        $director = new Director(new FromExisting(
+            $this->jira->getIssues(''),
+            new \DateTimeImmutable(date('Y-m-d')),
+        ));
         $schedule = $director->build()->release();
         $response->getBody()->write(json_encode($schedule));
         return $response

@@ -66,6 +66,7 @@ readonly class Jira
 
     private function convert($issue): array
     {
+        $status = $issue->fields->status->name;
         $begin = $issue->fields->customfield_10036 ?? date('Y-m-d');
         $end =
             $issue->fields->customfield_10037 &&
@@ -75,10 +76,11 @@ readonly class Jira
         return [
             'key' => $issue->key,
             'summary' => $issue->fields->summary,
+            'status' => $status,
             'duration' => (int)$issue->fields->customfield_10038,
             'begin' => $begin,
             'end' => $end,
-            'status' => $issue->fields->status->name,
+            'isCompleted' => $this->isCompleted($status),
             'links' => [
                 'outward' => array_values(array_map(
                     fn($link) => [
@@ -106,7 +108,7 @@ readonly class Jira
         ];
     }
 
-    private function fieldsMapping($field): string
+    private function fieldsMapping(string $field): string
     {
         $mapping = [
             "begin" => "customfield_10036",
@@ -115,14 +117,19 @@ readonly class Jira
         return $mapping[$field];
     }
 
-    private function getLinkTypeByName($name): string
+    private function getLinkTypeByName(string $name): string
     {
         return $name === 'Depends' ? Link::TYPE_SEQUENCE : Link::TYPE_SCHEDULE;
     }
 
-    private function getLinkNameByType($type): string
+    private function getLinkNameByType(string $type): string
     {
         return $type === Link::TYPE_SEQUENCE ? 'Depends' : 'Follows';
+    }
+
+    private function isCompleted(string $status): bool
+    {
+        return $status === 'Done';
     }
 
     private function getClient(): Client
