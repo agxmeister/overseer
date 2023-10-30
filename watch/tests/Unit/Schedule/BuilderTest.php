@@ -15,7 +15,7 @@ class BuilderTest extends Unit
                 K-01   |       xxxx|
                 K-02   |   ****    | & K-01
                 K-03   |xxxxxxx    | @ K-01
-                finish             ^ # 2023-09-21
+                                   ^ # 2023-09-21
             '),
             new \DateTimeImmutable('2023-01-01'),
         );
@@ -31,7 +31,7 @@ class BuilderTest extends Unit
                 K-01   |       xxxx|
                 K-02   | ****      | & K-01
                 K-03   |xxxxxxx    | @ K-01
-                finish             ^ # 2023-09-21
+                                   ^ # 2023-09-21
             '),
             new \DateTimeImmutable('2023-01-01'),
         );

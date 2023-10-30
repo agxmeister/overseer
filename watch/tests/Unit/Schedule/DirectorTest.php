@@ -226,7 +226,7 @@ class DirectorTest extends Unit
                     K-01          |        ****      | 
                     K-02          |    ****          | @ K-01
                     K-03         +|****              | @ K-02
-                    finish                           ^ # 2023-09-21
+                                                     ^ # 2023-09-21
                 '),
                 Utils::getSchedule('
                     finish-buffer |            !!____| @ finish
