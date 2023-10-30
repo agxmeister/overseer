@@ -21,5 +21,11 @@ readonly class LateStart implements ScheduleStrategy
                 ->modify("-{$node->getCompletion()} day")
                 ->format("Y-m-d"));
         }
+        $milestone->setAttribute('begin', array_reduce(
+            $milestone->getPreceders(true),
+            fn($acc, Node $node) => min($acc, $node->getAttribute('begin')),
+            $this->date->format("Y-m-d"),
+        ));
+        $milestone->setAttribute('end', $this->date->format("Y-m-d"));
     }
 }

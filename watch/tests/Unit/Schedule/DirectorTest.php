@@ -78,7 +78,7 @@ class DirectorTest extends Unit
     protected function assertSchedule($expected, $actual)
     {
         $this->assertSameSize($expected, $actual, 'Number of volumes in the schedule is differ from expected.');
-        foreach (['issues', 'buffers', 'links'] as $volume) {
+        foreach (['issues', 'buffers', 'milestones', 'links'] as $volume) {
             $this->assertScheduleVolume($expected[$volume], $actual[$volume], $volume);
         }
         $this->assertEquals($expected['criticalChain'], $actual['criticalChain'], 'Critical chain of the schedule is differ from expected.');

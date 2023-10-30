@@ -13,9 +13,10 @@ use Watch\Schedule\Model\Node;
 abstract class Builder
 {
     const VOLUME_ISSUES = 'issues';
+    const VOLUME_BUFFERS = 'buffers';
+    const VOLUME_MILESTONES = 'milestones';
     const VOLUME_LINKS = 'links';
     const VOLUME_CRITICAL_CHAIN = 'criticalChain';
-    const VOLUME_BUFFERS = 'buffers';
 
     protected Milestone|null $milestone;
 
@@ -48,6 +49,14 @@ abstract class Builder
                     'consumption' => $node->getAttribute('consumption'),
                 ],
                 array_filter($this->milestone->getPreceders(true), fn(Node $node) => $node instanceof Buffer)
+            )),
+            self::VOLUME_MILESTONES => array_values(array_map(
+                fn(Node $node) => [
+                    'key' => $node->getName(),
+                    'begin' => $node->getAttribute('begin'),
+                    'end' => $node->getAttribute('end'),
+                ],
+                array_filter([$this->milestone, ...$this->milestone->getPreceders(true)], fn(Node $node) => $node instanceof Milestone)
             )),
             self::VOLUME_LINKS => \Watch\Utils::getUnique(
                 array_reduce(

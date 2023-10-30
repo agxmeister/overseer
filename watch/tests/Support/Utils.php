@@ -58,10 +58,12 @@ class Utils
 
         $milestoneDate = self::getMilestoneDate($lines);
 
-        $criticalChain = [$milestoneDate->format('Y-m-d') => array_reduce(
+        $milestoneName = array_reduce(
             array_filter($lines, fn($line) => str_contains($line, '^')),
             fn($acc, $line) => trim(explode('^', $line)[0] ?? '')
-        )];
+        );
+
+        $criticalChain = [$milestoneDate->format('Y-m-d') => $milestoneName];
 
         $schedule = array_reduce(array_filter($lines, fn($line) => !str_contains($line, '^')), function ($schedule, $line) use ($milestoneDate, &$criticalChain) {
             $issueData = explode('|', $line);
@@ -104,6 +106,16 @@ class Utils
             'buffers' => [],
             'links' => [],
         ]);
+
+        $schedule['milestones'] = [[
+            'key' => $milestoneName,
+            'begin' => array_reduce(
+                $schedule['issues'],
+                fn($acc, $issue) => min($acc, $issue['begin']),
+                $milestoneDate->format('Y-m-d'),
+            ),
+            'end' => $milestoneDate->format('Y-m-d'),
+        ]];
 
         krsort($criticalChain);
         $schedule['criticalChain'] = array_values($criticalChain);
