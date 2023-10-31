@@ -7,7 +7,7 @@ use Watch\Schedule\Utils;
 
 class FromScratch extends Builder
 {
-    public function __construct(array $issues, \DateTimeImmutable $now, private readonly LimitStrategy $limitStrategy, private readonly ScheduleStrategy $scheduleStrategy)
+    public function __construct(array $issues, \DateTimeInterface $now, private readonly LimitStrategy $limitStrategy, private readonly ScheduleStrategy $scheduleStrategy)
     {
         parent::__construct($issues, $now);
     }

@@ -20,7 +20,7 @@ abstract class Builder
 
     protected Milestone|null $milestone;
 
-    public function __construct(protected readonly array $issues, protected readonly \DateTimeImmutable $now)
+    public function __construct(protected readonly array $issues, protected readonly \DateTimeInterface $now)
     {
     }
 

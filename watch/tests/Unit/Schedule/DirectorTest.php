@@ -64,15 +64,15 @@ class DirectorTest extends Unit
     /**
      * @dataProvider dataGetScheduleBasic
      */
-    public function testGetScheduleBasic($issues, $schedule)
+    public function testGetScheduleBasic($issuesDescription, $scheduleDescription)
     {
         $director = new Director(
             new FromExistingBuilder(
-                $issues,
-                new \DateTimeImmutable('2023-09-13'),
+                Utils::getIssues($issuesDescription),
+                Utils::getNowDate($scheduleDescription),
             )
         );
-        $this->assertSchedule($schedule, $director->build()->release());
+        $this->assertSchedule(Utils::getSchedule($scheduleDescription), $director->build()->release());
     }
 
     protected function assertSchedule($expected, $actual)
@@ -221,21 +221,18 @@ class DirectorTest extends Unit
     protected function dataGetScheduleBasic(): array
     {
         return [
-            [
-                Utils::getIssues('
-                    K-01          |        ****      | 
-                    K-02          |    ****          | @ K-01
-                    K-03         +|****              | @ K-02
-                                                     ^ # 2023-09-21
-                '),
-                Utils::getSchedule('
-                    finish-buffer |            !!____| @ finish
-                    K-01          |        xxxx      | @ finish-buffer
-                    K-02          |    xxxx          | @ K-01
-                    K-03          |xxxx              | @ K-02
-                    finish                           ^ # 2023-09-21
-                '),
-            ],
+            ['
+                K-01          |        ****      |
+                K-02          |    ****          | @ K-01
+                K-03         +|****              | @ K-02
+                                                 ^ # 2023-09-21
+            ', '
+                finish-buffer |            !!____| @ finish
+                K-01          |        xxxx      | @ finish-buffer
+                K-02          |    xxxx          | @ K-01
+                K-03          |xxxx              | @ K-02
+                finish                   ^       ^ # 2023-09-21
+            '],
         ];
     }
 }

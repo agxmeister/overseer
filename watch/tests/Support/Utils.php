@@ -6,9 +6,12 @@ class Utils
 {
     public static function getIssues(string $description): array
     {
-        $lines = [...array_filter(array_map(fn($line) => trim($line), explode("\n", $description)), fn($line) => strlen($line) > 0)];
+        $lines = [...array_filter(
+            array_map(fn($line) => trim($line), explode("\n", $description)),
+            fn($line) => strlen($line) > 0)
+        ];
 
-        $milestoneDate = self::getMilestoneDate($lines);
+        $milestoneDate = self::getMilestoneDate($description);
 
         $links = [];
         $issues = array_reduce(array_filter($lines, fn($line) => !str_contains($line, '^')), function($issues, $line) use ($milestoneDate, &$links) {
@@ -54,9 +57,12 @@ class Utils
 
     public static function getSchedule(string $description): array
     {
-        $lines = [...array_filter(array_map(fn($line) => trim($line), explode("\n", $description)), fn($line) => strlen($line) > 0)];
+        $lines = [...array_filter(
+            array_map(fn($line) => trim($line), explode("\n", $description)),
+            fn($line) => strlen($line) > 0)
+        ];
 
-        $milestoneDate = self::getMilestoneDate($lines);
+        $milestoneDate = self::getMilestoneDate($description);
 
         $milestoneName = array_reduce(
             array_filter($lines, fn($line) => str_contains($line, '^')),
@@ -123,15 +129,24 @@ class Utils
         return $schedule;
     }
 
-    private static function getMilestoneDate(array $lines): \DateTimeInterface
+    public static function getMilestoneDate(string $description): \DateTimeImmutable|null
     {
-        $milestoneAttributes = array_reduce(
-            array_filter($lines, fn($line) => str_contains($line, '^')),
-            fn($acc, $line) => trim(explode('^', $line)[1] ?? '')
-        );
-        if (is_null($milestoneAttributes)) {
-            return new \DateTimeImmutable();
+        $milestoneLine = self::extractMilestoneLine($description);
+        return self::extractMilestoneDate($milestoneLine);
+    }
+
+    public static function getNowDate(string $description): \DateTimeImmutable|null
+    {
+        $milestoneLine = self::extractMilestoneLine($description);
+        return self::extractNowDate($milestoneLine);
+    }
+
+    private static function extractMilestoneDate(string $milestoneLine): \DateTimeImmutable|null
+    {
+        if (empty($milestoneLine)) {
+            return null;
         }
+        $milestoneAttributes = trim(array_reverse(explode('^', $milestoneLine))[0]);
         $dateAttribute =
             array_reduce(
                 array_filter(
@@ -145,9 +160,43 @@ class Utils
         return new \DateTimeImmutable(explode(' ', $dateAttribute)[1] ?? '');
     }
 
+    private static function extractNowDate(string $milestoneLine): \DateTimeImmutable|null
+    {
+        if (empty($milestoneLine)) {
+            return null;
+        }
+        $milestoneLineParts = array_reverse(explode('^', $milestoneLine));
+        if (sizeof($milestoneLineParts) < 3) {
+            return null;
+        }
+        $gap = strlen($milestoneLineParts[1]) + 1;
+        return self::extractMilestoneDate($milestoneLine)->modify("- {$gap} day");
+    }
+
+    private static function extractMilestoneLine(string $description): string
+    {
+        return array_reduce(
+            array_filter(
+                array_filter(
+                    array_map(fn($line) => trim($line), explode("\n", $description)),
+                    fn($line) => strlen($line) > 0
+                ),
+                fn($line) => str_contains($line, '^')
+            ),
+            fn($acc, $line) => $line,
+            '',
+        );
+    }
+
     private static function getLinks(string $from, string $attributes): array
     {
-        $linkAttributes = array_filter(array_map(fn($attribute) => trim($attribute), explode(',', $attributes)), fn($attribute) => $attribute && in_array($attribute[0], ['&', '@']));
+        $linkAttributes = array_filter(
+            array_map(
+                fn($attribute) => trim($attribute),
+                explode(',', $attributes)
+            ),
+            fn($attribute) => $attribute && in_array($attribute[0], ['&', '@'])
+        );
         $links = [];
         if (!empty($linkAttributes)) {
             foreach ($linkAttributes as $linkAttribute) {

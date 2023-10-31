@@ -7,7 +7,7 @@ use Watch\Schedule\Model\Node;
 
 readonly class LateStart implements ScheduleStrategy
 {
-    public function __construct(private \DateTimeImmutable $date)
+    public function __construct(private \DateTimeInterface $date)
     {
     }
 
