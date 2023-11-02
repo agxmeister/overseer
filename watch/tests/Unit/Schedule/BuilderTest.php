@@ -4,6 +4,7 @@ namespace Tests\Unit\Schedule;
 use Codeception\Test\Unit;
 use Tests\Support\Utils;
 use Watch\Schedule\Builder;
+use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\FromExisting as FromExistingBuilder;
 use Watch\Schedule\Builder\Strategy\Schedule\LeftToRight as LeftToRightScheduleStrategy;
 
@@ -12,13 +13,13 @@ class BuilderTest extends Unit
     public function testAddCriticalChain()
     {
         $builder = new FromExistingBuilder(
+            new Context(new \DateTimeImmutable('2023-01-01')),
             Utils::getIssues('
                 K-01   |       xxxx|
                 K-02   |   ****    | & K-01
                 K-03   |xxxxxxx    | @ K-01
                                    ^ # 2023-09-21
             '),
-            new \DateTimeImmutable('2023-01-01'),
             new LeftToRightScheduleStrategy(),
         );
         $builder->run();
@@ -29,13 +30,13 @@ class BuilderTest extends Unit
     public function testAddFeedingBuffers()
     {
         $builder = new FromExistingBuilder(
+            new Context(new \DateTimeImmutable('2023-01-01')),
             Utils::getIssues('
                 K-01   |       xxxx|
                 K-02   | ****      | & K-01
                 K-03   |xxxxxxx    | @ K-01
                                    ^ # 2023-09-21
             '),
-            new \DateTimeImmutable('2023-01-01'),
             new LeftToRightScheduleStrategy(),
         );
         $builder->run();

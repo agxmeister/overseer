@@ -3,6 +3,7 @@ namespace Tests\Unit\Schedule;
 
 use Codeception\Test\Unit;
 use Tests\Support\Utils;
+use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\FromScratch as FromScratchBuilder;
 use Watch\Schedule\Builder\FromExisting as FromExistingBuilder;
 use Watch\Schedule\Builder\LimitStrategy;
@@ -21,8 +22,8 @@ class DirectorTest extends Unit
     {
         $director = new Director(
             new FromScratchBuilder(
+                new Context(new \DateTimeImmutable('2023-01-01')),
                 $issues,
-                new \DateTimeImmutable('2023-01-01'),
                 new RightToLeftScheduleStrategy(new \DateTimeImmutable('2023-09-21')),
                 $this->makeEmpty(LimitStrategy::class),
             )
@@ -37,8 +38,8 @@ class DirectorTest extends Unit
     {
         $director = new Director(
             new FromScratchBuilder(
+                new Context(new \DateTimeImmutable('2023-01-01')),
                 $issues,
-                new \DateTimeImmutable('2023-01-01'),
                 new RightToLeftScheduleStrategy(new \DateTimeImmutable('2023-09-21')),
                 new SimpleLimitStrategy(),
             )
@@ -53,8 +54,8 @@ class DirectorTest extends Unit
     {
         $director = new Director(
             new FromScratchBuilder(
+                new Context(new \DateTimeImmutable('2023-01-01')),
                 $issues,
-                new \DateTimeImmutable('2023-01-01'),
                 new RightToLeftScheduleStrategy(new \DateTimeImmutable('2023-09-21')),
                 new BasicLimitStrategy(),
             )
@@ -69,8 +70,8 @@ class DirectorTest extends Unit
     {
         $director = new Director(
             new FromExistingBuilder(
+                new Context(Utils::getNowDate($scheduleDescription)),
                 Utils::getIssues($issuesDescription),
-                Utils::getNowDate($scheduleDescription),
                 new LeftToRightScheduleStrategy(),
             )
         );

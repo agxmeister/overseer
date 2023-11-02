@@ -2,6 +2,7 @@
 
 namespace Watch\Schedule;
 
+use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\ScheduleStrategy;
 use Watch\Schedule\Model\Buffer;
 use Watch\Schedule\Model\FeedingBuffer;
@@ -21,7 +22,7 @@ abstract class Builder
 
     protected Milestone|null $milestone;
 
-    public function __construct(protected readonly array $issues, protected readonly \DateTimeInterface $now, protected readonly ScheduleStrategy $scheduleStrategy)
+    public function __construct(protected readonly Context $context, protected readonly array $issues)
     {
     }
 
@@ -87,11 +88,7 @@ abstract class Builder
         ];
     }
 
-    public function addMilestone(): self
-    {
-        $this->milestone = Utils::getMilestone($this->issues);
-        return $this;
-    }
+    abstract public function addMilestone(): self;
 
     public function addMilestoneBuffer(): self
     {
@@ -123,11 +120,7 @@ abstract class Builder
         return $this;
     }
 
-    public function addDates(): self
-    {
-        $this->scheduleStrategy->apply($this->milestone);
-        return $this;
-    }
+    abstract public function addDates(): self;
 
     public function addBuffersConsumption(): self
     {
@@ -138,10 +131,10 @@ abstract class Builder
                     fn(Node $node) => $node instanceof Issue
                 ),
                 fn(Node $node) =>
-                    $node->getAttribute('end') < $this->now->format('Y-m-d') &&
+                    $node->getAttribute('end') < $this->context->getNow()->format('Y-m-d') &&
                     !$node->getAttribute('isCompleted')
             ),
-            fn(int $acc, Node $node) => $acc + (int)$this->now->diff(new \DateTimeImmutable($node->getAttribute('end')))->format('%a') - 1,
+            fn(int $acc, Node $node) => $acc + (int)$this->context->getNow()->diff(new \DateTimeImmutable($node->getAttribute('end')))->format('%a') - 1,
             0,
         );
 
