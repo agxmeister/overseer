@@ -5,7 +5,7 @@ namespace Watch\Schedule\Builder\Strategy\Schedule;
 use Watch\Schedule\Builder\ScheduleStrategy;
 use Watch\Schedule\Model\Node;
 
-readonly class LateStart implements ScheduleStrategy
+readonly class RightToLeft implements ScheduleStrategy
 {
     public function __construct(private \DateTimeInterface $date)
     {

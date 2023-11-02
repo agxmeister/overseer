@@ -7,7 +7,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Watch\Jira;
 use Watch\Schedule\Builder\FromScratch;
 use Watch\Schedule\Builder\Strategy\Limit\Basic;
-use Watch\Schedule\Builder\Strategy\Schedule\LateStart;
+use Watch\Schedule\Builder\Strategy\Schedule\RightToLeft;
 use Watch\Schedule\Director;
 
 class PutSchedule
@@ -23,7 +23,7 @@ class PutSchedule
             new FromScratch(
                 $this->jira->getIssues(''),
                 new \DateTimeImmutable(date('Y-m-d')),
-                new LateStart(new \DateTimeImmutable($params->date)),
+                new RightToLeft(new \DateTimeImmutable($params->date)),
                 new Basic(),
             )
         );

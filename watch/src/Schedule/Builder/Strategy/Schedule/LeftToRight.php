@@ -6,7 +6,7 @@ use Watch\Schedule\Builder\ScheduleStrategy;
 use Watch\Schedule\Model\Buffer;
 use Watch\Schedule\Model\Node;
 
-readonly class FromAnchor implements ScheduleStrategy
+readonly class LeftToRight implements ScheduleStrategy
 {
     public function apply(Node $milestone): void
     {

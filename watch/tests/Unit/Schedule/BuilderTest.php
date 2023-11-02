@@ -5,7 +5,7 @@ use Codeception\Test\Unit;
 use Tests\Support\Utils;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\FromExisting as FromExistingBuilder;
-use Watch\Schedule\Builder\Strategy\Schedule\FromAnchor;
+use Watch\Schedule\Builder\Strategy\Schedule\LeftToRight as LeftToRightScheduleStrategy;
 
 class BuilderTest extends Unit
 {
@@ -19,7 +19,7 @@ class BuilderTest extends Unit
                                    ^ # 2023-09-21
             '),
             new \DateTimeImmutable('2023-01-01'),
-            new FromAnchor(),
+            new LeftToRightScheduleStrategy(),
         );
         $builder->run();
         $builder->addMilestone();
@@ -36,7 +36,7 @@ class BuilderTest extends Unit
                                    ^ # 2023-09-21
             '),
             new \DateTimeImmutable('2023-01-01'),
-            new FromAnchor(),
+            new LeftToRightScheduleStrategy(),
         );
         $builder->run();
         $builder
