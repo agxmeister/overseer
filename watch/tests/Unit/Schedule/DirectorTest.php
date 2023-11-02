@@ -18,49 +18,49 @@ class DirectorTest extends Unit
     /**
      * @dataProvider dataCreateScheduleUnlimited
      */
-    public function testCreateScheduleUnlimited($issues, $schedule)
+    public function testCreateScheduleUnlimited($issuesDescription, $scheduleDescription)
     {
         $director = new Director(
             new FromScratchBuilder(
-                new Context(new \DateTimeImmutable('2023-01-01')),
-                $issues,
-                new RightToLeftScheduleStrategy(new \DateTimeImmutable('2023-09-21')),
+                new Context(Utils::getNowDate($scheduleDescription)),
+                Utils::getIssues($issuesDescription),
+                new RightToLeftScheduleStrategy(Utils::getMilestoneDate($scheduleDescription)),
                 $this->makeEmpty(LimitStrategy::class),
             )
         );
-        $this->assertSchedule($schedule, $director->build()->release());
+        $this->assertSchedule(Utils::getSchedule($scheduleDescription), $director->build()->release());
     }
 
     /**
      * @dataProvider dataCreateScheduleSimple
      */
-    public function testCreateScheduleSimple($issues, $schedule)
+    public function testCreateScheduleSimple($issuesDescription, $scheduleDescription)
     {
         $director = new Director(
             new FromScratchBuilder(
-                new Context(new \DateTimeImmutable('2023-01-01')),
-                $issues,
-                new RightToLeftScheduleStrategy(new \DateTimeImmutable('2023-09-21')),
+                new Context(Utils::getNowDate($scheduleDescription)),
+                Utils::getIssues($issuesDescription),
+                new RightToLeftScheduleStrategy(Utils::getMilestoneDate($scheduleDescription)),
                 new SimpleLimitStrategy(),
             )
         );
-        $this->assertSchedule($schedule, $director->build()->release());
+        $this->assertSchedule(Utils::getSchedule($scheduleDescription), $director->build()->release());
     }
 
     /**
      * @dataProvider dataCreateScheduleBasic
      */
-    public function testCreateScheduleBasic($issues, $schedule)
+    public function testCreateScheduleBasic($issuesDescription, $scheduleDescription)
     {
         $director = new Director(
             new FromScratchBuilder(
-                new Context(new \DateTimeImmutable('2023-01-01')),
-                $issues,
-                new RightToLeftScheduleStrategy(new \DateTimeImmutable('2023-09-21')),
+                new Context(Utils::getNowDate($scheduleDescription)),
+                Utils::getIssues($issuesDescription),
+                new RightToLeftScheduleStrategy(Utils::getMilestoneDate($scheduleDescription)),
                 new BasicLimitStrategy(),
             )
         );
-        $this->assertSchedule($schedule, $director->build()->release());
+        $this->assertSchedule(Utils::getSchedule($scheduleDescription), $director->build()->release());
     }
 
     /**
@@ -100,124 +100,100 @@ class DirectorTest extends Unit
     protected function dataCreateScheduleUnlimited(): array
     {
         return [
-            [
-                Utils::getIssues('
-                    K-01          |    ....       |
-                    K-02          |....           | & K-01
-                    K-03          |.......        |
-                '),
-                Utils::getSchedule('
-                    finish-buffer |           ____| @ finish
-                    K-01          |       xxxx    | @ finish-buffer
-                    K-02          |   xxxx        | & K-01
-                    K-03-buffer   |       ____    | @ finish-buffer
-                    K-03          |*******        | @ K-03-buffer
-                    finish                        ^ # 2023-09-21
-                '),
-            ], [
-                Utils::getIssues('
-                    K-01          |       ....      |
-                    K-02          |....             | & K-01
-                    K-03          |.......          | & K-01
-                '),
-                Utils::getSchedule('
-                    finish-buffer |           ______| @ finish
-                    K-01          |       xxxx      | @ finish-buffer
-                    K-02-buffer   |     __          | @ K-01
-                    K-02          | ****            | & K-01, @ K-02-buffer
-                    K-03          |xxxxxxx          | & K-01
-                    finish                          ^ # 2023-09-21
-                '),
-            ],
+            ['
+                K-01          |    ....       |
+                K-02          |....           | & K-01
+                K-03          |.......        |
+            ', '
+                finish-buffer |           ____| @ finish
+                K-01          |       xxxx    | @ finish-buffer
+                K-02          |   xxxx        | & K-01
+                K-03-buffer   |       ____    | @ finish-buffer
+                K-03          |*******        | @ K-03-buffer
+                finish        ^               ^ # 2023-09-21
+            '], ['
+                K-01          |       ....      |
+                K-02          |....             | & K-01
+                K-03          |.......          | & K-01
+            ', '
+                finish-buffer |           ______| @ finish
+                K-01          |       xxxx      | @ finish-buffer
+                K-02-buffer   |     __          | @ K-01
+                K-02          | ****            | & K-01, @ K-02-buffer
+                K-03          |xxxxxxx          | & K-01
+                finish        ^                 ^ # 2023-09-21
+            '],
         ];
     }
 
     protected function dataCreateScheduleSimple(): array
     {
         return [
-            [
-                Utils::getIssues('
-                    K-01          |....        |
-                    K-02          |....        |
-                '),
-                Utils::getSchedule('
-                    finish-buffer |        ____| @ finish
-                    K-01          |    xxxx    | @ finish-buffer
-                    K-02          |xxxx        | @ K-01
-                    finish                     ^ # 2023-09-21
-                '),
-            ], [
-                Utils::getIssues('
-                    K-01          |....              |
-                    K-02          |....              |
-                    K-03          |....              |
-                '),
-                Utils::getSchedule('
-                    finish-buffer |            ______| @ finish
-                    K-01          |        xxxx      | @ finish-buffer
-                    K-02          |    xxxx          | @ K-01
-                    K-03          |xxxx              | @ K-02
-                    finish                           ^ # 2023-09-21
-                '),
-            ],
+            ['
+                K-01          |....        |
+                K-02          |....        |
+            ', '
+                finish-buffer |        ____| @ finish
+                K-01          |    xxxx    | @ finish-buffer
+                K-02          |xxxx        | @ K-01
+                finish        ^            ^ # 2023-09-21
+            '], ['
+                K-01          |....              |
+                K-02          |....              |
+                K-03          |....              |
+            ', '
+                finish-buffer |            ______| @ finish
+                K-01          |        xxxx      | @ finish-buffer
+                K-02          |    xxxx          | @ K-01
+                K-03          |xxxx              | @ K-02
+                finish        ^                  ^ # 2023-09-21
+            '],
         ];
     }
 
     protected function dataCreateScheduleBasic(): array
     {
         return [
-            [
-                Utils::getIssues('
-                    K-01          |....    |
-                    K-02          |....    |
-                '),
-                Utils::getSchedule('
-                    finish-buffer |      __| @ finish
-                    K-01          |  xxxx  | @ finish-buffer
-                    K-02-buffer   |    __  | @ finish-buffer
-                    K-02          |****    | @ K-02-buffer
-                    finish                 ^ # 2023-09-21
-                '),
-            ], [
-                Utils::getIssues('
-                    K-01          |....        |
-                    K-02          |....        |
-                    K-03          |....        |
-                '),
-                Utils::getSchedule('
-                    finish-buffer |        ____| @ finish
-                    K-01          |xxxx        | @ K-02
-                    K-02          |    xxxx    | @ finish-buffer
-                    K-03-buffer   |      __    | @ finish-buffer
-                    K-03          |  ****      | @ K-03-buffer
-                    finish                     ^ # 2023-09-21
-                '),
-            ], [
-                Utils::getIssues('
-                    K-01          |....        |
-                    K-02          |....        | & K-01
-                '),
-                Utils::getSchedule('
-                    finish-buffer |        ____| @ finish
-                    K-01          |    xxxx    | @ finish-buffer
-                    K-02          |xxxx        | & K-01
-                    finish                     ^ # 2023-09-21
-                '),
-            ], [
-                Utils::getIssues('
-                    K-01          |....          |
-                    K-02          |....          | & K-01
-                    K-03          |....          | & K-01
-                '),
-                Utils::getSchedule('
-                    finish-buffer |          ____| @ finish
-                    K-01          |      xxxx    | @ finish-buffer
-                    K-02          |  xxxx        | & K-01
-                    K-03-buffer   |    __        | @ K-01
-                    K-03          |****          | & K-01, @ K-03-buffer
-                    finish                       ^ # 2023-09-21
-                '),
-            ],
+            ['
+                K-01          |....    |
+                K-02          |....    |
+            ', '
+                finish-buffer |      __| @ finish
+                K-01          |  xxxx  | @ finish-buffer
+                K-02-buffer   |    __  | @ finish-buffer
+                K-02          |****    | @ K-02-buffer
+                finish        ^        ^ # 2023-09-21
+            '], ['
+                K-01          |....        |
+                K-02          |....        |
+                K-03          |....        |
+            ', '
+                finish-buffer |        ____| @ finish
+                K-01          |xxxx        | @ K-02
+                K-02          |    xxxx    | @ finish-buffer
+                K-03-buffer   |      __    | @ finish-buffer
+                K-03          |  ****      | @ K-03-buffer
+                finish        ^            ^ # 2023-09-21
+            '], ['
+                K-01          |....        |
+                K-02          |....        | & K-01
+            ', '
+                finish-buffer |        ____| @ finish
+                K-01          |    xxxx    | @ finish-buffer
+                K-02          |xxxx        | & K-01
+                finish        ^            ^ # 2023-09-21
+            '], ['
+                K-01          |....          |
+                K-02          |....          | & K-01
+                K-03          |....          | & K-01
+            ', '
+                finish-buffer |          ____| @ finish
+                K-01          |      xxxx    | @ finish-buffer
+                K-02          |  xxxx        | & K-01
+                K-03-buffer   |    __        | @ K-01
+                K-03          |****          | & K-01, @ K-03-buffer
+                finish        ^              ^ # 2023-09-21
+            '],
         ];
     }
 
