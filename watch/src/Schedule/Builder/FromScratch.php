@@ -7,20 +7,14 @@ use Watch\Schedule\Utils;
 
 class FromScratch extends Builder
 {
-    public function __construct(array $issues, \DateTimeInterface $now, private readonly LimitStrategy $limitStrategy, private readonly ScheduleStrategy $scheduleStrategy)
+    public function __construct(array $issues, \DateTimeInterface $now, ScheduleStrategy $scheduleStrategy, private readonly LimitStrategy $limitStrategy)
     {
-        parent::__construct($issues, $now);
+        parent::__construct($issues, $now, $scheduleStrategy);
     }
 
     public function addMilestone(): self
     {
         $this->milestone = Utils::getMilestone($this->issues, $this->limitStrategy);
-        return $this;
-    }
-
-    public function addDates(): self
-    {
-        Utils::setDates($this->milestone, $this->scheduleStrategy);
         return $this;
     }
 }

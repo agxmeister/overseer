@@ -8,6 +8,7 @@ use Watch\Schedule\Builder\FromExisting as FromExistingBuilder;
 use Watch\Schedule\Builder\LimitStrategy;
 use Watch\Schedule\Builder\Strategy\Limit\Basic as BasicLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Limit\Simple as SimpleLimitStrategy;
+use Watch\Schedule\Builder\Strategy\Schedule\FromAnchor  as FromAnchorScheduleStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\LateStart as LateStartScheduleStrategy;
 use Watch\Schedule\Director;
 
@@ -22,8 +23,8 @@ class DirectorTest extends Unit
             new FromScratchBuilder(
                 $issues,
                 new \DateTimeImmutable('2023-01-01'),
+                new LateStartScheduleStrategy(new \DateTimeImmutable('2023-09-21')),
                 $this->makeEmpty(LimitStrategy::class),
-                new LateStartScheduleStrategy(new \DateTimeImmutable('2023-09-21'))
             )
         );
         $this->assertSchedule($schedule, $director->build()->release());
@@ -38,8 +39,8 @@ class DirectorTest extends Unit
             new FromScratchBuilder(
                 $issues,
                 new \DateTimeImmutable('2023-01-01'),
+                new LateStartScheduleStrategy(new \DateTimeImmutable('2023-09-21')),
                 new SimpleLimitStrategy(),
-                new LateStartScheduleStrategy(new \DateTimeImmutable('2023-09-21'))
             )
         );
         $this->assertSchedule($schedule, $director->build()->release());
@@ -54,8 +55,8 @@ class DirectorTest extends Unit
             new FromScratchBuilder(
                 $issues,
                 new \DateTimeImmutable('2023-01-01'),
+                new LateStartScheduleStrategy(new \DateTimeImmutable('2023-09-21')),
                 new BasicLimitStrategy(),
-                new LateStartScheduleStrategy(new \DateTimeImmutable('2023-09-21'))
             )
         );
         $this->assertSchedule($schedule, $director->build()->release());
@@ -70,6 +71,7 @@ class DirectorTest extends Unit
             new FromExistingBuilder(
                 Utils::getIssues($issuesDescription),
                 Utils::getNowDate($scheduleDescription),
+                new FromAnchorScheduleStrategy(),
             )
         );
         $this->assertSchedule(Utils::getSchedule($scheduleDescription), $director->build()->release());

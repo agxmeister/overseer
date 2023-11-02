@@ -6,6 +6,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Watch\Jira;
 use Watch\Schedule\Builder\FromExisting;
+use Watch\Schedule\Builder\Strategy\Schedule\FromAnchor;
 use Watch\Schedule\Director;
 
 class GetSchedule
@@ -19,6 +20,7 @@ class GetSchedule
         $director = new Director(new FromExisting(
             $this->jira->getIssues(''),
             new \DateTimeImmutable(date('Y-m-d')),
+            new FromAnchor(),
         ));
         $schedule = $director->build()->release();
         $response->getBody()->write(json_encode($schedule));

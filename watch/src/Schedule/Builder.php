@@ -2,6 +2,7 @@
 
 namespace Watch\Schedule;
 
+use Watch\Schedule\Builder\ScheduleStrategy;
 use Watch\Schedule\Model\Buffer;
 use Watch\Schedule\Model\FeedingBuffer;
 use Watch\Schedule\Model\Issue;
@@ -20,7 +21,7 @@ abstract class Builder
 
     protected Milestone|null $milestone;
 
-    public function __construct(protected readonly array $issues, protected readonly \DateTimeInterface $now)
+    public function __construct(protected readonly array $issues, protected readonly \DateTimeInterface $now, protected readonly ScheduleStrategy $scheduleStrategy)
     {
     }
 
@@ -124,7 +125,7 @@ abstract class Builder
 
     public function addDates(): self
     {
-        Utils::setDates($this->milestone);
+        $this->scheduleStrategy->apply($this->milestone);
         return $this;
     }
 

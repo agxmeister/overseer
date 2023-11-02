@@ -111,30 +111,4 @@ class Utils
 
         return $milestone;
     }
-
-    static public function setDates(Milestone $milestone, ScheduleStrategy $strategy = null): void
-    {
-        if (!is_null($strategy)) {
-            $strategy->apply($milestone);
-            return;
-        }
-        foreach (array_filter($milestone->getPreceders(true), fn(Node $node) => $node instanceof Buffer) as $buffer) {
-            $date = new \DateTimeImmutable(max(array_map(
-                fn(Node $node) => $node->getAttribute('end') ?? null,
-                $buffer->getPreceders()
-            )));
-            $buffer->setAttribute('begin', $date->modify("1 day")->format("Y-m-d"));
-            $buffer->setAttribute('end', $date->modify("{$buffer->getLength()} day")->format("Y-m-d"));
-        }
-        $end = (new \DateTimeImmutable(array_reduce(
-            $milestone->getPreceders(true),
-            fn($acc, Node $node) => max($acc, $node->getAttribute('end')),
-        )))->modify("1 day");
-        $milestone->setAttribute('begin', array_reduce(
-            $milestone->getPreceders(true),
-            fn($acc, Node $node) => min($acc, $node->getAttribute('begin')),
-            $end->format("Y-m-d"),
-        ));
-        $milestone->setAttribute('end', $end->format("Y-m-d"));
-    }
 }
