@@ -111,4 +111,25 @@ class Utils
 
         return $milestone;
     }
+
+    static public function getLateDays(Node $node, array $filter, \DateTimeImmutable $now): int
+    {
+        $nodeLateDays = (
+            !$node->getAttribute('isCompleted') &&
+            $node->getAttribute('end') < $now->format('Y-m-d')
+        )
+            ? $now->diff(new \DateTimeImmutable($node->getAttribute('end')))->format('%a') - 1
+            : 0;
+        return max([$nodeLateDays, ...array_map(
+            fn(int $followerLateDays) => $followerLateDays + $nodeLateDays,
+            array_map(
+                fn(Node $follower) => self::getLateDays($follower, $filter, $now),
+                array_uintersect(
+                    $node->getFollowers(),
+                    $filter,
+                    fn(Node $a, Node $b) => $a->getName() === $b->getName() ? 0 : ($a->getName() > $b->getName() ? 1 : -1),
+                ),
+            )
+        )]);
+    }
 }

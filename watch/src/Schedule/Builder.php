@@ -124,29 +124,44 @@ abstract class Builder
 
     public function addBuffersConsumption(): self
     {
-        $lateDays = array_reduce(
-            array_filter(
-                array_filter(
-                    Utils::getCriticalChain($this->milestone),
-                    fn(Node $node) => $node instanceof Issue
-                ),
-                fn(Node $node) =>
-                    $node->getAttribute('end') < $this->context->getNow()->format('Y-m-d') &&
-                    !$node->getAttribute('isCompleted')
-            ),
-            fn(int $acc, Node $node) => $acc + (int)$this->context->getNow()->diff(new \DateTimeImmutable($node->getAttribute('end')))->format('%a') - 1,
-            0,
-        );
+        $criticalChain = Utils::getCriticalChain($this->milestone);
 
         $milestoneBuffer = array_reduce(
             array_filter(
-                Utils::getCriticalChain($this->milestone),
-                fn(Node $node) => $node instanceof Buffer
+                $this->milestone->getPreceders(true),
+                fn(Node $node) => $node instanceof MilestoneBuffer,
             ),
             fn($acc, Node $node) => $node
         );
+        $lateDays = Utils::getLateDays(
+            array_reduce($criticalChain, fn($acc, Node $node) => $node),
+            $criticalChain,
+            $this->context->getNow(),
+        );
+        $milestoneBuffer->setAttribute('consumption', min($milestoneBuffer->getLength(), $lateDays));
 
-        $milestoneBuffer->setAttribute('consumption', $lateDays);
+        $feedingBuffers = array_filter(
+            $this->milestone->getPreceders(true),
+            fn(Node $node) => $node instanceof FeedingBuffer,
+        );
+        foreach ($feedingBuffers as $feedingBuffer) {
+            $lateDays = max(array_map(
+                fn(Node $tail) => Utils::getLateDays(
+                    $tail,
+                    array_udiff(
+                        $feedingBuffer->getPreceders(true),
+                        $criticalChain,
+                        fn(Node $a, Node $b) => $a->getName() === $b->getName() ? 0 : ($a->getName() > $b->getName() ? 1 : -1),
+                    ),
+                    $this->context->getNow()
+                ),
+                array_filter(
+                    $feedingBuffer->getPreceders(true),
+                    fn(Node $node) => !$node->hasPreceders(),
+                ),
+            ));
+            $feedingBuffer->setAttribute('consumption', min($feedingBuffer->getLength(), $lateDays));
+        }
 
         return $this;
     }
