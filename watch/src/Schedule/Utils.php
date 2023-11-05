@@ -3,8 +3,6 @@
 namespace Watch\Schedule;
 
 use Watch\Schedule\Builder\LimitStrategy;
-use Watch\Schedule\Builder\ScheduleStrategy;
-use Watch\Schedule\Model\Buffer;
 use Watch\Schedule\Model\FeedingBuffer;
 use Watch\Schedule\Model\Issue;
 use Watch\Schedule\Model\Link;

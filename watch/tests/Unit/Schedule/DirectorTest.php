@@ -8,6 +8,7 @@ use Watch\Schedule\Builder\FromScratch as FromScratchBuilder;
 use Watch\Schedule\Builder\FromExisting as FromExistingBuilder;
 use Watch\Schedule\Builder\LimitStrategy;
 use Watch\Schedule\Builder\Strategy\Limit\Basic as BasicLimitStrategy;
+use Watch\Schedule\Builder\Strategy\Limit\Corrective as CorrectiveLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Limit\Simple as SimpleLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\LeftToRight  as LeftToRightScheduleStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\RightToLeft as RightToLeftScheduleStrategy;
@@ -58,6 +59,22 @@ class DirectorTest extends Unit
                 Utils::getIssues($issuesDescription),
                 new RightToLeftScheduleStrategy(Utils::getMilestoneDate($scheduleDescription)),
                 new BasicLimitStrategy(),
+            )
+        );
+        $this->assertSchedule(Utils::getSchedule($scheduleDescription), $director->build()->release());
+    }
+
+    /**
+     * @dataProvider dataCreateScheduleCorrective
+     */
+    public function testCreateScheduleCorrective($issuesDescription, $scheduleDescription)
+    {
+        $director = new Director(
+            new FromScratchBuilder(
+                new Context(Utils::getNowDate($scheduleDescription)),
+                Utils::getIssues($issuesDescription),
+                new RightToLeftScheduleStrategy(Utils::getMilestoneDate($scheduleDescription)),
+                new CorrectiveLimitStrategy(),
             )
         );
         $this->assertSchedule(Utils::getSchedule($scheduleDescription), $director->build()->release());
@@ -193,6 +210,24 @@ class DirectorTest extends Unit
                 K-03-buffer   |    __        | @ K-01
                 K-03          |****          | & K-01, @ K-03-buffer
                 finish        ^              ^ # 2023-09-21
+            '],
+        ];
+    }
+
+    protected function dataCreateScheduleCorrective(): array
+    {
+        return [
+            ['
+                K-01 |......|
+                K-02 |..... |
+                K-03 |....  |
+            ', '
+                finish-buffer |          _____| @ finish
+                K-01          |    xxxxxx     | @ finish-buffer
+                K-02-buffer   |       ___     | @ finish-buffer
+                K-02          |  *****        | @ K-02-buffer
+                K-03          |xxxx           | @ K-01
+                finish        ^               ^ # 2023-09-21
             '],
         ];
     }
