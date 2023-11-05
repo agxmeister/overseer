@@ -11,10 +11,11 @@ readonly class Basic implements LimitStrategy
 {
     public function apply(Node $milestone): void
     {
+        $nodes = $milestone->getPreceders(true);
         $point = 1;
         do {
-            $ongoingNodes = array_filter($milestone->getPreceders(true), fn(Node $node) => $this->isOngoingAt($node, $point));
-            $completingNodes = array_filter($milestone->getPreceders(true), fn(Node $node) => $this->isCompletingAt($node, $point));
+            $ongoingNodes = array_filter($nodes, fn(Node $node) => $this->isOngoingAt($node, $point));
+            $completingNodes = array_filter($nodes, fn(Node $node) => $this->isCompletingAt($node, $point));
             while (sizeof($ongoingNodes) > 2) {
                 $longestNode = Utils::getLongestSequence($completingNodes, [Link::TYPE_SEQUENCE]);
                 $shortestNode = Utils::getShortestSequence(

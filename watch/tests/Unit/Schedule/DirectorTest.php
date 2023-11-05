@@ -218,15 +218,39 @@ class DirectorTest extends Unit
     {
         return [
             ['
-                K-01 |......|
-                K-02 |..... |
-                K-03 |....  |
+                K-01          |......         |
+                K-02          |.....          |
+                K-03          |....           |
             ', '
                 finish-buffer |          _____| @ finish
                 K-01          |    xxxxxx     | @ finish-buffer
                 K-02-buffer   |       ___     | @ finish-buffer
                 K-02          |  *****        | @ K-02-buffer
                 K-03          |xxxx           | @ K-01
+                finish        ^               ^ # 2023-09-21
+            '], ['
+                K-01          |   ******      |
+                K-02          |  *****        |
+                K-03          |****           |
+                                              ^ # 2023-09-21
+            ', '
+                finish-buffer |          _____| @ finish
+                K-01          |    xxxxxx     | @ finish-buffer
+                K-02-buffer   |       ___     | @ finish-buffer
+                K-02          |  *****        | @ K-02-buffer
+                K-03          |xxxx           | @ K-01
+                finish        ^               ^ # 2023-09-21
+            '], ['
+                K-01          |   *****       |
+                K-02          |  ******       |
+                K-03          |****           |
+                                              ^ # 2023-09-21
+            ', '
+                finish-buffer |          _____| @ finish
+                K-01-buffer   |       ___     | @ finish-buffer
+                K-01          |  *****        | @ K-01-buffer
+                K-02          |    xxxxxx     | @ finish-buffer
+                K-03          |xxxx           | @ K-02
                 finish        ^               ^ # 2023-09-21
             '],
         ];
