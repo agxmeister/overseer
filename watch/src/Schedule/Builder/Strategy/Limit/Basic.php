@@ -15,8 +15,7 @@ readonly class Basic implements LimitStrategy
         do {
             $ongoingNodes = array_filter($milestone->getPreceders(true), fn(Node $node) => $this->isOngoingAt($node, $point));
             $completingNodes = array_filter($milestone->getPreceders(true), fn(Node $node) => $this->isCompletingAt($node, $point));
-            $numberOfTasksInParallel = count($ongoingNodes);
-            while ($numberOfTasksInParallel > 2) {
+            while (sizeof($ongoingNodes) > 2) {
                 $longestNode = Utils::getLongestSequence($completingNodes, [Link::TYPE_SEQUENCE]);
                 $shortestNode = Utils::getShortestSequence(
                     array_filter($ongoingNodes, fn(Node $node) => $node->getName() !== $longestNode->getName()),
@@ -26,11 +25,10 @@ readonly class Basic implements LimitStrategy
                     break;
                 }
                 $followers = $longestNode->getFollowers([Link::TYPE_SCHEDULE]);
-                array_walk($followers, fn(Node $follower) => $longestNode->unprecede($follower));
+                array_walk($followers, fn(Node $follower) => $longestNode->unprecede($follower, Link::TYPE_SCHEDULE));
                 $longestNode->precede($shortestNode, Link::TYPE_SCHEDULE);
                 $ongoingNodes = array_filter($ongoingNodes, fn(Node $node) => $node !== $longestNode);
                 $completingNodes = array_filter($completingNodes, fn(Node $node) => $node !== $longestNode);
-                $numberOfTasksInParallel--;
             }
             $point++;
         } while ($point <= $milestone->getLength(true));
