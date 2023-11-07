@@ -9,6 +9,10 @@ use Watch\Schedule\Utils;
 
 readonly class Corrective implements LimitStrategy
 {
+    public function __construct(private int $limit)
+    {
+    }
+
     public function apply(Node $milestone): void
     {
         $nodes = $milestone->getPreceders(true);
@@ -16,7 +20,7 @@ readonly class Corrective implements LimitStrategy
         do {
             $point = $milestone->getDistance(true) - $shift;
             $ongoingNodes = array_filter($nodes, fn(Node $node) => $this->isOngoingAt($node, $point));
-            while (sizeof($ongoingNodes) > 2) {
+            while (sizeof($ongoingNodes) > $this->limit) {
                 $shortestNode = Utils::getShortestSequence($ongoingNodes, [Link::TYPE_SEQUENCE]);
                 $longestNode = Utils::getLongestSequence(
                     array_filter($ongoingNodes, fn(Node $node) => $node->getName() !== $shortestNode->getName()),

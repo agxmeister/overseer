@@ -74,7 +74,7 @@ class DirectorTest extends Unit
                 new Context(Utils::getNowDate($scheduleDescription)),
                 Utils::getIssues($issuesDescription),
                 new RightToLeftScheduleStrategy(Utils::getMilestoneDate($scheduleDescription)),
-                new CorrectiveLimitStrategy(),
+                new CorrectiveLimitStrategy(2),
             )
         );
         $this->assertSchedule(Utils::getSchedule($scheduleDescription), $director->build()->release());
