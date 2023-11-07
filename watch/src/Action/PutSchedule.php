@@ -5,6 +5,7 @@ namespace Watch\Action;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Watch\Jira;
+use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\FromScratch;
 use Watch\Schedule\Builder\Strategy\Limit\Basic;
 use Watch\Schedule\Builder\Strategy\Schedule\RightToLeft;
@@ -21,8 +22,8 @@ class PutSchedule
         $params = json_decode(file_get_contents('php://input'));
         $director = new Director(
             new FromScratch(
+                new Context(new \DateTimeImmutable(date('Y-m-d'))),
                 $this->jira->getIssues(''),
-                new \DateTimeImmutable(date('Y-m-d')),
                 new RightToLeft(new \DateTimeImmutable($params->date)),
                 new Basic(),
             )
