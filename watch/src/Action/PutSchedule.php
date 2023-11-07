@@ -25,7 +25,7 @@ class PutSchedule
                 new Context(new \DateTimeImmutable(date('Y-m-d'))),
                 $this->jira->getIssues(''),
                 new RightToLeft(new \DateTimeImmutable($params->date)),
-                new Basic(),
+                new Basic(2),
             )
         );
         $issues = $director->build()->release();

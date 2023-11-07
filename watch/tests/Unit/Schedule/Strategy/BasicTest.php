@@ -20,7 +20,7 @@ class BasicTest extends Unit
         $node2->precede($milestone);
         $node3->precede($milestone);
         $node4->precede($milestone);
-        $strategy = new Basic();
+        $strategy = new Basic(2);
         $strategy->apply($milestone);
         $this->assertEquals(24, $milestone->getLength(true));
         $this->assertEquals([$node3], $node1->getPreceders(false, [Link::TYPE_SCHEDULE]));

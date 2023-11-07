@@ -9,6 +9,10 @@ use Watch\Schedule\Utils;
 
 readonly class Basic implements LimitStrategy
 {
+    public function __construct(private int $limit)
+    {
+    }
+
     public function apply(Node $milestone): void
     {
         $nodes = $milestone->getPreceders(true);
@@ -16,7 +20,7 @@ readonly class Basic implements LimitStrategy
         do {
             $ongoingNodes = array_filter($nodes, fn(Node $node) => $this->isOngoingAt($node, $point));
             $completingNodes = array_filter($nodes, fn(Node $node) => $this->isCompletingAt($node, $point));
-            while (sizeof($ongoingNodes) > 2) {
+            while (sizeof($ongoingNodes) > $this->limit) {
                 $longestNode = Utils::getLongestSequence($completingNodes, [Link::TYPE_SEQUENCE]);
                 $shortestNode = Utils::getShortestSequence(
                     array_filter($ongoingNodes, fn(Node $node) => $node->getName() !== $longestNode->getName()),
