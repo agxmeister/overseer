@@ -109,9 +109,24 @@ abstract class Builder
             $criticalPreceder = Utils::getLongestSequence($preceders);
             $notCriticalPreceders = array_filter($preceders, fn(Node $node) => $node !== $criticalPreceder);
             foreach ($notCriticalPreceders as $notCriticalPreceder) {
+                $feedingChainLength = array_reduce(
+                    array_filter(
+                        $notCriticalPreceder->getPreceders(true),
+                        fn(Node $node) => !$node->getAttribute('isCompleted')
+                    ),
+                    fn(int $acc, Node $node) => max($acc, $node->getDistance()),
+                    $notCriticalPreceder->getDistance()
+                )
+                    - $notCriticalPreceder->getDistance()
+                    + !$notCriticalPreceder->getAttribute('isCompleted') ?
+                            $notCriticalPreceder->getLength() :
+                            0;
+                if ($feedingChainLength === 0) {
+                    continue;
+                }
                 $buffer = new FeedingBuffer(
                     "{$notCriticalPreceder->getName()}-buffer",
-                    (int)ceil($notCriticalPreceder->getLength(true) / 2),
+                    (int)ceil($feedingChainLength / 2),
                     ['consumption' => 0],
                 );
                 $this->addBuffer($buffer, $node, [$notCriticalPreceder]);
