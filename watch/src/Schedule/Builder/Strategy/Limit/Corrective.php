@@ -15,7 +15,7 @@ readonly class Corrective implements LimitStrategy
 
     public function apply(Node $milestone): void
     {
-        $nodes = $milestone->getPreceders(true);
+        $nodes = array_filter($milestone->getPreceders(true), fn(Node $node) => !$node->getAttribute('isCompleted'));
         $shift = 0;
         do {
             $point = $milestone->getDistance(true) - $shift;
