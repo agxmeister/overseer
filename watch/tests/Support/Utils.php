@@ -16,8 +16,9 @@ class Utils
         $links = [];
         $issues = array_reduce(array_filter($lines, fn($line) => !str_contains($line, '^')), function($issues, $line) use ($milestoneDate, &$links) {
             $issueData = explode('|', $line);
+            $isStarted = str_ends_with($issueData[0], '~');
             $isCompleted = str_ends_with($issueData[0], '+');
-            $key = trim(rtrim($issueData[0], '+'));
+            $key = trim(rtrim($issueData[0], '~+'));
             $duration = strlen(trim($issueData[1]));
             $attributes = trim($issueData[2]);
             $isScheduled = in_array(trim($issueData[1])[0], ['*']);
@@ -31,6 +32,7 @@ class Utils
                 'duration' => $duration,
                 'begin' => $isScheduled ? $milestoneDate->modify("-{$beginGap} day")->format('Y-m-d') : null,
                 'end' => $isScheduled ? $milestoneDate->modify("-{$endGap} day")->format('Y-m-d') : null,
+                'isStarted' => $isStarted,
                 'isCompleted' => $isCompleted,
                 'links' => [
                     'inward' => [],
