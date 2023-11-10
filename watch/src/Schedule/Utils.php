@@ -80,6 +80,7 @@ class Utils
             $node = new Issue($issue['key'], $issue['duration'], [
                 'begin' => $issue['begin'],
                 'end' => $issue['end'],
+                'isStarted' => $issue['isStarted'],
                 'isCompleted' => $issue['isCompleted'],
             ]);
             $nodes[$node->getName()] = $node;

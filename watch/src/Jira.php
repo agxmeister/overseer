@@ -80,6 +80,7 @@ readonly class Jira
             'duration' => (int)$issue->fields->customfield_10038,
             'begin' => $begin,
             'end' => $end,
+            'isStarted' => $this->isStarted($status),
             'isCompleted' => $this->isCompleted($status),
             'links' => [
                 'outward' => array_values(array_map(
@@ -125,6 +126,11 @@ readonly class Jira
     private function getLinkNameByType(string $type): string
     {
         return $type === Link::TYPE_SEQUENCE ? 'Depends' : 'Follows';
+    }
+
+    private function isStarted(string $status): bool
+    {
+        return $status === 'In Progress';
     }
 
     private function isCompleted(string $status): bool
