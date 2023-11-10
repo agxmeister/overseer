@@ -76,6 +76,18 @@ class CorrectiveFromScratchDirectorTest extends AbstractDirectorTest
                 K-03-buffer   |      __   | @ finish-buffer
                 K-03          |  ****     | @ K-03-buffer
                 finish        ^           ^ # 2023-09-21
+            '], ['
+                K-01          |   *****      |
+                K-02         ~|  ******      |
+                K-03          |****          |
+                                             ^ # 2023-09-21
+            ', '
+                finish-buffer |         _____| @ finish
+                K-01          |    xxxxx     | @ finish-buffer
+                K-02-buffer   |      ___     | @ finish-buffer
+                K-02          |******        | @ K-02-buffer
+                K-03          |xxxx          | @ K-01
+                finish        ^              ^ # 2023-09-21
             '],
         ];
     }

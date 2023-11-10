@@ -23,7 +23,13 @@ readonly class Corrective implements LimitStrategy
             while (sizeof($ongoingNodes) > $this->limit) {
                 $shortestNode = Utils::getShortestSequence($ongoingNodes, [Link::TYPE_SEQUENCE]);
                 $longestNode = Utils::getLongestSequence(
-                    array_filter($ongoingNodes, fn(Node $node) => $node->getName() !== $shortestNode->getName()),
+                    array_filter(
+                        array_filter(
+                            $ongoingNodes,
+                            fn(Node $node) => !$node->getAttribute('isStarted')
+                        ),
+                        fn(Node $node) => $node->getName() !== $shortestNode->getName()
+                    ),
                     [Link::TYPE_SEQUENCE]
                 );
                 if (is_null($shortestNode) || is_null($longestNode)) {
