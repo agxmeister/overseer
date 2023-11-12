@@ -19,7 +19,7 @@ class UnlimitedFromScratchDirectorTest extends AbstractDirectorTest
             new FromScratchBuilder(
                 new Context(Utils::getNowDate($scheduleDescription)),
                 Utils::getIssues($issuesDescription),
-                new RightToLeftScheduleStrategy(Utils::getMilestoneDate($scheduleDescription)),
+                new RightToLeftScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
                 $this->makeEmpty(LimitStrategy::class),
             )
         );

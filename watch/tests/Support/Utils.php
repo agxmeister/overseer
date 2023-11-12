@@ -11,7 +11,7 @@ class Utils
             fn($line) => strlen($line) > 0)
         ];
 
-        $milestoneDate = self::getMilestoneDate($description);
+        $milestoneDate = self::getMilestoneEndDate($description);
 
         $links = [];
         $issues = array_reduce(array_filter($lines, fn($line) => !str_contains($line, '^')), function($issues, $line) use ($milestoneDate, &$links) {
@@ -64,16 +64,16 @@ class Utils
             fn($line) => strlen($line) > 0)
         ];
 
-        $milestoneDate = self::getMilestoneDate($description);
+        $milestoneEndDate = self::getMilestoneEndDate($description);
 
         $milestoneName = array_reduce(
             array_filter($lines, fn($line) => str_contains($line, '^')),
             fn($acc, $line) => trim(explode('^', $line)[0] ?? '')
         );
 
-        $criticalChain = [$milestoneDate->format('Y-m-d') => $milestoneName];
+        $criticalChain = [$milestoneEndDate->format('Y-m-d') => $milestoneName];
 
-        $schedule = array_reduce(array_filter($lines, fn($line) => !str_contains($line, '^')), function ($schedule, $line) use ($milestoneDate, &$criticalChain) {
+        $schedule = array_reduce(array_filter($lines, fn($line) => !str_contains($line, '^')), function ($schedule, $line) use ($milestoneEndDate, &$criticalChain) {
             $issueData = explode('|', $line);
             $key = trim($issueData[0]);
             $duration = strlen(trim($issueData[1]));
@@ -89,19 +89,19 @@ class Utils
             if ($isIssue) {
                 $schedule['issues'][] = [
                     'key' => $key,
-                    'begin' => $isScheduled ? $milestoneDate->modify("-{$beginGap} day")->format('Y-m-d') : null,
-                    'end' => $isScheduled ? $milestoneDate->modify("-{$endGap} day")->format('Y-m-d') : null,
+                    'begin' => $isScheduled ? $milestoneEndDate->modify("-{$beginGap} day")->format('Y-m-d') : null,
+                    'end' => $isScheduled ? $milestoneEndDate->modify("-{$endGap} day")->format('Y-m-d') : null,
                 ];
                 if ($isCritical) {
-                    $criticalChain[$milestoneDate->modify("-{$endGap} day")->format('Y-m-d')] = $key;
+                    $criticalChain[$milestoneEndDate->modify("-{$endGap} day")->format('Y-m-d')] = $key;
                 }
             }
 
             if ($isBuffer) {
                 $schedule['buffers'][] = [
                     'key' => $key,
-                    'begin' => $milestoneDate->modify("-{$beginGap} day")->format('Y-m-d'),
-                    'end' => $milestoneDate->modify("-{$endGap} day")->format('Y-m-d'),
+                    'begin' => $milestoneEndDate->modify("-{$beginGap} day")->format('Y-m-d'),
+                    'end' => $milestoneEndDate->modify("-{$endGap} day")->format('Y-m-d'),
                     'consumption' => $consumption,
                 ];
             }
@@ -117,12 +117,8 @@ class Utils
 
         $schedule['milestones'] = [[
             'key' => $milestoneName,
-            'begin' => array_reduce(
-                $schedule['issues'],
-                fn($acc, $issue) => min($acc, $issue['begin']),
-                $milestoneDate->format('Y-m-d'),
-            ),
-            'end' => $milestoneDate->format('Y-m-d'),
+            'begin' => self::getMilestoneBeginDate($description)->format('Y-m-d'),
+            'end' => $milestoneEndDate->format('Y-m-d'),
         ]];
 
         krsort($criticalChain);
@@ -131,7 +127,7 @@ class Utils
         return $schedule;
     }
 
-    public static function getMilestoneDate(string $description): \DateTimeImmutable|null
+    public static function getMilestoneEndDate(string $description): \DateTimeImmutable|null
     {
         $milestoneLine = self::extractMilestoneLine($description);
         return self::extractMilestoneDate($milestoneLine);
@@ -139,7 +135,7 @@ class Utils
 
     public static function getMilestoneBeginDate(string $description): \DateTimeImmutable|null
     {
-        $milestoneEndDate = self::getMilestoneDate($description);
+        $milestoneEndDate = self::getMilestoneEndDate($description);
         if (is_null($milestoneEndDate)) {
             return null;
         }
@@ -157,7 +153,7 @@ class Utils
                 ),
                 fn(string $line) => str_contains($line, '|')
             ),
-            fn(int $acc, string $line) => strlen(explode('|', $line)[1]),
+            fn(int $acc, string $line) => max($acc, strlen(ltrim(explode('|', $line)[1]))),
             0);
     }
 

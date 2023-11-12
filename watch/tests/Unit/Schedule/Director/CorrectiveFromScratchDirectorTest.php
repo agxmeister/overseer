@@ -36,7 +36,7 @@ class CorrectiveFromScratchDirectorTest extends AbstractDirectorTest
             new FromScratchBuilder(
                 new Context(Utils::getNowDate($scheduleDescription)),
                 Utils::getIssues($issuesDescription),
-                new RightToLeftScheduleStrategy(Utils::getMilestoneDate($scheduleDescription)),
+                new RightToLeftScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
                 new CorrectiveLimitStrategy(2),
             )
         );
