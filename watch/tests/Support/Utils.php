@@ -137,6 +137,30 @@ class Utils
         return self::extractMilestoneDate($milestoneLine);
     }
 
+    public static function getMilestoneBeginDate(string $description): \DateTimeImmutable|null
+    {
+        $milestoneEndDate = self::getMilestoneDate($description);
+        if (is_null($milestoneEndDate)) {
+            return null;
+        }
+        $milestoneLength = self::getMilestoneLength($description);
+        return $milestoneEndDate->modify("-{$milestoneLength} day");
+    }
+
+    public static function getMilestoneLength(string $description): int
+    {
+        return array_reduce(
+            array_filter(
+                array_map(
+                    fn($line) => trim($line),
+                    explode("\n", $description),
+                ),
+                fn(string $line) => str_contains($line, '|')
+            ),
+            fn(int $acc, string $line) => strlen(explode('|', $line)[1]),
+            0);
+    }
+
     public static function getNowDate(string $description): \DateTimeImmutable|null
     {
         $milestoneLine = self::extractMilestoneLine($description);

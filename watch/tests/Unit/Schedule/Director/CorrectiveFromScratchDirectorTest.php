@@ -5,22 +5,22 @@ use Tests\Support\Utils;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\FromScratch as FromScratchBuilder;
 use Watch\Schedule\Builder\Strategy\Limit\Corrective as CorrectiveLimitStrategy;
-use Watch\Schedule\Builder\Strategy\Schedule\LeftToRight as LeftToRightScheduleStrategy;
+use Watch\Schedule\Builder\Strategy\Schedule\FromDate as FromDateScheduleStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\RightToLeft as RightToLeftScheduleStrategy;
 use Watch\Schedule\Director;
 
 class CorrectiveFromScratchDirectorTest extends AbstractDirectorTest
 {
     /**
-     * @dataProvider dataBuildLeftToRight
+     * @dataProvider dataBuildFromDate
      */
-    public function testBuildLeftToRight($issuesDescription, $scheduleDescription)
+    public function testBuildFromDate($issuesDescription, $scheduleDescription)
     {
         $director = new Director(
             new FromScratchBuilder(
                 new Context(Utils::getNowDate($scheduleDescription)),
                 Utils::getIssues($issuesDescription),
-                new LeftToRightScheduleStrategy(),
+                new FromDateScheduleStrategy(Utils::getMilestoneBeginDate($scheduleDescription)),
                 new CorrectiveLimitStrategy(2),
             )
         );
@@ -43,7 +43,7 @@ class CorrectiveFromScratchDirectorTest extends AbstractDirectorTest
         $this->assertSchedule(Utils::getSchedule($scheduleDescription), $director->build()->release());
     }
 
-    protected function dataBuildLeftToRight(): array
+    protected function dataBuildFromDate(): array
     {
         return [
             ['
