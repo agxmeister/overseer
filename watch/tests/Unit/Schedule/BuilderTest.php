@@ -6,7 +6,7 @@ use Tests\Support\Utils;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\FromExisting as FromExistingBuilder;
-use Watch\Schedule\Builder\Strategy\Schedule\LeftToRight as LeftToRightScheduleStrategy;
+use Watch\Schedule\Builder\Strategy\Schedule\KeepDates as LeftToRightScheduleStrategy;
 
 class BuilderTest extends Unit
 {

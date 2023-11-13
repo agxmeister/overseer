@@ -8,7 +8,7 @@ use Watch\Jira;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\FromScratch;
 use Watch\Schedule\Builder\Strategy\Limit\Basic;
-use Watch\Schedule\Builder\Strategy\Schedule\RightToLeft;
+use Watch\Schedule\Builder\Strategy\Schedule\ToDate;
 use Watch\Schedule\Director;
 
 class PutSchedule
@@ -24,7 +24,7 @@ class PutSchedule
             new FromScratch(
                 new Context(new \DateTimeImmutable(date('Y-m-d'))),
                 $this->jira->getIssues(''),
-                new RightToLeft(new \DateTimeImmutable($params->date)),
+                new ToDate(new \DateTimeImmutable($params->date)),
                 new Basic(2),
             )
         );

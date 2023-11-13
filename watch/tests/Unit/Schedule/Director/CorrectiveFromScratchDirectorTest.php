@@ -6,7 +6,7 @@ use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\FromScratch as FromScratchBuilder;
 use Watch\Schedule\Builder\Strategy\Limit\Corrective as CorrectiveLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\FromDate as FromDateScheduleStrategy;
-use Watch\Schedule\Builder\Strategy\Schedule\RightToLeft as RightToLeftScheduleStrategy;
+use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Director;
 
 class CorrectiveFromScratchDirectorTest extends AbstractDirectorTest
@@ -36,7 +36,7 @@ class CorrectiveFromScratchDirectorTest extends AbstractDirectorTest
             new FromScratchBuilder(
                 new Context(Utils::getNowDate($scheduleDescription)),
                 Utils::getIssues($issuesDescription),
-                new RightToLeftScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
+                new ToDateScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
                 new CorrectiveLimitStrategy(2),
             )
         );

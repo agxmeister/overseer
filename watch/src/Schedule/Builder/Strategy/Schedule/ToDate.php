@@ -4,15 +4,18 @@ namespace Watch\Schedule\Builder\Strategy\Schedule;
 
 use Watch\Schedule\Builder\ScheduleStrategy;
 use Watch\Schedule\Model\Node;
+use Watch\Schedule\Utils;
 
-readonly class RightToLeft implements ScheduleStrategy
+readonly class ToDate implements ScheduleStrategy
 {
-    public function __construct(private \DateTimeInterface $date)
+    public function __construct(private \DateTimeImmutable $date)
     {
     }
 
     public function apply(Node $milestone): void
     {
+        $milestoneLength = Utils::getLongestSequence($milestone->getPreceders())->getLength(true);
+        $milestoneBeginDate = $this->date->modify("-{$milestoneLength} day");
         foreach ($milestone->getPreceders(true) as $node) {
             $node->setAttribute('begin', $this->date
                 ->modify("-{$node->getDistance()} day")
@@ -21,11 +24,7 @@ readonly class RightToLeft implements ScheduleStrategy
                 ->modify("-{$node->getCompletion()} day")
                 ->format("Y-m-d"));
         }
-        $milestone->setAttribute('begin', array_reduce(
-            $milestone->getPreceders(true),
-            fn($acc, Node $node) => min($acc, $node->getAttribute('begin')),
-            $this->date->format("Y-m-d"),
-        ));
+        $milestone->setAttribute('begin', $milestoneBeginDate->format("Y-m-d"));
         $milestone->setAttribute('end', $this->date->format("Y-m-d"));
     }
 }

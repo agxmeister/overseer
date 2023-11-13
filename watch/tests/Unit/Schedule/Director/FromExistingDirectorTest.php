@@ -4,7 +4,7 @@ namespace Tests\Unit\Schedule\Director;
 use Tests\Support\Utils;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\FromExisting as FromExistingBuilder;
-use Watch\Schedule\Builder\Strategy\Schedule\LeftToRight as LeftToRightScheduleStrategy;
+use Watch\Schedule\Builder\Strategy\Schedule\KeepDates as LeftToRightScheduleStrategy;
 use Watch\Schedule\Director;
 
 class FromExistingDirectorTest extends AbstractDirectorTest

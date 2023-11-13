@@ -5,7 +5,7 @@ use Tests\Support\Utils;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\FromScratch as FromScratchBuilder;
 use Watch\Schedule\Builder\LimitStrategy;
-use Watch\Schedule\Builder\Strategy\Schedule\RightToLeft as RightToLeftScheduleStrategy;
+use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Director;
 
 class UnlimitedFromScratchDirectorTest extends AbstractDirectorTest
@@ -19,7 +19,7 @@ class UnlimitedFromScratchDirectorTest extends AbstractDirectorTest
             new FromScratchBuilder(
                 new Context(Utils::getNowDate($scheduleDescription)),
                 Utils::getIssues($issuesDescription),
-                new RightToLeftScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
+                new ToDateScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
                 $this->makeEmpty(LimitStrategy::class),
             )
         );
