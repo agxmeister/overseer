@@ -5,14 +5,14 @@ use Codeception\Test\Unit;
 use Tests\Support\Utils;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
-use Watch\Schedule\Builder\FromExisting as FromExistingBuilder;
+use Watch\Schedule\Builder\Preserving as PreservingBuilder;
 use Watch\Schedule\Builder\Strategy\Schedule\KeepDates as LeftToRightScheduleStrategy;
 
 class BuilderTest extends Unit
 {
     public function testAddCriticalChain()
     {
-        $builder = new FromExistingBuilder(
+        $builder = new PreservingBuilder(
             new Context(new \DateTimeImmutable('2023-01-01')),
             Utils::getIssues('
                 K-01   |       xxxx|
@@ -29,7 +29,7 @@ class BuilderTest extends Unit
 
     public function testAddFeedingBuffers()
     {
-        $builder = new FromExistingBuilder(
+        $builder = new PreservingBuilder(
             new Context(new \DateTimeImmutable('2023-01-01')),
             Utils::getIssues('
                 K-01   |       xxxx|

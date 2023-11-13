@@ -3,7 +3,7 @@ namespace Tests\Unit\Schedule\Director;
 
 use Tests\Support\Utils;
 use Watch\Schedule\Builder\Context;
-use Watch\Schedule\Builder\FromScratch as FromScratchBuilder;
+use Watch\Schedule\Builder\Modifying as ModifyingBuilder;
 use Watch\Schedule\Builder\Strategy\Limit\Simple as SimpleLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Director;
@@ -16,7 +16,7 @@ class SimpleFromScratchDirectorTest extends AbstractDirectorTest
     public function testBuild($issuesDescription, $scheduleDescription)
     {
         $director = new Director(
-            new FromScratchBuilder(
+            new ModifyingBuilder(
                 new Context(Utils::getNowDate($scheduleDescription)),
                 Utils::getIssues($issuesDescription),
                 new ToDateScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),

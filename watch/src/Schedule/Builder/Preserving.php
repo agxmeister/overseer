@@ -5,7 +5,7 @@ namespace Watch\Schedule\Builder;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Utils;
 
-class FromExisting extends Builder
+class Preserving extends Builder
 {
     public function __construct(Context $context, array $issues, private readonly ScheduleStrategy $scheduleStrategy)
     {

@@ -3,7 +3,7 @@ namespace Tests\Unit\Schedule\Director;
 
 use Tests\Support\Utils;
 use Watch\Schedule\Builder\Context;
-use Watch\Schedule\Builder\FromScratch as FromScratchBuilder;
+use Watch\Schedule\Builder\Modifying as ModifyingBuilder;
 use Watch\Schedule\Builder\Strategy\Limit\Corrective as CorrectiveLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\FromDate as FromDateScheduleStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
@@ -17,7 +17,7 @@ class CorrectiveFromScratchDirectorTest extends AbstractDirectorTest
     public function testBuildFromDate($issuesDescription, $scheduleDescription)
     {
         $director = new Director(
-            new FromScratchBuilder(
+            new ModifyingBuilder(
                 new Context(Utils::getNowDate($scheduleDescription)),
                 Utils::getIssues($issuesDescription),
                 new FromDateScheduleStrategy(Utils::getMilestoneBeginDate($scheduleDescription)),
@@ -33,7 +33,7 @@ class CorrectiveFromScratchDirectorTest extends AbstractDirectorTest
     public function testBuildRightToLeft($issuesDescription, $scheduleDescription)
     {
         $director = new Director(
-            new FromScratchBuilder(
+            new ModifyingBuilder(
                 new Context(Utils::getNowDate($scheduleDescription)),
                 Utils::getIssues($issuesDescription),
                 new ToDateScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),

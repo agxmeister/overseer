@@ -3,7 +3,7 @@ namespace Tests\Unit\Schedule\Director;
 
 use Tests\Support\Utils;
 use Watch\Schedule\Builder\Context;
-use Watch\Schedule\Builder\FromExisting as FromExistingBuilder;
+use Watch\Schedule\Builder\Preserving as PreservingBuilder;
 use Watch\Schedule\Builder\Strategy\Schedule\KeepDates as LeftToRightScheduleStrategy;
 use Watch\Schedule\Director;
 
@@ -15,7 +15,7 @@ class FromExistingDirectorTest extends AbstractDirectorTest
     public function testBuild($issuesDescription, $scheduleDescription)
     {
         $director = new Director(
-            new FromExistingBuilder(
+            new PreservingBuilder(
                 new Context(Utils::getNowDate($scheduleDescription)),
                 Utils::getIssues($issuesDescription),
                 new LeftToRightScheduleStrategy(),
