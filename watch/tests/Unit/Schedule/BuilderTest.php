@@ -3,7 +3,6 @@ namespace Tests\Unit\Schedule;
 
 use Codeception\Test\Unit;
 use Tests\Support\Utils;
-use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\Preserving as PreservingBuilder;
 use Watch\Schedule\Builder\Strategy\Schedule\KeepDates as LeftToRightScheduleStrategy;
@@ -24,7 +23,7 @@ class BuilderTest extends Unit
         );
         $builder->run();
         $builder->addMilestone();
-        $this->assertEquals(['finish', 'K-01', 'K-03'], $builder->release()[Builder::VOLUME_CRITICAL_CHAIN]);
+        $this->assertEquals(['finish', 'K-01', 'K-03'], $builder->release()[$builder::VOLUME_CRITICAL_CHAIN]);
     }
 
     public function testAddFeedingBuffers()
@@ -51,6 +50,6 @@ class BuilderTest extends Unit
                 'end' => '2023-09-16',
                 'consumption' => 0,
             ]
-        ], $builder->release()[Builder::VOLUME_BUFFERS]);
+        ], $builder->release()[$builder::VOLUME_BUFFERS]);
     }
 }

@@ -5,11 +5,12 @@ namespace Watch\Schedule\Builder;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Utils;
 
-class Modifying extends Builder
+class Modifying implements Builder
 {
-    public function __construct(Context $context, array $issues, private readonly ScheduleStrategy $scheduleStrategy, private readonly LimitStrategy $limitStrategy)
+    use AbleToBuild;
+
+    public function __construct(protected readonly Context $context, protected readonly array $issues, private readonly ScheduleStrategy $scheduleStrategy, private readonly LimitStrategy $limitStrategy)
     {
-        parent::__construct($context, $issues);
     }
 
     public function addMilestone(): self
