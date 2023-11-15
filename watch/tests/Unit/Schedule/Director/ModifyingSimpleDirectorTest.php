@@ -8,7 +8,7 @@ use Watch\Schedule\Builder\Strategy\Limit\Simple as SimpleLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Director;
 
-class SimpleFromScratchDirectorTest extends AbstractDirectorTest
+class ModifyingSimpleDirectorTest extends AbstractDirectorTest
 {
     /**
      * @dataProvider dataBuild

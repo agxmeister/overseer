@@ -9,7 +9,7 @@ use Watch\Schedule\Builder\Strategy\Schedule\FromDate as FromDateScheduleStrateg
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Director;
 
-class CorrectiveFromScratchDirectorTest extends AbstractDirectorTest
+class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
 {
     /**
      * @dataProvider dataBuildFromDate
@@ -28,9 +28,9 @@ class CorrectiveFromScratchDirectorTest extends AbstractDirectorTest
     }
 
     /**
-     * @dataProvider dataBuildRightToLeft
+     * @dataProvider dataBuildToDate
      */
-    public function testBuildRightToLeft($issuesDescription, $scheduleDescription)
+    public function testBuildToDate($issuesDescription, $scheduleDescription)
     {
         $director = new Director(
             new ModifyingBuilder(
@@ -62,7 +62,7 @@ class CorrectiveFromScratchDirectorTest extends AbstractDirectorTest
         ];
     }
 
-    protected function dataBuildRightToLeft(): array
+    protected function dataBuildToDate(): array
     {
         return [
             ['

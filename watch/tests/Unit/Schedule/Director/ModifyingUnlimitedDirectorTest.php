@@ -8,7 +8,7 @@ use Watch\Schedule\Builder\LimitStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Director;
 
-class UnlimitedFromScratchDirectorTest extends AbstractDirectorTest
+class ModifyingUnlimitedDirectorTest extends AbstractDirectorTest
 {
     /**
      * @dataProvider dataBuild

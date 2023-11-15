@@ -6,7 +6,7 @@ use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\Preserving as PreservingBuilder;
 use Watch\Schedule\Director;
 
-class FromExistingDirectorTest extends AbstractDirectorTest
+class PreservingDirectorTest extends AbstractDirectorTest
 {
     /**
      * @dataProvider dataBuild
