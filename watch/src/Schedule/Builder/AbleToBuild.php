@@ -172,6 +172,29 @@ trait AbleToBuild
         return $this;
     }
 
+    protected function addBuffersDates(array $buffers): void
+    {
+        foreach ($buffers as $buffer) {
+            $maxPrecederEndDate = new \DateTimeImmutable(array_reduce(
+                $buffer->getPreceders(),
+                fn($acc, Node $node) => max($acc, $node->getAttribute('end')),
+            ));
+            $buffer->setAttribute('begin', $maxPrecederEndDate->modify("1 day")->format("Y-m-d"));
+            $buffer->setAttribute('end', $maxPrecederEndDate->modify("{$buffer->getLength()} day")->format("Y-m-d"));
+        }
+    }
+
+    protected function addMilestoneDates(Milestone $milestone): void
+    {
+        $milestoneEndDate = (new \DateTimeImmutable(array_reduce(
+            $milestone->getPreceders(),
+            fn($acc, Node $node) => max($acc, $node->getAttribute('end')),
+        )))->modify("1 day");
+        $milestoneLength = Utils::getLongestSequence($milestone->getPreceders())->getLength(true);
+        $milestone->setAttribute('begin', $milestoneEndDate->modify("-{$milestoneLength} day")->format("Y-m-d"));
+        $milestone->setAttribute('end', $milestoneEndDate->format("Y-m-d"));
+    }
+
     private function addBuffer(Buffer $buffer, Node $beforeNode, array $afterNodes): void
     {
         array_walk($afterNodes, fn(Node $afterNode) => $afterNode->unprecede($beforeNode, Link::TYPE_SCHEDULE));

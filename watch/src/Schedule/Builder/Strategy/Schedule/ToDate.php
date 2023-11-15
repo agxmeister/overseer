@@ -3,8 +3,8 @@
 namespace Watch\Schedule\Builder\Strategy\Schedule;
 
 use Watch\Schedule\Builder\ScheduleStrategy;
+use Watch\Schedule\Model\Issue;
 use Watch\Schedule\Model\Node;
-use Watch\Schedule\Utils;
 
 readonly class ToDate implements ScheduleStrategy
 {
@@ -14,9 +14,12 @@ readonly class ToDate implements ScheduleStrategy
 
     public function apply(Node $milestone): void
     {
-        $milestoneLength = Utils::getLongestSequence($milestone->getPreceders())->getLength(true);
-        $milestoneBeginDate = $this->date->modify("-{$milestoneLength} day");
-        foreach ($milestone->getPreceders(true) as $node) {
+        foreach (
+            array_filter(
+                $milestone->getPreceders(true),
+                fn(Node $node) => $node instanceof Issue,
+            ) as $node
+        ) {
             $node->setAttribute('begin', $this->date
                 ->modify("-{$node->getDistance()} day")
                 ->format("Y-m-d"));
@@ -24,7 +27,5 @@ readonly class ToDate implements ScheduleStrategy
                 ->modify("-{$node->getCompletion()} day")
                 ->format("Y-m-d"));
         }
-        $milestone->setAttribute('begin', $milestoneBeginDate->format("Y-m-d"));
-        $milestone->setAttribute('end', $this->date->format("Y-m-d"));
     }
 }

@@ -5,7 +5,6 @@ use Codeception\Test\Unit;
 use Tests\Support\Utils;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\Preserving as PreservingBuilder;
-use Watch\Schedule\Builder\Strategy\Schedule\KeepDates as LeftToRightScheduleStrategy;
 
 class BuilderTest extends Unit
 {
@@ -19,7 +18,6 @@ class BuilderTest extends Unit
                 K-03   |xxxxxxx    | @ K-01
                                    ^ # 2023-09-21
             '),
-            new LeftToRightScheduleStrategy(),
         );
         $builder->run();
         $builder->addMilestone();
@@ -36,7 +34,6 @@ class BuilderTest extends Unit
                 K-03   |xxxxxxx    | @ K-01
                                    ^ # 2023-09-21
             '),
-            new LeftToRightScheduleStrategy(),
         );
         $builder->run();
         $builder

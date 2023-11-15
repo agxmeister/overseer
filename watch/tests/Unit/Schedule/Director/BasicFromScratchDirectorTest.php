@@ -19,8 +19,8 @@ class BasicFromScratchDirectorTest extends AbstractDirectorTest
             new ModifyingBuilder(
                 new Context(Utils::getNowDate($scheduleDescription)),
                 Utils::getIssues($issuesDescription),
-                new ToDateScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
                 new BasicLimitStrategy(2),
+                new ToDateScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
             )
         );
         $this->assertSchedule(Utils::getSchedule($scheduleDescription), $director->build()->release());

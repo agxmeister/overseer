@@ -3,6 +3,7 @@
 namespace Watch\Schedule\Builder\Strategy\Schedule;
 
 use Watch\Schedule\Builder\ScheduleStrategy;
+use Watch\Schedule\Model\Issue;
 use Watch\Schedule\Model\Node;
 use Watch\Schedule\Utils;
 
@@ -16,7 +17,12 @@ readonly class FromDate implements ScheduleStrategy
     {
         $milestoneLength = Utils::getLongestSequence($milestone->getPreceders())->getLength(true);
         $milestoneEndDate = $this->date->modify("{$milestoneLength} day");
-        foreach ($milestone->getPreceders(true) as $node) {
+        foreach (
+            array_filter(
+                $milestone->getPreceders(true),
+                fn(Node $node) => $node instanceof Issue,
+            ) as $node
+        ) {
             $node->setAttribute('begin', $milestoneEndDate
                 ->modify("-{$node->getDistance()} day")
                 ->format("Y-m-d"));
@@ -24,7 +30,5 @@ readonly class FromDate implements ScheduleStrategy
                 ->modify("-{$node->getCompletion()} day")
                 ->format("Y-m-d"));
         }
-        $milestone->setAttribute('begin', $this->date->format("Y-m-d"));
-        $milestone->setAttribute('end', $milestoneEndDate->format("Y-m-d"));
     }
 }

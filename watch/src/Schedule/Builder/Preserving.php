@@ -3,13 +3,15 @@
 namespace Watch\Schedule\Builder;
 
 use Watch\Schedule\Builder;
+use Watch\Schedule\Model\Buffer;
+use Watch\Schedule\Model\Node;
 use Watch\Schedule\Utils;
 
 class Preserving implements Builder
 {
     use AbleToBuild;
 
-    public function __construct(protected readonly Context $context, protected readonly array $issues, private readonly ScheduleStrategy $scheduleStrategy)
+    public function __construct(protected readonly Context $context, protected readonly array $issues)
     {
     }
 
@@ -21,7 +23,11 @@ class Preserving implements Builder
 
     public function addDates(): self
     {
-        $this->scheduleStrategy->apply($this->milestone);
+        $this->addBuffersDates(array_filter(
+            $this->milestone->getPreceders(true),
+            fn(Node $node) => $node instanceof Buffer,
+        ));
+        $this->addMilestoneDates($this->milestone);
         return $this;
     }
 }

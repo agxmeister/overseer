@@ -24,8 +24,8 @@ class PutSchedule
             new Modifying(
                 new Context(new \DateTimeImmutable(date('Y-m-d'))),
                 $this->jira->getIssues(''),
-                new ToDate(new \DateTimeImmutable($params->date)),
                 new Basic(2),
+                new ToDate(new \DateTimeImmutable($params->date)),
             )
         );
         $issues = $director->build()->release();

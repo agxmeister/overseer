@@ -19,8 +19,8 @@ class UnlimitedFromScratchDirectorTest extends AbstractDirectorTest
             new ModifyingBuilder(
                 new Context(Utils::getNowDate($scheduleDescription)),
                 Utils::getIssues($issuesDescription),
-                new ToDateScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
                 $this->makeEmpty(LimitStrategy::class),
+                new ToDateScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
             )
         );
         $this->assertSchedule(Utils::getSchedule($scheduleDescription), $director->build()->release());

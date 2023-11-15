@@ -7,7 +7,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Watch\Jira;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\Preserving;
-use Watch\Schedule\Builder\Strategy\Schedule\KeepDates;
 use Watch\Schedule\Director;
 
 class GetSchedule
@@ -21,7 +20,6 @@ class GetSchedule
         $director = new Director(new Preserving(
             new Context(new \DateTimeImmutable(date('Y-m-d'))),
             $this->jira->getIssues(''),
-            new KeepDates(),
         ));
         $schedule = $director->build()->release();
         $response->getBody()->write(json_encode($schedule));

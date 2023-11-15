@@ -20,8 +20,8 @@ class CorrectiveFromScratchDirectorTest extends AbstractDirectorTest
             new ModifyingBuilder(
                 new Context(Utils::getNowDate($scheduleDescription)),
                 Utils::getIssues($issuesDescription),
-                new FromDateScheduleStrategy(Utils::getMilestoneBeginDate($scheduleDescription)),
                 new CorrectiveLimitStrategy(2),
+                new FromDateScheduleStrategy(Utils::getMilestoneBeginDate($scheduleDescription)),
             )
         );
         $this->assertSchedule(Utils::getSchedule($scheduleDescription), $director->build()->release());
@@ -36,8 +36,8 @@ class CorrectiveFromScratchDirectorTest extends AbstractDirectorTest
             new ModifyingBuilder(
                 new Context(Utils::getNowDate($scheduleDescription)),
                 Utils::getIssues($issuesDescription),
-                new ToDateScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
                 new CorrectiveLimitStrategy(2),
+                new ToDateScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
             )
         );
         $this->assertSchedule(Utils::getSchedule($scheduleDescription), $director->build()->release());
