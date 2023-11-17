@@ -39,7 +39,7 @@ class ModifyingUnlimitedDirectorTest extends AbstractDirectorTest
                 K-02          |   xxxx        | & K-01
                 K-03-buffer   |       ____    | @ finish-buffer
                 K-03          |*******        | @ K-03-buffer
-                finish        ^               ^ # 2023-09-21
+                finish                        ^ # 2023-09-21
             '], ['
                 K-01          |       ....      |
                 K-02          |....             | & K-01
@@ -50,7 +50,7 @@ class ModifyingUnlimitedDirectorTest extends AbstractDirectorTest
                 K-02-buffer   |     __          | @ K-01
                 K-02          | ****            | & K-01, @ K-02-buffer
                 K-03          |xxxxxxx          | & K-01
-                finish        ^                 ^ # 2023-09-21
+                finish                          ^ # 2023-09-21
             '],
         ];
     }

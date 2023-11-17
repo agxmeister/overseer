@@ -73,7 +73,7 @@ class Utils
 
         $criticalChain = [$milestoneEndDate->format('Y-m-d') => $milestoneName];
 
-        $schedule = array_reduce(array_filter($lines, fn($line) => !str_contains($line, '^')), function ($schedule, $line) use ($milestoneEndDate, &$criticalChain) {
+        $schedule = array_reduce(array_filter($lines, fn($line) => !str_contains($line, '^') && !str_contains($line, '>')), function ($schedule, $line) use ($milestoneEndDate, &$criticalChain) {
             $issueData = explode('|', $line);
             $key = trim($issueData[0]);
             $duration = strlen(trim($issueData[1]));
@@ -159,8 +159,11 @@ class Utils
 
     public static function getNowDate(string $description): \DateTimeImmutable|null
     {
-        $milestoneLine = self::extractMilestoneLine($description);
-        return self::extractNowDate($milestoneLine);
+        return self::extractNowDate(
+            self::extractContextLine($description),
+            self::extractMilestoneLine($description),
+            self::getMilestoneLength($description),
+        );
     }
 
     private static function extractMilestoneDate(string $milestoneLine): \DateTimeImmutable|null
@@ -182,16 +185,15 @@ class Utils
         return new \DateTimeImmutable(explode(' ', $dateAttribute)[1] ?? '');
     }
 
-    private static function extractNowDate(string $milestoneLine): \DateTimeImmutable|null
+    private static function extractNowDate(string $contextLine, string $milestoneLine, int $milestoneLength): \DateTimeImmutable|null
     {
         if (empty($milestoneLine)) {
             return null;
         }
-        $milestoneLineParts = array_reverse(explode('^', $milestoneLine));
-        if (sizeof($milestoneLineParts) < 3) {
-            return null;
+        if (empty($contextLine)) {
+            return self::extractMilestoneDate($milestoneLine)->modify("- {$milestoneLength} day");
         }
-        $gap = strlen($milestoneLineParts[1]) + 1;
+        $gap = strpos($milestoneLine, '^') - strpos($contextLine, '>');
         return self::extractMilestoneDate($milestoneLine)->modify("- {$gap} day");
     }
 
@@ -200,10 +202,25 @@ class Utils
         return array_reduce(
             array_filter(
                 array_filter(
-                    array_map(fn($line) => trim($line), explode("\n", $description)),
+                    array_map(fn($line) => $line, explode("\n", $description)),
                     fn($line) => strlen($line) > 0
                 ),
                 fn($line) => str_contains($line, '^')
+            ),
+            fn($acc, $line) => $line,
+            '',
+        );
+    }
+
+    private static function extractContextLine(string $description): string
+    {
+        return array_reduce(
+            array_filter(
+                array_filter(
+                    array_map(fn($line) => $line, explode("\n", $description)),
+                    fn($line) => strlen($line) > 0
+                ),
+                fn($line) => str_contains($line, '>')
             ),
             fn($acc, $line) => $line,
             '',

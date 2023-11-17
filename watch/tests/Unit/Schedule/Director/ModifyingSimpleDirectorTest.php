@@ -36,7 +36,7 @@ class ModifyingSimpleDirectorTest extends AbstractDirectorTest
                 finish-buffer |        ____| @ finish
                 K-01          |    xxxx    | @ finish-buffer
                 K-02          |xxxx        | @ K-01
-                finish        ^            ^ # 2023-09-21
+                finish                     ^ # 2023-09-21
             '], ['
                 K-01          |....              |
                 K-02          |....              |
@@ -46,7 +46,7 @@ class ModifyingSimpleDirectorTest extends AbstractDirectorTest
                 K-01          |        xxxx      | @ finish-buffer
                 K-02          |    xxxx          | @ K-01
                 K-03          |xxxx              | @ K-02
-                finish        ^                  ^ # 2023-09-21
+                finish                           ^ # 2023-09-21
             '],
         ];
     }
