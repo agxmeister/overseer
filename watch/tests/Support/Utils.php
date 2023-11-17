@@ -142,13 +142,7 @@ class Utils
     public static function getMilestoneLength(string $description): int
     {
         return array_reduce(
-            array_filter(
-                array_map(
-                    fn($line) => trim($line),
-                    explode("\n", $description),
-                ),
-                fn(string $line) => str_contains($line, '|')
-            ),
+            self::extractIssueLines($description),
             fn(int $acc, string $line) => max($acc, strlen(ltrim(explode('|', $line)[1]))),
             0);
     }
@@ -205,14 +199,22 @@ class Utils
         return self::extractMilestoneDate($milestoneLine)->modify("- {$gap} day");
     }
 
+    private static function extractIssueLines(string $description): array
+    {
+        return array_reduce(
+            array_filter(
+                array_map(fn($line) => $line, explode("\n", $description)),
+                fn(string $line) => str_contains($line, '|')
+            ),
+            fn(array $acc, string $line) => [...$acc, $line],
+        []);
+    }
+
     private static function extractMilestoneLine(string $description): string
     {
         return array_reduce(
             array_filter(
-                array_filter(
-                    array_map(fn($line) => $line, explode("\n", $description)),
-                    fn($line) => strlen($line) > 0
-                ),
+                array_map(fn($line) => $line, explode("\n", $description)),
                 fn($line) => str_contains($line, '^')
             ),
             fn($acc, $line) => $line,
@@ -224,10 +226,7 @@ class Utils
     {
         return array_reduce(
             array_filter(
-                array_filter(
-                    array_map(fn($line) => $line, explode("\n", $description)),
-                    fn($line) => strlen($line) > 0
-                ),
+                array_map(fn($line) => $line, explode("\n", $description)),
                 fn($line) => str_contains($line, '>')
             ),
             fn($acc, $line) => $line,
