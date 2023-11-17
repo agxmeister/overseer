@@ -64,12 +64,8 @@ class Utils
             fn($line) => strlen($line) > 0)
         ];
 
+        $milestoneName = self::getMilestoneName($description);
         $milestoneEndDate = self::getMilestoneEndDate($description);
-
-        $milestoneName = array_reduce(
-            array_filter($lines, fn($line) => str_contains($line, '^')),
-            fn($acc, $line) => trim(explode('^', $line)[0] ?? '')
-        );
 
         $criticalChain = [$milestoneEndDate->format('Y-m-d') => $milestoneName];
 
@@ -157,6 +153,11 @@ class Utils
             0);
     }
 
+    public static function getMilestoneName(string $description): string
+    {
+        return self::extractMilestoneName(self::extractMilestoneLine($description));
+    }
+
     public static function getNowDate(string $description): \DateTimeImmutable|null
     {
         return self::extractNowDate(
@@ -165,6 +166,8 @@ class Utils
             self::getMilestoneLength($description),
         );
     }
+
+
 
     private static function extractMilestoneDate(string $milestoneLine): \DateTimeImmutable|null
     {
@@ -183,6 +186,11 @@ class Utils
                 fn($acc, $attribute) => $attribute
             );
         return new \DateTimeImmutable(explode(' ', $dateAttribute)[1] ?? '');
+    }
+
+    private static function extractMilestoneName(string $milestoneLine): string
+    {
+        return trim(explode('^', $milestoneLine)[0] ?? '');
     }
 
     private static function extractNowDate(string $contextLine, string $milestoneLine, int $milestoneLength): \DateTimeImmutable|null
