@@ -123,20 +123,20 @@ class Utils
         return $schedule;
     }
 
-    public static function getMilestoneEndDate(string $description): \DateTimeImmutable|null
-    {
-        $milestoneLine = self::extractMilestoneLine($description);
-        return self::extractMilestoneDate($milestoneLine);
-    }
-
     public static function getMilestoneBeginDate(string $description): \DateTimeImmutable|null
     {
-        $milestoneEndDate = self::getMilestoneEndDate($description);
-        if (is_null($milestoneEndDate)) {
-            return null;
-        }
         $milestoneLength = self::getMilestoneLength($description);
-        return $milestoneEndDate->modify("-{$milestoneLength} day");
+        return self::isBeginMilestoneMarker($description) ?
+            self::getMilestoneDate($description) :
+            self::getMilestoneDate($description)->modify("-{$milestoneLength} day");
+    }
+
+    public static function getMilestoneEndDate(string $description): \DateTimeImmutable|null
+    {
+        $milestoneLength = self::getMilestoneLength($description);
+        return self::isBeginMilestoneMarker($description) ?
+            self::getMilestoneDate($description)->modify("{$milestoneLength} day") :
+            self::getMilestoneDate($description);
     }
 
     public static function getMilestoneLength(string $description): int
@@ -161,7 +161,10 @@ class Utils
         );
     }
 
-
+    private static function getMilestoneDate(string $description): \DateTimeImmutable|null
+    {
+        return self::extractMilestoneDate(self::extractMilestoneLine($description));
+    }
 
     private static function extractMilestoneDate(string $milestoneLine): \DateTimeImmutable|null
     {
@@ -180,6 +183,14 @@ class Utils
                 fn($acc, $attribute) => $attribute
             );
         return new \DateTimeImmutable(explode(' ', $dateAttribute)[1] ?? '');
+    }
+
+    private static function isBeginMilestoneMarker(string $description): bool
+    {
+        return strpos(self::extractMilestoneLine($description), '^') === array_reduce(
+                self::extractIssueLines($description),
+                fn($acc, $line) => min($acc, strpos($line, '|')),
+            );
     }
 
     private static function extractMilestoneName(string $milestoneLine): string
