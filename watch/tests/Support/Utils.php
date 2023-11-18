@@ -125,26 +125,28 @@ class Utils
 
     public static function getMilestoneBeginDate(string $description): \DateTimeImmutable|null
     {
+        $milestoneBeginGap = self::getMilestoneBeginGap($description);
+        $milestoneEndGap = self::getMilestoneBeginGap($description);
         $milestoneLength = self::getMilestoneLength($description);
         return self::isBeginMilestoneMarker($description) ?
-            self::getMilestoneDate($description) :
-            self::getMilestoneDate($description)->modify("-{$milestoneLength} day");
+            self::getMilestoneDate($description)
+                ?->modify("{$milestoneBeginGap} day") :
+            self::getMilestoneDate($description)
+                ?->modify("-{$milestoneEndGap} day")
+                ?->modify("-{$milestoneLength} day");
     }
 
     public static function getMilestoneEndDate(string $description): \DateTimeImmutable|null
     {
+        $milestoneBeginGap = self::getMilestoneBeginGap($description);
+        $milestoneEndGap = self::getMilestoneBeginGap($description);
         $milestoneLength = self::getMilestoneLength($description);
         return self::isBeginMilestoneMarker($description) ?
-            self::getMilestoneDate($description)->modify("{$milestoneLength} day") :
-            self::getMilestoneDate($description);
-    }
-
-    public static function getMilestoneLength(string $description): int
-    {
-        return array_reduce(
-            self::extractIssueLines($description),
-            fn(int $acc, string $line) => max($acc, strlen(ltrim(explode('|', $line)[1]))),
-            0);
+            self::getMilestoneDate($description)
+                ?->modify("{$milestoneBeginGap} day")
+                ?->modify("{$milestoneLength} day") :
+            self::getMilestoneDate($description)
+                ?->modify("-{$milestoneEndGap} day");
     }
 
     public static function getMilestoneName(string $description): string
@@ -154,11 +156,53 @@ class Utils
 
     public static function getNowDate(string $description): \DateTimeImmutable|null
     {
+        $contextLine = self::extractContextLine($description);
+        if (empty($contextLine)) {
+            return self::getMilestoneBeginDate($description);
+        }
         return self::extractNowDate(
-            self::extractContextLine($description),
+            $contextLine,
             self::extractMilestoneLine($description),
-            self::getMilestoneLength($description),
         );
+    }
+
+    public static function getMilestoneLength(string $description): int
+    {
+        $maxTrackLength = array_reduce(
+            self::extractTracks($description),
+            fn(int $acc, string $track) => max($acc, strlen($track)),
+            0,
+        );
+        return $maxTrackLength - self::getMilestoneBeginGap($description) - self::getMilestoneEndGap($description);
+    }
+
+    private static function getMilestoneBeginGap(string $description): int
+    {
+        return self::getMilestoneGap($description, true);
+    }
+
+    private static function getMilestoneEndGap(string $description): int
+    {
+        return self::getMilestoneGap($description, false);
+    }
+
+    private static function getMilestoneGap(string $description, $isBegin): int
+    {
+        $tracks = self::extractTracks($description);
+        $maxTrackLength = array_reduce(
+            $tracks,
+            fn(int $acc, string $track) => max($acc, strlen($track)),
+            0,
+        );
+        $maxTrackLengthTrimmed = array_reduce(
+            array_map(
+                fn(string $track) => $isBegin ? ltrim($track) : rtrim($track),
+                $tracks,
+            ),
+            fn(int $acc, string $line) => max($acc, strlen($line)),
+            0,
+        );
+        return $maxTrackLength - $maxTrackLengthTrimmed;
     }
 
     private static function getMilestoneDate(string $description): \DateTimeImmutable|null
@@ -188,9 +232,9 @@ class Utils
     private static function isBeginMilestoneMarker(string $description): bool
     {
         return strpos(self::extractMilestoneLine($description), '^') === array_reduce(
-                self::extractIssueLines($description),
-                fn($acc, $line) => min($acc, strpos($line, '|')),
-            );
+            self::extractIssueLines($description),
+            fn($acc, $line) => max($acc, strpos($line, '|')),
+        );
     }
 
     private static function extractMilestoneName(string $milestoneLine): string
@@ -198,13 +242,10 @@ class Utils
         return trim(explode('^', $milestoneLine)[0] ?? '');
     }
 
-    private static function extractNowDate(string $contextLine, string $milestoneLine, int $milestoneLength): \DateTimeImmutable|null
+    private static function extractNowDate(string $contextLine, string $milestoneLine): \DateTimeImmutable|null
     {
-        if (empty($milestoneLine)) {
+        if (empty($contextLine) || empty($milestoneLine)) {
             return null;
-        }
-        if (empty($contextLine)) {
-            return self::extractMilestoneDate($milestoneLine)->modify("- {$milestoneLength} day");
         }
         $gap = strpos($milestoneLine, '^') - strpos($contextLine, '>');
         return self::extractMilestoneDate($milestoneLine)->modify("- {$gap} day");
@@ -219,6 +260,14 @@ class Utils
             ),
             fn(array $acc, string $line) => [...$acc, $line],
         []);
+    }
+
+    private static function extractTracks(string $description): array
+    {
+        return array_map(
+            fn(string $line) => explode('|', $line)[1],
+            self::extractIssueLines($description),
+        );
     }
 
     private static function extractMilestoneLine(string $description): string
