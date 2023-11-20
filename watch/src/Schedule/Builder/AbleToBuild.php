@@ -176,7 +176,10 @@ trait AbleToBuild
     {
         foreach ($buffers as $buffer) {
             $maxPrecederEndDate = new \DateTimeImmutable(array_reduce(
-                $buffer->getPreceders(),
+                array_filter(
+                    $buffer->getPreceders(),
+                    fn(Node $node) => !$node->getAttribute('isIgnored', false),
+                ),
                 fn($acc, Node $node) => max($acc, $node->getAttribute('end')),
             ));
             $buffer->setAttribute('begin', $maxPrecederEndDate->modify("1 day")->format("Y-m-d"));

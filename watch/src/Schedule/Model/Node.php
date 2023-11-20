@@ -128,7 +128,7 @@ abstract class Node
 
     public function getLength(bool $withPreceders = false, array $types = []): int
     {
-        $effectiveLength = $this->getAttribute('isIgnored', false) ? 1 : $this->length;
+        $effectiveLength = $this->getAttribute('isIgnored', false) ? 0 : $this->length;
         if (!$withPreceders) {
             return $effectiveLength;
         }
@@ -141,7 +141,11 @@ abstract class Node
 
     public function getCompletion(): int
     {
-        return $this->getDistance() - $this->getLength() + 1;
+        $length = $this->getLength();
+        if ($length < 1) {
+            return $this->getDistance();
+        }
+        return $this->getDistance() - $length + 1;
     }
 
     public function getSchedule(): array|string
