@@ -44,6 +44,15 @@ readonly class Corrective implements LimitStrategy
             }
             $shift++;
         } while ($shift <= $milestone->getLength(true));
+
+        foreach (
+            array_filter(
+                $milestone->getPreceders(true),
+                fn(Node $node) => $node->getAttribute('isCompleted')
+            ) as $node
+        ) {
+            $node->setAttribute('isIgnored', true);
+        }
     }
 
     private function isOngoingAt(Node $node, int $point): bool
