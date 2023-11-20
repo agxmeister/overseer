@@ -128,14 +128,15 @@ abstract class Node
 
     public function getLength(bool $withPreceders = false, array $types = []): int
     {
+        $effectiveLength = $this->getAttribute('isIgnored', false) ? 1 : $this->length;
         if (!$withPreceders) {
-            return $this->length;
+            return $effectiveLength;
         }
         $preceders = $this->getPreceders(true, $types);
         if (empty($preceders)) {
-            return $this->length;
+            return $effectiveLength;
         }
-        return max(array_map(fn(Node $node) => $node->getDistance(), $preceders)) - $this->getDistance() + $this->length;
+        return max(array_map(fn(Node $node) => $node->getDistance(), $preceders)) - $this->getDistance() + $effectiveLength;
     }
 
     public function getCompletion(): int

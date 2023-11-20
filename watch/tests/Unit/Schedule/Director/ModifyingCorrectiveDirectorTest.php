@@ -71,17 +71,16 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
                 K-03          |  xxxx          | @ K-01
                 finish        ^                  # 2023-08-21
             '], ['
-                K-01          |   *****   |
-                K-02         +|  ******   |
-                K-03          |****       |
-                              ^             # 2023-08-21
+                K-01          |   ***** |
+                K-02         +|  ****** |
+                K-03          |****     |
+                              ^           # 2023-08-21
             ', '
-                finish-buffer |        ___| @ finish
-                K-01-buffer   |     ___   | @ finish-buffer
-                K-01          |*****      | @ K-01-buffer
-                K-02          |  xxxxxx   | @ finish-buffer
-                K-03-buffer   |      __   | @ finish-buffer
-                K-03          |  ****     | @ K-03-buffer
+                finish-buffer |      ___| @ finish
+                K-01          | xxxxx   | @ finish-buffer
+                K-02          |     *   | @ finish-buffer
+                K-03-buffer   |    __   | @ finish-buffer
+                K-03          |****     | @ K-03-buffer
                 finish        ^             # 2023-08-21
             '],
         ];
@@ -120,7 +119,7 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
                                           ^ # 2023-09-21
             ', '
                 finish-buffer |        ___| @ finish
-                K-01          |   *****   | @ finish-buffer
+                K-01          |       *   | @ finish-buffer
                 K-02          |  xxxxxx   | @ finish-buffer
                 K-03-buffer   |      __   | @ finish-buffer
                 K-03          |  ****     | @ K-03-buffer
