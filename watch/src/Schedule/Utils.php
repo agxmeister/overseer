@@ -115,9 +115,9 @@ class Utils
     {
         $nodeLateDays = (
             !$node->getAttribute('isCompleted') &&
-            $node->getAttribute('end') < $now->format('Y-m-d')
+            $node->getAttribute('end') <= $now->format('Y-m-d')
         )
-            ? $now->diff(new \DateTimeImmutable($node->getAttribute('end')))->format('%a') - 1
+            ? $now->diff(new \DateTimeImmutable($node->getAttribute('end')))->format('%a')
             : 0;
         return max([$nodeLateDays, ...array_map(
             fn(int $followerLateDays) => $followerLateDays + $nodeLateDays,

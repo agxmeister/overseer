@@ -176,13 +176,10 @@ trait AbleToBuild
     {
         foreach ($buffers as $buffer) {
             $maxPrecederEndDate = new \DateTimeImmutable(array_reduce(
-                array_filter(
-                    $buffer->getPreceders(),
-                    fn(Node $node) => !$node->getAttribute('isIgnored', false),
-                ),
+                $buffer->getPreceders(),
                 fn($acc, Node $node) => max($acc, $node->getAttribute('end')),
             ));
-            $buffer->setAttribute('begin', $maxPrecederEndDate->modify("1 day")->format("Y-m-d"));
+            $buffer->setAttribute('begin', $maxPrecederEndDate->format("Y-m-d"));
             $buffer->setAttribute('end', $maxPrecederEndDate->modify("{$buffer->getLength()} day")->format("Y-m-d"));
         }
     }
@@ -192,7 +189,7 @@ trait AbleToBuild
         $milestoneEndDate = (new \DateTimeImmutable(array_reduce(
             $milestone->getPreceders(),
             fn($acc, Node $node) => max($acc, $node->getAttribute('end')),
-        )))->modify("1 day");
+        )));
         $milestoneLength = Utils::getLongestSequence($milestone->getPreceders())->getLength(true);
         $milestone->setAttribute('begin', $milestoneEndDate->modify("-{$milestoneLength} day")->format("Y-m-d"));
         $milestone->setAttribute('end', $milestoneEndDate->format("Y-m-d"));

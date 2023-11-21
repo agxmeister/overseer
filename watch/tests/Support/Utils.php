@@ -22,8 +22,8 @@ class Utils
             $duration = strlen(trim($issueData[1]));
             $attributes = trim($issueData[2]);
             $isScheduled = in_array(trim($issueData[1])[0], ['*']);
-            $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1])) + 1;
-            $beginGap = $endGap + $duration - 1;
+            $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1]));
+            $beginGap = $endGap + $duration;
 
             $links = [...$links, ...self::getLinks($key, $attributes)];
 
@@ -80,22 +80,19 @@ class Utils
             $isCritical = in_array(trim($issueData[1])[0], ['x']);
             $isBuffer = in_array(trim($issueData[1])[0], ['_', '!']);
             $consumption = substr_count(trim($issueData[1]), '!');
-            $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1])) + 1;
-            $beginGap = $endGap + $duration - 1;
-            $nextGap = $endGap - 1;
+            $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1]));
+            $beginGap = $endGap + $duration;
 
             if ($isIssue) {
                 $schedule['issues'][] = [
                     'key' => $key,
                     'begin' => $isScheduled
                         ? $isIgnored
-                            ? $milestoneEndDate->modify("-{$nextGap} day")->format('Y-m-d')
+                            ? $milestoneEndDate->modify("-{$endGap} day")->format('Y-m-d')
                             : $milestoneEndDate->modify("-{$beginGap} day")->format('Y-m-d')
                         : null,
                     'end' => $isScheduled
-                        ? $isIgnored
-                            ? $milestoneEndDate->modify("-{$nextGap} day")->format('Y-m-d')
-                            : $milestoneEndDate->modify("-{$endGap} day")->format('Y-m-d')
+                        ? $milestoneEndDate->modify("-{$endGap} day")->format('Y-m-d')
                         : null,
                 ];
                 if ($isCritical) {

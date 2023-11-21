@@ -141,11 +141,7 @@ abstract class Node
 
     public function getCompletion(): int
     {
-        $length = $this->getLength();
-        if ($length < 1) {
-            return $this->getDistance();
-        }
-        return $this->getDistance() - $length + 1;
+        return $this->getDistance() - $this->getLength();
     }
 
     public function getSchedule(): array|string

@@ -22,11 +22,14 @@ readonly class Basic implements LimitStrategy
             $completingNodes = array_filter($nodes, fn(Node $node) => $this->isCompletingAt($node, $point));
             while (sizeof($ongoingNodes) > $this->limit) {
                 $longestNode = Utils::getLongestSequence($completingNodes, [Link::TYPE_SEQUENCE]);
+                if (is_null($longestNode)) {
+                    break;
+                }
                 $shortestNode = Utils::getShortestSequence(
                     array_filter($ongoingNodes, fn(Node $node) => $node->getName() !== $longestNode->getName()),
                     [Link::TYPE_SEQUENCE]
                 );
-                if (is_null($longestNode) || is_null($shortestNode)) {
+                if (is_null($shortestNode)) {
                     break;
                 }
                 $followers = $longestNode->getFollowers([Link::TYPE_SCHEDULE]);
@@ -41,11 +44,11 @@ readonly class Basic implements LimitStrategy
 
     private function isOngoingAt(Node $node, int $point): bool
     {
-        return $node->getCompletion() <= $point && $node->getDistance() >= $point;
+        return $node->getCompletion() < $point && $node->getDistance() >= $point;
     }
 
     private function isCompletingAt(Node $node, int $point): bool
     {
-        return $node->getCompletion() === $point;
+        return $node->getCompletion() + 1 === $point;
     }
 }

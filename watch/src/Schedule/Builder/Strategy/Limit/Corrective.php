@@ -22,6 +22,9 @@ readonly class Corrective implements LimitStrategy
             $ongoingNodes = array_filter($nodes, fn(Node $node) => $this->isOngoingAt($node, $point));
             while (sizeof($ongoingNodes) > $this->limit) {
                 $shortestNode = Utils::getShortestSequence($ongoingNodes, [Link::TYPE_SEQUENCE]);
+                if (is_null($shortestNode)) {
+                    break;
+                }
                 $longestNode = Utils::getLongestSequence(
                     array_filter(
                         array_filter(
@@ -32,7 +35,7 @@ readonly class Corrective implements LimitStrategy
                     ),
                     [Link::TYPE_SEQUENCE]
                 );
-                if (is_null($shortestNode) || is_null($longestNode)) {
+                if (is_null($longestNode)) {
                     break;
                 }
                 $followers = $shortestNode->getFollowers([Link::TYPE_SCHEDULE]);
@@ -57,6 +60,6 @@ readonly class Corrective implements LimitStrategy
 
     private function isOngoingAt(Node $node, int $point): bool
     {
-        return $node->getCompletion() <= $point && $node->getDistance() >= $point;
+        return $node->getCompletion() < $point && $node->getDistance() >= $point;
     }
 }

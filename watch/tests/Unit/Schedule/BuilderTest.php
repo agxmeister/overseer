@@ -44,7 +44,7 @@ class BuilderTest extends Unit
             [
                 'key' => 'K-02-buffer',
                 'begin' => '2023-09-15',
-                'end' => '2023-09-16',
+                'end' => '2023-09-17',
                 'consumption' => 0,
             ]
         ], $builder->release()[$builder::VOLUME_BUFFERS]);
