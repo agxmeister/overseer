@@ -2,7 +2,7 @@
 namespace Tests\Unit\Schedule;
 
 use Codeception\Test\Unit;
-use Tests\Support\Utils;
+use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\Preserving as PreservingBuilder;
 

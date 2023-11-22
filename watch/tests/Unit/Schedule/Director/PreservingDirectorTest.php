@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Unit\Schedule\Director;
 
-use Tests\Support\Utils;
+use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\Preserving as PreservingBuilder;
 use Watch\Schedule\Director;

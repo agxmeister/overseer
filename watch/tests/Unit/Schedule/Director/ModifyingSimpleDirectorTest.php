@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Unit\Schedule\Director;
 
-use Tests\Support\Utils;
+use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\Modifying as ModifyingBuilder;
 use Watch\Schedule\Builder\Strategy\Limit\Simple as SimpleLimitStrategy;

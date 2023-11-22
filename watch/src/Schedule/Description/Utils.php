@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Support;
+namespace Watch\Schedule\Description;
 
 class Utils
 {
