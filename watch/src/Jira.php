@@ -64,6 +64,34 @@ readonly class Jira
         $this->getClient()->delete("issueLink/$linkId");
     }
 
+    public function createIssue($issue): void
+    {
+        $fields = [];
+        foreach (
+            array_filter(
+                $issue,
+                fn($key) => in_array($key, ['duration', 'begin', 'end']),
+                ARRAY_FILTER_USE_KEY
+            ) as $key => $value
+        ) {
+            $fields[$this->fieldsMapping($key)] = $value;
+        }
+        $this->getClient()->post("issue", [
+            'json' => [
+                'fields' => [
+                    'project' => [
+                        'key' => 'OD',
+                    ],
+                    'issuetype' => [
+                        'id' => '10001',
+                    ],
+                    'summary' => $issue['key'],
+                    ...$fields,
+                ],
+            ],
+        ]);
+    }
+
     private function convert($issue): array
     {
         $status = $issue->fields->status->name;
@@ -112,6 +140,7 @@ readonly class Jira
     private function fieldsMapping(string $field): string
     {
         $mapping = [
+            "duration" => "customfield_10038",
             "begin" => "customfield_10036",
             "end" => "customfield_10037",
         ];
@@ -140,12 +169,15 @@ readonly class Jira
 
     private function getClient(): Client
     {
-        return $this->client = $this->client ?? new Client([
-            'base_uri' => $this->apiUrl,
-            'headers' => [
-                'Authorization' => 'Basic ' . base64_encode($this->apiUsername . ':' . $this->apiToken),
-                'Content-Type' => 'application/json',
-            ],
-        ]);
+        if (!isset($this->client)) {
+            $this->client = new Client([
+                'base_uri' => $this->apiUrl,
+                'headers' => [
+                    'Authorization' => 'Basic ' . base64_encode($this->apiUsername . ':' . $this->apiToken),
+                    'Content-Type' => 'application/json',
+                ],
+            ]);
+        }
+        return $this->client;
     }
 }
