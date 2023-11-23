@@ -7,7 +7,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Watch\Jira;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\Modifying;
-use Watch\Schedule\Builder\Strategy\Limit\Basic;
+use Watch\Schedule\Builder\Strategy\Limit\Initiative;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate;
 use Watch\Schedule\Director;
 
@@ -24,7 +24,7 @@ class PutSchedule
             new Modifying(
                 new Context(new \DateTimeImmutable(date('Y-m-d'))),
                 $this->jira->getIssues(''),
-                new Basic(2),
+                new Initiative(2),
                 new ToDate(new \DateTimeImmutable($params->date)),
             )
         );

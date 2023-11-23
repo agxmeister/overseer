@@ -4,11 +4,11 @@ namespace Tests\Unit\Schedule\Director;
 use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\Modifying as ModifyingBuilder;
-use Watch\Schedule\Builder\Strategy\Limit\Basic as BasicLimitStrategy;
+use Watch\Schedule\Builder\Strategy\Limit\Initiative as InitiativeLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Director;
 
-class ModifyingBasicDirectorTest extends AbstractDirectorTest
+class ModifyingInitiativeDirectorTest extends AbstractDirectorTest
 {
     /**
      * @dataProvider dataBuild
@@ -19,7 +19,7 @@ class ModifyingBasicDirectorTest extends AbstractDirectorTest
             new ModifyingBuilder(
                 new Context(Utils::getNowDate($scheduleDescription)),
                 Utils::getIssues($issuesDescription),
-                new BasicLimitStrategy(2),
+                new InitiativeLimitStrategy(2),
                 new ToDateScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
             )
         );

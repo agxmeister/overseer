@@ -7,7 +7,7 @@ use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Node;
 use Watch\Schedule\Utils;
 
-readonly class Basic implements LimitStrategy
+readonly class Initiative implements LimitStrategy
 {
     public function __construct(private int $limit)
     {
