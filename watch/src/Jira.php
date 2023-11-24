@@ -76,19 +76,30 @@ readonly class Jira
         ) {
             $fields[$this->fieldsMapping($key)] = $value;
         }
-        $this->getClient()->post("issue", [
-            'json' => [
-                'fields' => [
-                    'project' => [
-                        'key' => 'OD',
-                    ],
-                    'issuetype' => [
-                        'id' => '10001',
-                    ],
-                    'summary' => $issue['key'],
-                    ...$fields,
+        $json = [
+            'fields' => [
+                'project' => [
+                    'key' => 'OD',
                 ],
+                'issuetype' => [
+                    'id' => '10001',
+                ],
+                'summary' => $issue['key'],
+                ...$fields,
             ],
+        ];
+        if ($issue['isStarted'] ?? false) {
+            $json['transition'] = [
+                'id' => '2',
+            ];
+        }
+        if ($issue['isCompleted'] ?? false) {
+            $json['transition'] = [
+                'id' => '31',
+            ];
+        }
+        $this->getClient()->post("issue", [
+            'json' => $json,
         ]);
     }
 
