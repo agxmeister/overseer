@@ -4,7 +4,7 @@ namespace Watch\Schedule;
 
 use Watch\Schedule\Builder\LimitStrategy;
 use Watch\Schedule\Model\FeedingBuffer;
-use Watch\Schedule\Model\Issue;
+use Watch\Schedule\Model\Task;
 use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Milestone;
 use Watch\Schedule\Model\Node;
@@ -77,7 +77,7 @@ class Utils
     {
         $nodes = [];
         foreach ($issues as $issue) {
-            $node = new Issue($issue['key'], $issue['duration'], [
+            $node = new Task($issue['key'], $issue['duration'], [
                 'begin' => $issue['begin'],
                 'end' => $issue['end'],
                 'isStarted' => $issue['isStarted'],

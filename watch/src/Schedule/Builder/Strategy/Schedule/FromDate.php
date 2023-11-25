@@ -3,7 +3,7 @@
 namespace Watch\Schedule\Builder\Strategy\Schedule;
 
 use Watch\Schedule\Builder\ScheduleStrategy;
-use Watch\Schedule\Model\Issue;
+use Watch\Schedule\Model\Task;
 use Watch\Schedule\Model\Node;
 use Watch\Schedule\Utils;
 
@@ -20,7 +20,7 @@ readonly class FromDate implements ScheduleStrategy
         foreach (
             array_filter(
                 $milestone->getPreceders(true),
-                fn(Node $node) => $node instanceof Issue,
+                fn(Node $node) => $node instanceof Task,
             ) as $node
         ) {
             $node->setAttribute('begin', $milestoneEndDate

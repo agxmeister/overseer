@@ -2,6 +2,6 @@
 
 namespace Watch\Schedule\Model;
 
-class Issue extends Node
+class Task extends Node
 {
 }

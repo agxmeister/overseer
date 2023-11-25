@@ -4,7 +4,7 @@ namespace Watch\Schedule\Builder;
 
 use Watch\Schedule\Model\Buffer;
 use Watch\Schedule\Model\FeedingBuffer;
-use Watch\Schedule\Model\Issue;
+use Watch\Schedule\Model\Task;
 use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Milestone;
 use Watch\Schedule\Model\MilestoneBuffer;
@@ -36,7 +36,7 @@ trait AbleToBuild
                     'begin' => $node->getAttribute('begin'),
                     'end' => $node->getAttribute('end'),
                 ],
-                array_filter($this->milestone->getPreceders(true), fn(Node $node) => $node instanceof Issue)
+                array_filter($this->milestone->getPreceders(true), fn(Node $node) => $node instanceof Task)
             )),
             self::VOLUME_BUFFERS => array_values(array_map(
                 fn(Node $node) => [
