@@ -4,6 +4,7 @@ namespace Watch\Action;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Watch\Issue;
 use Watch\Jira;
 
 class Tasks
@@ -16,7 +17,7 @@ class Tasks
     {
         $response->getBody()->write(json_encode(
             array_map(
-                fn($issue) => Utils::convertIssue($issue),
+                fn(Issue $issue) => Utils::convertIssue($issue),
                 $this->jira->getIssues('')
             ),
         ));

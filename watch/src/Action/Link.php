@@ -19,7 +19,7 @@ class Link
         $type = $args['type'];
         $issue = $this->jira->getIssue($from);
         $linkId = array_reduce(
-            $issue['links']['inward'],
+            $issue->links['inward'],
             fn($acc, $link) => $link['key'] === $to && $link['type'] === $type ? $link['id'] : $acc,
         );
         $this->jira->removeLink($linkId);

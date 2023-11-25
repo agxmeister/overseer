@@ -2,6 +2,7 @@
 
 namespace Watch\Schedule\Builder;
 
+use Watch\Issue;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Model\Buffer;
 use Watch\Schedule\Model\Node;
@@ -11,6 +12,10 @@ class Preserving implements Builder
 {
     use AbleToBuild;
 
+    /**
+     * @param Context $context
+     * @param Issue[] $issues
+     */
     public function __construct(protected readonly Context $context, protected readonly array $issues)
     {
     }

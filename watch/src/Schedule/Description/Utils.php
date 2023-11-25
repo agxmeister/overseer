@@ -2,8 +2,14 @@
 
 namespace Watch\Schedule\Description;
 
+use Watch\Issue;
+
 class Utils
 {
+    /**
+     * @param string $description
+     * @return Issue[]
+     */
     public static function getIssues(string $description): array
     {
         $lines = [...array_filter(
@@ -54,7 +60,7 @@ class Utils
             ];
         }
 
-        return array_values($issues);
+        return array_map(fn(array $issue) => new Issue($issue), array_values($issues));
     }
 
     public static function getSchedule(string $description): array

@@ -2,6 +2,7 @@
 
 namespace Watch\Schedule;
 
+use Watch\Issue;
 use Watch\Schedule\Builder\LimitStrategy;
 use Watch\Schedule\Model\FeedingBuffer;
 use Watch\Schedule\Model\Task;
@@ -73,31 +74,36 @@ class Utils
         );
     }
 
+    /**
+     * @param Issue[] $issues
+     * @param LimitStrategy|null $strategy
+     * @return Milestone
+     */
     static public function getMilestone(array $issues, LimitStrategy $strategy = null): Milestone
     {
         $nodes = [];
         foreach ($issues as $issue) {
-            $node = new Task($issue['key'], $issue['duration'], [
-                'begin' => $issue['begin'],
-                'end' => $issue['end'],
-                'isStarted' => $issue['isStarted'],
-                'isCompleted' => $issue['isCompleted'],
+            $node = new Task($issue->key, $issue->duration, [
+                'begin' => $issue->begin,
+                'end' => $issue->end,
+                'isStarted' => $issue->isStarted,
+                'isCompleted' => $issue->isCompleted,
             ]);
             $nodes[$node->getName()] = $node;
         }
 
         $milestone = new Milestone('finish');
         foreach ($issues as $issue) {
-            $inwards = $issue['links']['inward'];
+            $inwards = $issue->links['inward'];
             foreach ($inwards as $link) {
                 $follower = $nodes[$link['key']] ?? null;
-                $preceder = $nodes[$issue['key']] ?? null;
+                $preceder = $nodes[$issue->key] ?? null;
                 if (!is_null($preceder) && !is_null($follower)) {
                     $follower->follow($preceder, $link['type']);
                 }
             }
             if (empty($inwards)) {
-                $node = $nodes[$issue['key']] ?? null;
+                $node = $nodes[$issue->key] ?? null;
                 if (!is_null($nodes)) {
                     $milestone->follow($node, Link::TYPE_SCHEDULE);
                 }

@@ -3,6 +3,7 @@
 namespace Watch;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use Watch\Schedule\Model\Link;
 
 readonly class Jira
@@ -13,13 +14,23 @@ readonly class Jira
     {
     }
 
-    public function getIssue($jiraId): array
+    /**
+     * @param $jiraId
+     * @return Issue
+     * @throws GuzzleException
+     */
+    public function getIssue($jiraId): Issue
     {
         $response = $this->getClient()->get("issue/$jiraId");
         return $this->convert(json_decode($response->getBody()));
     }
 
-    public function getIssues($jql): mixed
+    /**
+     * @param $jql
+     * @return Issue[]
+     * @throws GuzzleException
+     */
+    public function getIssues($jql): array
     {
         $response = $this->getClient()->post('search', [
             'json' => [
@@ -103,7 +114,7 @@ readonly class Jira
         ]);
     }
 
-    private function convert($issue): array
+    private function convert($issue): Issue
     {
         $status = $issue->fields->status->name;
         $begin = $issue->fields->customfield_10036 ?? date('Y-m-d');
@@ -112,7 +123,7 @@ readonly class Jira
             $issue->fields->customfield_10037 >= $begin ?
                 $issue->fields->customfield_10037 :
                 $begin;
-        return [
+        return new Issue([
             'key' => $issue->key,
             'summary' => $issue->fields->summary,
             'status' => $status,
@@ -145,7 +156,7 @@ readonly class Jira
                     )
                 )),
             ],
-        ];
+        ]);
     }
 
     private function fieldsMapping(string $field): string
