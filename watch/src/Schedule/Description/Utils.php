@@ -2,7 +2,7 @@
 
 namespace Watch\Schedule\Description;
 
-use Watch\Issue;
+use Watch\Subject\Model\Issue;
 
 class Utils
 {

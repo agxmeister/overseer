@@ -2,7 +2,7 @@
 
 namespace Watch\Schedule\Builder;
 
-use Watch\Issue;
+use Watch\Subject\Model\Issue;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Model\Buffer;
 use Watch\Schedule\Model\Node;

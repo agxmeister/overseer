@@ -1,6 +1,6 @@
 <?php
 
-namespace Watch;
+namespace Watch\Subject\Model;
 
 readonly class Issue
 {

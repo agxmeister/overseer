@@ -2,13 +2,13 @@
 
 namespace Watch\Schedule;
 
-use Watch\Issue;
+use Watch\Subject\Model\Issue;
 use Watch\Schedule\Builder\LimitStrategy;
 use Watch\Schedule\Model\FeedingBuffer;
-use Watch\Schedule\Model\Task;
 use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Milestone;
 use Watch\Schedule\Model\Node;
+use Watch\Schedule\Model\Task;
 
 class Utils
 {

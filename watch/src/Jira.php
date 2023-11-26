@@ -4,6 +4,7 @@ namespace Watch;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use Watch\Subject\Model\Issue;
 use Watch\Schedule\Model\Link;
 
 readonly class Jira

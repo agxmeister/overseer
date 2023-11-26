@@ -4,7 +4,7 @@ namespace Watch\Action;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Watch\Issue;
+use Watch\Subject\Model\Issue;
 use Watch\Jira;
 
 class Tasks
