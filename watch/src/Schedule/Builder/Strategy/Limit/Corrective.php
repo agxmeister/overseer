@@ -15,7 +15,7 @@ readonly class Corrective implements LimitStrategy
 
     public function apply(Node $milestone): void
     {
-        $nodes = array_filter($milestone->getPreceders(true), fn(Node $node) => !$node->getAttribute('isCompleted'));
+        $nodes = array_filter($milestone->getPreceders(true), fn(Node $node) => !$node->getAttribute('completed'));
         $shift = 0;
         do {
             $point = $milestone->getDistance(true) - $shift;
@@ -29,7 +29,7 @@ readonly class Corrective implements LimitStrategy
                     array_filter(
                         array_filter(
                             $ongoingNodes,
-                            fn(Node $node) => !$node->getAttribute('isStarted')
+                            fn(Node $node) => !$node->getAttribute('started')
                         ),
                         fn(Node $node) => $node->getName() !== $shortestNode->getName()
                     ),
@@ -51,10 +51,10 @@ readonly class Corrective implements LimitStrategy
         foreach (
             array_filter(
                 $milestone->getPreceders(true),
-                fn(Node $node) => $node->getAttribute('isCompleted')
+                fn(Node $node) => $node->getAttribute('completed')
             ) as $node
         ) {
-            $node->setAttribute('isIgnored', true);
+            $node->setAttribute('ignored', true);
         }
     }
 

@@ -93,12 +93,12 @@ readonly class Jira
                 $this->fieldsMapping('end') => $issue->end,
             ],
         ];
-        if ($issue->isStarted ?? false) {
+        if ($issue->started ?? false) {
             $json['transition'] = [
                 'id' => '2',
             ];
         }
-        if ($issue->isCompleted ?? false) {
+        if ($issue->completed ?? false) {
             $json['transition'] = [
                 'id' => '31',
             ];
@@ -124,8 +124,8 @@ readonly class Jira
             'duration' => (int)$issue->fields->customfield_10038,
             'begin' => $begin,
             'end' => $end,
-            'isStarted' => $this->isStarted($status),
-            'isCompleted' => $this->isCompleted($status),
+            'started' => $this->isStarted($status),
+            'completed' => $this->isCompleted($status),
             'links' => [
                 ...array_values(array_map(
                     fn($link) => new Link(

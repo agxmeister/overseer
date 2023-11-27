@@ -105,13 +105,13 @@ trait AbleToBuild
                 $feedingChainLength = array_reduce(
                     array_filter(
                         $notCriticalPreceder->getPreceders(true),
-                        fn(Node $node) => !$node->getAttribute('isCompleted')
+                        fn(Node $node) => !$node->getAttribute('completed')
                     ),
                     fn(int $acc, Node $node) => max($acc, $node->getDistance()),
                     $notCriticalPreceder->getDistance()
                 )
                     - $notCriticalPreceder->getDistance()
-                    + !$notCriticalPreceder->getAttribute('isCompleted') ?
+                    + !$notCriticalPreceder->getAttribute('completed') ?
                             $notCriticalPreceder->getLength() :
                             0;
                 if ($feedingChainLength === 0) {

@@ -8,12 +8,12 @@ readonly class Issue
         public string|null $key = null,
         public string|null $summary = null,
         public string|null $status = null,
-        public int|null $duration = null,
+        public int|null    $duration = null,
         public string|null $begin = null,
         public string|null $end = null,
-        public bool|null $isStarted = null,
-        public bool|null $isCompleted = null,
-        public array|null $links = null,
+        public bool|null   $started = null,
+        public bool|null   $completed = null,
+        public array|null  $links = null,
     )
     {
     }

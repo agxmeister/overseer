@@ -86,8 +86,8 @@ class Utils
             $node = new Task($issue->key, $issue->duration, [
                 'begin' => $issue->begin,
                 'end' => $issue->end,
-                'isStarted' => $issue->isStarted,
-                'isCompleted' => $issue->isCompleted,
+                'started' => $issue->started,
+                'completed' => $issue->completed,
             ]);
             $nodes[$node->getName()] = $node;
         }
@@ -120,7 +120,7 @@ class Utils
     static public function getLateDays(Node $node, array $filter, \DateTimeImmutable $now): int
     {
         $nodeLateDays = (
-            !$node->getAttribute('isCompleted') &&
+            !$node->getAttribute('completed') &&
             $node->getAttribute('end') <= $now->format('Y-m-d')
         )
             ? $now->diff(new \DateTimeImmutable($node->getAttribute('end')))->format('%a')

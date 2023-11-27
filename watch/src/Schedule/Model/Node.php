@@ -128,7 +128,7 @@ abstract class Node
 
     public function getLength(bool $withPreceders = false, array $types = []): int
     {
-        $effectiveLength = $this->getAttribute('isIgnored', false) ? 0 : $this->length;
+        $effectiveLength = $this->getAttribute('ignored', false) ? 0 : $this->length;
         if (!$withPreceders) {
             return $effectiveLength;
         }
