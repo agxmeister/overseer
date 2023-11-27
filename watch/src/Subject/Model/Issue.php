@@ -4,23 +4,18 @@ namespace Watch\Subject\Model;
 
 readonly class Issue
 {
-    public string|null $key;
-    public string|null $summary;
-    public string|null $status;
-    public string|null $duration;
-    public string|null $begin;
-    public string|null $end;
-    public bool|null $isStarted;
-    public bool|null $isCompleted;
-    public array|null $links;
-
-    public function __construct(array $properties)
+    public function __construct(
+        public string|null $key = null,
+        public string|null $summary = null,
+        public string|null $status = null,
+        public string|null $duration = null,
+        public string|null $begin = null,
+        public string|null $end = null,
+        public bool|null $isStarted = null,
+        public bool|null $isCompleted = null,
+        public array|null $links = null,
+    )
     {
-        foreach ($properties as $name => $value) {
-            if (property_exists($this, $name)) {
-                $this->$name = $value;
-            }
-        }
     }
 
     /**

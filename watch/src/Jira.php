@@ -125,7 +125,7 @@ readonly class Jira
             $issue->fields->customfield_10037 >= $begin ?
                 $issue->fields->customfield_10037 :
                 $begin;
-        return new Issue([
+        return new Issue(...[
             'key' => $issue->key,
             'summary' => $issue->fields->summary,
             'status' => $status,

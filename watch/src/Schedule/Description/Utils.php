@@ -62,7 +62,7 @@ class Utils
             );
         }
 
-        return array_map(fn(array $issue) => new Issue($issue), array_values($issues));
+        return array_map(fn(array $issue) => new Issue(...$issue), array_values($issues));
     }
 
     public static function getSchedule(string $description): array
