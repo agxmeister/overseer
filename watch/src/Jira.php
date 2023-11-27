@@ -77,18 +77,8 @@ readonly class Jira
         $this->getClient()->delete("issueLink/$linkId");
     }
 
-    public function createIssue($issue): void
+    public function createIssue(Issue $issue): void
     {
-        $fields = [];
-        foreach (
-            array_filter(
-                $issue,
-                fn($key) => in_array($key, ['duration', 'begin', 'end']),
-                ARRAY_FILTER_USE_KEY
-            ) as $key => $value
-        ) {
-            $fields[$this->fieldsMapping($key)] = $value;
-        }
         $json = [
             'fields' => [
                 'project' => [
@@ -97,16 +87,18 @@ readonly class Jira
                 'issuetype' => [
                     'id' => '10001',
                 ],
-                'summary' => $issue['key'],
-                ...$fields,
+                'summary' => $issue->key,
+                $this->fieldsMapping('duration') => $issue->duration,
+                $this->fieldsMapping('begin') => $issue->begin,
+                $this->fieldsMapping('end') => $issue->end,
             ],
         ];
-        if ($issue['isStarted'] ?? false) {
+        if ($issue->isStarted ?? false) {
             $json['transition'] = [
                 'id' => '2',
             ];
         }
-        if ($issue['isCompleted'] ?? false) {
+        if ($issue->isCompleted ?? false) {
             $json['transition'] = [
                 'id' => '31',
             ];

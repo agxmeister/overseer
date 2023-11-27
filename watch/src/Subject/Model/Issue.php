@@ -8,7 +8,7 @@ readonly class Issue
         public string|null $key = null,
         public string|null $summary = null,
         public string|null $status = null,
-        public string|null $duration = null,
+        public int|null $duration = null,
         public string|null $begin = null,
         public string|null $end = null,
         public bool|null $isStarted = null,
