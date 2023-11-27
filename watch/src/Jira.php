@@ -5,7 +5,8 @@ namespace Watch;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Watch\Subject\Model\Issue;
-use Watch\Schedule\Model\Link;
+use Watch\Subject\Model\Link;
+use Watch\Schedule\Model\Link as ScheduleLink;
 
 readonly class Jira
 {
@@ -134,23 +135,25 @@ readonly class Jira
             'isStarted' => $this->isStarted($status),
             'isCompleted' => $this->isCompleted($status),
             'links' => [
-                'outward' => array_values(array_map(
-                    fn($link) => [
-                        'id' => $link->id,
-                        'key' => $link->outwardIssue->key,
-                        'type' => $this->getLinkTypeByName($link->type->name),
-                    ],
+                ...array_values(array_map(
+                    fn($link) => new Link(
+                        $link->id,
+                        $link->outwardIssue->key,
+                        $this->getLinkTypeByName($link->type->name),
+                        Link::ROLE_OUTWARD,
+                    ),
                     array_filter(
                         $issue->fields->issuelinks,
                         fn($link) => isset($link->outwardIssue)
                     )
                 )),
-                'inward' => array_values(array_map(
-                    fn($link) => [
-                        'id' => $link->id,
-                        'key' => $link->inwardIssue->key,
-                        'type' => $this->getLinkTypeByName($link->type->name),
-                    ],
+                ...array_values(array_map(
+                    fn($link) => new Link(
+                        $link->id,
+                        $link->inwardIssue->key,
+                        $this->getLinkTypeByName($link->type->name),
+                        Link::ROLE_INWARD,
+                    ),
                     array_filter(
                         $issue->fields->issuelinks,
                         fn($link) => isset($link->inwardIssue)
@@ -172,12 +175,12 @@ readonly class Jira
 
     private function getLinkTypeByName(string $name): string
     {
-        return $name === 'Depends' ? Link::TYPE_SEQUENCE : Link::TYPE_SCHEDULE;
+        return $name === 'Depends' ? ScheduleLink::TYPE_SEQUENCE : ScheduleLink::TYPE_SCHEDULE;
     }
 
     private function getLinkNameByType(string $type): string
     {
-        return $type === Link::TYPE_SEQUENCE ? 'Depends' : 'Follows';
+        return $type === ScheduleLink::TYPE_SEQUENCE ? 'Depends' : 'Follows';
     }
 
     private function isStarted(string $status): bool

@@ -94,12 +94,12 @@ class Utils
 
         $milestone = new Milestone('finish');
         foreach ($issues as $issue) {
-            $inwards = $issue->links['inward'];
+            $inwards = $issue->getInwardLinks();
             foreach ($inwards as $link) {
-                $follower = $nodes[$link['key']] ?? null;
+                $follower = $nodes[$link->key] ?? null;
                 $preceder = $nodes[$issue->key] ?? null;
                 if (!is_null($preceder) && !is_null($follower)) {
-                    $follower->follow($preceder, $link['type']);
+                    $follower->follow($preceder, $link->type);
                 }
             }
             if (empty($inwards)) {

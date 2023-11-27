@@ -22,4 +22,17 @@ readonly class Issue
             }
         }
     }
+
+    /**
+     * @return Link[]
+     */
+    public function getInwardLinks(): array
+    {
+        return array_filter($this->links, fn(Link $link) => $link->role === Link::ROLE_INWARD);
+    }
+
+    public function getOutwardLinks(): array
+    {
+        return array_filter($this->links, fn(Link $link) => $link->role === Link::ROLE_OUTWARD);
+    }
 }

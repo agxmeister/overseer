@@ -3,6 +3,7 @@
 namespace Watch\Schedule\Description;
 
 use Watch\Subject\Model\Issue;
+use Watch\Subject\Model\Link;
 
 class Utils
 {
@@ -40,24 +41,25 @@ class Utils
                 'end' => $isScheduled ? $milestoneDate->modify("-{$endGap} day")->format('Y-m-d') : null,
                 'isStarted' => $isStarted,
                 'isCompleted' => $isCompleted,
-                'links' => [
-                    'inward' => [],
-                    'outward' => [],
-                ]
+                'links' => [],
             ];
 
             return $issues;
         }, []);
 
         foreach($links as $link) {
-            $issues[$link['from']]['links']['inward'][] = [
-                'key' => $link['to'],
-                'type' => $link['type'],
-            ];
-            $issues[$link['to']]['links']['outward'][] = [
-                'key' => $link['from'],
-                'type' => $link['type'],
-            ];
+            $issues[$link['from']]['links'][] = new Link(
+                0,
+                $link['to'],
+                $link['type'],
+                Link::ROLE_INWARD,
+            );
+            $issues[$link['to']]['links'][] = new Link(
+                0,
+                $link['from'],
+                $link['type'],
+                Link::ROLE_OUTWARD,
+            );
         }
 
         return array_map(fn(array $issue) => new Issue($issue), array_values($issues));
