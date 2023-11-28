@@ -5,6 +5,7 @@ use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\Preserving as PreservingBuilder;
 use Watch\Schedule\Director;
+use Watch\Subject\Adapter;
 
 class PreservingDirectorTest extends AbstractDirectorTest
 {
@@ -15,7 +16,7 @@ class PreservingDirectorTest extends AbstractDirectorTest
     {
         $director = new Director(
             new PreservingBuilder(
-                new Context(Utils::getNowDate($scheduleDescription)),
+                new Context(Utils::getNowDate($scheduleDescription), new Adapter()),
                 Utils::getIssues($issuesDescription),
             )
         );

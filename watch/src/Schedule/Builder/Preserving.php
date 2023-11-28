@@ -22,7 +22,7 @@ class Preserving implements Builder
 
     public function addMilestone(): self
     {
-        $this->milestone = Utils::getMilestone($this->issues);
+        $this->milestone = Utils::getMilestone($this->issues, $this->context->adapter);
         return $this;
     }
 

@@ -32,7 +32,7 @@ class Utils
             $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1]));
             $beginGap = $endGap + $duration;
 
-            $links = [...$links, ...self::getLinks($key, $attributes)];
+            $links = [...$links, ...self::getLinks($key, $attributes, 'subject')];
 
             $issues[$key] = [
                 'key' => $key,
@@ -117,7 +117,7 @@ class Utils
                 ];
             }
 
-            $schedule['links'] = [...$schedule['links'], ...self::getLinks($key, $attributes)];
+            $schedule['links'] = [...$schedule['links'], ...self::getLinks($key, $attributes, 'schedule')];
 
             return $schedule;
         }, [
@@ -309,7 +309,7 @@ class Utils
         );
     }
 
-    private static function getLinks(string $from, string $attributes): array
+    private static function getLinks(string $from, string $attributes, string $model): array
     {
         $linkAttributes = array_filter(
             array_map(
@@ -323,7 +323,10 @@ class Utils
             foreach ($linkAttributes as $linkAttribute) {
                 $linkData = explode(' ', $linkAttribute);
                 $to = $linkData[1];
-                $type = $linkData[0] === '&' ? 'sequence' : 'schedule';
+                $type = $model === 'subject'
+                    ? ($linkData[0] === '&' ? 'Depends' : 'Follows')
+                    : ($linkData[0] === '&' ? 'sequence' : 'schedule')
+                ;
                 $links[] = [
                     'from' => $from,
                     'to' => $to,

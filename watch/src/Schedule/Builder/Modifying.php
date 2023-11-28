@@ -24,7 +24,7 @@ class Modifying implements Builder
 
     public function addMilestone(): self
     {
-        $this->milestone = Utils::getMilestone($this->issues, $this->limitStrategy);
+        $this->milestone = Utils::getMilestone($this->issues, $this->context->adapter, $this->limitStrategy);
         return $this;
     }
 

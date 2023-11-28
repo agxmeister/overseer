@@ -10,6 +10,7 @@ use Watch\Schedule\Builder\Modifying;
 use Watch\Schedule\Builder\Strategy\Limit\Initiative;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate;
 use Watch\Schedule\Director;
+use Watch\Subject\Adapter;
 
 class PutSchedule
 {
@@ -22,7 +23,7 @@ class PutSchedule
         $params = json_decode(file_get_contents('php://input'));
         $director = new Director(
             new Modifying(
-                new Context(new \DateTimeImmutable(date('Y-m-d'))),
+                new Context(new \DateTimeImmutable(date('Y-m-d')), new Adapter()),
                 $this->jira->getIssues(''),
                 new Initiative(2),
                 new ToDate(new \DateTimeImmutable($params->date)),

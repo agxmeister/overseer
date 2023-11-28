@@ -7,6 +7,7 @@ use Watch\Schedule\Builder\Modifying as ModifyingBuilder;
 use Watch\Schedule\Builder\Strategy\Limit\Simple as SimpleLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Director;
+use Watch\Subject\Adapter;
 
 class ModifyingSimpleDirectorTest extends AbstractDirectorTest
 {
@@ -17,7 +18,7 @@ class ModifyingSimpleDirectorTest extends AbstractDirectorTest
     {
         $director = new Director(
             new ModifyingBuilder(
-                new Context(Utils::getNowDate($scheduleDescription)),
+                new Context(Utils::getNowDate($scheduleDescription), new Adapter()),
                 Utils::getIssues($issuesDescription),
                 new SimpleLimitStrategy(),
                 new ToDateScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),

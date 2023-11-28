@@ -142,7 +142,7 @@ trait AbleToBuild
         $lateDays = Utils::getLateDays(
             array_reduce($criticalChain, fn($acc, Node $node) => $node),
             $criticalChain,
-            $this->context->getNow(),
+            $this->context->now,
         );
         $milestoneBuffer->setAttribute('consumption', min($milestoneBuffer->getLength(), $lateDays));
 
@@ -159,7 +159,7 @@ trait AbleToBuild
                         $criticalChain,
                         fn(Node $a, Node $b) => $a->getName() === $b->getName() ? 0 : ($a->getName() > $b->getName() ? 1 : -1),
                     ),
-                    $this->context->getNow()
+                    $this->context->now
                 ),
                 array_filter(
                     $feedingBuffer->getPreceders(true),

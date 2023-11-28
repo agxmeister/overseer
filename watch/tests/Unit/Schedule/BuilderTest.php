@@ -5,13 +5,14 @@ use Codeception\Test\Unit;
 use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\Preserving as PreservingBuilder;
+use Watch\Subject\Adapter;
 
 class BuilderTest extends Unit
 {
     public function testAddCriticalChain()
     {
         $builder = new PreservingBuilder(
-            new Context(new \DateTimeImmutable('2023-01-01')),
+            new Context(new \DateTimeImmutable('2023-01-01'), new Adapter()),
             Utils::getIssues('
                 K-01   |       xxxx|
                 K-02   |   ****    | & K-01
@@ -27,7 +28,7 @@ class BuilderTest extends Unit
     public function testAddFeedingBuffers()
     {
         $builder = new PreservingBuilder(
-            new Context(new \DateTimeImmutable('2023-01-01')),
+            new Context(new \DateTimeImmutable('2023-01-01'), new Adapter()),
             Utils::getIssues('
                 K-01   |       xxxx|
                 K-02   | ****      | & K-01

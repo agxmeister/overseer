@@ -8,6 +8,7 @@ use Watch\Jira;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\Preserving;
 use Watch\Schedule\Director;
+use Watch\Subject\Adapter;
 
 class GetSchedule
 {
@@ -18,7 +19,7 @@ class GetSchedule
     public function __invoke(Request $request, Response $response, $args): Response
     {
         $director = new Director(new Preserving(
-            new Context(new \DateTimeImmutable(date('Y-m-d'))),
+            new Context(new \DateTimeImmutable(date('Y-m-d')), new Adapter()),
             $this->jira->getIssues(''),
         ));
         $schedule = $director->build()->release();

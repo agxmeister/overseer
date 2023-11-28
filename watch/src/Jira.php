@@ -131,7 +131,7 @@ readonly class Jira
                     fn($link) => new Link(
                         $link->id,
                         $link->outwardIssue->key,
-                        $this->getLinkTypeByName($link->type->name),
+                        $link->type->name,
                         Link::ROLE_OUTWARD,
                     ),
                     array_filter(
@@ -143,7 +143,7 @@ readonly class Jira
                     fn($link) => new Link(
                         $link->id,
                         $link->inwardIssue->key,
-                        $this->getLinkTypeByName($link->type->name),
+                        $link->type->name,
                         Link::ROLE_INWARD,
                     ),
                     array_filter(
@@ -163,11 +163,6 @@ readonly class Jira
             "end" => "customfield_10037",
         ];
         return $mapping[$field];
-    }
-
-    private function getLinkTypeByName(string $name): string
-    {
-        return $name === 'Depends' ? ScheduleLink::TYPE_SEQUENCE : ScheduleLink::TYPE_SCHEDULE;
     }
 
     private function getLinkNameByType(string $type): string

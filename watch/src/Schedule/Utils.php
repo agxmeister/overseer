@@ -2,6 +2,7 @@
 
 namespace Watch\Schedule;
 
+use Watch\Subject\Adapter;
 use Watch\Subject\Model\Issue;
 use Watch\Schedule\Builder\LimitStrategy;
 use Watch\Schedule\Model\FeedingBuffer;
@@ -76,10 +77,11 @@ class Utils
 
     /**
      * @param Issue[] $issues
+     * @param Adapter $adapter
      * @param LimitStrategy|null $strategy
      * @return Milestone
      */
-    static public function getMilestone(array $issues, LimitStrategy $strategy = null): Milestone
+    static public function getMilestone(array $issues, Adapter $adapter, LimitStrategy $strategy = null): Milestone
     {
         $nodes = [];
         foreach ($issues as $issue) {
@@ -99,7 +101,7 @@ class Utils
                 $follower = $nodes[$link->key] ?? null;
                 $preceder = $nodes[$issue->key] ?? null;
                 if (!is_null($preceder) && !is_null($follower)) {
-                    $follower->follow($preceder, $link->type);
+                    $follower->follow($preceder, $adapter->getLinkType($link));
                 }
             }
             if (empty($inwards)) {
