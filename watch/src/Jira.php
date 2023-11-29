@@ -66,7 +66,7 @@ readonly class Jira
                     'key' => $inwardJiraId,
                 ],
                 'type' => [
-                    'name' => $this->getLinkNameByType($type),
+                    'name' => $type,
                 ],
             ],
         ]);
@@ -163,11 +163,6 @@ readonly class Jira
             "end" => "customfield_10037",
         ];
         return $mapping[$field];
-    }
-
-    private function getLinkNameByType(string $type): string
-    {
-        return $type === ScheduleLink::TYPE_SEQUENCE ? 'Depends' : 'Follows';
     }
 
     private function isStarted(string $status): bool

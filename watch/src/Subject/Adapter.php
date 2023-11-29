@@ -7,7 +7,7 @@ use Watch\Schedule\Model\Link as ScheduleLink;
 
 class Adapter
 {
-    public function getLinkType(SubjectLink $link)
+    public function getScheduleLinkTypeBySubjectLink(SubjectLink $link): string
     {
         return $link->type === 'Depends' ? ScheduleLink::TYPE_SEQUENCE : ScheduleLink::TYPE_SCHEDULE;
     }

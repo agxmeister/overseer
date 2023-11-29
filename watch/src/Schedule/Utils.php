@@ -101,7 +101,7 @@ class Utils
                 $follower = $nodes[$link->key] ?? null;
                 $preceder = $nodes[$issue->key] ?? null;
                 if (!is_null($preceder) && !is_null($follower)) {
-                    $follower->follow($preceder, $adapter->getLinkType($link));
+                    $follower->follow($preceder, $adapter->getScheduleLinkTypeBySubjectLink($link));
                 }
             }
             if (empty($inwards)) {
