@@ -76,7 +76,7 @@ readonly class Jira
         $this->getClient()->delete("issueLink/$linkId");
     }
 
-    public function createIssue(Issue $issue): void
+    public function createIssue(Issue $issue): string
     {
         $json = [
             'fields' => [
@@ -102,9 +102,9 @@ readonly class Jira
                 'id' => '31',
             ];
         }
-        $this->getClient()->post("issue", [
+        return json_decode($this->getClient()->post("issue", [
             'json' => $json,
-        ]);
+        ])->getBody())->key;
     }
 
     private function convert($issue): Issue
