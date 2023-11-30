@@ -6,7 +6,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Watch\Subject\Model\Issue;
 use Watch\Subject\Model\Link;
-use Watch\Schedule\Model\Link as ScheduleLink;
 
 readonly class Jira
 {
@@ -87,7 +86,7 @@ readonly class Jira
                 'issuetype' => [
                     'id' => '10001',
                 ],
-                'summary' => $issue->key,
+                'summary' => $issue->summary,
                 $this->fieldsMapping('duration') => $issue->duration,
                 $this->fieldsMapping('begin') => $issue->begin,
                 $this->fieldsMapping('end') => $issue->end,
