@@ -166,6 +166,19 @@ trait AbleToBuild
         return $this;
     }
 
+    public function addDates(): self
+    {
+        if (!is_null($this->scheduleStrategy)) {
+            $this->scheduleStrategy->apply($this->milestone);
+        }
+        $this->addBuffersDates(array_filter(
+            $this->milestone->getPreceders(true),
+            fn(Node $node) => $node instanceof Buffer,
+        ));
+        $this->addMilestoneDates($this->milestone);
+        return $this;
+    }
+
     public function addBuffersConsumption(): self
     {
         $criticalChain = Utils::getCriticalChain($this->milestone);
