@@ -6,7 +6,6 @@ use Watch\Subject\Model\Issue;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Model\Buffer;
 use Watch\Schedule\Model\Node;
-use Watch\Schedule\Utils;
 
 class Modifying implements Builder
 {
@@ -15,17 +14,16 @@ class Modifying implements Builder
     /**
      * @param Context $context
      * @param Issue[] $issues
-     * @param LimitStrategy $limitStrategy
-     * @param ScheduleStrategy $scheduleStrategy
+     * @param LimitStrategy|null $limitStrategy
+     * @param ScheduleStrategy|null $scheduleStrategy
      */
-    public function __construct(protected readonly Context $context, protected readonly array $issues, private readonly LimitStrategy $limitStrategy, private readonly ScheduleStrategy $scheduleStrategy)
+    public function __construct(
+        protected readonly Context $context,
+        protected readonly array $issues,
+        private readonly LimitStrategy|null $limitStrategy = null,
+        private readonly ScheduleStrategy|null $scheduleStrategy = null,
+    )
     {
-    }
-
-    public function addMilestone(): self
-    {
-        $this->milestone = Utils::getMilestone($this->issues, $this->context->adapter, $this->limitStrategy);
-        return $this;
     }
 
     public function addDates(): self

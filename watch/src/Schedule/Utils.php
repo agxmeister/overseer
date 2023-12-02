@@ -2,14 +2,8 @@
 
 namespace Watch\Schedule;
 
-use Watch\Subject\Adapter;
-use Watch\Subject\Model\Issue;
-use Watch\Schedule\Builder\LimitStrategy;
 use Watch\Schedule\Model\FeedingBuffer;
-use Watch\Schedule\Model\Link;
-use Watch\Schedule\Model\Milestone;
 use Watch\Schedule\Model\Node;
-use Watch\Schedule\Model\Task;
 
 class Utils
 {
@@ -73,50 +67,6 @@ class Utils
                 $acc
             )
         );
-    }
-
-    /**
-     * @param Issue[] $issues
-     * @param Adapter $adapter
-     * @param LimitStrategy|null $strategy
-     * @return Milestone
-     */
-    static public function getMilestone(array $issues, Adapter $adapter, LimitStrategy $strategy = null): Milestone
-    {
-        $nodes = [];
-        foreach ($issues as $issue) {
-            $node = new Task($issue->key, $issue->duration, [
-                'begin' => $issue->begin,
-                'end' => $issue->end,
-                'started' => $issue->started,
-                'completed' => $issue->completed,
-            ]);
-            $nodes[$node->getName()] = $node;
-        }
-
-        $milestone = new Milestone('finish');
-        foreach ($issues as $issue) {
-            $inwards = $issue->getInwardLinks();
-            foreach ($inwards as $link) {
-                $follower = $nodes[$link->key] ?? null;
-                $preceder = $nodes[$issue->key] ?? null;
-                if (!is_null($preceder) && !is_null($follower)) {
-                    $follower->follow($preceder, $adapter->getScheduleLinkTypeBySubjectLink($link));
-                }
-            }
-            if (empty($inwards)) {
-                $node = $nodes[$issue->key] ?? null;
-                if (!is_null($nodes)) {
-                    $milestone->follow($node, Link::TYPE_SCHEDULE);
-                }
-            }
-        }
-
-        if (!is_null($strategy)) {
-            $strategy->apply($milestone);
-        }
-
-        return $milestone;
     }
 
     static public function getLateDays(Node $node, array $filter, \DateTimeImmutable $now): int

@@ -83,6 +83,44 @@ trait AbleToBuild
         ];
     }
 
+    public function addMilestone(): self
+    {
+        $nodes = [];
+        foreach ($this->issues as $issue) {
+            $node = new Task($issue->key, $issue->duration, [
+                'begin' => $issue->begin,
+                'end' => $issue->end,
+                'started' => $issue->started,
+                'completed' => $issue->completed,
+            ]);
+            $nodes[$node->getName()] = $node;
+        }
+
+        $this->milestone = new Milestone('finish');
+        foreach ($this->issues as $issue) {
+            $inwards = $issue->getInwardLinks();
+            foreach ($inwards as $link) {
+                $follower = $nodes[$link->key] ?? null;
+                $preceder = $nodes[$issue->key] ?? null;
+                if (!is_null($preceder) && !is_null($follower)) {
+                    $follower->follow($preceder, $this->context->adapter->getScheduleLinkTypeBySubjectLink($link));
+                }
+            }
+            if (empty($inwards)) {
+                $node = $nodes[$issue->key] ?? null;
+                if (!is_null($nodes)) {
+                    $this->milestone->follow($node, Link::TYPE_SCHEDULE);
+                }
+            }
+        }
+
+        if (!is_null($this->limitStrategy)) {
+            $this->limitStrategy->apply($this->milestone);
+        }
+
+        return $this;
+    }
+
     public function addMilestoneBuffer(): self
     {
         $buffer = new MilestoneBuffer(
