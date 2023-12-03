@@ -1,9 +1,9 @@
 <?php
 namespace Tests\Unit\Schedule\Director;
 
+use Watch\Schedule\Builder;
 use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder\Context;
-use Watch\Schedule\Builder\Modifying as ModifyingBuilder;
 use Watch\Schedule\Builder\Strategy\Limit\Simple as SimpleLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Director;
@@ -17,7 +17,7 @@ class ModifyingSimpleDirectorTest extends AbstractDirectorTest
     public function testBuild($issuesDescription, $scheduleDescription)
     {
         $director = new Director(
-            new ModifyingBuilder(
+            new Builder(
                 new Context(Utils::getNowDate($scheduleDescription), new Adapter()),
                 Utils::getIssues($issuesDescription),
                 new SimpleLimitStrategy(),

@@ -2,8 +2,8 @@
 namespace Tests\Unit\Schedule\Director;
 
 use Watch\Schedule\Description\Utils;
+use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
-use Watch\Schedule\Builder\Modifying as ModifyingBuilder;
 use Watch\Schedule\Builder\Strategy\Limit\Corrective as CorrectiveLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\FromDate as FromDateScheduleStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
@@ -18,7 +18,7 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
     public function testBuildFromDate($issuesDescription, $scheduleDescription)
     {
         $director = new Director(
-            new ModifyingBuilder(
+            new Builder(
                 new Context(Utils::getNowDate($scheduleDescription), new Adapter()),
                 Utils::getIssues($issuesDescription),
                 new CorrectiveLimitStrategy(2),
@@ -34,7 +34,7 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
     public function testBuildToDate($issuesDescription, $scheduleDescription)
     {
         $director = new Director(
-            new ModifyingBuilder(
+            new Builder(
                 new Context(Utils::getNowDate($scheduleDescription), new Adapter()),
                 Utils::getIssues($issuesDescription),
                 new CorrectiveLimitStrategy(2),

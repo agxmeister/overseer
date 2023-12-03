@@ -5,8 +5,8 @@ namespace Watch\Action;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Watch\Jira;
+use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
-use Watch\Schedule\Builder\Modifying;
 use Watch\Schedule\Builder\Strategy\Limit\Initiative;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate;
 use Watch\Schedule\Director;
@@ -22,7 +22,7 @@ class PutSchedule
     {
         $params = json_decode(file_get_contents('php://input'));
         $director = new Director(
-            new Modifying(
+            new Builder(
                 new Context(new \DateTimeImmutable(date('Y-m-d')), new Adapter()),
                 $this->jira->getIssues(''),
                 new Initiative(2),
