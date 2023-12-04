@@ -8,6 +8,7 @@ use Watch\Schedule\Builder\Strategy\Limit\Corrective as CorrectiveLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\FromDate as FromDateScheduleStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Director;
+use Watch\Schedule\Formatter;
 use Watch\Subject\Adapter;
 
 class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
@@ -25,7 +26,11 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
                 new FromDateScheduleStrategy(Utils::getMilestoneBeginDate($scheduleDescription)),
             )
         );
-        $this->assertSchedule(Utils::getSchedule($scheduleDescription), $director->build()->release());
+        $adapter = new Formatter();
+        $this->assertSchedule(
+            Utils::getSchedule($scheduleDescription),
+            $adapter->getSchedule($director->build()->release())
+        );
     }
 
     /**
@@ -41,7 +46,11 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
                 new ToDateScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
             )
         );
-        $this->assertSchedule(Utils::getSchedule($scheduleDescription), $director->build()->release());
+        $adapter = new Formatter();
+        $this->assertSchedule(
+            Utils::getSchedule($scheduleDescription),
+            $adapter->getSchedule($director->build()->release())
+        );
     }
 
     protected function dataBuildFromDate(): array

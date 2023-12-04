@@ -10,6 +10,7 @@ use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\Strategy\Limit\Initiative;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate;
 use Watch\Schedule\Director;
+use Watch\Schedule\Formatter;
 use Watch\Subject\Adapter;
 
 class PutSchedule
@@ -29,8 +30,9 @@ class PutSchedule
                 new ToDate(new \DateTimeImmutable($params->date)),
             )
         );
-        $issues = $director->build()->release();
-        $response->getBody()->write(json_encode($issues));
+        $adapter = new Formatter();
+        $schedule = $adapter->getSchedule($director->build()->release());
+        $response->getBody()->write(json_encode($schedule));
         return $response
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Access-Control-Allow-Origin', '*');

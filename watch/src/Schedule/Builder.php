@@ -16,12 +16,6 @@ use Watch\Subject\Model\Issue;
 
 class Builder
 {
-    const VOLUME_ISSUES = 'issues';
-    const VOLUME_BUFFERS = 'buffers';
-    const VOLUME_MILESTONES = 'milestones';
-    const VOLUME_LINKS = 'links';
-    const VOLUME_CRITICAL_CHAIN = 'criticalChain';
-
     protected Milestone|null $milestone = null;
 
     /**
@@ -45,60 +39,9 @@ class Builder
         return $this;
     }
 
-    public function release(): array
+    public function release(): Milestone
     {
-        return [
-            self::VOLUME_ISSUES => array_values(array_map(
-                fn(Node $node) => [
-                    'key' => $node->getName(),
-                    'begin' => $node->getAttribute('begin'),
-                    'end' => $node->getAttribute('end'),
-                ],
-                array_filter($this->milestone->getPreceders(true), fn(Node $node) => $node instanceof Task)
-            )),
-            self::VOLUME_BUFFERS => array_values(array_map(
-                fn(Node $node) => [
-                    'key' => $node->getName(),
-                    'begin' => $node->getAttribute('begin'),
-                    'end' => $node->getAttribute('end'),
-                    'consumption' => $node->getAttribute('consumption'),
-                ],
-                array_filter($this->milestone->getPreceders(true), fn(Node $node) => $node instanceof Buffer)
-            )),
-            self::VOLUME_MILESTONES => array_values(array_map(
-                fn(Node $node) => [
-                    'key' => $node->getName(),
-                    'begin' => $node->getAttribute('begin'),
-                    'end' => $node->getAttribute('end'),
-                ],
-                array_filter([$this->milestone, ...$this->milestone->getPreceders(true)], fn(Node $node) => $node instanceof Milestone)
-            )),
-            self::VOLUME_LINKS => \Watch\Utils::getUnique(
-                array_reduce(
-                    $this->milestone->getPreceders(true),
-                    fn($acc, Node $node) => [
-                        ...$acc,
-                        ...array_map(fn(Link $link) => [
-                            'from' => $node->getName(),
-                            'to' => $link->getNode()->getName(),
-                            'type' => $link->getType(),
-                        ], $node->getFollowLinks()),
-                        ...array_map(fn(Link $link) => [
-                            'from' => $link->getNode()->getName(),
-                            'to' => $node->getName(),
-                            'type' => $link->getType(),
-                        ], $node->getPrecedeLinks()),
-                    ],
-                    []
-                ),
-                fn($link) => implode('-', array_values($link))
-            ),
-            self::VOLUME_CRITICAL_CHAIN => array_reduce(
-                array_filter(Utils::getCriticalChain($this->milestone), fn(Node $node) => !($node instanceof Buffer)),
-                fn($acc, Node $node) => [...$acc, $node->getName()],
-                []
-            ),
-        ];
+        return $this->milestone;
     }
 
     public function addMilestone(): self

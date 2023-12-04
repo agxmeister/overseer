@@ -7,6 +7,7 @@ use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\Strategy\Limit\Initiative as InitiativeLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Director;
+use Watch\Schedule\Formatter;
 use Watch\Subject\Adapter;
 
 class ModifyingInitiativeDirectorTest extends AbstractDirectorTest
@@ -24,7 +25,11 @@ class ModifyingInitiativeDirectorTest extends AbstractDirectorTest
                 new ToDateScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
             )
         );
-        $this->assertSchedule(Utils::getSchedule($scheduleDescription), $director->build()->release());
+        $adapter = new Formatter();
+        $this->assertSchedule(
+            Utils::getSchedule($scheduleDescription),
+            $adapter->getSchedule($director->build()->release())
+        );
     }
 
     protected function dataBuild(): array

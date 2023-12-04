@@ -5,6 +5,7 @@ use Codeception\Test\Unit;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder\Context;
+use Watch\Schedule\Formatter;
 use Watch\Subject\Adapter;
 
 class BuilderTest extends Unit
@@ -22,7 +23,8 @@ class BuilderTest extends Unit
         );
         $builder->run();
         $builder->addMilestone();
-        $this->assertEquals(['finish', 'K-01', 'K-03'], $builder->release()[$builder::VOLUME_CRITICAL_CHAIN]);
+        $adapter = new Formatter();
+        $this->assertEquals(['finish', 'K-01', 'K-03'], $adapter->getSchedule($builder->release())[$adapter::VOLUME_CRITICAL_CHAIN]);
     }
 
     public function testAddFeedingBuffers()
@@ -41,6 +43,7 @@ class BuilderTest extends Unit
             ->addMilestone()
             ->addFeedingBuffers()
             ->addDates();
+        $adapter = new Formatter();
         $this->assertEquals([
             [
                 'key' => 'K-02-buffer',
@@ -48,6 +51,6 @@ class BuilderTest extends Unit
                 'end' => '2023-09-17',
                 'consumption' => 0,
             ]
-        ], $builder->release()[$builder::VOLUME_BUFFERS]);
+        ], $adapter->getSchedule($builder->release())[$adapter::VOLUME_BUFFERS]);
     }
 }

@@ -8,6 +8,7 @@ use Watch\Jira;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Director;
+use Watch\Schedule\Formatter;
 use Watch\Subject\Adapter;
 
 class GetSchedule
@@ -24,7 +25,8 @@ class GetSchedule
                 $this->jira->getIssues(''),
             )
         );
-        $schedule = $director->build()->release();
+        $adapter = new Formatter();
+        $schedule = $adapter->getSchedule($director->build()->release());
         $response->getBody()->write(json_encode($schedule));
         return $response
             ->withHeader('Content-Type', 'application/json')

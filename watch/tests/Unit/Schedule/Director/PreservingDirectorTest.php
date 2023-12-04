@@ -5,6 +5,7 @@ use Watch\Schedule\Builder;
 use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Director;
+use Watch\Schedule\Formatter;
 use Watch\Subject\Adapter;
 
 class PreservingDirectorTest extends AbstractDirectorTest
@@ -20,7 +21,11 @@ class PreservingDirectorTest extends AbstractDirectorTest
                 Utils::getIssues($issuesDescription),
             )
         );
-        $this->assertSchedule(Utils::getSchedule($scheduleDescription), $director->build()->release());
+        $adapter = new Formatter();
+        $this->assertSchedule(
+            Utils::getSchedule($scheduleDescription),
+            $adapter->getSchedule($director->build()->release())
+        );
     }
 
     protected function dataBuild(): array
