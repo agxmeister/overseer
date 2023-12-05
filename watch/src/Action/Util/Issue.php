@@ -1,12 +1,12 @@
 <?php
 
-namespace Watch\Action;
+namespace Watch\Action\Util;
 
-use Watch\Subject\Model\Issue;
+use Watch\Subject\Model\Issue as SubjectIssue;
 
-class Utils
+class Issue
 {
-    public static function convertIssue(Issue $issue): array
+    public function convert(SubjectIssue $issue): array
     {
         return array_filter(
             (array)$issue,
