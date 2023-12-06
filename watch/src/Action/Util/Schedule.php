@@ -2,9 +2,9 @@
 
 namespace Watch\Action\Util;
 
+use Watch;
 use Watch\Schedule\Model\Buffer;
 use Watch\Schedule\Model\Link;
-use Watch\Schedule\Model\Milestone;
 use Watch\Schedule\Model\Node;
 use Watch\Schedule\Model\Task;
 use Watch\Schedule\Utils;
@@ -17,8 +17,9 @@ class Schedule
     const VOLUME_LINKS = 'links';
     const VOLUME_CRITICAL_CHAIN = 'criticalChain';
 
-    public function serialize(Milestone $milestone): array
+    public function serialize(Watch\Schedule $schedule): array
     {
+        $milestone = current($schedule->milestones);
         return [
             self::VOLUME_ISSUES => array_values(array_map(
                 fn(Node $node) => [
@@ -43,7 +44,7 @@ class Schedule
                     'begin' => $node->getAttribute('begin'),
                     'end' => $node->getAttribute('end'),
                 ],
-                array_filter([$milestone, ...$milestone->getPreceders(true)], fn(Node $node) => $node instanceof Milestone)
+                $schedule->milestones
             )),
             self::VOLUME_LINKS => \Watch\Utils::getUnique(
                 array_reduce(

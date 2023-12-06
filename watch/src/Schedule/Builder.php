@@ -2,6 +2,7 @@
 
 namespace Watch\Schedule;
 
+use Watch\Schedule;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\LimitStrategy;
 use Watch\Schedule\Builder\ScheduleStrategy;
@@ -39,9 +40,9 @@ class Builder
         return $this;
     }
 
-    public function release(): Milestone
+    public function release(): Schedule
     {
-        return $this->milestone;
+        return new Schedule([$this->milestone]);
     }
 
     public function addMilestone(): self
