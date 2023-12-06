@@ -4,16 +4,16 @@ namespace Watch\Action;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Watch\Action\Util\Schedule as Util;
 use Watch\Jira;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Director;
-use Watch\Schedule\Formatter;
 use Watch\Subject\Adapter;
 
-class GetSchedule
+readonly class GetSchedule
 {
-    public function __construct(private readonly Jira $jira)
+    public function __construct(private Jira $jira, private Util $util)
     {
     }
 
@@ -25,8 +25,7 @@ class GetSchedule
                 $this->jira->getIssues(''),
             )
         );
-        $adapter = new Formatter();
-        $schedule = $adapter->getSchedule($director->build()->release());
+        $schedule = $this->util->serialize($director->build()->release());
         $response->getBody()->write(json_encode($schedule));
         return $response
             ->withHeader('Content-Type', 'application/json')

@@ -1,13 +1,13 @@
 <?php
 namespace Tests\Unit\Schedule\Director;
 
+use Watch\Action\Util\Schedule as ScheduleUtil;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\Strategy\Limit\Simple as SimpleLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Director;
-use Watch\Schedule\Formatter;
 use Watch\Subject\Adapter;
 
 class ModifyingSimpleDirectorTest extends AbstractDirectorTest
@@ -25,10 +25,10 @@ class ModifyingSimpleDirectorTest extends AbstractDirectorTest
                 new ToDateScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
             )
         );
-        $adapter = new Formatter();
+        $scheduleUtil = new ScheduleUtil();
         $this->assertSchedule(
             Utils::getSchedule($scheduleDescription),
-            $adapter->getSchedule($director->build()->release())
+            $scheduleUtil->serialize($director->build()->release())
         );
     }
 

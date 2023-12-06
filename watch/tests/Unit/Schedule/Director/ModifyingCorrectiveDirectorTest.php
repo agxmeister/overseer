@@ -1,6 +1,7 @@
 <?php
 namespace Tests\Unit\Schedule\Director;
 
+use Watch\Action\Util\Schedule as ScheduleUtil;
 use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
@@ -8,7 +9,6 @@ use Watch\Schedule\Builder\Strategy\Limit\Corrective as CorrectiveLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\FromDate as FromDateScheduleStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Director;
-use Watch\Schedule\Formatter;
 use Watch\Subject\Adapter;
 
 class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
@@ -26,10 +26,10 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
                 new FromDateScheduleStrategy(Utils::getMilestoneBeginDate($scheduleDescription)),
             )
         );
-        $adapter = new Formatter();
+        $scheduleUtil = new ScheduleUtil();
         $this->assertSchedule(
             Utils::getSchedule($scheduleDescription),
-            $adapter->getSchedule($director->build()->release())
+            $scheduleUtil->serialize($director->build()->release())
         );
     }
 
@@ -46,10 +46,10 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
                 new ToDateScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
             )
         );
-        $adapter = new Formatter();
+        $scheduleUtil = new ScheduleUtil();
         $this->assertSchedule(
             Utils::getSchedule($scheduleDescription),
-            $adapter->getSchedule($director->build()->release())
+            $scheduleUtil->serialize($director->build()->release())
         );
     }
 

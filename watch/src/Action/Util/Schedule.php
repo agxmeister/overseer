@@ -1,14 +1,15 @@
 <?php
 
-namespace Watch\Schedule;
+namespace Watch\Action\Util;
 
 use Watch\Schedule\Model\Buffer;
 use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Milestone;
 use Watch\Schedule\Model\Node;
 use Watch\Schedule\Model\Task;
+use Watch\Schedule\Utils;
 
-class Formatter
+class Schedule
 {
     const VOLUME_ISSUES = 'issues';
     const VOLUME_BUFFERS = 'buffers';
@@ -16,7 +17,7 @@ class Formatter
     const VOLUME_LINKS = 'links';
     const VOLUME_CRITICAL_CHAIN = 'criticalChain';
 
-    public function getSchedule(Milestone $milestone): array
+    public function serialize(Milestone $milestone): array
     {
         return [
             self::VOLUME_ISSUES => array_values(array_map(

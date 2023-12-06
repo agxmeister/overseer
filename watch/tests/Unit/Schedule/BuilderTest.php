@@ -2,10 +2,10 @@
 namespace Tests\Unit\Schedule;
 
 use Codeception\Test\Unit;
+use Watch\Action\Util\Schedule as ScheduleUtil;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder\Context;
-use Watch\Schedule\Formatter;
 use Watch\Subject\Adapter;
 
 class BuilderTest extends Unit
@@ -23,8 +23,8 @@ class BuilderTest extends Unit
         );
         $builder->run();
         $builder->addMilestone();
-        $adapter = new Formatter();
-        $this->assertEquals(['finish', 'K-01', 'K-03'], $adapter->getSchedule($builder->release())[$adapter::VOLUME_CRITICAL_CHAIN]);
+        $scheduleUtil = new ScheduleUtil();
+        $this->assertEquals(['finish', 'K-01', 'K-03'], $scheduleUtil->serialize($builder->release())[ScheduleUtil::VOLUME_CRITICAL_CHAIN]);
     }
 
     public function testAddFeedingBuffers()
@@ -43,7 +43,7 @@ class BuilderTest extends Unit
             ->addMilestone()
             ->addFeedingBuffers()
             ->addDates();
-        $adapter = new Formatter();
+        $scheduleUtil = new ScheduleUtil();
         $this->assertEquals([
             [
                 'key' => 'K-02-buffer',
@@ -51,6 +51,6 @@ class BuilderTest extends Unit
                 'end' => '2023-09-17',
                 'consumption' => 0,
             ]
-        ], $adapter->getSchedule($builder->release())[$adapter::VOLUME_BUFFERS]);
+        ], $scheduleUtil->serialize($builder->release())[ScheduleUtil::VOLUME_BUFFERS]);
     }
 }
