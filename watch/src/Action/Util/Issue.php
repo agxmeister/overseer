@@ -6,7 +6,7 @@ use Watch\Subject\Model\Issue as SubjectIssue;
 
 class Issue
 {
-    public function convert(SubjectIssue $issue): array
+    public function serialize(SubjectIssue $issue): array
     {
         return array_filter(
             (array)$issue,
