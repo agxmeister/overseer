@@ -43,6 +43,7 @@ class Utils
                 'started' => $started,
                 'completed' => $completed,
                 'links' => [],
+                'milestone' => 'finish',
             ];
 
             return $issues;

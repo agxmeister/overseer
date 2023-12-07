@@ -58,7 +58,10 @@ class Builder
             $nodes[$node->getName()] = $node;
         }
 
-        $this->milestone = new Milestone('finish');
+        $this->milestone = new Milestone(array_reduce(
+            $this->issues,
+            fn($acc, Issue $issue) => $issue->milestone
+        ));
         foreach ($this->issues as $issue) {
             $inwards = $issue->getInwardLinks();
             foreach ($inwards as $link) {

@@ -9,6 +9,8 @@ use Watch\Subject\Model\Link;
 
 readonly class Jira
 {
+    const DEFAULT_MILESTONE = 'finish';
+
     private Client $client;
 
     public function __construct(private string $apiUrl, private string $apiUsername, private string $apiToken)
@@ -151,6 +153,7 @@ readonly class Jira
                     )
                 )),
             ],
+            'milestone' => self::DEFAULT_MILESTONE,
         ]);
     }
 
