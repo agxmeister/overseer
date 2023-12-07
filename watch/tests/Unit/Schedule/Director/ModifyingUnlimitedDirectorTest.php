@@ -21,6 +21,7 @@ class ModifyingUnlimitedDirectorTest extends AbstractDirectorTest
             new Builder(
                 new Context(Utils::getNowDate($scheduleDescription), new Adapter()),
                 Utils::getIssues($issuesDescription),
+                Utils::getMilestones($issuesDescription),
                 $this->makeEmpty(LimitStrategy::class),
                 new ToDateScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
             )

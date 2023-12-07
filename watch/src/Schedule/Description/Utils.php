@@ -67,6 +67,20 @@ class Utils
         return array_map(fn(array $issue) => new Issue(...$issue), array_values($issues));
     }
 
+    /**
+     * @param string $description
+     * @return string[]
+     */
+    public static function getMilestones(string $description): array
+    {
+        return array_unique(
+            array_map(
+                fn(Issue $issue) => $issue->milestone,
+                self::getIssues($description)
+            )
+        );
+    }
+
     public static function getSchedule(string $description): array
     {
         $lines = [...array_filter(

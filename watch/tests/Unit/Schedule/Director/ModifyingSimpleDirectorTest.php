@@ -21,6 +21,7 @@ class ModifyingSimpleDirectorTest extends AbstractDirectorTest
             new Builder(
                 new Context(Utils::getNowDate($scheduleDescription), new Adapter()),
                 Utils::getIssues($issuesDescription),
+                Utils::getMilestones($issuesDescription),
                 new SimpleLimitStrategy(),
                 new ToDateScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
             )

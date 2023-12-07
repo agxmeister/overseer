@@ -12,6 +12,7 @@ use Watch\Schedule\Builder\Strategy\Limit\Initiative;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate;
 use Watch\Schedule\Director;
 use Watch\Subject\Adapter;
+use Watch\Subject\Model\Issue;
 
 readonly class PutSchedule
 {
@@ -22,10 +23,16 @@ readonly class PutSchedule
     public function __invoke(Request $request, Response $response, $args): Response
     {
         $params = json_decode(file_get_contents('php://input'));
+        $issues = $this->jira->getIssues('');
         $director = new Director(
             new Builder(
                 new Context(new \DateTimeImmutable(date('Y-m-d')), new Adapter()),
-                $this->jira->getIssues(''),
+                $issues,
+                [array_reduce(
+                    $issues,
+                    fn(string $acc, Issue $issue) => $issue->milestone,
+                    '',
+                )],
                 new Initiative(2),
                 new ToDate(new \DateTimeImmutable($params->date)),
             )

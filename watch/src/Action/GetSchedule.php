@@ -10,6 +10,7 @@ use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Director;
 use Watch\Subject\Adapter;
+use Watch\Subject\Model\Issue;
 
 readonly class GetSchedule
 {
@@ -19,10 +20,16 @@ readonly class GetSchedule
 
     public function __invoke(Request $request, Response $response, $args): Response
     {
+        $issues = $this->jira->getIssues('');
         $director = new Director(
             new Builder(
                 new Context(new \DateTimeImmutable(date('Y-m-d')), new Adapter()),
-                $this->jira->getIssues(''),
+                $issues,
+                [array_reduce(
+                    $issues,
+                    fn(string $acc, Issue $issue) => $issue->milestone,
+                    '',
+                )],
             )
         );
         $schedule = $this->util->serialize($director->build()->release());

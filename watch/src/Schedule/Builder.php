@@ -22,12 +22,14 @@ class Builder
     /**
      * @param Context $context
      * @param Issue[] $issues
+     * @param string[] $milestones
      * @param LimitStrategy|null $limitStrategy
      * @param ScheduleStrategy|null $scheduleStrategy
      */
     public function __construct(
         protected readonly Context $context,
         protected readonly array $issues,
+        protected readonly array $milestones,
         private readonly LimitStrategy|null $limitStrategy = null,
         private readonly ScheduleStrategy|null $scheduleStrategy = null,
     )
@@ -60,7 +62,8 @@ class Builder
 
         $this->milestone = new Milestone(array_reduce(
             $this->issues,
-            fn($acc, Issue $issue) => $issue->milestone
+            fn(string $acc, Issue $issue) => $issue->milestone,
+            '',
         ));
         foreach ($this->issues as $issue) {
             $inwards = $issue->getInwardLinks();
