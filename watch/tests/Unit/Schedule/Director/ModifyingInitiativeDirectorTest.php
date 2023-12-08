@@ -8,7 +8,7 @@ use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\Strategy\Limit\Initiative as InitiativeLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Director;
-use Watch\Subject\Adapter;
+use Watch\Subject\Decorator\Factory;
 
 class ModifyingInitiativeDirectorTest extends AbstractDirectorTest
 {
@@ -19,7 +19,7 @@ class ModifyingInitiativeDirectorTest extends AbstractDirectorTest
     {
         $director = new Director(
             new Builder(
-                new Context(Utils::getNowDate($scheduleDescription), new Adapter()),
+                new Context(Utils::getNowDate($scheduleDescription), new Factory()),
                 Utils::getIssues($issuesDescription),
                 Utils::getMilestones($issuesDescription),
                 new InitiativeLimitStrategy(2),

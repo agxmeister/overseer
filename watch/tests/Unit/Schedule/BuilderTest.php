@@ -6,7 +6,7 @@ use Watch\Action\Util\Schedule as ScheduleUtil;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder\Context;
-use Watch\Subject\Adapter;
+use Watch\Subject\Decorator\Factory;
 
 class BuilderTest extends Unit
 {
@@ -19,7 +19,7 @@ class BuilderTest extends Unit
                                ^ # 2023-09-21
         ';
         $builder = new Builder(
-            new Context(new \DateTimeImmutable('2023-01-01'), new Adapter()),
+            new Context(new \DateTimeImmutable('2023-01-01'), new Factory()),
             Utils::getIssues($description),
             Utils::getMilestones($description),
         );
@@ -38,7 +38,7 @@ class BuilderTest extends Unit
                                ^ # 2023-09-21
         ';
         $builder = new Builder(
-            new Context(new \DateTimeImmutable('2023-01-01'), new Adapter()),
+            new Context(new \DateTimeImmutable('2023-01-01'), new Factory()),
             Utils::getIssues($description),
             Utils::getMilestones($description),
         );

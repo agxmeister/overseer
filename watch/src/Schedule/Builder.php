@@ -71,7 +71,7 @@ class Builder
                 $follower = $nodes[$link->key] ?? null;
                 $preceder = $nodes[$issue->key] ?? null;
                 if (!is_null($preceder) && !is_null($follower)) {
-                    $follower->follow($preceder, $this->context->adapter->getScheduleLinkTypeBySubjectLink($link));
+                    $follower->follow($preceder, $this->context->factory->getLink($link)->getType());
                 }
             }
             if (empty($inwards)) {

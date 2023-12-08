@@ -9,7 +9,7 @@ use Watch\Schedule\Builder\Strategy\Limit\Corrective as CorrectiveLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\FromDate as FromDateScheduleStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Director;
-use Watch\Subject\Adapter;
+use Watch\Subject\Decorator\Factory;
 
 class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
 {
@@ -20,7 +20,7 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
     {
         $director = new Director(
             new Builder(
-                new Context(Utils::getNowDate($scheduleDescription), new Adapter()),
+                new Context(Utils::getNowDate($scheduleDescription), new Factory()),
                 Utils::getIssues($issuesDescription),
                 Utils::getMilestones($issuesDescription),
                 new CorrectiveLimitStrategy(2),
@@ -41,7 +41,7 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
     {
         $director = new Director(
             new Builder(
-                new Context(Utils::getNowDate($scheduleDescription), new Adapter()),
+                new Context(Utils::getNowDate($scheduleDescription), new Factory()),
                 Utils::getIssues($issuesDescription),
                 Utils::getMilestones($issuesDescription),
                 new CorrectiveLimitStrategy(2),

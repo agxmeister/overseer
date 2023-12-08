@@ -8,7 +8,7 @@ use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\LimitStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Director;
-use Watch\Subject\Adapter;
+use Watch\Subject\Decorator\Factory;
 
 class ModifyingUnlimitedDirectorTest extends AbstractDirectorTest
 {
@@ -19,7 +19,7 @@ class ModifyingUnlimitedDirectorTest extends AbstractDirectorTest
     {
         $director = new Director(
             new Builder(
-                new Context(Utils::getNowDate($scheduleDescription), new Adapter()),
+                new Context(Utils::getNowDate($scheduleDescription), new Factory()),
                 Utils::getIssues($issuesDescription),
                 Utils::getMilestones($issuesDescription),
                 $this->makeEmpty(LimitStrategy::class),

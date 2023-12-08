@@ -11,7 +11,7 @@ use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\Strategy\Limit\Initiative;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate;
 use Watch\Schedule\Director;
-use Watch\Subject\Adapter;
+use Watch\Subject\Decorator\Factory;
 use Watch\Subject\Model\Issue;
 
 readonly class PutSchedule
@@ -26,7 +26,7 @@ readonly class PutSchedule
         $issues = $this->jira->getIssues('');
         $director = new Director(
             new Builder(
-                new Context(new \DateTimeImmutable(date('Y-m-d')), new Adapter()),
+                new Context(new \DateTimeImmutable(date('Y-m-d')), new Factory()),
                 $issues,
                 [array_reduce(
                     $issues,

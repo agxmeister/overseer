@@ -9,7 +9,7 @@ use Watch\Jira;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Director;
-use Watch\Subject\Adapter;
+use Watch\Subject\Decorator\Factory;
 use Watch\Subject\Model\Issue;
 
 readonly class GetSchedule
@@ -23,7 +23,7 @@ readonly class GetSchedule
         $issues = $this->jira->getIssues('');
         $director = new Director(
             new Builder(
-                new Context(new \DateTimeImmutable(date('Y-m-d')), new Adapter()),
+                new Context(new \DateTimeImmutable(date('Y-m-d')), new Factory()),
                 $issues,
                 [array_reduce(
                     $issues,
