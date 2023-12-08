@@ -16,7 +16,7 @@ abstract class Node
      */
     private array $preceders = [];
 
-    public function __construct(protected readonly string $name, private readonly int $length, private array $attributes = [])
+    public function __construct(protected readonly string $name, private readonly int $length = 0, private array $attributes = [])
     {
     }
 
