@@ -16,7 +16,7 @@ use Watch\Subject\Model\Issue;
 
 readonly class PutSchedule
 {
-    public function __construct(private Jira $jira, private Util $util)
+    public function __construct(private Jira $jira, private Factory $factory, private Util $util)
     {
     }
 
@@ -26,7 +26,7 @@ readonly class PutSchedule
         $issues = $this->jira->getIssues('');
         $director = new Director(
             new Builder(
-                new Context(new \DateTimeImmutable(date('Y-m-d')), new Factory()),
+                new Context(new \DateTimeImmutable(date('Y-m-d')), $this->factory),
                 $issues,
                 [array_reduce(
                     $issues,
