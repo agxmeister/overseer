@@ -119,6 +119,7 @@ readonly class Jira
                 $issue->fields->customfield_10037 :
                 $begin;
         return new Issue(...[
+            'id' => $issue->id,
             'key' => $issue->key,
             'summary' => $issue->fields->summary,
             'status' => $status,

@@ -5,6 +5,7 @@ namespace Watch\Subject\Model;
 readonly class Issue
 {
     public function __construct(
+        public int|null $id = null,
         public string|null $key = null,
         public string|null $summary = null,
         public string|null $status = null,
