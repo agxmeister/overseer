@@ -43,15 +43,29 @@ readonly class Jira
         return array_map(fn($issueRaw) => $this->convert($issueRaw), json_decode($response->getBody())->issues);
     }
 
-    public function setIssue($jiraId, $fields): void
+    public function setIssue(Issue $issue): void
     {
-        $jiraFields = [];
-        foreach ($fields as $key => $value) {
-            $jiraFields[$this->fieldsMapping($key)] = $value;
-        }
-        $this->getClient()->put("issue/$jiraId", [
+        $issueFieldMap = $this->getIssueFieldsMap();
+        $this->getClient()->put("issue/$issue->key", [
             'json' => [
-                'fields' => $jiraFields,
+                'fields' => array_filter(
+                    array_reduce(
+                        array_map(
+                            fn(string $subjectField, $jiraField) => [
+                                $jiraField,
+                                $issue->$subjectField ?? null,
+                            ],
+                            array_keys($issueFieldMap),
+                            array_values($issueFieldMap),
+                        ),
+                        fn($acc, $field) => [
+                            ...$acc,
+                            $field[0] => $field[1]
+                        ],
+                        [],
+                    ),
+                    fn($value) => !is_null($value),
+                ),
             ],
         ]);
     }
@@ -89,9 +103,9 @@ readonly class Jira
                     'id' => '10001',
                 ],
                 'summary' => $issue->summary,
-                $this->fieldsMapping('duration') => $issue->duration,
-                $this->fieldsMapping('begin') => $issue->begin,
-                $this->fieldsMapping('end') => $issue->end,
+                $this->getField('duration') => $issue->duration,
+                $this->getField('begin') => $issue->begin,
+                $this->getField('end') => $issue->end,
             ],
         ];
         if ($issue->started ?? false) {
@@ -158,14 +172,18 @@ readonly class Jira
         ]);
     }
 
-    private function fieldsMapping(string $field): string
+    private function getIssueFieldsMap(): array
     {
-        $mapping = [
+        return [
             "duration" => "customfield_10038",
             "begin" => "customfield_10036",
             "end" => "customfield_10037",
         ];
-        return $mapping[$field];
+    }
+
+    private function getField(string $field): string|null
+    {
+        return $this->getIssueFieldsMap()[$field] ?? null;
     }
 
     private function isStarted(string $status): bool
