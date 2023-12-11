@@ -7,6 +7,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Watch\Jira;
 use Watch\Schedule\Model\Task;
 use Watch\Schedule\Decorator\Factory;
+use Watch\Subject\Model\Issue;
+use Watch\Subject\Model\Link;
 
 class Links
 {
@@ -24,9 +26,14 @@ class Links
         $link = current($from->getFollowLinks());
 
         $this->jira->addLink(
-            $params->outwardTaskId,
-            $params->inwardTaskId,
-            $this->factory->getLink($link)->getType(),
+            new Issue(
+                key: $params->outwardTaskId,
+            ),
+            new Link(
+                key: $params->inwardTaskId,
+                type: $this->factory->getLink($link)->getType(),
+                role: Link::ROLE_INWARD,
+            )
         );
 
         return $response

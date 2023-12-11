@@ -26,21 +26,25 @@ readonly class CreateMilestone
             [],
         );
 
-        $links = array_values(array_unique(array_reduce(
+        $getIssue = fn(Issue $issue) => new Issue(
+            key: $keys[$issue->key]
+        );
+        $getLink = fn(Issue $issue, Link $link) => new Link(
+            key: $keys[$link->key],
+            type: $link->getType(),
+            role: $link->role,
+        );
+
+        array_reduce(
             $issues,
-            fn($acc, Issue $issue) => [...$acc, ...array_map(
-                fn(Link $link) => [
-                    'from' => $keys[$link->role === Link::ROLE_INWARD ? $issue->key : $link->key],
-                    'to' => $keys[$link->role === Link::ROLE_INWARD ? $link->key : $issue->key],
-                    'type' => $link->type,
-                ],
-                $issue->links
-            )],
-            []
-        ), SORT_REGULAR));
-        foreach ($links as $link) {
-            $this->jira->addLink($link['from'], $link['to'], $link['type']);
-        }
+            fn($acc, Issue $issue) => array_reduce(
+                $issue->links,
+                fn($acc, Link $link) => $this->jira->addLink(
+                    $getIssue($issue),
+                    $getLink($issue, $link)
+                ),
+            ),
+        );
 
         return $response
             ->withHeader('Content-Type', 'application/json')

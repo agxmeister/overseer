@@ -8,7 +8,13 @@ readonly class Link implements LinkDecorator
 {
     const ROLE_OUTWARD = 'outward';
     const ROLE_INWARD = 'inward';
-    public function __construct(public int $id, public string $key, public string $type, public string $role)
+
+    public function __construct(
+        public int|null $id = null,
+        public string|null $key = null,
+        public string|null $type = null,
+        public string|null $role = null,
+    )
     {
     }
 

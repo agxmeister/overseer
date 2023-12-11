@@ -52,18 +52,18 @@ readonly class Jira
         ]);
     }
 
-    public function addLink($outwardJiraId, $inwardJiraId, $type): void
+    public function addLink(Issue $issue, Link $link): void
     {
         $this->getClient()->post("issueLink", [
             'json' => [
                 'outwardIssue' => [
-                    'key' => $outwardJiraId,
+                    'key' => $link->role === Link::ROLE_INWARD ? $issue->key : $link->key,
                 ],
                 'inwardIssue' => [
-                    'key' => $inwardJiraId,
+                    'key' => $link->role === Link::ROLE_OUTWARD ? $issue->key : $link->key,
                 ],
                 'type' => [
-                    'name' => $type,
+                    'name' => $link->getType(),
                 ],
             ],
         ]);
