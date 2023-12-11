@@ -45,27 +45,9 @@ readonly class Jira
 
     public function setIssue(Issue $issue): void
     {
-        $issueFieldMap = $this->getIssueFieldsMap();
         $this->getClient()->put("issue/$issue->key", [
             'json' => [
-                'fields' => array_filter(
-                    array_reduce(
-                        array_map(
-                            fn(string $subjectField, $jiraField) => [
-                                $jiraField,
-                                $issue->$subjectField ?? null,
-                            ],
-                            array_keys($issueFieldMap),
-                            array_values($issueFieldMap),
-                        ),
-                        fn($acc, $field) => [
-                            ...$acc,
-                            $field[0] => $field[1]
-                        ],
-                        [],
-                    ),
-                    fn($value) => !is_null($value),
-                ),
+                'fields' => $this->getFields($issue),
             ],
         ]);
     }
@@ -94,32 +76,20 @@ readonly class Jira
 
     public function createIssue(Issue $issue): string
     {
-        $json = [
-            'fields' => [
-                'project' => [
-                    'key' => 'OD',
-                ],
-                'issuetype' => [
-                    'id' => '10001',
-                ],
-                'summary' => $issue->summary,
-                $this->getField('duration') => $issue->duration,
-                $this->getField('begin') => $issue->begin,
-                $this->getField('end') => $issue->end,
-            ],
-        ];
-        if ($issue->started ?? false) {
-            $json['transition'] = [
-                'id' => '2',
-            ];
-        }
-        if ($issue->completed ?? false) {
-            $json['transition'] = [
-                'id' => '31',
-            ];
-        }
         return json_decode($this->getClient()->post("issue", [
-            'json' => $json,
+            'json' => [
+                'fields' => [
+                    'project' => [
+                        'key' => 'OD',
+                    ],
+                    'issuetype' => [
+                        'id' => '10001',
+                    ],
+                    ...$this->getFields($issue)
+                ],
+                ...($issue->started ?? false ? ['transition' => ['id' => 2]] : []),
+                ...($issue->completed ?? false ? ['transition' => ['id' => 31]] : []),
+            ],
         ])->getBody())->key;
     }
 
@@ -175,15 +145,34 @@ readonly class Jira
     private function getIssueFieldsMap(): array
     {
         return [
+            "summary" => "summary",
             "duration" => "customfield_10038",
             "begin" => "customfield_10036",
             "end" => "customfield_10037",
         ];
     }
 
-    private function getField(string $field): string|null
+    private function getFields(Issue $issue): array
     {
-        return $this->getIssueFieldsMap()[$field] ?? null;
+        $issueFieldMap = $this->getIssueFieldsMap();
+        return array_filter(
+            array_reduce(
+                array_map(
+                    fn(string $subjectField, $jiraField) => [
+                        $jiraField,
+                        $issue->$subjectField ?? null,
+                    ],
+                    array_keys($issueFieldMap),
+                    array_values($issueFieldMap),
+                ),
+                fn($acc, $field) => [
+                    ...$acc,
+                    $field[0] => $field[1]
+                ],
+                [],
+            ),
+            fn($value) => !is_null($value),
+        );
     }
 
     private function isStarted(string $status): bool
