@@ -22,7 +22,7 @@ readonly class CreateMilestone
 
         $keys = array_reduce(
             $issues,
-            fn(array $acc, Issue $issue) => [...$acc, $issue->key => $this->jira->createIssue($issue)],
+            fn(array $acc, Issue $issue) => [...$acc, $issue->key => $this->jira->addIssue($issue)],
             [],
         );
 

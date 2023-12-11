@@ -52,6 +52,25 @@ readonly class Jira
         ]);
     }
 
+    public function addIssue(Issue $issue): string
+    {
+        return json_decode($this->getClient()->post("issue", [
+            'json' => [
+                'fields' => [
+                    'project' => [
+                        'key' => 'OD',
+                    ],
+                    'issuetype' => [
+                        'id' => '10001',
+                    ],
+                    ...$this->getFields($issue)
+                ],
+                ...($issue->started ?? false ? ['transition' => ['id' => 2]] : []),
+                ...($issue->completed ?? false ? ['transition' => ['id' => 31]] : []),
+            ],
+        ])->getBody())->key;
+    }
+
     public function addLink(Issue $issue, Link $link): void
     {
         $this->getClient()->post("issueLink", [
@@ -72,25 +91,6 @@ readonly class Jira
     public function removeLink($linkId): void
     {
         $this->getClient()->delete("issueLink/$linkId");
-    }
-
-    public function createIssue(Issue $issue): string
-    {
-        return json_decode($this->getClient()->post("issue", [
-            'json' => [
-                'fields' => [
-                    'project' => [
-                        'key' => 'OD',
-                    ],
-                    'issuetype' => [
-                        'id' => '10001',
-                    ],
-                    ...$this->getFields($issue)
-                ],
-                ...($issue->started ?? false ? ['transition' => ['id' => 2]] : []),
-                ...($issue->completed ?? false ? ['transition' => ['id' => 31]] : []),
-            ],
-        ])->getBody())->key;
     }
 
     private function convert($issue): Issue
