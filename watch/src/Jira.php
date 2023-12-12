@@ -11,6 +11,15 @@ readonly class Jira
 {
     const DEFAULT_MILESTONE = 'finish';
 
+    const STATUS_STARTED = ['In Progress'];
+    const STATUS_COMPLETED = ['Done'];
+    const FIELDS_MAP_ISSUE = [
+        "summary" => "summary",
+        "duration" => "customfield_10038",
+        "begin" => "customfield_10036",
+        "end" => "customfield_10037",
+    ];
+
     private Client $client;
 
     public function __construct(private string $apiUrl, private string $apiUsername, private string $apiToken)
@@ -25,7 +34,7 @@ readonly class Jira
     public function getIssue($jiraId): Issue
     {
         $response = $this->getClient()->get("issue/$jiraId");
-        return $this->convert(json_decode($response->getBody()));
+        return $this->getIssueByFields(json_decode($response->getBody()));
     }
 
     /**
@@ -40,14 +49,14 @@ readonly class Jira
                 'jql' => $jql,
             ],
         ]);
-        return array_map(fn($issueRaw) => $this->convert($issueRaw), json_decode($response->getBody())->issues);
+        return array_map(fn($issueRaw) => $this->getIssueByFields($issueRaw), json_decode($response->getBody())->issues);
     }
 
     public function setIssue(Issue $issue): void
     {
         $this->getClient()->put("issue/$issue->key", [
             'json' => [
-                'fields' => $this->getFields($issue),
+                'fields' => $this->getFieldsByIssue($issue),
             ],
         ]);
     }
@@ -63,7 +72,7 @@ readonly class Jira
                     'issuetype' => [
                         'id' => '10001',
                     ],
-                    ...$this->getFields($issue)
+                    ...$this->getFieldsByIssue($issue)
                 ],
                 ...($issue->started ?? false ? ['transition' => ['id' => 2]] : []),
                 ...($issue->completed ?? false ? ['transition' => ['id' => 31]] : []),
@@ -93,7 +102,7 @@ readonly class Jira
         $this->getClient()->delete("issueLink/$linkId");
     }
 
-    private function convert($issue): Issue
+    private function getIssueByFields($issue): Issue
     {
         $status = $issue->fields->status->name;
         $begin = $issue->fields->customfield_10036 ?? date('Y-m-d');
@@ -110,8 +119,8 @@ readonly class Jira
             'duration' => (int)$issue->fields->customfield_10038,
             'begin' => $begin,
             'end' => $end,
-            'started' => $this->isStarted($status),
-            'completed' => $this->isCompleted($status),
+            'started' => in_array($status, self::STATUS_STARTED),
+            'completed' => in_array($status, self::STATUS_COMPLETED),
             'links' => [
                 ...array_values(array_map(
                     fn($link) => new Link(
@@ -142,19 +151,8 @@ readonly class Jira
         ]);
     }
 
-    private function getIssueFieldsMap(): array
+    private function getFieldsByIssue(Issue $issue): array
     {
-        return [
-            "summary" => "summary",
-            "duration" => "customfield_10038",
-            "begin" => "customfield_10036",
-            "end" => "customfield_10037",
-        ];
-    }
-
-    private function getFields(Issue $issue): array
-    {
-        $issueFieldMap = $this->getIssueFieldsMap();
         return array_filter(
             array_reduce(
                 array_map(
@@ -162,8 +160,8 @@ readonly class Jira
                         $jiraField,
                         $issue->$subjectField ?? null,
                     ],
-                    array_keys($issueFieldMap),
-                    array_values($issueFieldMap),
+                    array_keys(self::FIELDS_MAP_ISSUE),
+                    array_values(self::FIELDS_MAP_ISSUE),
                 ),
                 fn($acc, $field) => [
                     ...$acc,
@@ -173,16 +171,6 @@ readonly class Jira
             ),
             fn($value) => !is_null($value),
         );
-    }
-
-    private function isStarted(string $status): bool
-    {
-        return $status === 'In Progress';
-    }
-
-    private function isCompleted(string $status): bool
-    {
-        return $status === 'Done';
     }
 
     private function getClient(): Client
