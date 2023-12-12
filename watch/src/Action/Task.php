@@ -6,7 +6,6 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Watch\Action\Util\Issue as Util;
 use Watch\Jira;
-use Watch\Subject\Model\Issue;
 
 readonly class Task
 {
@@ -18,7 +17,7 @@ readonly class Task
     {
         $taskId = $args['taskId'];
         $params = json_decode(file_get_contents('php://input'), true);
-        $issue = new Issue(...[
+        $issue = $this->util->deserialize([
             'key' => $taskId,
             ...$params,
         ]);

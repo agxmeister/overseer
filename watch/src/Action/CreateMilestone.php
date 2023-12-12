@@ -5,13 +5,15 @@ namespace Watch\Action;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Watch\Jira;
+use Watch\Action\Util\Issue as IssueUtil;
+use Watch\Action\Util\Link as LinkUtil;
 use Watch\Schedule\Description\Utils as DescriptionUtils;
 use Watch\Subject\Model\Issue;
 use Watch\Subject\Model\Link;
 
 readonly class CreateMilestone
 {
-    public function __construct(private Jira $jira)
+    public function __construct(private Jira $jira, private IssueUtil $issueUtil, private LinkUtil $linkUtil)
     {
     }
 
@@ -26,14 +28,14 @@ readonly class CreateMilestone
             [],
         );
 
-        $getIssue = fn(Issue $issue) => new Issue(
-            key: $keys[$issue->key]
-        );
-        $getLink = fn(Issue $issue, Link $link) => new Link(
-            key: $keys[$link->key],
-            type: $link->getType(),
-            role: $link->role,
-        );
+        $getIssue = fn(Issue $issue) => $this->issueUtil->deserialize([
+            'key' => $keys[$issue->key],
+        ]);
+        $getLink = fn(Issue $issue, Link $link) => $this->linkUtil->deserialize([
+            'key' => $keys[$link->key],
+            'type' => $link->getType(),
+            'role' => $link->role,
+        ]);
 
         array_reduce(
             $issues,

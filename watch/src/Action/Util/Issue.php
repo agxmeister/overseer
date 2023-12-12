@@ -14,4 +14,9 @@ class Issue
             ARRAY_FILTER_USE_KEY
         );
     }
+    
+    public function deserialize(array $attributes): SubjectIssue
+    {
+        return new SubjectIssue(...$attributes);
+    }
 }
