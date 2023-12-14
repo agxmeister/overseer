@@ -127,7 +127,7 @@ export default function Page()
         });
     }
 
-    const onLink = async (outwardTaskId: string, inwardTaskId: string, type: string = LinkType.Sequence) => {
+    const onLink = async (outwardTaskId: string, inwardTaskId: string, type: string = 'Depends') => {
         await mutatePlan(() => addLink(outwardTaskId, inwardTaskId, type),{
             populateCache: false,
         });

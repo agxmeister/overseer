@@ -61,6 +61,9 @@ readonly class Jira
         ]);
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function addIssue(Issue $issue): string
     {
         return json_decode($this->getClient()->post("issue", [
@@ -80,21 +83,44 @@ readonly class Jira
         ])->getBody())->key;
     }
 
-    public function addLink(Issue $issue, Link $link): void
+    /**
+     * @throws GuzzleException
+     */
+    public function addLink(int|string $fromIssueId, int|string $toIssueId, string $type): int
     {
         $this->getClient()->post("issueLink", [
             'json' => [
                 'outwardIssue' => [
-                    'key' => $link->role === Link::ROLE_INWARD ? $issue->key : $link->key,
+                    'id' => $fromIssueId,
+                    'key' => $fromIssueId,
                 ],
                 'inwardIssue' => [
-                    'key' => $link->role === Link::ROLE_OUTWARD ? $issue->key : $link->key,
+                    'id' => $toIssueId,
+                    'key' => $toIssueId,
                 ],
                 'type' => [
-                    'name' => $link->getType(),
+                    'name' => $type,
                 ],
             ],
         ]);
+
+        return array_reduce(
+            json_decode(
+                $this
+                    ->getClient()
+                    ->get("issue/$fromIssueId?fields=issuelinks")
+                    ->getBody()
+            )
+                ->fields
+                ->issuelinks,
+            fn($acc, $link) => (
+                isset($link->inwardIssue)
+                && ($link->inwardIssue->id === $toIssueId || $link->inwardIssue->key === $toIssueId)
+                && $link->type->name === $type
+            )
+                ? $link->id
+                : $acc
+        );
     }
 
     public function removeLink($linkId): void
