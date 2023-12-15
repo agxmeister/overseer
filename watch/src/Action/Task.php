@@ -16,12 +16,8 @@ readonly class Task
     public function __invoke(Request $request, Response $response, $args): Response
     {
         $taskId = $args['taskId'];
-        $params = json_decode(file_get_contents('php://input'), true);
-        $issue = $this->util->deserialize([
-            'key' => $taskId,
-            ...$params,
-        ]);
-        $this->jira->setIssue($issue);
+        $attributes = json_decode(file_get_contents('php://input'), true);
+        $this->jira->setIssue($taskId, $attributes);
         $response->getBody()->write(json_encode($this->util->serialize($this->jira->getIssue($taskId))));
         return $response
             ->withHeader('Content-Type', 'application/json')

@@ -52,11 +52,11 @@ readonly class Jira
         return array_map(fn($issueRaw) => $this->getIssueByFields($issueRaw), json_decode($response->getBody())->issues);
     }
 
-    public function setIssue(Issue $issue): void
+    public function setIssue(int|string $issueId, array $attributes): void
     {
-        $this->getClient()->put("issue/$issue->key", [
+        $this->getClient()->put("issue/$issueId", [
             'json' => [
-                'fields' => $this->getFieldsByIssue($issue),
+                'fields' => $this->getIssueFieldsByAttributes($attributes),
             ],
         ]);
     }
@@ -64,7 +64,7 @@ readonly class Jira
     /**
      * @throws GuzzleException
      */
-    public function addIssue(Issue $issue): string
+    public function addIssue(array $attributes): string
     {
         return json_decode($this->getClient()->post("issue", [
             'json' => [
@@ -75,12 +75,12 @@ readonly class Jira
                     'issuetype' => [
                         'id' => '10001',
                     ],
-                    ...$this->getFieldsByIssue($issue)
+                    ...$this->getIssueFieldsByAttributes($attributes)
                 ],
-                ...($issue->started ?? false ? ['transition' => ['id' => 2]] : []),
-                ...($issue->completed ?? false ? ['transition' => ['id' => 31]] : []),
+                ...($attributes['started'] ?? false ? ['transition' => ['id' => 2]] : []),
+                ...($attributes['completed'] ?? false ? ['transition' => ['id' => 31]] : []),
             ],
-        ])->getBody())->key;
+        ])->getBody())->id;
     }
 
     /**
@@ -145,6 +145,7 @@ readonly class Jira
             'duration' => (int)$issue->fields->customfield_10038,
             'begin' => $begin,
             'end' => $end,
+            'milestone' => self::DEFAULT_MILESTONE,
             'started' => in_array($status, self::STATUS_STARTED),
             'completed' => in_array($status, self::STATUS_COMPLETED),
             'links' => [
@@ -173,18 +174,17 @@ readonly class Jira
                     )
                 )),
             ],
-            'milestone' => self::DEFAULT_MILESTONE,
         ]);
     }
 
-    private function getFieldsByIssue(Issue $issue): array
+    private function getIssueFieldsByAttributes(array $attributes): array
     {
         return array_filter(
             array_reduce(
                 array_map(
                     fn(string $subjectField, $jiraField) => [
                         $jiraField,
-                        $issue->$subjectField ?? null,
+                        $attributes[$subjectField] ?? null,
                     ],
                     array_keys(self::FIELDS_MAP_ISSUE),
                     array_values(self::FIELDS_MAP_ISSUE),

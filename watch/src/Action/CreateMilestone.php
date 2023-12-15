@@ -20,9 +20,12 @@ readonly class CreateMilestone
         $description = file_get_contents('php://input');
         $issues = DescriptionUtils::getIssues($description);
 
-        $keys = array_reduce(
+        $issueIds = array_reduce(
             $issues,
-            fn(array $acc, Issue $issue) => [...$acc, $issue->key => $this->jira->addIssue($issue)],
+            fn(array $acc, Issue $issue) => [
+                ...$acc,
+                $issue->key => $this->jira->addIssue(get_object_vars($issue)),
+            ],
             [],
         );
 
@@ -31,8 +34,12 @@ readonly class CreateMilestone
             fn($acc, Issue $issue) => array_reduce(
                 $issue->links,
                 fn($acc, Link $link) => $this->jira->addLink(
-                    $link->role === Link::ROLE_INWARD ? $keys[$issue->key] : $keys[$link->key],
-                    $link->role === Link::ROLE_INWARD ? $keys[$link->key] : $keys[$issue->key],
+                    $link->role === Link::ROLE_INWARD
+                        ? $issueIds[$issue->key]
+                        : $issueIds[$link->key],
+                    $link->role === Link::ROLE_INWARD
+                        ? $issueIds[$link->key]
+                        : $issueIds[$issue->key],
                     $link->getType(),
                 ),
             ),
