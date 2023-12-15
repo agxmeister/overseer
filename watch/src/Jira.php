@@ -64,16 +64,16 @@ readonly class Jira
     /**
      * @throws GuzzleException
      */
-    public function addIssue(array $attributes): string
+    public function addIssue(int $project, int $type, array $attributes): string
     {
         return json_decode($this->getClient()->post("issue", [
             'json' => [
                 'fields' => [
                     'project' => [
-                        'key' => 'OD',
+                        'id' => $project,
                     ],
                     'issuetype' => [
-                        'id' => '10001',
+                        'id' => $type,
                     ],
                     ...$this->getIssueFieldsByAttributes($attributes)
                 ],
