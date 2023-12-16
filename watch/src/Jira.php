@@ -47,13 +47,13 @@ readonly class Jira
     }
 
     /**
-     * @param $jiraId
+     * @param string $issueId
      * @return Issue
      * @throws GuzzleException
      */
-    public function getIssue($jiraId): Issue
+    public function getIssue(string $issueId): Issue
     {
-        $response = $this->getClient()->get("issue/$jiraId");
+        $response = $this->getClient()->get("issue/$issueId");
         return $this->getIssueByFields(json_decode($response->getBody()));
     }
 
@@ -72,7 +72,7 @@ readonly class Jira
         return array_map(fn($issueRaw) => $this->getIssueByFields($issueRaw), json_decode($response->getBody())->issues);
     }
 
-    public function setIssue(int|string $issueId, array $attributes): void
+    public function setIssue(string $issueId, array $attributes): void
     {
         $this->getClient()->put("issue/$issueId", [
             'json' => [
@@ -98,7 +98,7 @@ readonly class Jira
     /**
      * @throws GuzzleException
      */
-    public function addLink(int|string $fromIssueId, int|string $toIssueId, string $type): int
+    public function addLink(string $fromIssueId, string $toIssueId, string $type): string
     {
         $this->getClient()->post("issueLink", [
             'json' => [
@@ -135,7 +135,7 @@ readonly class Jira
         );
     }
 
-    public function removeLink($linkId): void
+    public function removeLink(string $linkId): void
     {
         $this->getClient()->delete("issueLink/$linkId");
     }
