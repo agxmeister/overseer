@@ -37,6 +37,8 @@ class Utils
             $issues[$key] = [
                 'key' => $key,
                 'summary' => $key,
+                'project' => 10000,
+                'type' => 10001,
                 'duration' => $duration,
                 'begin' => $isScheduled ? $milestoneDate->modify("-{$beginGap} day")->format('Y-m-d') : null,
                 'end' => $isScheduled ? $milestoneDate->modify("-{$endGap} day")->format('Y-m-d') : null,

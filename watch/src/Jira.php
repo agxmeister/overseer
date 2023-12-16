@@ -14,10 +14,30 @@ readonly class Jira
     const STATUS_STARTED = ['In Progress'];
     const STATUS_COMPLETED = ['Done'];
     const FIELDS_MAP_ISSUE = [
-        "summary" => "summary",
-        "duration" => "customfield_10038",
-        "begin" => "customfield_10036",
-        "end" => "customfield_10037",
+        'project' => [
+            'name' => 'project',
+            'type' => 'reference',
+        ],
+        'type' => [
+            'name' => 'issuetype',
+            'type' => 'reference',
+        ],
+        'summary' => [
+            'name' => 'summary',
+            'type' => 'scalar',
+        ],
+        'duration' => [
+            'name' => 'customfield_10038',
+            'type' => 'scalar',
+        ],
+        'begin' => [
+            'name' => 'customfield_10036',
+            'type' => 'scalar',
+        ],
+        'end' => [
+            'name' => 'customfield_10037',
+            'type' => 'scalar',
+        ],
     ];
 
     private Client $client;
@@ -64,19 +84,11 @@ readonly class Jira
     /**
      * @throws GuzzleException
      */
-    public function addIssue(int $project, int $type, array $attributes): string
+    public function addIssue(array $attributes): string
     {
         return json_decode($this->getClient()->post("issue", [
             'json' => [
-                'fields' => [
-                    'project' => [
-                        'id' => $project,
-                    ],
-                    'issuetype' => [
-                        'id' => $type,
-                    ],
-                    ...$this->getIssueFieldsByAttributes($attributes)
-                ],
+                'fields' => $this->getIssueFieldsByAttributes($attributes),
                 ...($attributes['started'] ?? false ? ['transition' => ['id' => 2]] : []),
                 ...($attributes['completed'] ?? false ? ['transition' => ['id' => 31]] : []),
             ],
@@ -142,6 +154,8 @@ readonly class Jira
             'key' => $issue->key,
             'summary' => $issue->fields->summary,
             'status' => $status,
+            'project' => $issue->fields->project->id,
+            'type' => $issue->fields->issuetype->id,
             'duration' => (int)$issue->fields->customfield_10038,
             'begin' => $begin,
             'end' => $end,
@@ -179,24 +193,31 @@ readonly class Jira
 
     private function getIssueFieldsByAttributes(array $attributes): array
     {
-        return array_filter(
+        return
             array_reduce(
-                array_map(
-                    fn(string $subjectField, $jiraField) => [
-                        $jiraField,
-                        $attributes[$subjectField] ?? null,
-                    ],
-                    array_keys(self::FIELDS_MAP_ISSUE),
-                    array_values(self::FIELDS_MAP_ISSUE),
+                array_filter(
+                    array_map(
+                        fn(string $subjectField, $jiraField) => [
+                            'name' => $jiraField['name'],
+                            'type' => $jiraField['type'],
+                            'value' => $attributes[$subjectField] ?? null,
+                        ],
+                        array_keys(self::FIELDS_MAP_ISSUE),
+                        array_values(self::FIELDS_MAP_ISSUE),
+                    ),
+                    fn($field) => !is_null($field['value']),
                 ),
                 fn($acc, $field) => [
                     ...$acc,
-                    $field[0] => $field[1]
+                    $field['name'] => match ($field['type']) {
+                        'reference' => [
+                            'id' => $field['value'],
+                        ],
+                        default => $field['value'],
+                    },
                 ],
                 [],
-            ),
-            fn($value) => !is_null($value),
-        );
+            );
     }
 
     private function getClient(): Client

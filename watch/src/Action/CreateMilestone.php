@@ -24,7 +24,7 @@ readonly class CreateMilestone
             $issues,
             fn(array $acc, Issue $issue) => [
                 ...$acc,
-                $issue->key => $this->jira->addIssue(10000, 10001, get_object_vars($issue)),
+                $issue->key => $this->jira->addIssue(get_object_vars($issue)),
             ],
             [],
         );
