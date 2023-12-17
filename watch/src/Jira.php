@@ -60,11 +60,11 @@ readonly class Jira
     }
 
     /**
-     * @param $jql
+     * @param string $jql
      * @return Issue[]
      * @throws GuzzleException
      */
-    public function getIssues($jql): array
+    public function getIssues(string $jql): array
     {
         $response = $this->getClient()->post('search', [
             'json' => [
@@ -88,12 +88,34 @@ readonly class Jira
      */
     public function createIssue(array $attributes): string
     {
-        return json_decode($this->getClient()->post("issue", [
+        $issueId = json_decode($this->getClient()->post("issue", [
             'json' => [
                 'fields' => $this->getFieldsByIssueAttributes($attributes),
-                'transition' => $this->getTransitionByIssueAttributes($attributes),
             ],
         ])->getBody())->id;
+
+        $status = json_decode($this->getClient()->get("issue/$issueId?fields=status")->getBody())
+            ->fields->status->name;
+        if ($status === $attributes['status']) {
+            return $issueId;
+        }
+
+        $this->getClient()->post("issue/$issueId/transitions", [
+            'json' => [
+                'transition' => [
+                    'id' => array_reduce(
+                        array_filter(
+                            json_decode($this->getClient()->get("issue/$issueId/transitions")->getBody())
+                                ->transitions,
+                            fn($transition) => $transition->to->name === $attributes['status']
+                        ),
+                        fn($acc, $transition) => $transition->id
+                    ),
+                ],
+            ],
+        ]);
+
+        return $issueId;
     }
 
     /**
@@ -219,20 +241,6 @@ readonly class Jira
                 ],
                 [],
             );
-    }
-
-    private function getTransitionByIssueAttributes(array $attributes): array|null
-    {
-        if ($attributes['status'] === self::STATUS_NEW) {
-            return null;
-        }
-        return [
-            'id' => match($attributes['status']) {
-                self::STATUS_STARTED => '2',
-                self::STATUS_COMPLETED => '31',
-                default => '11',
-            },
-        ];
     }
 
     private function getClient(): Client
