@@ -11,8 +11,10 @@ readonly class Jira
 {
     const DEFAULT_MILESTONE = 'finish';
 
-    const STATUS_STARTED = ['In Progress'];
-    const STATUS_COMPLETED = ['Done'];
+    const STATUS_NEW = 'To Do';
+    const STATUS_STARTED = 'In Progress';
+    const STATUS_COMPLETED = 'Done';
+
     const FIELDS_MAP_ISSUE = [
         'project' => [
             'name' => 'project',
@@ -72,11 +74,11 @@ readonly class Jira
         return array_map(fn($issueRaw) => $this->getIssueByFields($issueRaw), json_decode($response->getBody())->issues);
     }
 
-    public function setIssue(string $issueId, array $attributes): void
+    public function updateIssue(string $issueId, array $attributes): void
     {
         $this->getClient()->put("issue/$issueId", [
             'json' => [
-                'fields' => $this->getIssueFieldsByAttributes($attributes),
+                'fields' => $this->getFieldsByIssueAttributes($attributes),
             ],
         ]);
     }
@@ -84,13 +86,12 @@ readonly class Jira
     /**
      * @throws GuzzleException
      */
-    public function addIssue(array $attributes): string
+    public function createIssue(array $attributes): string
     {
         return json_decode($this->getClient()->post("issue", [
             'json' => [
-                'fields' => $this->getIssueFieldsByAttributes($attributes),
-                ...($attributes['started'] ?? false ? ['transition' => ['id' => 2]] : []),
-                ...($attributes['completed'] ?? false ? ['transition' => ['id' => 31]] : []),
+                'fields' => $this->getFieldsByIssueAttributes($attributes),
+                'transition' => $this->getTransitionByIssueAttributes($attributes),
             ],
         ])->getBody())->id;
     }
@@ -160,8 +161,8 @@ readonly class Jira
             'begin' => $begin,
             'end' => $end,
             'milestone' => self::DEFAULT_MILESTONE,
-            'started' => in_array($status, self::STATUS_STARTED),
-            'completed' => in_array($status, self::STATUS_COMPLETED),
+            'started' => in_array($status, [self::STATUS_STARTED]),
+            'completed' => in_array($status, [self::STATUS_COMPLETED]),
             'links' => [
                 ...array_values(array_map(
                     fn($link) => new Link(
@@ -191,7 +192,7 @@ readonly class Jira
         ]);
     }
 
-    private function getIssueFieldsByAttributes(array $attributes): array
+    private function getFieldsByIssueAttributes(array $attributes): array
     {
         return
             array_reduce(
@@ -218,6 +219,20 @@ readonly class Jira
                 ],
                 [],
             );
+    }
+
+    private function getTransitionByIssueAttributes(array $attributes): array|null
+    {
+        if ($attributes['status'] === self::STATUS_NEW) {
+            return null;
+        }
+        return [
+            'id' => match($attributes['status']) {
+                self::STATUS_STARTED => '2',
+                self::STATUS_COMPLETED => '31',
+                default => '11',
+            },
+        ];
     }
 
     private function getClient(): Client
