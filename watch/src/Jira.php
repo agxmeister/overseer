@@ -74,46 +74,36 @@ readonly class Jira
         return array_map(fn($issueRaw) => $this->getIssueByFields($issueRaw), json_decode($response->getBody())->issues);
     }
 
-    public function updateIssue(string $issueId, array $attributes): void
+    /**
+     * @throws GuzzleException
+     */
+    public function updateIssue(string $issueId, array $issueAttributes): void
     {
         $this->getClient()->put("issue/$issueId", [
             'json' => [
-                'fields' => $this->getFieldsByIssueAttributes($attributes),
+                'fields' => $this->getFieldsByIssueAttributes($issueAttributes),
             ],
         ]);
+
+        if (isset($issueAttributes['status'])) {
+            $this->changeIssueStatus($issueId, $issueAttributes['status']);
+        }
     }
 
     /**
      * @throws GuzzleException
      */
-    public function createIssue(array $attributes): string
+    public function createIssue(array $issueAttributes): string
     {
         $issueId = json_decode($this->getClient()->post("issue", [
             'json' => [
-                'fields' => $this->getFieldsByIssueAttributes($attributes),
+                'fields' => $this->getFieldsByIssueAttributes($issueAttributes),
             ],
         ])->getBody())->id;
 
-        $status = json_decode($this->getClient()->get("issue/$issueId?fields=status")->getBody())
-            ->fields->status->name;
-        if ($status === $attributes['status']) {
-            return $issueId;
+        if (isset($issueAttributes['status'])) {
+            $this->changeIssueStatus($issueId, $issueAttributes['status']);
         }
-
-        $this->getClient()->post("issue/$issueId/transitions", [
-            'json' => [
-                'transition' => [
-                    'id' => array_reduce(
-                        array_filter(
-                            json_decode($this->getClient()->get("issue/$issueId/transitions")->getBody())
-                                ->transitions,
-                            fn($transition) => $transition->to->name === $attributes['status']
-                        ),
-                        fn($acc, $transition) => $transition->id
-                    ),
-                ],
-            ],
-        ]);
 
         return $issueId;
     }
@@ -161,6 +151,32 @@ readonly class Jira
     public function removeLink(string $linkId): void
     {
         $this->getClient()->delete("issueLink/$linkId");
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    private function changeIssueStatus(string $issueId, string $issueStatus): void
+    {
+        $issueData = json_decode(
+            $this->getClient()->get("issue/$issueId?fields=status&expand=transitions")->getBody()
+        );
+        if ($issueData->fields->status->name === $issueStatus) {
+            return;
+        }
+        $this->getClient()->post("issue/$issueId/transitions", [
+            'json' => [
+                'transition' => [
+                    'id' => array_reduce(
+                        array_filter(
+                            $issueData->transitions,
+                            fn($transition) => $transition->to->name === $issueStatus
+                        ),
+                        fn($acc, $transition) => $transition->id
+                    ),
+                ],
+            ],
+        ]);
     }
 
     private function getIssueByFields($issue): Issue
