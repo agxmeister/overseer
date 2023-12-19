@@ -23,7 +23,7 @@ readonly class Links
         $linkId = $this->jira->addLink(
             $params->outwardTaskId,
             $params->inwardTaskId,
-            $params->type
+            $params->type,
         );
 
         $response->getBody()->write(json_encode($linkId));

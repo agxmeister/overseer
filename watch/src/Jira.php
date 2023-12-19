@@ -111,7 +111,7 @@ readonly class Jira
     /**
      * @throws GuzzleException
      */
-    public function addLink(string $fromIssueId, string $toIssueId, string $type): string
+    public function addLink(string $fromIssueId, string $toIssueId, string $linkType): string
     {
         $this->getClient()->post("issueLink", [
             'json' => [
@@ -124,30 +124,27 @@ readonly class Jira
                     'key' => $toIssueId,
                 ],
                 'type' => [
-                    'name' => $type,
+                    'name' => $linkType,
                 ],
             ],
         ]);
 
         return array_reduce(
-            json_decode(
-                $this
-                    ->getClient()
-                    ->get("issue/$fromIssueId?fields=issuelinks")
-                    ->getBody()
-            )
+            json_decode($this->getClient()->get("issue/$fromIssueId?fields=issuelinks")->getBody())
                 ->fields
                 ->issuelinks,
             fn($acc, $link) => (
-                isset($link->inwardIssue)
-                && ($link->inwardIssue->id === $toIssueId || $link->inwardIssue->key === $toIssueId)
-                && $link->type->name === $type
+                ($link->inwardIssue->id === $toIssueId || $link->inwardIssue->key === $toIssueId)
+                && $link->type->name === $linkType
             )
                 ? $link->id
                 : $acc
         );
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function removeLink(string $linkId): void
     {
         $this->getClient()->delete("issueLink/$linkId");
