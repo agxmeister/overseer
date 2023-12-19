@@ -54,8 +54,8 @@ class Builder
             $node = new Task($issue->key, $issue->duration, [
                 'begin' => $issue->begin,
                 'end' => $issue->end,
-                'started' => $issue->started,
-                'completed' => $issue->completed,
+                'started' => $issue->status === 'In Progress',
+                'completed' => $issue->status === 'Done',
             ]);
             $nodes[$node->getName()] = $node;
         }

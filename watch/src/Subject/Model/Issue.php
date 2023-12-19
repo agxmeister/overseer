@@ -15,8 +15,6 @@ readonly class Issue
         public string|null $begin = null,
         public string|null $end = null,
         public string|null $milestone = null,
-        public bool|null   $started = null,
-        public bool|null   $completed = null,
         /* @var Link[]|null */
         public array|null  $links = null,
     )

@@ -11,10 +11,6 @@ readonly class Jira
 {
     const DEFAULT_MILESTONE = 'finish';
 
-    const STATUS_NEW = 'To Do';
-    const STATUS_STARTED = 'In Progress';
-    const STATUS_COMPLETED = 'Done';
-
     const FIELDS_MAP_ISSUE = [
         'project' => [
             'name' => 'project',
@@ -196,8 +192,6 @@ readonly class Jira
             'begin' => $begin,
             'end' => $end,
             'milestone' => self::DEFAULT_MILESTONE,
-            'started' => in_array($status, [self::STATUS_STARTED]),
-            'completed' => in_array($status, [self::STATUS_COMPLETED]),
             'links' => [
                 ...array_values(array_map(
                     fn($link) => new Link(
