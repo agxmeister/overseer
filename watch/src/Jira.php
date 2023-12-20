@@ -2,8 +2,8 @@
 
 namespace Watch;
 
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use Watch\Jira\Client;
 use Watch\Subject\Model\Issue;
 use Watch\Subject\Model\Link;
 
@@ -38,9 +38,7 @@ readonly class Jira
         ],
     ];
 
-    private Client $client;
-
-    public function __construct(private string $apiUrl, private string $apiUsername, private string $apiToken)
+    public function __construct(private Client $client, private Config $config)
     {
     }
 
@@ -51,7 +49,7 @@ readonly class Jira
      */
     public function getIssue(string $issueId): Issue
     {
-        $response = $this->getClient()->get("issue/$issueId");
+        $response = $this->client->http->get("issue/$issueId");
         return $this->getIssueByFields(json_decode($response->getBody()));
     }
 
@@ -62,7 +60,7 @@ readonly class Jira
      */
     public function getIssues(string $jql): array
     {
-        $response = $this->getClient()->post('search', [
+        $response = $this->client->http->post('search', [
             'json' => [
                 'jql' => $jql,
             ],
@@ -75,7 +73,7 @@ readonly class Jira
      */
     public function updateIssue(string $issueId, array $issueAttributes): void
     {
-        $this->getClient()->put("issue/$issueId", [
+        $this->client->http->put("issue/$issueId", [
             'json' => [
                 'fields' => $this->getFieldsByIssueAttributes($issueAttributes),
             ],
@@ -91,7 +89,7 @@ readonly class Jira
      */
     public function createIssue(array $issueAttributes): string
     {
-        $issueId = json_decode($this->getClient()->post("issue", [
+        $issueId = json_decode($this->client->http->post("issue", [
             'json' => [
                 'fields' => $this->getFieldsByIssueAttributes($issueAttributes),
             ],
@@ -109,7 +107,7 @@ readonly class Jira
      */
     public function addLink(string $fromIssueId, string $toIssueId, string $linkType): string
     {
-        $this->getClient()->post("issueLink", [
+        $this->client->http->post("issueLink", [
             'json' => [
                 'outwardIssue' => [
                     'id' => $fromIssueId,
@@ -126,7 +124,7 @@ readonly class Jira
         ]);
 
         return array_reduce(
-            json_decode($this->getClient()->get("issue/$fromIssueId?fields=issuelinks")->getBody())
+            json_decode($this->client->http->get("issue/$fromIssueId?fields=issuelinks")->getBody())
                 ->fields
                 ->issuelinks,
             fn($acc, $link) => (
@@ -143,7 +141,7 @@ readonly class Jira
      */
     public function removeLink(string $linkId): void
     {
-        $this->getClient()->delete("issueLink/$linkId");
+        $this->client->http->delete("issueLink/$linkId");
     }
 
     /**
@@ -152,12 +150,12 @@ readonly class Jira
     private function changeIssueStatus(string $issueId, string $issueStatus): void
     {
         $issueData = json_decode(
-            $this->getClient()->get("issue/$issueId?fields=status&expand=transitions")->getBody()
+            $this->client->http->get("issue/$issueId?fields=status&expand=transitions")->getBody()
         );
         if ($issueData->fields->status->name === $issueStatus) {
             return;
         }
-        $this->getClient()->post("issue/$issueId/transitions", [
+        $this->client->http->post("issue/$issueId/transitions", [
             'json' => [
                 'transition' => [
                     'id' => array_reduce(
@@ -248,19 +246,5 @@ readonly class Jira
                 ],
                 [],
             );
-    }
-
-    private function getClient(): Client
-    {
-        if (!isset($this->client)) {
-            $this->client = new Client([
-                'base_uri' => $this->apiUrl,
-                'headers' => [
-                    'Authorization' => 'Basic ' . base64_encode($this->apiUsername . ':' . $this->apiToken),
-                    'Content-Type' => 'application/json',
-                ],
-            ]);
-        }
-        return $this->client;
     }
 }
