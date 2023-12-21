@@ -11,33 +11,6 @@ readonly class Jira
 {
     const DEFAULT_MILESTONE = 'finish';
 
-    const FIELDS_MAP_ISSUE = [
-        'project' => [
-            'name' => 'project',
-            'type' => 'reference',
-        ],
-        'type' => [
-            'name' => 'issuetype',
-            'type' => 'reference',
-        ],
-        'summary' => [
-            'name' => 'summary',
-            'type' => 'scalar',
-        ],
-        'duration' => [
-            'name' => 'customfield_10038',
-            'type' => 'scalar',
-        ],
-        'begin' => [
-            'name' => 'customfield_10036',
-            'type' => 'scalar',
-        ],
-        'end' => [
-            'name' => 'customfield_10037',
-            'type' => 'scalar',
-        ],
-    ];
-
     public function __construct(private Client $client, private Config $config)
     {
     }
@@ -225,13 +198,14 @@ readonly class Jira
             array_reduce(
                 array_filter(
                     array_map(
-                        fn(string $subjectField, $jiraField) => [
-                            'name' => $jiraField['name'],
-                            'type' => $jiraField['type'],
-                            'value' => $attributes[$subjectField] ?? null,
+                        fn(string $subjectAttributeName, $jiraFieldName, $jiraFieldType) => [
+                            'name' => $jiraFieldName,
+                            'type' => $jiraFieldType,
+                            'value' => $attributes[$subjectAttributeName] ?? null,
                         ],
-                        array_keys(self::FIELDS_MAP_ISSUE),
-                        array_values(self::FIELDS_MAP_ISSUE),
+                        array_map(fn($field) => $field->attribute, $this->config->jira->fields),
+                        array_map(fn($field) => $field->name, $this->config->jira->fields),
+                        array_map(fn($field) => $field->type, $this->config->jira->fields),
                     ),
                     fn($field) => !is_null($field['value']),
                 ),

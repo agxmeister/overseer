@@ -1,3 +1,31 @@
 {
-    "test": "Hello, world!"
+    "jira": {
+        "fields": [
+            {
+                "attribute": "project",
+                "name": "project",
+                "type": "reference"
+            }, {
+                "attribute": "type",
+                "name": "issuetype",
+                "type": "reference"
+            }, {
+                "attribute": "summary",
+                "name": "summary",
+                "type": "scalar"
+            }, {
+                "attribute": "duration",
+                "name": "customfield_10038",
+                "type": "scalar"
+            }, {
+                "attribute": "begin",
+                "name": "customfield_10036",
+                "type": "scalar"
+            }, {
+                "attribute": "end",
+                "name": "customfield_10037",
+                "type": "scalar"
+            }
+        ]
+    }
 }
