@@ -44,7 +44,6 @@ class Utils
                 'begin' => $isScheduled ? $milestoneDate->modify("-{$beginGap} day")->format('Y-m-d') : null,
                 'end' => $isScheduled ? $milestoneDate->modify("-{$endGap} day")->format('Y-m-d') : null,
                 'links' => [],
-                'milestone' => 'finish',
             ];
 
             return $issues;
@@ -74,12 +73,7 @@ class Utils
      */
     public static function getMilestones(string $description): array
     {
-        return array_unique(
-            array_map(
-                fn(Issue $issue) => $issue->milestone,
-                self::getIssues($description)
-            )
-        );
+        return [self::getMilestoneName($description)];
     }
 
     public static function getSchedule(string $description): array

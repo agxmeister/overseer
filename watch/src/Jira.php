@@ -9,8 +9,6 @@ use Watch\Subject\Model\Link;
 
 readonly class Jira
 {
-    const DEFAULT_MILESTONE = 'finish';
-
     public function __construct(private Client $client, private Config $config)
     {
     }
@@ -162,7 +160,6 @@ readonly class Jira
             'duration' => (int)$issue->fields->customfield_10038,
             'begin' => $begin,
             'end' => $end,
-            'milestone' => self::DEFAULT_MILESTONE,
             'links' => [
                 ...array_values(array_map(
                     fn($link) => new Link(

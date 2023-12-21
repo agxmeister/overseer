@@ -93,7 +93,7 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
                 K-02         -|******   | @ finish-buffer
                 K-03-buffer   |    __   | @ finish-buffer
                 K-03          |****     | @ K-03-buffer
-                finish        ^             # 2023-08-21
+                finish        ^           # 2023-08-21
             '],
         ];
     }

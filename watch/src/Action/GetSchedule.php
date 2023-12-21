@@ -25,11 +25,7 @@ readonly class GetSchedule
             new Builder(
                 new Context(new \DateTimeImmutable(date('Y-m-d')), $this->factory),
                 $issues,
-                [array_reduce(
-                    $issues,
-                    fn(string $acc, Issue $issue) => $issue->milestone,
-                    '',
-                )],
+                ['finish'],
             )
         );
         $schedule = $this->util->serialize($director->build()->release());

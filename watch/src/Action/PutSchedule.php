@@ -28,11 +28,7 @@ readonly class PutSchedule
             new Builder(
                 new Context(new \DateTimeImmutable(date('Y-m-d')), $this->factory),
                 $issues,
-                [array_reduce(
-                    $issues,
-                    fn(string $acc, Issue $issue) => $issue->milestone,
-                    '',
-                )],
+                ['finish'],
                 new Initiative(2),
                 new ToDate(new \DateTimeImmutable($params->date)),
             )
