@@ -25,12 +25,21 @@ class Utils
             $issueData = explode('|', $line);
             $started = str_ends_with($issueData[0], '~');
             $completed = str_ends_with($issueData[0], '+');
-            $key = trim(rtrim($issueData[0], '~+'));
+            $name = trim(rtrim($issueData[0], '~+'));
             $duration = strlen(trim($issueData[1]));
             $attributes = trim($issueData[2]);
             $isScheduled = in_array(trim($issueData[1])[0], ['*']);
             $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1]));
             $beginGap = $endGap + $duration;
+
+            list($key, $project) = array_map(
+                fn($name, $value) => $value ?? match($name) {
+                    'project' => 'OD',
+                    default => null,
+                },
+                ['key', 'project'],
+                array_reverse(explode('/', $name)),
+            );
 
             $links = [...$links, ...self::getLinks($key, $attributes, 'subject')];
 
@@ -38,7 +47,7 @@ class Utils
                 'key' => $key,
                 'summary' => $key,
                 'status' => $started ? 'In Progress' : ($completed ? 'Done' : 'To Do'),
-                'project' => 'OD',
+                'project' => $project,
                 'type' => '10001',
                 'duration' => $duration,
                 'begin' => $isScheduled ? $milestoneDate->modify("-{$beginGap} day")->format('Y-m-d') : null,
