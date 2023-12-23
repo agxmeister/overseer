@@ -32,12 +32,13 @@ class Utils
             $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1]));
             $beginGap = $endGap + $duration;
 
-            list($key, $project) = array_map(
+            list($key, $type, $project) = array_map(
                 fn($name, $value) => $value ?? match($name) {
-                    'project' => 'OD',
+                    'project' => 'PRJ',
+                    'type' => 'T',
                     default => null,
                 },
-                ['key', 'project'],
+                ['key', 'type', 'project'],
                 array_reverse(explode('/', $name)),
             );
 
@@ -48,7 +49,7 @@ class Utils
                 'summary' => $key,
                 'status' => $started ? 'In Progress' : ($completed ? 'Done' : 'To Do'),
                 'project' => $project,
-                'type' => 'Task',
+                'type' => $type,
                 'duration' => $duration,
                 'begin' => $isScheduled ? $milestoneDate->modify("-{$beginGap} day")->format('Y-m-d') : null,
                 'end' => $isScheduled ? $milestoneDate->modify("-{$endGap} day")->format('Y-m-d') : null,
