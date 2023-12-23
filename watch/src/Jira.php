@@ -156,7 +156,7 @@ readonly class Jira
             'summary' => $issue->fields->summary,
             'status' => $status,
             'project' => $issue->fields->project->key,
-            'type' => $issue->fields->issuetype->id,
+            'type' => $issue->fields->issuetype->name,
             'duration' => (int)$issue->fields->customfield_10038,
             'begin' => $begin,
             'end' => $end,
@@ -211,6 +211,9 @@ readonly class Jira
                     $field['name'] => match ($field['type']) {
                         'key' => [
                             'key' => $field['value'],
+                        ],
+                        'name' => [
+                            'name' => $field['value'],
                         ],
                         'reference' => [
                             'id' => $field['value'],

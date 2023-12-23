@@ -8,7 +8,7 @@
             }, {
                 "attribute": "type",
                 "name": "issuetype",
-                "type": "reference"
+                "type": "name"
             }, {
                 "attribute": "summary",
                 "name": "summary",
