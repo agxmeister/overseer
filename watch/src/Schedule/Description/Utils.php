@@ -38,7 +38,7 @@ class Utils
                 'key' => $key,
                 'summary' => $key,
                 'status' => $started ? 'In Progress' : ($completed ? 'Done' : 'To Do'),
-                'project' => '10000',
+                'project' => 'OD',
                 'type' => '10001',
                 'duration' => $duration,
                 'begin' => $isScheduled ? $milestoneDate->modify("-{$beginGap} day")->format('Y-m-d') : null,
