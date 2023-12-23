@@ -4,27 +4,23 @@
             {
                 "attribute": "project",
                 "name": "project",
-                "type": "key"
+                "type": "ref/key"
             }, {
                 "attribute": "type",
                 "name": "issuetype",
-                "type": "name"
+                "type": "ref/name"
             }, {
                 "attribute": "summary",
-                "name": "summary",
-                "type": "scalar"
+                "name": "summary"
             }, {
                 "attribute": "duration",
-                "name": "customfield_10038",
-                "type": "scalar"
+                "name": "customfield_10038"
             }, {
                 "attribute": "begin",
-                "name": "customfield_10036",
-                "type": "scalar"
+                "name": "customfield_10036"
             }, {
                 "attribute": "end",
-                "name": "customfield_10037",
-                "type": "scalar"
+                "name": "customfield_10037"
             }
         ]
     }

@@ -202,20 +202,20 @@ readonly class Jira
                         ],
                         array_map(fn($field) => $field->attribute, $this->config->jira->fields),
                         array_map(fn($field) => $field->name, $this->config->jira->fields),
-                        array_map(fn($field) => $field->type, $this->config->jira->fields),
+                        array_map(fn($field) => $field->type ?? 'scalar', $this->config->jira->fields),
                     ),
                     fn($field) => !is_null($field['value']),
                 ),
                 fn($acc, $field) => [
                     ...$acc,
                     $field['name'] => match ($field['type']) {
-                        'key' => [
+                        'ref/key' => [
                             'key' => $field['value'],
                         ],
-                        'name' => [
+                        'ref/name' => [
                             'name' => $field['value'],
                         ],
-                        'reference' => [
+                        'ref/id' => [
                             'id' => $field['value'],
                         ],
                         default => $field['value'],
