@@ -11,7 +11,7 @@ class Utils
      * @param string $description
      * @return Issue[]
      */
-    public static function getIssues(string $description): array
+    public static function getIssues(string $description, callable $getAttributesByState = null): array
     {
         $lines = [...array_filter(
             array_map(fn($line) => trim($line), explode("\n", $description)),
@@ -21,43 +21,51 @@ class Utils
         $milestoneDate = self::getMilestoneEndDate($description);
 
         $links = [];
-        $issues = array_reduce(array_filter($lines, fn($line) => !str_contains($line, '^')), function($issues, $line) use ($milestoneDate, &$links) {
-            $issueData = explode('|', $line);
-            $started = str_ends_with($issueData[0], '~');
-            $completed = str_ends_with($issueData[0], '+');
-            $name = trim(rtrim($issueData[0], '~+'));
-            $duration = strlen(trim($issueData[1]));
-            $attributes = trim($issueData[2]);
-            $isScheduled = in_array(trim($issueData[1])[0], ['*']);
-            $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1]));
-            $beginGap = $endGap + $duration;
+        $issues = array_reduce(
+            array_filter($lines, fn($line) => !str_contains($line, '^')),
+            function($issues, $line) use ($getAttributesByState, $milestoneDate, &$links) {
+                $issueData = explode('|', $line);
+                $started = str_ends_with($issueData[0], '~');
+                $completed = str_ends_with($issueData[0], '+');
+                $name = trim(rtrim($issueData[0], '~+'));
+                $duration = strlen(trim($issueData[1]));
+                $attributes = trim($issueData[2]);
+                $isScheduled = in_array(trim($issueData[1])[0], ['*']);
+                $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1]));
+                $beginGap = $endGap + $duration;
 
-            list($key, $type, $project) = array_map(
-                fn($name, $value) => $value ?? match($name) {
-                    'project' => 'PRJ',
-                    'type' => 'T',
-                    default => null,
-                },
-                ['key', 'type', 'project'],
-                array_reverse(explode('/', $name)),
-            );
+                list($key, $type, $project) = array_map(
+                    fn($name, $value) => $value ?? match($name) {
+                        'project' => 'PRJ',
+                        'type' => 'T',
+                        default => null,
+                    },
+                    ['key', 'type', 'project'],
+                    array_reverse(explode('/', $name)),
+                );
 
-            $links = [...$links, ...self::getLinks($key, $attributes, 'subject')];
+                $links = [...$links, ...self::getLinks($key, $attributes, 'subject')];
 
-            $issues[$key] = [
-                'key' => $key,
-                'summary' => $key,
-                'status' => $started ? 'In Progress' : ($completed ? 'Done' : 'To Do'),
-                'project' => $project,
-                'type' => $type,
-                'duration' => $duration,
-                'begin' => $isScheduled ? $milestoneDate->modify("-{$beginGap} day")->format('Y-m-d') : null,
-                'end' => $isScheduled ? $milestoneDate->modify("-{$endGap} day")->format('Y-m-d') : null,
-                'links' => [],
-            ];
+                $issues[$key] = [
+                    'key' => $key,
+                    'summary' => $key,
+                    'status' => $started ? 'In Progress' : ($completed ? 'Done' : 'To Do'),
+                    'project' => $project,
+                    'type' => $type,
+                    'duration' => $duration,
+                    'begin' => $isScheduled ? $milestoneDate->modify("-{$beginGap} day")->format('Y-m-d') : null,
+                    'end' => $isScheduled ? $milestoneDate->modify("-{$endGap} day")->format('Y-m-d') : null,
+                    ...(!is_null($getAttributesByState)
+                        ? $getAttributesByState($started, $completed)
+                        : []
+                    ),
+                    'links' => [],
+                ];
 
-            return $issues;
-        }, []);
+                return $issues;
+            },
+            []
+        );
 
         foreach($links as $link) {
             $issues[$link['from']]['links'][] = new Link(

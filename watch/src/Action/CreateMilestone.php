@@ -18,7 +18,12 @@ readonly class CreateMilestone
     public function __invoke(Request $request, Response $response, $args): Response
     {
         $description = file_get_contents('php://input');
-        $issues = DescriptionUtils::getIssues($description);
+        $issues = DescriptionUtils::getIssues(
+            $description,
+            fn($started, $completed) => [
+                'status' => $started ? 'In Progress' : ($completed ? 'Done' : 'To Do'),
+            ]
+        );
 
         $issueIds = array_reduce(
             $issues,
