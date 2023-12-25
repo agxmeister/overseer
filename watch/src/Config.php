@@ -7,11 +7,8 @@ namespace Watch;
  */
 readonly class Config
 {
-    private object $data;
-
-    public function __construct($path)
+    public function __construct(private object $data)
     {
-        $this->data = json_decode(file_get_contents($path));
     }
 
     public function __get($name): mixed
