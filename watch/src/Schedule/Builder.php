@@ -6,6 +6,7 @@ use Watch\Schedule;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\LimitStrategy;
 use Watch\Schedule\Builder\ScheduleStrategy;
+use Watch\Schedule\Builder\StateStrategy;
 use Watch\Schedule\Model\Buffer;
 use Watch\Schedule\Model\FeedingBuffer;
 use Watch\Schedule\Model\Link;
@@ -25,6 +26,7 @@ class Builder
      * @param string[] $milestones
      * @param LimitStrategy|null $limitStrategy
      * @param ScheduleStrategy|null $scheduleStrategy
+     * @param StateStrategy|null $stateStrategy
      */
     public function __construct(
         protected readonly Context $context,
@@ -32,6 +34,7 @@ class Builder
         protected readonly array $milestones,
         private readonly LimitStrategy|null $limitStrategy = null,
         private readonly ScheduleStrategy|null $scheduleStrategy = null,
+        private readonly StateStrategy|null $stateStrategy = null,
     )
     {
     }
@@ -56,6 +59,7 @@ class Builder
                 'end' => $issue->end,
                 'started' => $issue->status === 'In Progress',
                 'completed' => $issue->status === 'Done',
+                ...(!is_null($this->stateStrategy) ? $this->stateStrategy->apply(get_object_vars($issue)) : [])
             ]);
             $nodes[$node->getName()] = $node;
         }

@@ -8,6 +8,7 @@ use Watch\Action\Util\Schedule as Util;
 use Watch\Jira;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
+use Watch\Schedule\Builder\Strategy\State\MapByStatus as MapByStatusStateStrategy;
 use Watch\Schedule\Director;
 use Watch\Subject\Decorator\Factory;
 use Watch\Subject\Model\Issue;
@@ -26,6 +27,7 @@ readonly class GetSchedule
                 new Context(new \DateTimeImmutable(date('Y-m-d')), $this->factory),
                 $issues,
                 ['finish'],
+                stateStrategy: new MapByStatusStateStrategy(),
             )
         );
         $schedule = $this->util->serialize($director->build()->release());

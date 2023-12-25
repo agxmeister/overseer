@@ -8,11 +8,11 @@ use Watch\Action\Util\Schedule as Util;
 use Watch\Jira;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
-use Watch\Schedule\Builder\Strategy\Limit\Initiative;
-use Watch\Schedule\Builder\Strategy\Schedule\ToDate;
+use Watch\Schedule\Builder\Strategy\Limit\Initiative as InitiativeLimitStrategy;
+use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
+use Watch\Schedule\Builder\Strategy\State\MapByStatus as MapByStatusStateStrategy;
 use Watch\Schedule\Director;
 use Watch\Subject\Decorator\Factory;
-use Watch\Subject\Model\Issue;
 
 readonly class PutSchedule
 {
@@ -29,8 +29,9 @@ readonly class PutSchedule
                 new Context(new \DateTimeImmutable(date('Y-m-d')), $this->factory),
                 $issues,
                 ['finish'],
-                new Initiative(2),
-                new ToDate(new \DateTimeImmutable($params->date)),
+                new InitiativeLimitStrategy(2),
+                new ToDateScheduleStrategy(new \DateTimeImmutable($params->date)),
+                stateStrategy: new MapByStatusStateStrategy(),
             )
         );
         $schedule = $this->util->serialize($director->build()->release());
