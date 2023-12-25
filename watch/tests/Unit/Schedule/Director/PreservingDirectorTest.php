@@ -3,6 +3,7 @@ namespace Tests\Unit\Schedule\Director;
 
 use Watch\Action\Util\Schedule as ScheduleUtil;
 use Watch\Schedule\Builder;
+use Watch\Schedule\Builder\Strategy\State\MapByStatus as MapByStatusStateStrategy;
 use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Director;
@@ -20,6 +21,7 @@ class PreservingDirectorTest extends AbstractDirectorTest
                 new Context(Utils::getNowDate($scheduleDescription), new Factory()),
                 Utils::getIssues($issuesDescription),
                 Utils::getMilestones($issuesDescription),
+                new MapByStatusStateStrategy(),
             )
         );
         $scheduleUtil = new ScheduleUtil();

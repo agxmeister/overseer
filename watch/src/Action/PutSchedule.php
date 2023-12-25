@@ -29,9 +29,9 @@ readonly class PutSchedule
                 new Context(new \DateTimeImmutable(date('Y-m-d')), $this->factory),
                 $issues,
                 ['finish'],
+                new MapByStatusStateStrategy(),
                 new InitiativeLimitStrategy(2),
                 new ToDateScheduleStrategy(new \DateTimeImmutable($params->date)),
-                stateStrategy: new MapByStatusStateStrategy(),
             )
         );
         $schedule = $this->util->serialize($director->build()->release());

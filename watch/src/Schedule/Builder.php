@@ -24,17 +24,17 @@ class Builder
      * @param Context $context
      * @param Issue[] $issues
      * @param string[] $milestones
+     * @param StateStrategy|null $stateStrategy
      * @param LimitStrategy|null $limitStrategy
      * @param ScheduleStrategy|null $scheduleStrategy
-     * @param StateStrategy|null $stateStrategy
      */
     public function __construct(
         protected readonly Context $context,
         protected readonly array $issues,
         protected readonly array $milestones,
+        private readonly StateStrategy|null $stateStrategy = null,
         private readonly LimitStrategy|null $limitStrategy = null,
         private readonly ScheduleStrategy|null $scheduleStrategy = null,
-        private readonly StateStrategy|null $stateStrategy = null,
     )
     {
     }
@@ -57,8 +57,6 @@ class Builder
             $node = new Task($issue->key, $issue->duration, [
                 'begin' => $issue->begin,
                 'end' => $issue->end,
-                'started' => $issue->status === 'In Progress',
-                'completed' => $issue->status === 'Done',
                 ...(!is_null($this->stateStrategy) ? $this->stateStrategy->apply(get_object_vars($issue)) : [])
             ]);
             $nodes[$node->getName()] = $node;

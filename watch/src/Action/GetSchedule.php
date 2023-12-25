@@ -27,7 +27,7 @@ readonly class GetSchedule
                 new Context(new \DateTimeImmutable(date('Y-m-d')), $this->factory),
                 $issues,
                 ['finish'],
-                stateStrategy: new MapByStatusStateStrategy(),
+                new MapByStatusStateStrategy(),
             )
         );
         $schedule = $this->util->serialize($director->build()->release());

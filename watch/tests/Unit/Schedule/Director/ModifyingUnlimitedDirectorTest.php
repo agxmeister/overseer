@@ -6,6 +6,7 @@ use Watch\Schedule\Builder;
 use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\LimitStrategy;
+use Watch\Schedule\Builder\Strategy\State\MapByStatus as MapByStatusStateStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Director;
 use Watch\Subject\Decorator\Factory;
@@ -22,6 +23,7 @@ class ModifyingUnlimitedDirectorTest extends AbstractDirectorTest
                 new Context(Utils::getNowDate($scheduleDescription), new Factory()),
                 Utils::getIssues($issuesDescription),
                 Utils::getMilestones($issuesDescription),
+                new MapByStatusStateStrategy(),
                 $this->makeEmpty(LimitStrategy::class),
                 new ToDateScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
             )
