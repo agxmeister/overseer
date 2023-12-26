@@ -24,7 +24,7 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
                 new Context(Utils::getNowDate($scheduleDescription), new Factory()),
                 Utils::getIssues($issuesDescription),
                 Utils::getMilestones($issuesDescription),
-                new MapByStatusStateStrategy(),
+                new MapByStatusStateStrategy($this->getConfig()),
                 new CorrectiveLimitStrategy(2),
                 new FromDateScheduleStrategy(Utils::getMilestoneBeginDate($scheduleDescription)),
             )
@@ -46,7 +46,7 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
                 new Context(Utils::getNowDate($scheduleDescription), new Factory()),
                 Utils::getIssues($issuesDescription),
                 Utils::getMilestones($issuesDescription),
-                new MapByStatusStateStrategy(),
+                new MapByStatusStateStrategy($this->getConfig()),
                 new CorrectiveLimitStrategy(2),
                 new ToDateScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
             )

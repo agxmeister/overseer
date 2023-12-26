@@ -21,7 +21,7 @@ class PreservingDirectorTest extends AbstractDirectorTest
                 new Context(Utils::getNowDate($scheduleDescription), new Factory()),
                 Utils::getIssues($issuesDescription),
                 Utils::getMilestones($issuesDescription),
-                new MapByStatusStateStrategy(),
+                new MapByStatusStateStrategy($this->getConfig()),
             )
         );
         $scheduleUtil = new ScheduleUtil();

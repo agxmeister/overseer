@@ -5,17 +5,17 @@ namespace Watch\Action;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Watch\Action\Util\Schedule as Util;
+use Watch\Config;
 use Watch\Jira;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\Strategy\State\MapByStatus as MapByStatusStateStrategy;
 use Watch\Schedule\Director;
 use Watch\Subject\Decorator\Factory;
-use Watch\Subject\Model\Issue;
 
 readonly class GetSchedule
 {
-    public function __construct(private Jira $jira, private Factory $factory, private Util $util)
+    public function __construct(private Config $config, private Jira $jira, private Factory $factory, private Util $util)
     {
     }
 
@@ -27,7 +27,7 @@ readonly class GetSchedule
                 new Context(new \DateTimeImmutable(date('Y-m-d')), $this->factory),
                 $issues,
                 ['finish'],
-                new MapByStatusStateStrategy(),
+                new MapByStatusStateStrategy($this->config),
             )
         );
         $schedule = $this->util->serialize($director->build()->release());

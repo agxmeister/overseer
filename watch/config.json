@@ -22,6 +22,16 @@
                 "attribute": "end",
                 "name": "customfield_10037"
             }
+        ],
+        "statuses": [
+            {
+                "state": "started",
+                "name": "In Progress"
+            },
+            {
+                "state": "completed",
+                "name": "Done"
+            }
         ]
     }
 }

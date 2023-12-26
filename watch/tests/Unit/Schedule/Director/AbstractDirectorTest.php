@@ -2,6 +2,7 @@
 namespace Tests\Unit\Schedule\Director;
 
 use Codeception\Test\Unit;
+use Watch\Config;
 
 abstract class AbstractDirectorTest extends Unit
 {
@@ -22,5 +23,10 @@ abstract class AbstractDirectorTest extends Unit
         for ($i = 0; $i < sizeof($actual); $i++) {
             $this->assertEquals($expected[$i], $actual[$i], "Items in volume '{$volume}' are mismatched.");
         }
+    }
+
+    protected function getConfig(): Config
+    {
+        return new Config(json_decode("{}"));
     }
 }

@@ -23,7 +23,7 @@ class ModifyingUnlimitedDirectorTest extends AbstractDirectorTest
                 new Context(Utils::getNowDate($scheduleDescription), new Factory()),
                 Utils::getIssues($issuesDescription),
                 Utils::getMilestones($issuesDescription),
-                new MapByStatusStateStrategy(),
+                new MapByStatusStateStrategy($this->getConfig()),
                 $this->makeEmpty(LimitStrategy::class),
                 new ToDateScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
             )
