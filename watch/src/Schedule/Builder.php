@@ -52,15 +52,18 @@ class Builder
 
     public function addMilestone(): self
     {
-        $nodes = [];
-        foreach ($this->issues as $issue) {
-            $node = new Task($issue->key, $issue->duration, [
-                'begin' => $issue->begin,
-                'end' => $issue->end,
-                ...(!is_null($this->stateStrategy) ? $this->stateStrategy->apply(get_object_vars($issue)) : [])
-            ]);
-            $nodes[$node->getName()] = $node;
-        }
+        $nodes = array_reduce(
+            array_map(
+                fn(Issue $issue) => new Task($issue->key, $issue->duration, [
+                    'begin' => $issue->begin,
+                    'end' => $issue->end,
+                    ...(!is_null($this->stateStrategy) ? $this->stateStrategy->apply(get_object_vars($issue)) : [])
+                ]),
+                $this->issues,
+            ),
+            fn(array $acc, Node $node) => [...$acc, $node->getName() => $node],
+            []
+        );
 
         $this->milestone = new Milestone('finish');
         foreach ($this->issues as $issue) {
