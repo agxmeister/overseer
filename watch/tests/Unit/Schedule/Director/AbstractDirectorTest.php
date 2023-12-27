@@ -27,6 +27,21 @@ abstract class AbstractDirectorTest extends Unit
 
     protected function getConfig(): Config
     {
-        return new Config(json_decode("{}"));
+        return new Config(json_decode('
+            {
+                "jira": {
+                    "statuses": [
+                        {
+                            "state": "started",
+                            "name": "In Progress"
+                        },
+                        {
+                            "state": "completed",
+                            "name": "Done"
+                        }
+                    ]
+                }
+            }
+        '));
     }
 }

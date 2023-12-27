@@ -64,6 +64,12 @@ class BuilderTest extends Unit
 
     private function getConfig(): Config
     {
-        return new Config(json_decode("{}"));
+        return new Config(json_decode('
+            {
+                "jira": {
+                    "statuses": []
+                }
+            }
+        '));
     }
 }

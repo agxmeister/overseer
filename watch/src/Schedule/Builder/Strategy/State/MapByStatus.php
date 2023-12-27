@@ -7,15 +7,19 @@ use Watch\Schedule\Builder\StateStrategy;
 
 readonly class MapByStatus implements StateStrategy
 {
-    public function __construct(Config $config)
+    public function __construct(private Config $config)
     {
     }
 
     public function apply(array $attributes): array
     {
-        return [
-            'started' => $attributes['status'] === 'In Progress',
-            'completed' => $attributes['status'] === 'Done',
-        ];
+        return array_reduce(
+            $this->config->jira->statuses,
+            fn($acc, $status) => [
+                ...$acc,
+                $status->state => $status->name === $attributes['status']
+            ],
+            [],
+        );
     }
 }
