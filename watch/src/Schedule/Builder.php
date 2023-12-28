@@ -6,14 +6,13 @@ use Watch\Schedule;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\LimitStrategy;
 use Watch\Schedule\Builder\ScheduleStrategy;
-use Watch\Schedule\Builder\StateStrategy;
+use Watch\Schedule\Builder\ConvertStrategy;
 use Watch\Schedule\Model\Buffer;
 use Watch\Schedule\Model\FeedingBuffer;
 use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Milestone;
 use Watch\Schedule\Model\MilestoneBuffer;
 use Watch\Schedule\Model\Node;
-use Watch\Schedule\Model\Task;
 use Watch\Subject\Model\Issue;
 
 class Builder
@@ -24,7 +23,7 @@ class Builder
      * @param Context $context
      * @param Issue[] $issues
      * @param string[] $milestones
-     * @param StateStrategy|null $stateStrategy
+     * @param ConvertStrategy $convertStrategy
      * @param LimitStrategy|null $limitStrategy
      * @param ScheduleStrategy|null $scheduleStrategy
      */
@@ -32,7 +31,7 @@ class Builder
         protected readonly Context $context,
         protected readonly array $issues,
         protected readonly array $milestones,
-        private readonly StateStrategy|null $stateStrategy = null,
+        private readonly ConvertStrategy $convertStrategy,
         private readonly LimitStrategy|null $limitStrategy = null,
         private readonly ScheduleStrategy|null $scheduleStrategy = null,
     )
@@ -54,11 +53,7 @@ class Builder
     {
         $nodes = array_reduce(
             array_map(
-                fn(Issue $issue) => new Task($issue->key, $issue->duration, [
-                    'begin' => $issue->begin,
-                    'end' => $issue->end,
-                    ...(!is_null($this->stateStrategy) ? $this->stateStrategy->apply(get_object_vars($issue)) : [])
-                ]),
+                fn(Issue $issue) => $this->convertStrategy->getTask($issue),
                 $this->issues,
             ),
             fn(array $acc, Node $node) => [...$acc, $node->getName() => $node],

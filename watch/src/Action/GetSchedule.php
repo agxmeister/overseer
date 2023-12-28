@@ -9,7 +9,7 @@ use Watch\Config;
 use Watch\Jira;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
-use Watch\Schedule\Builder\Strategy\State\MapByStatus as MapByStatusStateStrategy;
+use Watch\Schedule\Builder\Strategy\Convert\Plain as PlainConvertStrategy;
 use Watch\Schedule\Director;
 use Watch\Subject\Decorator\Factory;
 
@@ -27,7 +27,7 @@ readonly class GetSchedule
                 new Context(new \DateTimeImmutable(date('Y-m-d')), $this->factory),
                 $issues,
                 ['finish'],
-                new MapByStatusStateStrategy($this->config),
+                new PlainConvertStrategy($this->config),
             )
         );
         $schedule = $this->util->serialize($director->build()->release());

@@ -5,7 +5,7 @@ use Watch\Action\Util\Schedule as ScheduleUtil;
 use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
-use Watch\Schedule\Builder\Strategy\State\MapByStatus as MapByStatusStateStrategy;
+use Watch\Schedule\Builder\Strategy\Convert\Plain as PlainConvertStrategy;
 use Watch\Schedule\Builder\Strategy\Limit\Corrective as CorrectiveLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\FromDate as FromDateScheduleStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
@@ -24,7 +24,7 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
                 new Context(Utils::getNowDate($scheduleDescription), new Factory()),
                 Utils::getIssues($issuesDescription),
                 Utils::getMilestones($issuesDescription),
-                new MapByStatusStateStrategy($this->getConfig()),
+                new PlainConvertStrategy($this->getConfig()),
                 new CorrectiveLimitStrategy(2),
                 new FromDateScheduleStrategy(Utils::getMilestoneBeginDate($scheduleDescription)),
             )
@@ -46,7 +46,7 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
                 new Context(Utils::getNowDate($scheduleDescription), new Factory()),
                 Utils::getIssues($issuesDescription),
                 Utils::getMilestones($issuesDescription),
-                new MapByStatusStateStrategy($this->getConfig()),
+                new PlainConvertStrategy($this->getConfig()),
                 new CorrectiveLimitStrategy(2),
                 new ToDateScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
             )

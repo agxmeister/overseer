@@ -5,7 +5,7 @@ use Codeception\Test\Unit;
 use Watch\Action\Util\Schedule as ScheduleUtil;
 use Watch\Config;
 use Watch\Schedule\Builder;
-use Watch\Schedule\Builder\Strategy\State\MapByStatus as MapByStatusStateStrategy;
+use Watch\Schedule\Builder\Strategy\Convert\Plain as PlainConvertStrategy;
 use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder\Context;
 use Watch\Subject\Decorator\Factory;
@@ -24,7 +24,7 @@ class BuilderTest extends Unit
             new Context(new \DateTimeImmutable('2023-01-01'), new Factory()),
             Utils::getIssues($description),
             Utils::getMilestones($description),
-            new MapByStatusStateStrategy($this->getConfig()),
+            new PlainConvertStrategy($this->getConfig()),
         );
         $builder->run();
         $builder->addMilestone();
@@ -44,7 +44,7 @@ class BuilderTest extends Unit
             new Context(new \DateTimeImmutable('2023-01-01'), new Factory()),
             Utils::getIssues($description),
             Utils::getMilestones($description),
-            new MapByStatusStateStrategy($this->getConfig()),
+            new PlainConvertStrategy($this->getConfig()),
         );
         $builder->run();
         $builder
