@@ -20,7 +20,7 @@ class PreservingDirectorTest extends AbstractDirectorTest
             new Builder(
                 new Context(Utils::getNowDate($scheduleDescription), new Factory()),
                 Utils::getIssues($issuesDescription),
-                Utils::getMilestones($issuesDescription),
+                Utils::getMilestones($scheduleDescription),
                 new PlainConvertStrategy($this->getConfig()),
             )
         );
