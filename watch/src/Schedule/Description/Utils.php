@@ -283,7 +283,11 @@ class Utils
 
     private static function extractMilestoneName(string $milestoneLine): string
     {
-        return trim(explode('^', $milestoneLine)[0] ?? '');
+        list($milestoneName) = array_map(
+            fn(string $milestoneLinePart) => trim($milestoneLinePart),
+            explode('^', $milestoneLine),
+        );
+        return !empty($milestoneName) ? $milestoneName : 'finish';
     }
 
     private static function extractNowDate(string $contextLine, string $milestoneLine): \DateTimeImmutable|null
