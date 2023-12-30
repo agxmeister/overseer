@@ -60,7 +60,7 @@ class Builder
             []
         );
 
-        $this->milestone = new Milestone('finish');
+        $this->milestone = new Milestone(current($this->milestones));
         foreach ($this->issues as $issue) {
             $inwards = $issue->getInwardLinks();
             foreach ($inwards as $link) {
