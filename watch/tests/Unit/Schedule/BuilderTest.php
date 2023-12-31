@@ -14,7 +14,7 @@ class BuilderTest extends Unit
 {
     public function testAddCriticalChain()
     {
-        $description = '
+        $issuesDescription = '
             K-01   |       xxxx|
             K-02   |   ****    | & K-01
             K-03   |xxxxxxx    | @ K-01
@@ -22,8 +22,8 @@ class BuilderTest extends Unit
         ';
         $builder = new Builder(
             new Context(new \DateTimeImmutable('2023-01-01'), new Factory()),
-            Utils::getIssues($description),
-            Utils::getMilestones($description),
+            Utils::getIssues($issuesDescription),
+            ['finish'],
             new PlainConvertStrategy($this->getConfig()),
         );
         $builder->run();
@@ -34,7 +34,7 @@ class BuilderTest extends Unit
 
     public function testAddFeedingBuffers()
     {
-        $description = '
+        $issuesDescription = '
             K-01   |       xxxx|
             K-02   | ****      | & K-01
             K-03   |xxxxxxx    | @ K-01
@@ -42,8 +42,8 @@ class BuilderTest extends Unit
         ';
         $builder = new Builder(
             new Context(new \DateTimeImmutable('2023-01-01'), new Factory()),
-            Utils::getIssues($description),
-            Utils::getMilestones($description),
+            Utils::getIssues($issuesDescription),
+            ['finish'],
             new PlainConvertStrategy($this->getConfig()),
         );
         $builder->run();

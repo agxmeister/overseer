@@ -287,7 +287,7 @@ class Utils
             fn(string $milestoneLinePart) => trim($milestoneLinePart),
             explode('^', $milestoneLine),
         );
-        return !empty($milestoneName) ? $milestoneName : 'finish';
+        return $milestoneName;
     }
 
     private static function extractNowDate(string $contextLine, string $milestoneLine): \DateTimeImmutable|null
