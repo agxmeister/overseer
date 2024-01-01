@@ -172,10 +172,16 @@ class Utils
 
     public static function getMilestoneBeginDate(string $description): \DateTimeImmutable|null
     {
+        $milestoneLines = self::extractMilestoneLines($description);
+        if (empty($milestoneLines)) {
+            return null;
+        }
+        $milestoneLine = current($milestoneLines);
+        $issueLines = self::extractIssueLines($description);
         $milestoneBeginGap = self::getMilestoneBeginGap($description);
         $milestoneEndGap = self::getMilestoneBeginGap($description);
         $milestoneLength = self::getMilestoneLength($description);
-        return self::isBeginMilestoneMarker($description) ?
+        return self::isBeginMilestoneMarker($milestoneLine, $issueLines) ?
             self::getMilestoneDate($description)
                 ?->modify("{$milestoneBeginGap} day") :
             self::getMilestoneDate($description)
@@ -185,10 +191,16 @@ class Utils
 
     public static function getMilestoneEndDate(string $description): \DateTimeImmutable|null
     {
+        $milestoneLines = self::extractMilestoneLines($description);
+        if (empty($milestoneLines)) {
+            return null;
+        }
+        $milestoneLine = current($milestoneLines);
+        $issueLines = self::extractIssueLines($description);
         $milestoneBeginGap = self::getMilestoneBeginGap($description);
         $milestoneEndGap = self::getMilestoneBeginGap($description);
         $milestoneLength = self::getMilestoneLength($description);
-        return self::isBeginMilestoneMarker($description) ?
+        return self::isBeginMilestoneMarker($milestoneLine, $issueLines) ?
             self::getMilestoneDate($description)
                 ?->modify("{$milestoneBeginGap} day")
                 ?->modify("{$milestoneLength} day") :
@@ -276,15 +288,10 @@ class Utils
         return new \DateTimeImmutable(explode(' ', $dateAttribute)[1] ?? '');
     }
 
-    private static function isBeginMilestoneMarker(string $description): bool
+    private static function isBeginMilestoneMarker(string $milestoneLine, array $issueLines): bool
     {
-        $milestoneLines = self::extractMilestoneLines($description);
-        if (empty($milestoneLines)) {
-            return false;
-        }
-        $milestoneLine = current($milestoneLines);
         return strpos($milestoneLine, '^') === array_reduce(
-            self::extractIssueLines($description),
+            $issueLines,
             fn($acc, $line) => max($acc, strpos($line, '|')),
         );
     }
