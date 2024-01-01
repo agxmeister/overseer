@@ -91,7 +91,7 @@ class Utils
      */
     public static function getMilestones(string $description): array
     {
-        return [self::getMilestoneName($description)];
+        return self::getMilestoneNames($description);
     }
 
     public static function getSchedule(string $description): array
@@ -101,7 +101,7 @@ class Utils
             fn($line) => strlen($line) > 0)
         ];
 
-        $milestoneName = self::getMilestoneName($description);
+        list($milestoneName) = self::getMilestoneNames($description);
         $milestoneEndDate = self::getMilestoneEndDate($description);
 
         $criticalChain = [$milestoneEndDate->format('Y-m-d') => $milestoneName];
@@ -193,9 +193,12 @@ class Utils
                 ?->modify("-{$milestoneEndGap} day");
     }
 
-    public static function getMilestoneName(string $description): string
+    public static function getMilestoneNames(string $description): array
     {
-        return self::extractMilestoneName(self::extractMilestoneLine($description));
+        return array_map(
+            fn($line) => self::extractMilestoneName($line),
+            self::extractMilestoneLines($description),
+        );
     }
 
     public static function getNowDate(string $description): \DateTimeImmutable|null
@@ -206,7 +209,7 @@ class Utils
         }
         return self::extractNowDate(
             $contextLine,
-            self::extractMilestoneLine($description),
+            self::extractMilestoneLines($description),
         );
     }
 
@@ -251,7 +254,12 @@ class Utils
 
     private static function getMilestoneDate(string $description): \DateTimeImmutable|null
     {
-        return self::extractMilestoneDate(self::extractMilestoneLine($description));
+        $milestoneLines = self::extractMilestoneLines($description);
+        if (empty($milestoneLines)) {
+            return null;
+        }
+        $milestoneLine = current($milestoneLines);
+        return self::extractMilestoneDate($milestoneLine);
     }
 
     private static function extractMilestoneDate(string $milestoneLine): \DateTimeImmutable|null
@@ -275,7 +283,12 @@ class Utils
 
     private static function isBeginMilestoneMarker(string $description): bool
     {
-        return strpos(self::extractMilestoneLine($description), '^') === array_reduce(
+        $milestoneLines = self::extractMilestoneLines($description);
+        if (empty($milestoneLines)) {
+            return false;
+        }
+        $milestoneLine = current($milestoneLines);
+        return strpos($milestoneLine, '^') === array_reduce(
             self::extractIssueLines($description),
             fn($acc, $line) => max($acc, strpos($line, '|')),
         );
@@ -290,11 +303,12 @@ class Utils
         return $milestoneName;
     }
 
-    private static function extractNowDate(string $contextLine, string $milestoneLine): \DateTimeImmutable|null
+    private static function extractNowDate(string $contextLine, array $milestoneLines): \DateTimeImmutable|null
     {
-        if (empty($contextLine) || empty($milestoneLine)) {
+        if (empty($contextLine) || empty($milestoneLines)) {
             return null;
         }
+        $milestoneLine = current($milestoneLines);
         $gap = strpos($milestoneLine, '^') - strpos($contextLine, '>');
         return self::extractMilestoneDate($milestoneLine)->modify("- {$gap} day");
     }
@@ -318,16 +332,12 @@ class Utils
         );
     }
 
-    private static function extractMilestoneLine(string $description): string
+    private static function extractMilestoneLines(string $description): array
     {
-        return array_reduce(
-            array_filter(
-                array_map(fn($line) => $line, explode("\n", $description)),
-                fn($line) => str_contains($line, '^')
-            ),
-            fn($acc, $line) => $line,
-            '',
-        );
+        return array_values(array_filter(
+            array_map(fn($line) => $line, explode("\n", $description)),
+            fn($line) => str_contains($line, '^')
+        ));
     }
 
     private static function extractContextLine(string $description): string
