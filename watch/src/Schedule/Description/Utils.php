@@ -91,7 +91,10 @@ class Utils
      */
     public static function getMilestones(string $description): array
     {
-        return self::getMilestoneNames($description);
+        return array_map(
+            fn($line) => self::extractMilestoneName($line),
+            self::extractMilestoneLines($description),
+        );
     }
 
     public static function getSchedule(string $description): array
@@ -101,7 +104,7 @@ class Utils
             fn($line) => strlen($line) > 0)
         ];
 
-        list($milestoneName) = self::getMilestoneNames($description);
+        list($milestoneName) = self::getMilestones($description);
         $milestoneEndDate = self::getMilestoneEndDate($description);
 
         $criticalChain = [$milestoneEndDate->format('Y-m-d') => $milestoneName];
@@ -191,14 +194,6 @@ class Utils
                 ?->modify("{$milestoneLength} day") :
             self::getMilestoneDate($description)
                 ?->modify("-{$milestoneEndGap} day");
-    }
-
-    public static function getMilestoneNames(string $description): array
-    {
-        return array_map(
-            fn($line) => self::extractMilestoneName($line),
-            self::extractMilestoneLines($description),
-        );
     }
 
     public static function getNowDate(string $description): \DateTimeImmutable|null
