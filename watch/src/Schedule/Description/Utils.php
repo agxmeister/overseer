@@ -18,12 +18,13 @@ class Utils
             fn($line) => strlen($line) > 0)
         ];
 
-        $milestoneDate = self::getMilestoneEndDate($description);
+        $milestoneEndDate = self::getMilestoneEndDate($description);
+        $milestoneEndGap = self::getMilestoneEndGap($description);
 
         $links = [];
         $issues = array_reduce(
             array_filter($lines, fn($line) => !str_contains($line, '^')),
-            function($issues, $line) use ($getAttributesByState, $milestoneDate, &$links) {
+            function($issues, $line) use ($getAttributesByState, $milestoneEndDate, $milestoneEndGap, &$links) {
                 $issueData = explode('|', $line);
                 $started = str_ends_with($issueData[0], '~');
                 $completed = str_ends_with($issueData[0], '+');
@@ -31,7 +32,7 @@ class Utils
                 $duration = strlen(trim($issueData[1]));
                 $attributes = trim($issueData[2]);
                 $isScheduled = in_array(trim($issueData[1])[0], ['*']);
-                $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1]));
+                $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1])) - $milestoneEndGap;
                 $beginGap = $endGap + $duration;
 
                 list($key, $type, $project) = array_map(
@@ -53,8 +54,8 @@ class Utils
                     'project' => $project,
                     'type' => $type,
                     'duration' => $duration,
-                    'begin' => $isScheduled ? $milestoneDate->modify("-{$beginGap} day")->format('Y-m-d') : null,
-                    'end' => $isScheduled ? $milestoneDate->modify("-{$endGap} day")->format('Y-m-d') : null,
+                    'begin' => $isScheduled ? $milestoneEndDate->modify("-{$beginGap} day")->format('Y-m-d') : null,
+                    'end' => $isScheduled ? $milestoneEndDate->modify("-{$endGap} day")->format('Y-m-d') : null,
                     ...(!is_null($getAttributesByState)
                         ? $getAttributesByState($started, $completed)
                         : []
@@ -106,10 +107,11 @@ class Utils
 
         list($milestoneName) = self::getMilestones($description);
         $milestoneEndDate = self::getMilestoneEndDate($description);
+        $milestoneEndGap = self::getMilestoneEndGap($description);
 
         $criticalChain = [$milestoneEndDate->format('Y-m-d') => $milestoneName];
 
-        $schedule = array_reduce(array_filter($lines, fn($line) => !str_contains($line, '^') && !str_contains($line, '>')), function ($schedule, $line) use ($milestoneEndDate, &$criticalChain) {
+        $schedule = array_reduce(array_filter($lines, fn($line) => !str_contains($line, '^') && !str_contains($line, '>')), function ($schedule, $line) use ($milestoneEndDate, $milestoneEndGap, &$criticalChain) {
             $issueData = explode('|', $line);
             $ignored = str_ends_with($issueData[0], '-');
             $key = trim(rtrim($issueData[0], '-'));
@@ -120,7 +122,7 @@ class Utils
             $isCritical = in_array(trim($issueData[1])[0], ['x']);
             $isBuffer = in_array(trim($issueData[1])[0], ['_', '!']);
             $consumption = substr_count(trim($issueData[1]), '!');
-            $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1]));
+            $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1])) - $milestoneEndGap;
             $beginGap = $endGap + $duration;
 
             if ($isIssue) {
@@ -179,7 +181,7 @@ class Utils
         $milestoneLine = current($milestoneLines);
         $issueLines = self::extractIssueLines($description);
         $milestoneBeginGap = self::getMilestoneBeginGap($description);
-        $milestoneEndGap = self::getMilestoneBeginGap($description);
+        $milestoneEndGap = self::getMilestoneEndGap($description);
         $milestoneLength = self::getMilestoneLength($description);
         return self::isBeginMilestoneMarker($milestoneLine, $issueLines) ?
             self::getMilestoneDate($description)
@@ -198,7 +200,7 @@ class Utils
         $milestoneLine = current($milestoneLines);
         $issueLines = self::extractIssueLines($description);
         $milestoneBeginGap = self::getMilestoneBeginGap($description);
-        $milestoneEndGap = self::getMilestoneBeginGap($description);
+        $milestoneEndGap = self::getMilestoneEndGap($description);
         $milestoneLength = self::getMilestoneLength($description);
         return self::isBeginMilestoneMarker($milestoneLine, $issueLines) ?
             self::getMilestoneDate($description)

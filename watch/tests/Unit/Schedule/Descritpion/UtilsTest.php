@@ -14,6 +14,14 @@ class UtilsTest extends Unit
         self::assertEquals($milestones, Utils::getMilestones($description));
     }
 
+    /**
+     * @dataProvider dataGetMilestoneBeginDate
+     */
+    public function testGetMilestoneBeginDate($description, $beginDate)
+    {
+        self::assertEquals(new \DateTimeImmutable($beginDate), Utils::getMilestoneBeginDate($description));
+    }
+
     protected function dataGetMilestones(): array
     {
         return [
@@ -31,6 +39,37 @@ class UtilsTest extends Unit
                     M-02        ^ # 2023-01-04
                 ',
                 ['M-01', 'M-02'],
+            ],
+        ];
+    }
+
+    protected function dataGetMilestoneBeginDate(): array
+    {
+        return [
+            [
+                '
+                    K-01 |...| @ M-01
+                    M-01 ^     # 2023-07-15
+                ',
+                '2023-07-15',
+            ], [
+                '
+                    K-01 |...| @ M-01
+                    M-01     ^ # 2023-07-15
+                ',
+                '2023-07-12',
+            ], [
+                '
+                    K-01 |  ...| @ M-01
+                    M-01 ^     # 2023-07-15
+                ',
+                '2023-07-17',
+            ], [
+                '
+                    K-01 |...  | @ M-01
+                    M-01       ^ # 2023-07-15
+                ',
+                '2023-07-10',
             ],
         ];
     }
