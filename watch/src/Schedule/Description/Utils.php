@@ -86,18 +86,6 @@ class Utils
         return array_map(fn(array $issue) => new Issue(...$issue), array_values($issues));
     }
 
-    /**
-     * @param string $description
-     * @return string[]
-     */
-    public static function getMilestones(string $description): array
-    {
-        return array_map(
-            fn($line) => self::extractMilestoneName($line),
-            self::extractMilestoneLines($description),
-        );
-    }
-
     public static function getSchedule(string $description): array
     {
         $lines = [...array_filter(
@@ -170,6 +158,18 @@ class Utils
         $schedule['criticalChain'] = array_values($criticalChain);
 
         return $schedule;
+    }
+
+    /**
+     * @param string $description
+     * @return string[]
+     */
+    public static function getMilestones(string $description): array
+    {
+        return array_map(
+            fn($line) => self::extractMilestoneName($line),
+            self::extractMilestoneLines($description),
+        );
     }
 
     public static function getMilestoneBeginDate(string $description): \DateTimeImmutable|null
@@ -313,8 +313,8 @@ class Utils
             return null;
         }
         $milestoneLine = current($milestoneLines);
-        $gap = strpos($milestoneLine, '^') - strpos($contextLine, '>');
-        return self::extractMilestoneDate($milestoneLine)->modify("- {$gap} day");
+        $gap = (strpos($milestoneLine, '^') - strpos($contextLine, '>')) * -1;
+        return self::extractMilestoneDate($milestoneLine)->modify("{$gap} day");
     }
 
     private static function extractIssueLines(string $description): array
