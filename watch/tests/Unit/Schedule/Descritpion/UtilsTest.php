@@ -22,6 +22,22 @@ class UtilsTest extends Unit
         self::assertEquals(new \DateTimeImmutable($beginDate), Utils::getMilestoneBeginDate($description));
     }
 
+    /**
+     * @dataProvider dataGetMilestoneEndDate
+     */
+    public function testGetMilestoneEndDate($description, $endDate)
+    {
+        self::assertEquals(new \DateTimeImmutable($endDate), Utils::getMilestoneEndDate($description));
+    }
+
+    /**
+     * @dataProvider dataGetNowDate
+     */
+    public function testGetNowDate($description, $nowDate)
+    {
+        self::assertEquals(new \DateTimeImmutable($nowDate), Utils::getNowDate($description));
+    }
+
     protected function dataGetMilestones(): array
     {
         return [
@@ -70,6 +86,86 @@ class UtilsTest extends Unit
                     M-01       ^ # 2023-07-15
                 ',
                 '2023-07-10',
+            ],
+        ];
+    }
+
+    protected function dataGetMilestoneEndDate(): array
+    {
+        return [
+            [
+                '
+                    K-01 |...| @ M-01
+                    M-01 ^     # 2023-07-15
+                ',
+                '2023-07-18',
+            ], [
+                '
+                    K-01 |...| @ M-01
+                    M-01     ^ # 2023-07-15
+                ',
+                '2023-07-15',
+            ], [
+                '
+                    K-01 |  ...| @ M-01
+                    M-01 ^     # 2023-07-15
+                ',
+                '2023-07-20',
+            ], [
+                '
+                    K-01 |...  | @ M-01
+                    M-01       ^ # 2023-07-15
+                ',
+                '2023-07-13',
+            ],
+        ];
+    }
+
+    protected function dataGetNowDate(): array
+    {
+        return [
+            [
+                '
+                         >
+                    K-01 |...| @ M-01
+                    M-01 ^     # 2023-07-15
+                ',
+                '2023-07-15',
+            ], [
+                '
+                         >
+                    K-01 |...| @ M-01
+                    M-01     ^ # 2023-07-15
+                ',
+                '2023-07-11',
+            ], [
+                '
+                         >
+                    K-01 |  ...| @ M-01
+                    M-01 ^     # 2023-07-15
+                ',
+                '2023-07-15',
+            ], [
+                '
+                            >
+                    K-01 |  ...| @ M-01
+                    M-01 ^     # 2023-07-15
+                ',
+                '2023-07-18',
+            ], [
+                '
+                               >
+                    K-01 |...  | @ M-01
+                    M-01       ^ # 2023-07-15
+                ',
+                '2023-07-15',
+            ], [
+                '
+                            >
+                    K-01 |...  | @ M-01
+                    M-01       ^ # 2023-07-15
+                ',
+                '2023-07-12',
             ],
         ];
     }
