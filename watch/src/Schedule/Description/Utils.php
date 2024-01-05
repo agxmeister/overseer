@@ -19,7 +19,7 @@ class Utils
         ];
 
         $milestoneEndDate = self::getMilestoneEndDate($description);
-        $milestoneEndGap = self::getMilestoneEndGap($description);
+        $milestoneEndGap = self::getProjectEndGap($description);
 
         $links = [];
         $issues = array_reduce(
@@ -95,7 +95,7 @@ class Utils
 
         list($milestoneName) = self::getMilestones($description);
         $milestoneEndDate = self::getMilestoneEndDate($description);
-        $milestoneEndGap = self::getMilestoneEndGap($description);
+        $milestoneEndGap = self::getProjectEndGap($description);
 
         $criticalChain = [$milestoneEndDate->format('Y-m-d') => $milestoneName];
 
@@ -180,15 +180,15 @@ class Utils
         }
         $milestoneLine = current($milestoneLines);
         $issueLines = self::extractIssueLines($description);
-        $milestoneBeginGap = self::getMilestoneBeginGap($description);
-        $milestoneEndGap = self::getMilestoneEndGap($description);
-        $milestoneLength = self::getMilestoneLength($description);
+        $projectBeginGap = self::getProjectBeginGap($description);
+        $projectEndGap = self::getProjectEndGap($description);
+        $projectLength = self::getProjectLength($description);
         return self::isBeginMilestoneMarker($milestoneLine, $issueLines) ?
             self::getMilestoneDate($description)
-                ?->modify("{$milestoneBeginGap} day") :
+                ?->modify("{$projectBeginGap} day") :
             self::getMilestoneDate($description)
-                ?->modify("-{$milestoneEndGap} day")
-                ?->modify("-{$milestoneLength} day");
+                ?->modify("-{$projectEndGap} day")
+                ?->modify("-{$projectLength} day");
     }
 
     public static function getMilestoneEndDate(string $description): \DateTimeImmutable|null
@@ -199,15 +199,15 @@ class Utils
         }
         $milestoneLine = current($milestoneLines);
         $issueLines = self::extractIssueLines($description);
-        $milestoneBeginGap = self::getMilestoneBeginGap($description);
-        $milestoneEndGap = self::getMilestoneEndGap($description);
-        $milestoneLength = self::getMilestoneLength($description);
+        $projectBeginGap = self::getProjectBeginGap($description);
+        $projectEndGap = self::getProjectEndGap($description);
+        $projectLength = self::getProjectLength($description);
         return self::isBeginMilestoneMarker($milestoneLine, $issueLines) ?
             self::getMilestoneDate($description)
-                ?->modify("{$milestoneBeginGap} day")
-                ?->modify("{$milestoneLength} day") :
+                ?->modify("{$projectBeginGap} day")
+                ?->modify("{$projectLength} day") :
             self::getMilestoneDate($description)
-                ?->modify("-{$milestoneEndGap} day");
+                ?->modify("-{$projectEndGap} day");
     }
 
     public static function getNowDate(string $description): \DateTimeImmutable|null
@@ -222,27 +222,27 @@ class Utils
         );
     }
 
-    public static function getMilestoneLength(string $description): int
+    public static function getProjectLength(string $description): int
     {
         $maxTrackLength = array_reduce(
             self::extractTracks($description),
             fn(int $acc, string $track) => max($acc, strlen($track)),
             0,
         );
-        return $maxTrackLength - self::getMilestoneBeginGap($description) - self::getMilestoneEndGap($description);
+        return $maxTrackLength - self::getProjectBeginGap($description) - self::getProjectEndGap($description);
     }
 
-    private static function getMilestoneBeginGap(string $description): int
+    private static function getProjectBeginGap(string $description): int
     {
-        return self::getMilestoneGap($description, true);
+        return self::getProjectGap($description, true);
     }
 
-    private static function getMilestoneEndGap(string $description): int
+    private static function getProjectEndGap(string $description): int
     {
-        return self::getMilestoneGap($description, false);
+        return self::getProjectGap($description, false);
     }
 
-    private static function getMilestoneGap(string $description, $isBegin): int
+    private static function getProjectGap(string $description, $isBegin): int
     {
         $tracks = self::extractTracks($description);
         $maxTrackLength = array_reduce(
