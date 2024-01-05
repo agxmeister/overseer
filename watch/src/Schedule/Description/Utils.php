@@ -184,9 +184,9 @@ class Utils
         $projectEndGap = self::getProjectEndGap($description);
         $projectLength = self::getProjectLength($description);
         return self::isBeginMilestoneMarker($milestoneLine, $issueLines) ?
-            self::getMilestoneDate($description)
+            self::getProjectDate($description)
                 ?->modify("{$projectBeginGap} day") :
-            self::getMilestoneDate($description)
+            self::getProjectDate($description)
                 ?->modify("-{$projectEndGap} day")
                 ?->modify("-{$projectLength} day");
     }
@@ -203,10 +203,10 @@ class Utils
         $projectEndGap = self::getProjectEndGap($description);
         $projectLength = self::getProjectLength($description);
         return self::isBeginMilestoneMarker($milestoneLine, $issueLines) ?
-            self::getMilestoneDate($description)
+            self::getProjectDate($description)
                 ?->modify("{$projectBeginGap} day")
                 ?->modify("{$projectLength} day") :
-            self::getMilestoneDate($description)
+            self::getProjectDate($description)
                 ?->modify("-{$projectEndGap} day");
     }
 
@@ -261,14 +261,30 @@ class Utils
         return $maxTrackLength - $maxTrackLengthTrimmed;
     }
 
-    private static function getMilestoneDate(string $description): \DateTimeImmutable|null
+    private static function getProjectDate(string $description): \DateTimeImmutable|null
     {
-        $milestoneLines = self::extractMilestoneLines($description);
-        if (empty($milestoneLines)) {
-            return null;
-        }
-        $milestoneLine = current($milestoneLines);
-        return self::extractMilestoneDate($milestoneLine);
+        $isEndMarkers = self::isEndMarkers($description);
+        return array_reduce(
+            self::extractMilestoneLines($description),
+            fn($acc, string $milestoneLine) => $isEndMarkers
+                ? max($acc, self::extractMilestoneDate($milestoneLine))
+                : (
+                    is_null($acc)
+                        ? self::extractMilestoneDate($milestoneLine)
+                        : min($acc, self::extractMilestoneDate($milestoneLine))
+                ),
+        );
+    }
+
+    private static function isEndMarkers($description): bool
+    {
+        return array_reduce(
+            self::extractMilestoneLines($description),
+            fn($acc, $line) => max($acc, strrpos($line, '^')),
+        ) === array_reduce(
+            self::extractIssueLines($description),
+            fn($acc, $line) => max($acc, strrpos($line, '|')),
+        );
     }
 
     private static function extractMilestoneDate(string $milestoneLine): \DateTimeImmutable|null
