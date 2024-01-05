@@ -93,7 +93,7 @@ class Utils
             fn($line) => strlen($line) > 0)
         ];
 
-        list($milestoneName) = self::getMilestones($description);
+        $milestoneName = current(self::getMilestones($description));
         $milestoneEndDate = self::getMilestoneEndDate($description);
         $milestoneEndGap = self::getProjectEndGap($description);
 
