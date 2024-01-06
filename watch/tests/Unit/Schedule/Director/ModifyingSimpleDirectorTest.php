@@ -25,7 +25,7 @@ class ModifyingSimpleDirectorTest extends AbstractDirectorTest
                 Utils::getMilestones($scheduleDescription),
                 new PlainConvertStrategy($this->getConfig()),
                 new SimpleLimitStrategy(),
-                new ToDateScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
+                new ToDateScheduleStrategy(Utils::getProjectEndDate($scheduleDescription)),
             )
         );
         $scheduleUtil = new ScheduleUtil();

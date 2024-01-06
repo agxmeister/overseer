@@ -25,7 +25,7 @@ class ModifyingUnlimitedDirectorTest extends AbstractDirectorTest
                 Utils::getMilestones($scheduleDescription),
                 new PlainConvertStrategy($this->getConfig()),
                 $this->makeEmpty(LimitStrategy::class),
-                new ToDateScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
+                new ToDateScheduleStrategy(Utils::getProjectEndDate($scheduleDescription)),
             )
         );
         $scheduleUtil = new ScheduleUtil();

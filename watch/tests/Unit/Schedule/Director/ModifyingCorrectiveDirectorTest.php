@@ -26,7 +26,7 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
                 Utils::getMilestones($scheduleDescription),
                 new PlainConvertStrategy($this->getConfig()),
                 new CorrectiveLimitStrategy(2),
-                new FromDateScheduleStrategy(Utils::getMilestoneBeginDate($scheduleDescription)),
+                new FromDateScheduleStrategy(Utils::getProjectBeginDate($scheduleDescription)),
             )
         );
         $scheduleUtil = new ScheduleUtil();
@@ -48,7 +48,7 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
                 Utils::getMilestones($scheduleDescription),
                 new PlainConvertStrategy($this->getConfig()),
                 new CorrectiveLimitStrategy(2),
-                new ToDateScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
+                new ToDateScheduleStrategy(Utils::getProjectEndDate($scheduleDescription)),
             )
         );
         $scheduleUtil = new ScheduleUtil();

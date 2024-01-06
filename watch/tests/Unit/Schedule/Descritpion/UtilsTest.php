@@ -15,19 +15,19 @@ class UtilsTest extends Unit
     }
 
     /**
-     * @dataProvider dataGetMilestoneBeginDate
+     * @dataProvider dataGetProjectBeginDate
      */
-    public function testGetMilestoneBeginDate($description, $beginDate)
+    public function testGetProjectBeginDate($description, $beginDate)
     {
-        self::assertEquals(new \DateTimeImmutable($beginDate), Utils::getMilestoneBeginDate($description));
+        self::assertEquals(new \DateTimeImmutable($beginDate), Utils::getProjectBeginDate($description));
     }
 
     /**
-     * @dataProvider dataGetMilestoneEndDate
+     * @dataProvider dataGetProjectEndDate
      */
-    public function testGetMilestoneEndDate($description, $endDate)
+    public function testGetProjectEndDate($description, $endDate)
     {
-        self::assertEquals(new \DateTimeImmutable($endDate), Utils::getMilestoneEndDate($description));
+        self::assertEquals(new \DateTimeImmutable($endDate), Utils::getProjectEndDate($description));
     }
 
     /**
@@ -67,7 +67,7 @@ class UtilsTest extends Unit
         ];
     }
 
-    protected function dataGetMilestoneBeginDate(): array
+    protected function dataGetProjectBeginDate(): array
     {
         return [
             [
@@ -98,7 +98,7 @@ class UtilsTest extends Unit
         ];
     }
 
-    protected function dataGetMilestoneEndDate(): array
+    protected function dataGetProjectEndDate(): array
     {
         return [
             [

@@ -25,7 +25,7 @@ class ModifyingInitiativeDirectorTest extends AbstractDirectorTest
                 Utils::getMilestones($scheduleDescription),
                 new PlainConvertStrategy($this->getConfig()),
                 new InitiativeLimitStrategy(2),
-                new ToDateScheduleStrategy(Utils::getMilestoneEndDate($scheduleDescription)),
+                new ToDateScheduleStrategy(Utils::getProjectEndDate($scheduleDescription)),
             )
         );
         $scheduleUtil = new ScheduleUtil();

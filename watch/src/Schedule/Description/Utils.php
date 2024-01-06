@@ -18,13 +18,13 @@ class Utils
             fn($line) => strlen($line) > 0)
         ];
 
-        $milestoneEndDate = self::getMilestoneEndDate($description);
-        $milestoneEndGap = self::getProjectEndGap($description);
+        $projectEndDate = self::getProjectEndDate($description);
+        $projectEndGap = self::getProjectEndGap($description);
 
         $links = [];
         $issues = array_reduce(
             array_filter($lines, fn($line) => !str_contains($line, '^')),
-            function($issues, $line) use ($getAttributesByState, $milestoneEndDate, $milestoneEndGap, &$links) {
+            function($issues, $line) use ($getAttributesByState, $projectEndDate, $projectEndGap, &$links) {
                 $issueData = explode('|', $line);
                 $started = str_ends_with($issueData[0], '~');
                 $completed = str_ends_with($issueData[0], '+');
@@ -32,7 +32,7 @@ class Utils
                 $duration = strlen(trim($issueData[1]));
                 $attributes = trim($issueData[2]);
                 $isScheduled = in_array(trim($issueData[1])[0], ['*']);
-                $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1])) - $milestoneEndGap;
+                $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1])) - $projectEndGap;
                 $beginGap = $endGap + $duration;
 
                 list($key, $type, $project) = array_map(
@@ -54,8 +54,8 @@ class Utils
                     'project' => $project,
                     'type' => $type,
                     'duration' => $duration,
-                    'begin' => $isScheduled ? $milestoneEndDate->modify("-{$beginGap} day")->format('Y-m-d') : null,
-                    'end' => $isScheduled ? $milestoneEndDate->modify("-{$endGap} day")->format('Y-m-d') : null,
+                    'begin' => $isScheduled ? $projectEndDate->modify("-{$beginGap} day")->format('Y-m-d') : null,
+                    'end' => $isScheduled ? $projectEndDate->modify("-{$endGap} day")->format('Y-m-d') : null,
                     ...(!is_null($getAttributesByState)
                         ? $getAttributesByState($started, $completed)
                         : []
@@ -94,12 +94,12 @@ class Utils
         ];
 
         $milestoneName = current(self::getMilestones($description));
-        $milestoneEndDate = self::getMilestoneEndDate($description);
-        $milestoneEndGap = self::getProjectEndGap($description);
+        $projectEndDate = self::getProjectEndDate($description);
+        $projectEndGap = self::getProjectEndGap($description);
 
-        $criticalChain = [$milestoneEndDate->format('Y-m-d') => $milestoneName];
+        $criticalChain = [$projectEndDate->format('Y-m-d') => $milestoneName];
 
-        $schedule = array_reduce(array_filter($lines, fn($line) => !str_contains($line, '^') && !str_contains($line, '>')), function ($schedule, $line) use ($milestoneEndDate, $milestoneEndGap, &$criticalChain) {
+        $schedule = array_reduce(array_filter($lines, fn($line) => !str_contains($line, '^') && !str_contains($line, '>')), function ($schedule, $line) use ($projectEndDate, $projectEndGap, &$criticalChain) {
             $issueData = explode('|', $line);
             $ignored = str_ends_with($issueData[0], '-');
             $key = trim(rtrim($issueData[0], '-'));
@@ -110,7 +110,7 @@ class Utils
             $isCritical = in_array(trim($issueData[1])[0], ['x']);
             $isBuffer = in_array(trim($issueData[1])[0], ['_', '!']);
             $consumption = substr_count(trim($issueData[1]), '!');
-            $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1])) - $milestoneEndGap;
+            $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1])) - $projectEndGap;
             $beginGap = $endGap + $duration;
 
             if ($isIssue) {
@@ -118,23 +118,23 @@ class Utils
                     'key' => $key,
                     'begin' => $isScheduled
                         ? $ignored
-                            ? $milestoneEndDate->modify("-{$endGap} day")->format('Y-m-d')
-                            : $milestoneEndDate->modify("-{$beginGap} day")->format('Y-m-d')
+                            ? $projectEndDate->modify("-{$endGap} day")->format('Y-m-d')
+                            : $projectEndDate->modify("-{$beginGap} day")->format('Y-m-d')
                         : null,
                     'end' => $isScheduled
-                        ? $milestoneEndDate->modify("-{$endGap} day")->format('Y-m-d')
+                        ? $projectEndDate->modify("-{$endGap} day")->format('Y-m-d')
                         : null,
                 ];
                 if ($isCritical) {
-                    $criticalChain[$milestoneEndDate->modify("-{$endGap} day")->format('Y-m-d')] = $key;
+                    $criticalChain[$projectEndDate->modify("-{$endGap} day")->format('Y-m-d')] = $key;
                 }
             }
 
             if ($isBuffer) {
                 $schedule['buffers'][] = [
                     'key' => $key,
-                    'begin' => $milestoneEndDate->modify("-{$beginGap} day")->format('Y-m-d'),
-                    'end' => $milestoneEndDate->modify("-{$endGap} day")->format('Y-m-d'),
+                    'begin' => $projectEndDate->modify("-{$beginGap} day")->format('Y-m-d'),
+                    'end' => $projectEndDate->modify("-{$endGap} day")->format('Y-m-d'),
                     'consumption' => $consumption,
                 ];
             }
@@ -150,8 +150,8 @@ class Utils
 
         $schedule['milestones'] = [[
             'key' => $milestoneName,
-            'begin' => self::getMilestoneBeginDate($description)->format('Y-m-d'),
-            'end' => $milestoneEndDate->format('Y-m-d'),
+            'begin' => self::getProjectBeginDate($description)->format('Y-m-d'),
+            'end' => $projectEndDate->format('Y-m-d'),
         ]];
 
         krsort($criticalChain);
@@ -172,12 +172,8 @@ class Utils
         );
     }
 
-    public static function getMilestoneBeginDate(string $description): \DateTimeImmutable|null
+    public static function getProjectBeginDate(string $description): \DateTimeImmutable|null
     {
-        $milestoneLines = self::extractMilestoneLines($description);
-        if (empty($milestoneLines)) {
-            return null;
-        }
         $projectBeginGap = self::getProjectBeginGap($description);
         $projectEndGap = self::getProjectEndGap($description);
         $projectLength = self::getProjectLength($description);
@@ -189,12 +185,8 @@ class Utils
                 ?->modify("{$projectBeginGap} day");
     }
 
-    public static function getMilestoneEndDate(string $description): \DateTimeImmutable|null
+    public static function getProjectEndDate(string $description): \DateTimeImmutable|null
     {
-        $milestoneLines = self::extractMilestoneLines($description);
-        if (empty($milestoneLines)) {
-            return null;
-        }
         $projectBeginGap = self::getProjectBeginGap($description);
         $projectEndGap = self::getProjectEndGap($description);
         $projectLength = self::getProjectLength($description);
@@ -210,7 +202,7 @@ class Utils
     {
         $contextLine = self::extractContextLine($description);
         if (empty($contextLine)) {
-            return self::getMilestoneBeginDate($description);
+            return self::getProjectBeginDate($description);
         }
         return self::extractNowDate(
             $contextLine,
