@@ -178,17 +178,15 @@ class Utils
         if (empty($milestoneLines)) {
             return null;
         }
-        $milestoneLine = current($milestoneLines);
-        $issueLines = self::extractIssueLines($description);
         $projectBeginGap = self::getProjectBeginGap($description);
         $projectEndGap = self::getProjectEndGap($description);
         $projectLength = self::getProjectLength($description);
-        return self::isBeginMilestoneMarker($milestoneLine, $issueLines) ?
-            self::getProjectDate($description)
-                ?->modify("{$projectBeginGap} day") :
-            self::getProjectDate($description)
+        return self::isEndMarkers($description)
+            ? self::getProjectDate($description)
                 ?->modify("-{$projectEndGap} day")
-                ?->modify("-{$projectLength} day");
+                ?->modify("-{$projectLength} day")
+            : self::getProjectDate($description)
+                ?->modify("{$projectBeginGap} day");
     }
 
     public static function getMilestoneEndDate(string $description): \DateTimeImmutable|null
@@ -197,17 +195,15 @@ class Utils
         if (empty($milestoneLines)) {
             return null;
         }
-        $milestoneLine = current($milestoneLines);
-        $issueLines = self::extractIssueLines($description);
         $projectBeginGap = self::getProjectBeginGap($description);
         $projectEndGap = self::getProjectEndGap($description);
         $projectLength = self::getProjectLength($description);
-        return self::isBeginMilestoneMarker($milestoneLine, $issueLines) ?
-            self::getProjectDate($description)
+        return self::isEndMarkers($description)
+            ? self::getProjectDate($description)
+                ?->modify("-{$projectEndGap} day")
+            : self::getProjectDate($description)
                 ?->modify("{$projectBeginGap} day")
-                ?->modify("{$projectLength} day") :
-            self::getProjectDate($description)
-                ?->modify("-{$projectEndGap} day");
+                ?->modify("{$projectLength} day");
     }
 
     public static function getNowDate(string $description): \DateTimeImmutable|null
@@ -304,14 +300,6 @@ class Utils
                 fn($acc, $attribute) => $attribute
             );
         return new \DateTimeImmutable(explode(' ', $dateAttribute)[1] ?? '');
-    }
-
-    private static function isBeginMilestoneMarker(string $milestoneLine, array $issueLines): bool
-    {
-        return strpos($milestoneLine, '^') === array_reduce(
-            $issueLines,
-            fn($acc, $line) => max($acc, strpos($line, '|')),
-        );
     }
 
     private static function extractMilestoneName(string $milestoneLine): string
