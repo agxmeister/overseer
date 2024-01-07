@@ -93,11 +93,11 @@ class Utils
             fn($line) => strlen($line) > 0)
         ];
 
-        $milestoneName = current(self::getMilestones($description));
+        $projectMilestoneName = self::getProjectMilestoneName($description);
         $projectEndDate = self::getProjectEndDate($description);
         $projectEndGap = self::getProjectEndGap($description);
 
-        $criticalChain = [$projectEndDate->format('Y-m-d') => $milestoneName];
+        $criticalChain = [$projectEndDate->format('Y-m-d') => $projectMilestoneName];
 
         $schedule = array_reduce(array_filter($lines, fn($line) => !str_contains($line, '^') && !str_contains($line, '>')), function ($schedule, $line) use ($projectEndDate, $projectEndGap, &$criticalChain) {
             $issueData = explode('|', $line);
@@ -149,7 +149,7 @@ class Utils
         ]);
 
         $schedule['milestones'] = [[
-            'key' => $milestoneName,
+            'key' => $projectMilestoneName,
             'begin' => self::getProjectBeginDate($description)->format('Y-m-d'),
             'end' => $projectEndDate->format('Y-m-d'),
         ]];
@@ -262,6 +262,16 @@ class Utils
                         : min($acc, self::extractMilestoneDate($milestoneLine))
                 ),
         );
+    }
+
+    private static function getProjectMilestoneName(string $description): string
+    {
+        return self::extractMilestoneName(array_reduce(
+            self::extractMilestoneLines($description),
+            fn($acc, $milestoneLine) => is_null($acc) || strpos($acc, '^') < strpos($milestoneLine, '^')
+                ? $milestoneLine
+                : $acc,
+        ));
     }
 
     private static function isEndMarkers($description): bool
