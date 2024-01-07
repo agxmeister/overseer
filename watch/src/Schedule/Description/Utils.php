@@ -126,7 +126,7 @@ class Utils
                         : null,
                 ];
                 if ($isCritical) {
-                    $criticalChain[$projectEndDate->modify("-{$endGap} day")->format('Y-m-d')] = $key;
+                    $criticalChain[$projectEndDate->modify("-{$beginGap} day")->format('Y-m-d')] = $key;
                 }
             }
 
