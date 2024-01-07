@@ -46,6 +46,14 @@ class UtilsTest extends Unit
         self::assertEquals($length, Utils::getProjectLength($description));
     }
 
+    /**
+     * @dataProvider dataGetScheduleCriticalChain
+     */
+    public function testGetScheduleCriticalChain($description, $criticalChain)
+    {
+        self::assertEquals($criticalChain, Utils::getSchedule($description)['criticalChain']);
+    }
+
     protected function dataGetMilestones(): array
     {
         return [
@@ -230,6 +238,34 @@ class UtilsTest extends Unit
                     M-01  ^                 # 2023-07-15
                 ',
                 '11',
+            ],
+        ];
+    }
+
+    protected function dataGetScheduleCriticalChain(): array
+    {
+        return [
+            [
+                '
+                    K-01 |xxx| @ M-01
+                    M-01     ^ # 2023-07-15
+                ',
+                ['M-01', 'K-01'],
+            ], [
+                '
+                    K-01 |xxx   | @ K-02 @ M-01
+                    K-02 |   xxx| @ M-02
+                    M-01     ^    # 2023-07-12
+                    M-02        ^ # 2023-07-15
+                ',
+                ['M-02', 'K-02', 'K-01'],
+            ], [
+                '
+                    PB   |   __| @ M-01
+                    K-01 |xxx  | @ PB
+                    M-01       ^ # 2023-07-15
+                ',
+                ['M-01', 'K-01'],
             ],
         ];
     }
