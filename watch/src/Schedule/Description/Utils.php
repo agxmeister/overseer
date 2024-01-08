@@ -162,13 +162,56 @@ class Utils
 
     /**
      * @param string $description
-     * @return string[]
+     * @return array[]
      */
     public static function getMilestones(string $description): array
     {
-        return array_map(
-            fn($line) => self::extractMilestoneName($line),
+        $milestones = array_map(
+            fn($line) => [
+                'key' => self::extractMilestoneName($line),
+                'date' => self::extractMilestoneDate($line),
+            ],
             self::extractMilestoneLines($description),
+        );
+        usort($milestones, fn($a, $b) => $a['date'] < $b['date'] ? -1 : ($a['date'] > $b['date'] ? 1 : 0));
+
+        $isEndMarkers = self::isEndMarkers($description);
+        for ($i = 0; $i < sizeof($milestones); $i++) {
+            $milestones[$i]['begin'] = ($isEndMarkers
+                ? (
+                    $i > 0
+                        ? $milestones[$i - 1]['date']
+                        : self::getProjectBeginDate($description)
+                )
+                : $milestones[$i]['date'])->format('Y-m-d');
+            $milestones[$i]['end'] = ($isEndMarkers
+                ? $milestones[$i]['date']
+                : (
+                    $i < sizeof($milestones) - 1
+                        ? $milestones[$i + 1]['date']
+                        : self::getProjectEndDate($description)
+                ))->format('Y-m-d');
+        }
+
+        return array_map(
+            fn($milestone) => array_filter(
+                (array)$milestone,
+                fn($key) => in_array($key, ['key', 'begin', 'end']),
+                ARRAY_FILTER_USE_KEY
+            ),
+            $milestones,
+        );
+    }
+
+    /**
+     * @param string $description
+     * @return string[]
+     */
+    public static function getMilestoneNames(string $description): array
+    {
+        return array_map(
+            fn($milestone) => $milestone['key'],
+            self::getMilestones($description)
         );
     }
 

@@ -7,6 +7,14 @@ use Watch\Schedule\Description\Utils;
 class UtilsTest extends Unit
 {
     /**
+     * @dataProvider dataGetMilestoneNames
+     */
+    public function testGetMilestoneNames($description, $milestoneNames)
+    {
+        self::assertEquals($milestoneNames, Utils::getMilestoneNames($description));
+    }
+
+    /**
      * @dataProvider dataGetMilestones
      */
     public function testGetMilestones($description, $milestones)
@@ -54,7 +62,7 @@ class UtilsTest extends Unit
         self::assertEquals($criticalChain, Utils::getSchedule($description)['criticalChain']);
     }
 
-    protected function dataGetMilestones(): array
+    protected function dataGetMilestoneNames(): array
     {
         return [
             [
@@ -71,6 +79,73 @@ class UtilsTest extends Unit
                     M-02        ^ # 2023-01-04
                 ',
                 ['M-01', 'M-02'],
+            ],
+        ];
+    }
+
+    protected function dataGetMilestones(): array
+    {
+        return [
+            [
+                '
+                    K-01 |...| @ M-01
+                    M-01     ^ # 2023-01-01
+                ',
+                [
+                    [
+                        'key' => 'M-01',
+                        'begin' => '2022-12-29',
+                        'end' => '2023-01-01',
+                    ],
+                ],
+            ], [
+                '
+                    K-01 |...| @ M-01
+                    M-01 ^     # 2023-01-01
+                ',
+                [
+                    [
+                        'key' => 'M-01',
+                        'begin' => '2023-01-01',
+                        'end' => '2023-01-04',
+                    ],
+                ],
+            ], [
+                '
+                    K-01 |xxx   | @ M-01
+                    K-02 |   xxx| @ M-02
+                    M-01     ^    # 2023-01-01
+                    M-02        ^ # 2023-01-04
+                ',
+                [
+                    [
+                        'key' => 'M-01',
+                        'begin' => '2022-12-29',
+                        'end' => '2023-01-01',
+                    ], [
+                        'key' => 'M-02',
+                        'begin' => '2023-01-01',
+                        'end' => '2023-01-04',
+                    ],
+                ],
+            ], [
+                '
+                    K-01 |xxx   | @ M-01
+                    K-02 |   xxx| @ M-02
+                    M-01 ^        # 2023-01-01
+                    M-02     ^    # 2023-01-04
+                ',
+                [
+                    [
+                        'key' => 'M-01',
+                        'begin' => '2023-01-01',
+                        'end' => '2023-01-04',
+                    ], [
+                        'key' => 'M-02',
+                        'begin' => '2023-01-04',
+                        'end' => '2023-01-07',
+                    ],
+                ],
             ],
         ];
     }
