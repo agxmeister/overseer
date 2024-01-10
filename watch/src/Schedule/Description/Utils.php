@@ -322,9 +322,12 @@ class Utils
         return array_reduce(
             self::extractMilestoneLines($description),
             fn($acc, $line) => max($acc, strrpos($line, '^')),
-        ) === array_reduce(
-            self::extractIssueLines($description),
-            fn($acc, $line) => max($acc, strrpos($line, '|')),
+        ) >= array_reduce(
+            array_map(
+                fn($line) => rtrim(substr($line, 0, strrpos($line, '|'))),
+                self::extractIssueLines($description)
+            ),
+            fn($acc, $line) => max($acc, strlen($line)),
         );
     }
 
