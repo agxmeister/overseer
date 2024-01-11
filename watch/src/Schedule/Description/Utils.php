@@ -217,8 +217,9 @@ class Utils
 
     public static function getProjectBeginDate(string $description): \DateTimeImmutable|null
     {
-        $projectBeginGap = self::getProjectBeginGap($description);
-        $projectEndGap = self::getProjectEndGap($description);
+        $isApplyGaps = self::isApplyProjectGaps($description);
+        $projectBeginGap = $isApplyGaps ? self::getProjectBeginGap($description) : 0;
+        $projectEndGap = $isApplyGaps ? self::getProjectEndGap($description): 0;
         $projectLength = self::getProjectLength($description);
         return self::isEndMarkers($description)
             ? self::getProjectDate($description)
@@ -230,8 +231,9 @@ class Utils
 
     public static function getProjectEndDate(string $description): \DateTimeImmutable|null
     {
-        $projectBeginGap = self::getProjectBeginGap($description);
-        $projectEndGap = self::getProjectEndGap($description);
+        $isApplyGaps = self::isApplyProjectGaps($description);
+        $projectBeginGap = $isApplyGaps ? self::getProjectBeginGap($description) : 0;
+        $projectEndGap = $isApplyGaps ? self::getProjectEndGap($description): 0;
         $projectLength = self::getProjectLength($description);
         return self::isEndMarkers($description)
             ? self::getProjectDate($description)
@@ -328,6 +330,32 @@ class Utils
                 self::extractIssueLines($description)
             ),
             fn($acc, $line) => max($acc, strlen($line)),
+        );
+    }
+
+    private static function isApplyProjectGaps($description): bool
+    {
+        return array_reduce(
+            self::extractMilestoneLines($description),
+            fn($acc, $line) => in_array(strpos($line, '^'), [
+                array_reduce(
+                    array_map(
+                        fn($line) => strpos($line, '|'),
+                        self::extractIssueLines($description)
+                    ),
+                    fn($acc, $position) => min($acc, $position),
+                    PHP_INT_MAX,
+                ),
+                array_reduce(
+                    array_map(
+                        fn($line) => strrpos($line, '|'),
+                        self::extractIssueLines($description)
+                    ),
+                    fn($acc, $position) => max($acc, $position),
+                    0,
+                ),
+            ]),
+            false,
         );
     }
 
