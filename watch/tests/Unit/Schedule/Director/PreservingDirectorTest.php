@@ -38,7 +38,7 @@ class PreservingDirectorTest extends AbstractDirectorTest
                 K-01          |        ****      |
                 K-02          |    ****          | @ K-01
                 K-03         +|****              | @ K-02
-                                                 ^ # 2023-09-21
+                              ^                    # 2023-09-03
             ', '
                                          >
                 finish-buffer |            !!____| @ finish
@@ -50,7 +50,7 @@ class PreservingDirectorTest extends AbstractDirectorTest
                 K-01          |      ****    |
                 K-02          |  ****        | & K-01
                 K-03          |****          | & K-01
-                                             ^ # 2023-09-21
+                              ^                # 2023-09-07
             ', '
                                        >
                 finish-buffer |          !!__| @ finish
