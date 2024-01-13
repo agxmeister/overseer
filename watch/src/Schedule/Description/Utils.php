@@ -263,31 +263,20 @@ class Utils
 
     private static function getProjectBeginGap(string $description): int
     {
-        return self::getProjectGap($description, true);
+        return array_reduce(
+            self::extractTracks($description),
+            fn($acc, $track) => min($acc, strlen($track) - strlen(ltrim($track))),
+            PHP_INT_MAX
+        );
     }
 
     private static function getProjectEndGap(string $description): int
     {
-        return self::getProjectGap($description, false);
-    }
-
-    private static function getProjectGap(string $description, $isBegin): int
-    {
-        $tracks = self::extractTracks($description);
-        $maxTrackLength = array_reduce(
-            $tracks,
-            fn(int $acc, string $track) => max($acc, strlen($track)),
-            0,
+        return array_reduce(
+            self::extractTracks($description),
+            fn($acc, $track) => min($acc, strlen($track) - strlen(rtrim($track))),
+            PHP_INT_MAX
         );
-        $maxTrackLengthTrimmed = array_reduce(
-            array_map(
-                fn(string $track) => $isBegin ? ltrim($track) : rtrim($track),
-                $tracks,
-            ),
-            fn(int $acc, string $line) => max($acc, strlen($line)),
-            0,
-        );
-        return $maxTrackLength - $maxTrackLengthTrimmed;
     }
 
     private static function getProjectDate(string $description): \DateTimeImmutable|null
