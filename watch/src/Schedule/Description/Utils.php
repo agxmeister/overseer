@@ -245,12 +245,20 @@ class Utils
 
     public static function getProjectLength(string $description): int
     {
-        $maxTrackLength = array_reduce(
-            self::extractTracks($description),
-            fn(int $acc, string $track) => max($acc, strlen($track)),
-            0,
+        $tracks = self::extractTracks($description);
+        return array_reduce(
+            $tracks,
+            fn($acc, $track) => max($acc, strlen($track)),
+            0
+        ) - array_reduce(
+            $tracks,
+            fn($acc, $track) => min($acc, strlen($track) - strlen(rtrim($track))),
+            PHP_INT_MAX
+        ) - array_reduce(
+            $tracks,
+            fn($acc, $track) => min($acc, strlen($track) - strlen(ltrim($track))),
+            PHP_INT_MAX
         );
-        return $maxTrackLength - self::getProjectBeginGap($description) - self::getProjectEndGap($description);
     }
 
     private static function getProjectBeginGap(string $description): int
