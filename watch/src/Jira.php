@@ -5,6 +5,7 @@ namespace Watch;
 use GuzzleHttp\Exception\GuzzleException;
 use Watch\Jira\Client;
 use Watch\Subject\Model\Issue;
+use Watch\Subject\Model\Joint;
 use Watch\Subject\Model\Link;
 use Watch\Subject\Model\Sample;
 
@@ -32,16 +33,24 @@ readonly class Jira
      */
     public function getIssues(string $jql): Sample
     {
-        $response = $this->client->http->post('search', [
+        $issues = json_decode($this->client->http->post('search', [
             'json' => [
                 'jql' => $jql,
             ],
-        ]);
+        ])->getBody())->issues;
         return new Sample(
             array_map(
-                fn($issueRaw) => $this->getIssueByFields($issueRaw),
-                json_decode($response->getBody())->issues
+                fn($issue) => $this->getIssueByFields($issue),
+                $issues,
             ),
+            array_reduce(
+                array_map(
+                    fn($issue) => $this->getJoints($issue),
+                    $issues,
+                ),
+                fn($acc, $joints) => [...$acc, ...$joints],
+                [],
+            )
         );
     }
 
@@ -193,6 +202,36 @@ readonly class Jira
                 )),
             ],
         ]);
+    }
+
+    private function getJoints($issue): array
+    {
+        return [
+            ...array_values(array_map(
+                fn($link) => new Joint(
+                    $link->id,
+                    $link->outwardIssue->key,
+                    $issue->key,
+                    $link->type->name,
+                ),
+                array_filter(
+                    $issue->fields->issuelinks,
+                    fn($link) => isset($link->outwardIssue)
+                )
+            )),
+            ...array_values(array_map(
+                fn($link) => new Joint(
+                    $link->id,
+                    $issue->key,
+                    $link->inwardIssue->key,
+                    $link->type->name,
+                ),
+                array_filter(
+                    $issue->fields->issuelinks,
+                    fn($link) => isset($link->inwardIssue)
+                )
+            )),
+        ];
     }
 
     private function getFieldsByIssueAttributes(array $attributes): array
