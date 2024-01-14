@@ -24,11 +24,11 @@ readonly class PutSchedule
     public function __invoke(Request $request, Response $response, $args): Response
     {
         $params = json_decode(file_get_contents('php://input'));
-        $issues = $this->jira->getIssues('');
+        $sample = $this->jira->getIssues('');
         $director = new Director(
             new Builder(
                 new Context(new \DateTimeImmutable(date('Y-m-d')), $this->factory),
-                $issues,
+                $sample->issues,
                 ['finish'],
                 new PlainConvertStrategy($this->config),
                 new InitiativeLimitStrategy(2),
