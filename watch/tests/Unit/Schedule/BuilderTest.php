@@ -23,6 +23,7 @@ class BuilderTest extends Unit
         $builder = new Builder(
             new Context(new \DateTimeImmutable('2023-01-01'), new Factory()),
             Utils::getIssues($issuesDescription),
+            [],
             ['finish'],
             new PlainConvertStrategy($this->getConfig()),
         );
@@ -43,6 +44,7 @@ class BuilderTest extends Unit
         $builder = new Builder(
             new Context(new \DateTimeImmutable('2023-01-01'), new Factory()),
             Utils::getIssues($issuesDescription),
+            [],
             ['finish'],
             new PlainConvertStrategy($this->getConfig()),
         );

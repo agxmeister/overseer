@@ -14,6 +14,8 @@ use Watch\Schedule\Model\Milestone;
 use Watch\Schedule\Model\MilestoneBuffer;
 use Watch\Schedule\Model\Node;
 use Watch\Subject\Model\Issue;
+use Watch\Subject\Model\Joint;
+use Watch\Subject\Model\Link as SubjectLink;
 
 class Builder
 {
@@ -22,6 +24,7 @@ class Builder
     /**
      * @param Context $context
      * @param Issue[] $issues
+     * @param Joint[] $joints
      * @param string[] $milestones
      * @param ConvertStrategy $convertStrategy
      * @param LimitStrategy|null $limitStrategy
@@ -30,6 +33,7 @@ class Builder
     public function __construct(
         protected readonly Context $context,
         protected readonly array $issues,
+        protected readonly array $joints,
         protected readonly array $milestones,
         private readonly ConvertStrategy $convertStrategy,
         private readonly LimitStrategy|null $limitStrategy = null,
@@ -62,7 +66,15 @@ class Builder
 
         $this->milestone = new Milestone(current($this->milestones));
         foreach ($this->issues as $issue) {
-            $inwards = $issue->getInwardLinks();
+            $inwards = $this->joints
+                ? array_map(
+                    fn($joint) => new SubjectLink($joint->id, $joint->to, $joint->type, SubjectLink::ROLE_INWARD),
+                    array_filter(
+                        $this->joints,
+                        fn($joint) => $joint->from === $issue->key,
+                    ),
+                )
+                : $issue->getInwardLinks();
             foreach ($inwards as $link) {
                 $follower = $nodes[$link->key] ?? null;
                 $preceder = $nodes[$issue->key] ?? null;

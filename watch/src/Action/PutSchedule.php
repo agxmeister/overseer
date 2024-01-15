@@ -29,6 +29,7 @@ readonly class PutSchedule
             new Builder(
                 new Context(new \DateTimeImmutable(date('Y-m-d')), $this->factory),
                 $sample->issues,
+                $sample->joints,
                 ['finish'],
                 new PlainConvertStrategy($this->config),
                 new InitiativeLimitStrategy(2),
