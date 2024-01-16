@@ -3,12 +3,14 @@
 namespace Watch\Schedule\Description;
 
 use Watch\Subject\Model\Issue;
+use Watch\Subject\Model\Joint;
 use Watch\Subject\Model\Link;
 
 class Utils
 {
     /**
      * @param string $description
+     * @param callable|null $getAttributesByState
      * @return Issue[]
      */
     public static function getIssues(string $description, callable $getAttributesByState = null): array
@@ -84,6 +86,51 @@ class Utils
         }
 
         return array_map(fn(array $issue) => new Issue(...$issue), array_values($issues));
+    }
+
+    /**
+     * @param string $description
+     * @return Joint[]
+     */
+    public static function getJoints(string $description): array
+    {
+        $getIssueKey = function (string $line): string {
+            $issueData = explode('|', $line);
+            $name = trim(rtrim($issueData[0], '~+'));
+            list($key, $type, $project) = array_map(
+                fn($name, $value) => $value ?? match($name) {
+                    'project' => 'PRJ',
+                    'type' => 'T',
+                    default => null,
+                },
+                ['key', 'type', 'project'],
+                array_reverse(explode('/', $name)),
+            );
+            return $key;
+        };
+
+        $getIssueAttributes = function (string $line): string {
+            $issueData = explode('|', $line);
+            return trim($issueData[2]);
+        };
+
+        return array_map(
+            fn($link) => new Joint(0, $link['from'], $link['to'], $link['type']),
+            array_reduce(
+                array_filter(
+                    array_filter(
+                        array_map(fn($line) => trim($line), explode("\n", $description)),
+                        fn($line) => strlen($line) > 0
+                    ),
+                    fn($line) => !str_contains($line, '^'),
+                ),
+                fn($acc, $line) => [
+                    ...$acc,
+                    ...self::getLinks($getIssueKey($line), $getIssueAttributes($line), 'subject')
+                ],
+                [],
+            ),
+        );
     }
 
     public static function getSchedule(string $description): array

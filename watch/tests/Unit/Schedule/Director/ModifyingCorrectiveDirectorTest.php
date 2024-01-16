@@ -23,7 +23,7 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
             new Builder(
                 new Context(Utils::getNowDate($scheduleDescription), new Factory()),
                 Utils::getIssues($issuesDescription),
-                [],
+                Utils::getJoints($issuesDescription),
                 Utils::getMilestoneNames($scheduleDescription),
                 new PlainConvertStrategy($this->getConfig()),
                 new CorrectiveLimitStrategy(2),
@@ -46,7 +46,7 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
             new Builder(
                 new Context(Utils::getNowDate($scheduleDescription), new Factory()),
                 Utils::getIssues($issuesDescription),
-                [],
+                Utils::getJoints($issuesDescription),
                 Utils::getMilestoneNames($scheduleDescription),
                 new PlainConvertStrategy($this->getConfig()),
                 new CorrectiveLimitStrategy(2),
