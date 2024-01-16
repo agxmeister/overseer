@@ -66,15 +66,13 @@ class Builder
 
         $this->milestone = new Milestone(current($this->milestones));
         foreach ($this->issues as $issue) {
-            $inwards = $this->joints
-                ? array_map(
-                    fn($joint) => new SubjectLink($joint->id, $joint->to, $joint->type, SubjectLink::ROLE_INWARD),
-                    array_filter(
-                        $this->joints,
-                        fn($joint) => $joint->from === $issue->key,
-                    ),
-                )
-                : $issue->getInwardLinks();
+            $inwards = array_map(
+                fn($joint) => new SubjectLink($joint->id, $joint->to, $joint->type, SubjectLink::ROLE_INWARD),
+                array_filter(
+                    $this->joints,
+                    fn($joint) => $joint->from === $issue->key,
+                ),
+            );
             foreach ($inwards as $link) {
                 $follower = $nodes[$link->key] ?? null;
                 $preceder = $nodes[$issue->key] ?? null;
