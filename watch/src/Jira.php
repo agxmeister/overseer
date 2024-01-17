@@ -27,6 +27,16 @@ readonly class Jira
     }
 
     /**
+     * @param string $issueId
+     * @return Joint[]
+     */
+    public function getJoints(string $issueId): array
+    {
+        $response = $this->client->http->get("issue/$issueId");
+        return $this->getJointsByFields(json_decode($response->getBody()));
+    }
+
+    /**
      * @param string $jql
      * @return Sample
      * @throws GuzzleException
@@ -45,7 +55,7 @@ readonly class Jira
             ),
             array_reduce(
                 array_map(
-                    fn($issue) => $this->getJoints($issue),
+                    fn($issue) => $this->getJointsByFields($issue),
                     $issues,
                 ),
                 fn($acc, $joints) => [...$acc, ...$joints],
@@ -204,7 +214,7 @@ readonly class Jira
         ]);
     }
 
-    private function getJoints($issue): array
+    private function getJointsByFields($issue): array
     {
         return [
             ...array_values(array_map(
