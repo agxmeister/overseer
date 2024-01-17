@@ -4,7 +4,6 @@ namespace Watch\Schedule\Description;
 
 use Watch\Subject\Model\Issue;
 use Watch\Subject\Model\Joint;
-use Watch\Subject\Model\Link;
 
 class Utils
 {
@@ -23,7 +22,6 @@ class Utils
         $projectEndDate = self::getProjectEndDate($description);
         $projectEndGap = self::getProjectEndGap($description);
 
-        $links = [];
         $issues = array_reduce(
             array_filter($lines, fn($line) => !str_contains($line, '^')),
             function($issues, $line) use ($getAttributesByState, $projectEndDate, $projectEndGap, &$links) {
@@ -32,7 +30,6 @@ class Utils
                 $completed = str_ends_with($issueData[0], '+');
                 $name = trim(rtrim($issueData[0], '~+'));
                 $duration = strlen(trim($issueData[1]));
-                $attributes = trim($issueData[2]);
                 $isScheduled = in_array(trim($issueData[1])[0], ['*']);
                 $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1])) - $projectEndGap;
                 $beginGap = $endGap + $duration;
@@ -47,8 +44,6 @@ class Utils
                     array_reverse(explode('/', $name)),
                 );
 
-                $links = [...$links, ...self::getLinks($key, $attributes, 'subject')];
-
                 $issues[$key] = [
                     'key' => $key,
                     'summary' => $key,
@@ -62,28 +57,12 @@ class Utils
                         ? $getAttributesByState($started, $completed)
                         : []
                     ),
-                    'links' => [],
                 ];
 
                 return $issues;
             },
             []
         );
-
-        foreach($links as $link) {
-            $issues[$link['from']]['links'][] = new Link(
-                0,
-                $link['to'],
-                $link['type'],
-                Link::ROLE_INWARD,
-            );
-            $issues[$link['to']]['links'][] = new Link(
-                0,
-                $link['from'],
-                $link['type'],
-                Link::ROLE_OUTWARD,
-            );
-        }
 
         return array_map(fn(array $issue) => new Issue(...$issue), array_values($issues));
     }

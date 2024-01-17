@@ -185,32 +185,6 @@ readonly class Jira
             'duration' => (int)$issue->fields->customfield_10038,
             'begin' => $begin,
             'end' => $end,
-            'links' => [
-                ...array_values(array_map(
-                    fn($link) => new Link(
-                        $link->id,
-                        $link->outwardIssue->key,
-                        $link->type->name,
-                        Link::ROLE_OUTWARD,
-                    ),
-                    array_filter(
-                        $issue->fields->issuelinks,
-                        fn($link) => isset($link->outwardIssue)
-                    )
-                )),
-                ...array_values(array_map(
-                    fn($link) => new Link(
-                        $link->id,
-                        $link->inwardIssue->key,
-                        $link->type->name,
-                        Link::ROLE_INWARD,
-                    ),
-                    array_filter(
-                        $issue->fields->issuelinks,
-                        fn($link) => isset($link->inwardIssue)
-                    )
-                )),
-            ],
         ]);
     }
 

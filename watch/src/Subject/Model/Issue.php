@@ -14,22 +14,7 @@ readonly class Issue
         public int|null    $duration = null,
         public string|null $begin = null,
         public string|null $end = null,
-        /* @var Link[]|null */
-        public array|null  $links = null,
     )
     {
-    }
-
-    /**
-     * @return Link[]
-     */
-    public function getInwardLinks(): array
-    {
-        return array_filter($this->links, fn(Link $link) => $link->role === Link::ROLE_INWARD);
-    }
-
-    public function getOutwardLinks(): array
-    {
-        return array_filter($this->links, fn(Link $link) => $link->role === Link::ROLE_OUTWARD);
     }
 }
