@@ -15,7 +15,6 @@ use Watch\Schedule\Model\MilestoneBuffer;
 use Watch\Schedule\Model\Node;
 use Watch\Subject\Model\Issue;
 use Watch\Subject\Model\Joint;
-use Watch\Subject\Model\Link as SubjectLink;
 
 class Builder
 {
@@ -66,25 +65,18 @@ class Builder
 
         $this->milestone = new Milestone(current($this->milestones));
         foreach ($this->issues as $issue) {
-            $inwards = array_map(
-                fn($joint) => new SubjectLink($joint->id, $joint->to, $joint->type, SubjectLink::ROLE_INWARD),
-                array_filter(
-                    $this->joints,
-                    fn($joint) => $joint->from === $issue->key,
-                ),
+            $outgoingJoints = array_filter(
+                $this->joints,
+                fn($joint) => $joint->from === $issue->key,
             );
-            foreach ($inwards as $link) {
-                $follower = $nodes[$link->key] ?? null;
-                $preceder = $nodes[$issue->key] ?? null;
-                if (!is_null($preceder) && !is_null($follower)) {
-                    $follower->follow($preceder, $this->context->factory->getLink($link)->getType());
-                }
+            foreach ($outgoingJoints as $joint) {
+                $nodes[$joint->to]->follow(
+                    $nodes[$joint->from],
+                    $joint->type === 'Depends' ? Link::TYPE_SEQUENCE : Link::TYPE_SCHEDULE,
+                );
             }
-            if (empty($inwards)) {
-                $node = $nodes[$issue->key] ?? null;
-                if (!is_null($nodes)) {
-                    $this->milestone->follow($node, Link::TYPE_SCHEDULE);
-                }
+            if (empty($outgoingJoints)) {
+                $this->milestone->follow($nodes[$issue->key], Link::TYPE_SCHEDULE);
             }
         }
 
