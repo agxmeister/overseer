@@ -6,7 +6,6 @@ use GuzzleHttp\Exception\GuzzleException;
 use Watch\Jira\Client;
 use Watch\Subject\Model\Issue;
 use Watch\Subject\Model\Joint;
-use Watch\Subject\Model\Link;
 use Watch\Subject\Model\Sample;
 
 readonly class Jira

@@ -8,7 +8,6 @@ use Watch\Jira;
 use Watch\Schedule\Description\Utils as DescriptionUtils;
 use Watch\Subject\Model\Issue;
 use Watch\Subject\Model\Joint;
-use Watch\Subject\Model\Link;
 
 readonly class CreateMilestone
 {
