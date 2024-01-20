@@ -9,6 +9,7 @@ use Watch\Schedule\Builder\Strategy\Convert\Plain as PlainConvertStrategy;
 use Watch\Schedule\Builder\Strategy\Limit\Simple as SimpleLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Director;
+use Watch\Schedule\Mapper;
 use Watch\Subject\Decorator\Factory;
 
 class ModifyingSimpleDirectorTest extends AbstractDirectorTest
@@ -24,6 +25,7 @@ class ModifyingSimpleDirectorTest extends AbstractDirectorTest
                 Utils::getIssues($issuesDescription),
                 Utils::getJoints($issuesDescription),
                 Utils::getMilestoneNames($scheduleDescription),
+                new Mapper(["Depends"], ["Follows"]),
                 new PlainConvertStrategy($this->getConfig()),
                 new SimpleLimitStrategy(),
                 new ToDateScheduleStrategy(Utils::getProjectEndDate($scheduleDescription)),

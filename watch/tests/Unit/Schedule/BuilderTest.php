@@ -8,6 +8,7 @@ use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Strategy\Convert\Plain as PlainConvertStrategy;
 use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder\Context;
+use Watch\Schedule\Mapper;
 use Watch\Subject\Decorator\Factory;
 
 class BuilderTest extends Unit
@@ -25,6 +26,7 @@ class BuilderTest extends Unit
             Utils::getIssues($issuesDescription),
             Utils::getJoints($issuesDescription),
             ['finish'],
+            new Mapper(["Depends"], ["Follows"]),
             new PlainConvertStrategy($this->getConfig()),
         );
         $builder->run();
@@ -46,6 +48,7 @@ class BuilderTest extends Unit
             Utils::getIssues($issuesDescription),
             Utils::getJoints($issuesDescription),
             ['finish'],
+            new Mapper(["Depends"], ["Follows"]),
             new PlainConvertStrategy($this->getConfig()),
         );
         $builder->run();

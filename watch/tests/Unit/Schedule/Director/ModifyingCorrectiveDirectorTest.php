@@ -10,6 +10,7 @@ use Watch\Schedule\Builder\Strategy\Limit\Corrective as CorrectiveLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\FromDate as FromDateScheduleStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Director;
+use Watch\Schedule\Mapper;
 use Watch\Subject\Decorator\Factory;
 
 class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
@@ -25,6 +26,7 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
                 Utils::getIssues($issuesDescription),
                 Utils::getJoints($issuesDescription),
                 Utils::getMilestoneNames($scheduleDescription),
+                new Mapper(["Depends"], ["Follows"]),
                 new PlainConvertStrategy($this->getConfig()),
                 new CorrectiveLimitStrategy(2),
                 new FromDateScheduleStrategy(Utils::getProjectBeginDate($scheduleDescription)),
@@ -48,6 +50,7 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
                 Utils::getIssues($issuesDescription),
                 Utils::getJoints($issuesDescription),
                 Utils::getMilestoneNames($scheduleDescription),
+                new Mapper(["Depends"], ["Follows"]),
                 new PlainConvertStrategy($this->getConfig()),
                 new CorrectiveLimitStrategy(2),
                 new ToDateScheduleStrategy(Utils::getProjectEndDate($scheduleDescription)),

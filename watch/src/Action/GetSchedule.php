@@ -11,6 +11,7 @@ use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\Strategy\Convert\Plain as PlainConvertStrategy;
 use Watch\Schedule\Director;
+use Watch\Schedule\Mapper;
 use Watch\Subject\Decorator\Factory;
 
 readonly class GetSchedule
@@ -28,6 +29,10 @@ readonly class GetSchedule
                 $sample->issues,
                 $sample->joints,
                 ['finish'],
+                new Mapper(
+                    $this->config->schedule->link->type->sequence->joints,
+                    $this->config->schedule->link->type->schedule->joints,
+                ),
                 new PlainConvertStrategy($this->config),
             )
         );

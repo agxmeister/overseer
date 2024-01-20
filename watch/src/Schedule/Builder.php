@@ -34,6 +34,7 @@ class Builder
         protected readonly array $issues,
         protected readonly array $joints,
         protected readonly array $milestones,
+        private readonly Mapper $mapper,
         private readonly ConvertStrategy $convertStrategy,
         private readonly LimitStrategy|null $limitStrategy = null,
         private readonly ScheduleStrategy|null $scheduleStrategy = null,
@@ -72,7 +73,7 @@ class Builder
             foreach ($outgoingJoints as $joint) {
                 $nodes[$joint->to]->follow(
                     $nodes[$joint->from],
-                    $joint->type === 'Depends' ? Link::TYPE_SEQUENCE : Link::TYPE_SCHEDULE,
+                    $this->mapper->getLinkType($joint->type),
                 );
             }
             if (empty($outgoingJoints)) {

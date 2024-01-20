@@ -1,4 +1,16 @@
 {
+    "schedule": {
+        "link": {
+            "type": {
+                "sequence": {
+                    "joints": ["Depends"]
+                },
+                "schedule": {
+                    "joints": ["Follows"]
+                }
+            }
+        }
+    },
     "jira": {
         "fields": [
             {

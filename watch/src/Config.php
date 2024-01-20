@@ -3,6 +3,7 @@
 namespace Watch;
 
 /**
+ * @property mixed $schedule
  * @property mixed $jira
  */
 readonly class Config

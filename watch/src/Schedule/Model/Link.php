@@ -8,6 +8,7 @@ readonly class Link implements LinkDecorator
 {
     const TYPE_SEQUENCE = 'sequence';
     const TYPE_SCHEDULE = 'schedule';
+    const TYPE_UNKNOWN = 'unknown';
 
     public function __construct(private Node $node, private string $type = self::TYPE_SEQUENCE)
     {

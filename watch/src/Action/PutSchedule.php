@@ -13,6 +13,7 @@ use Watch\Schedule\Builder\Strategy\Limit\Initiative as InitiativeLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Builder\Strategy\Convert\Plain as PlainConvertStrategy;
 use Watch\Schedule\Director;
+use Watch\Schedule\Mapper;
 use Watch\Subject\Decorator\Factory;
 
 readonly class PutSchedule
@@ -31,6 +32,10 @@ readonly class PutSchedule
                 $sample->issues,
                 $sample->joints,
                 ['finish'],
+                new Mapper(
+                    $this->config->schedule->link->type->sequence->joints,
+                    $this->config->schedule->link->type->schedule->joints,
+                ),
                 new PlainConvertStrategy($this->config),
                 new InitiativeLimitStrategy(2),
                 new ToDateScheduleStrategy(new \DateTimeImmutable($params->date)),
