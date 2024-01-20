@@ -2,9 +2,7 @@
 
 namespace Watch\Schedule\Model;
 
-use Watch\Decorator\Link as LinkDecorator;
-
-readonly class Link implements LinkDecorator
+readonly class Link
 {
     const TYPE_SEQUENCE = 'sequence';
     const TYPE_SCHEDULE = 'schedule';

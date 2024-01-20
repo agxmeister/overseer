@@ -8,7 +8,6 @@ use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Director;
 use Watch\Schedule\Mapper;
-use Watch\Subject\Decorator\Factory;
 
 class PreservingDirectorTest extends AbstractDirectorTest
 {
@@ -19,7 +18,7 @@ class PreservingDirectorTest extends AbstractDirectorTest
     {
         $director = new Director(
             new Builder(
-                new Context(Utils::getNowDate($scheduleDescription), new Factory()),
+                new Context(Utils::getNowDate($scheduleDescription)),
                 Utils::getIssues($issuesDescription),
                 Utils::getJoints($issuesDescription),
                 Utils::getMilestoneNames($scheduleDescription),

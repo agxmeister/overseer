@@ -11,7 +11,6 @@ use Watch\Schedule\Builder\Strategy\Schedule\FromDate as FromDateScheduleStrateg
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Director;
 use Watch\Schedule\Mapper;
-use Watch\Subject\Decorator\Factory;
 
 class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
 {
@@ -22,7 +21,7 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
     {
         $director = new Director(
             new Builder(
-                new Context(Utils::getNowDate($scheduleDescription), new Factory()),
+                new Context(Utils::getNowDate($scheduleDescription)),
                 Utils::getIssues($issuesDescription),
                 Utils::getJoints($issuesDescription),
                 Utils::getMilestoneNames($scheduleDescription),
@@ -46,7 +45,7 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
     {
         $director = new Director(
             new Builder(
-                new Context(Utils::getNowDate($scheduleDescription), new Factory()),
+                new Context(Utils::getNowDate($scheduleDescription)),
                 Utils::getIssues($issuesDescription),
                 Utils::getJoints($issuesDescription),
                 Utils::getMilestoneNames($scheduleDescription),

@@ -9,7 +9,6 @@ use Watch\Schedule\Builder\Strategy\Convert\Plain as PlainConvertStrategy;
 use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Mapper;
-use Watch\Subject\Decorator\Factory;
 
 class BuilderTest extends Unit
 {
@@ -22,7 +21,7 @@ class BuilderTest extends Unit
                                ^ # 2023-09-21
         ';
         $builder = new Builder(
-            new Context(new \DateTimeImmutable('2023-01-01'), new Factory()),
+            new Context(new \DateTimeImmutable('2023-01-01')),
             Utils::getIssues($issuesDescription),
             Utils::getJoints($issuesDescription),
             ['finish'],
@@ -44,7 +43,7 @@ class BuilderTest extends Unit
                                ^ # 2023-09-21
         ';
         $builder = new Builder(
-            new Context(new \DateTimeImmutable('2023-01-01'), new Factory()),
+            new Context(new \DateTimeImmutable('2023-01-01')),
             Utils::getIssues($issuesDescription),
             Utils::getJoints($issuesDescription),
             ['finish'],

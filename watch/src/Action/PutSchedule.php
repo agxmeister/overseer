@@ -14,11 +14,10 @@ use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Builder\Strategy\Convert\Plain as PlainConvertStrategy;
 use Watch\Schedule\Director;
 use Watch\Schedule\Mapper;
-use Watch\Subject\Decorator\Factory;
 
 readonly class PutSchedule
 {
-    public function __construct(private Config $config, private Jira $jira, private Factory $factory, private Util $util)
+    public function __construct(private Config $config, private Jira $jira, private Util $util)
     {
     }
 
@@ -28,7 +27,7 @@ readonly class PutSchedule
         $sample = $this->jira->getIssues('');
         $director = new Director(
             new Builder(
-                new Context(new \DateTimeImmutable(date('Y-m-d')), $this->factory),
+                new Context(new \DateTimeImmutable(date('Y-m-d'))),
                 $sample->issues,
                 $sample->joints,
                 ['finish'],

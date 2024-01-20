@@ -10,7 +10,6 @@ use Watch\Schedule\Builder\Strategy\Convert\Plain as PlainConvertStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Director;
 use Watch\Schedule\Mapper;
-use Watch\Subject\Decorator\Factory;
 
 class ModifyingUnlimitedDirectorTest extends AbstractDirectorTest
 {
@@ -21,7 +20,7 @@ class ModifyingUnlimitedDirectorTest extends AbstractDirectorTest
     {
         $director = new Director(
             new Builder(
-                new Context(Utils::getNowDate($scheduleDescription), new Factory()),
+                new Context(Utils::getNowDate($scheduleDescription)),
                 Utils::getIssues($issuesDescription),
                 Utils::getJoints($issuesDescription),
                 Utils::getMilestoneNames($scheduleDescription),
