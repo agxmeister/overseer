@@ -5,7 +5,6 @@ use Codeception\Test\Unit;
 use Watch\Action\Util\Schedule as ScheduleUtil;
 use Watch\Config;
 use Watch\Schedule\Builder;
-use Watch\Schedule\Builder\Strategy\Convert\Plain as PlainConvertStrategy;
 use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Mapper;
@@ -26,7 +25,6 @@ class BuilderTest extends Unit
             Utils::getJoints($issuesDescription),
             ['finish'],
             new Mapper(["Depends"], ["Follows"], ['In Progress'], ['Done']),
-            new PlainConvertStrategy($this->getConfig()),
         );
         $builder->run();
         $builder->addMilestone();
@@ -48,7 +46,6 @@ class BuilderTest extends Unit
             Utils::getJoints($issuesDescription),
             ['finish'],
             new Mapper(["Depends"], ["Follows"], ['In Progress'], ['Done']),
-            new PlainConvertStrategy($this->getConfig()),
         );
         $builder->run();
         $builder

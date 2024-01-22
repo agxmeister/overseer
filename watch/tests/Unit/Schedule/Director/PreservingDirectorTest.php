@@ -3,7 +3,6 @@ namespace Tests\Unit\Schedule\Director;
 
 use Watch\Action\Util\Schedule as ScheduleUtil;
 use Watch\Schedule\Builder;
-use Watch\Schedule\Builder\Strategy\Convert\Plain as PlainConvertStrategy;
 use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Director;
@@ -23,7 +22,6 @@ class PreservingDirectorTest extends AbstractDirectorTest
                 Utils::getJoints($issuesDescription),
                 Utils::getMilestoneNames($scheduleDescription),
                 new Mapper(["Depends"], ["Follows"], ['In Progress'], ['Done']),
-                new PlainConvertStrategy($this->getConfig()),
             )
         );
         $scheduleUtil = new ScheduleUtil();

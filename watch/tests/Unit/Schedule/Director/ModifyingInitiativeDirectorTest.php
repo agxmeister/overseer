@@ -5,7 +5,6 @@ use Watch\Action\Util\Schedule as ScheduleUtil;
 use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
-use Watch\Schedule\Builder\Strategy\Convert\Plain as PlainConvertStrategy;
 use Watch\Schedule\Builder\Strategy\Limit\Initiative as InitiativeLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Director;
@@ -25,7 +24,6 @@ class ModifyingInitiativeDirectorTest extends AbstractDirectorTest
                 Utils::getJoints($issuesDescription),
                 Utils::getMilestoneNames($scheduleDescription),
                 new Mapper(["Depends"], ["Follows"], ['In Progress'], ['Done']),
-                new PlainConvertStrategy($this->getConfig()),
                 new InitiativeLimitStrategy(2),
                 new ToDateScheduleStrategy(Utils::getProjectEndDate($scheduleDescription)),
             )

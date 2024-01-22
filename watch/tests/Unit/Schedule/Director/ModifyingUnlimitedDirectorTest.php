@@ -6,7 +6,6 @@ use Watch\Schedule\Builder;
 use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\LimitStrategy;
-use Watch\Schedule\Builder\Strategy\Convert\Plain as PlainConvertStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Director;
 use Watch\Schedule\Mapper;
@@ -25,7 +24,6 @@ class ModifyingUnlimitedDirectorTest extends AbstractDirectorTest
                 Utils::getJoints($issuesDescription),
                 Utils::getMilestoneNames($scheduleDescription),
                 new Mapper(["Depends"], ["Follows"], ['In Progress'], ['Done']),
-                new PlainConvertStrategy($this->getConfig()),
                 $this->makeEmpty(LimitStrategy::class),
                 new ToDateScheduleStrategy(Utils::getProjectEndDate($scheduleDescription)),
             )

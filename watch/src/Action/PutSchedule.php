@@ -11,7 +11,6 @@ use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\Strategy\Limit\Initiative as InitiativeLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
-use Watch\Schedule\Builder\Strategy\Convert\Plain as PlainConvertStrategy;
 use Watch\Schedule\Director;
 use Watch\Schedule\Mapper;
 
@@ -37,7 +36,6 @@ readonly class PutSchedule
                     $this->config->schedule->state->started,
                     $this->config->schedule->state->completed,
                 ),
-                new PlainConvertStrategy($this->config),
                 new InitiativeLimitStrategy(2),
                 new ToDateScheduleStrategy(new \DateTimeImmutable($params->date)),
             )

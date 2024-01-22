@@ -6,7 +6,6 @@ use Watch\Schedule;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\LimitStrategy;
 use Watch\Schedule\Builder\ScheduleStrategy;
-use Watch\Schedule\Builder\ConvertStrategy;
 use Watch\Schedule\Model\Buffer;
 use Watch\Schedule\Model\FeedingBuffer;
 use Watch\Schedule\Model\Link;
@@ -26,7 +25,6 @@ class Builder
      * @param Issue[] $issues
      * @param Joint[] $joints
      * @param string[] $milestones
-     * @param ConvertStrategy $convertStrategy
      * @param LimitStrategy|null $limitStrategy
      * @param ScheduleStrategy|null $scheduleStrategy
      */
@@ -36,7 +34,6 @@ class Builder
         protected readonly array $joints,
         protected readonly array $milestones,
         private readonly Mapper $mapper,
-        private readonly ConvertStrategy $convertStrategy,
         private readonly LimitStrategy|null $limitStrategy = null,
         private readonly ScheduleStrategy|null $scheduleStrategy = null,
     )

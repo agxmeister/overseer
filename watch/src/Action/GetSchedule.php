@@ -9,7 +9,6 @@ use Watch\Config;
 use Watch\Jira;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
-use Watch\Schedule\Builder\Strategy\Convert\Plain as PlainConvertStrategy;
 use Watch\Schedule\Director;
 use Watch\Schedule\Mapper;
 
@@ -34,7 +33,6 @@ readonly class GetSchedule
                     $this->config->schedule->state->started,
                     $this->config->schedule->state->completed,
                 ),
-                new PlainConvertStrategy($this->config),
             )
         );
         $schedule = $this->util->serialize($director->build()->release());
