@@ -58,8 +58,7 @@ class Builder
                 fn(Issue $issue) => new Task($issue->key, $issue->duration, [
                     'begin' => $issue->begin,
                     'end' => $issue->end,
-                    'started' => $this->mapper->getState($issue->status) === 'started',
-                    'completed' => $this->mapper->getState($issue->status) === 'completed',
+                    'state' => $this->mapper->getState($issue->status),
                 ]),
                 $this->issues,
             ),
@@ -113,15 +112,13 @@ class Builder
                 $feedingChainLength = array_reduce(
                     array_filter(
                         $notCriticalPreceder->getPreceders(true),
-                        fn(Node $node) => !$node->getAttribute('completed')
+                        fn(Node $node) => $node->getAttribute('state') !== Task::STATE_COMPLETED
                     ),
                     fn(int $acc, Node $node) => max($acc, $node->getDistance()),
                     $notCriticalPreceder->getDistance()
                 )
                     - $notCriticalPreceder->getDistance()
-                    + !$notCriticalPreceder->getAttribute('completed') ?
-                            $notCriticalPreceder->getLength() :
-                            0;
+                    + ($notCriticalPreceder->getAttribute('state') !== Task::STATE_COMPLETED ? $notCriticalPreceder->getLength() : 0);
                 if ($feedingChainLength === 0) {
                     continue;
                 }
