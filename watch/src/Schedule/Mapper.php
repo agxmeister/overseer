@@ -3,6 +3,7 @@
 namespace Watch\Schedule;
 
 use Watch\Schedule\Model\Link;
+use Watch\Schedule\Model\Task;
 
 readonly class Mapper
 {
@@ -27,9 +28,9 @@ readonly class Mapper
     public function getState(string $status): string
     {
         return match (true) {
-            in_array($status, $this->startedStatuses) => 'started',
-            in_array($status, $this->completedStatuses) => 'completed',
-            default => 'unknown',
+            in_array($status, $this->startedStatuses) => Task::STATE_STARTED,
+            in_array($status, $this->completedStatuses) => Task::STATE_COMPLETED,
+            default => Task::STATE_UNKNOWN,
         };
     }
 }
