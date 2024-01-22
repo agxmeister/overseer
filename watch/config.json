@@ -9,6 +9,10 @@
                     "joints": ["Follows"]
                 }
             }
+        },
+        "state": {
+            "started": ["In Progress"],
+            "completed": ["Done"]
         }
     },
     "jira": {

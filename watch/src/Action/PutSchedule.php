@@ -34,6 +34,8 @@ readonly class PutSchedule
                 new Mapper(
                     $this->config->schedule->link->type->sequence->joints,
                     $this->config->schedule->link->type->schedule->joints,
+                    $this->config->schedule->state->started,
+                    $this->config->schedule->state->completed,
                 ),
                 new PlainConvertStrategy($this->config),
                 new InitiativeLimitStrategy(2),

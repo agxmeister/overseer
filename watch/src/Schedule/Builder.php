@@ -13,6 +13,7 @@ use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Milestone;
 use Watch\Schedule\Model\MilestoneBuffer;
 use Watch\Schedule\Model\Node;
+use Watch\Schedule\Model\Task;
 use Watch\Subject\Model\Issue;
 use Watch\Subject\Model\Joint;
 
@@ -57,7 +58,12 @@ class Builder
     {
         $nodes = array_reduce(
             array_map(
-                fn(Issue $issue) => $this->convertStrategy->getTask($issue),
+                fn(Issue $issue) => new Task($issue->key, $issue->duration, [
+                    'begin' => $issue->begin,
+                    'end' => $issue->end,
+                    'started' => $this->mapper->getState($issue->status) === 'started',
+                    'completed' => $this->mapper->getState($issue->status) === 'completed',
+                ]),
                 $this->issues,
             ),
             fn(array $acc, Node $node) => [...$acc, $node->getName() => $node],

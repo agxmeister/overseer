@@ -25,7 +25,7 @@ class BuilderTest extends Unit
             Utils::getIssues($issuesDescription),
             Utils::getJoints($issuesDescription),
             ['finish'],
-            new Mapper(["Depends"], ["Follows"]),
+            new Mapper(["Depends"], ["Follows"], ['In Progress'], ['Done']),
             new PlainConvertStrategy($this->getConfig()),
         );
         $builder->run();
@@ -47,7 +47,7 @@ class BuilderTest extends Unit
             Utils::getIssues($issuesDescription),
             Utils::getJoints($issuesDescription),
             ['finish'],
-            new Mapper(["Depends"], ["Follows"]),
+            new Mapper(["Depends"], ["Follows"], ['In Progress'], ['Done']),
             new PlainConvertStrategy($this->getConfig()),
         );
         $builder->run();
