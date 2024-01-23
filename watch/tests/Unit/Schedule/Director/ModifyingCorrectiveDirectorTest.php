@@ -24,7 +24,7 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
                 Utils::getIssues($issuesDescription),
                 Utils::getJoints($issuesDescription),
                 Utils::getMilestoneNames($scheduleDescription),
-                new Mapper(["Depends"], ["Follows"], ['In Progress'], ['Done']),
+                new Mapper(['In Progress'], ['Done'], ["Depends"], ["Follows"]),
                 new CorrectiveLimitStrategy(2),
                 new FromDateScheduleStrategy(Utils::getProjectBeginDate($scheduleDescription)),
             )
@@ -47,7 +47,7 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
                 Utils::getIssues($issuesDescription),
                 Utils::getJoints($issuesDescription),
                 Utils::getMilestoneNames($scheduleDescription),
-                new Mapper(["Depends"], ["Follows"], ['In Progress'], ['Done']),
+                new Mapper(['In Progress'], ['Done'], ["Depends"], ["Follows"]),
                 new CorrectiveLimitStrategy(2),
                 new ToDateScheduleStrategy(Utils::getProjectEndDate($scheduleDescription)),
             )

@@ -58,7 +58,7 @@ class Builder
                 fn(Issue $issue) => new Task($issue->key, $issue->duration, [
                     'begin' => $issue->begin,
                     'end' => $issue->end,
-                    'state' => $this->mapper->getState($issue->status),
+                    'state' => $this->mapper->getTaskState($issue->status),
                 ]),
                 $this->issues,
             ),

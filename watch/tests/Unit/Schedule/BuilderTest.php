@@ -24,7 +24,7 @@ class BuilderTest extends Unit
             Utils::getIssues($issuesDescription),
             Utils::getJoints($issuesDescription),
             ['finish'],
-            new Mapper(["Depends"], ["Follows"], ['In Progress'], ['Done']),
+            new Mapper(['In Progress'], ['Done'], ["Depends"], ["Follows"]),
         );
         $builder->run();
         $builder->addMilestone();

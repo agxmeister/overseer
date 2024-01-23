@@ -1,18 +1,16 @@
 {
     "schedule": {
-        "link": {
-            "type": {
-                "sequence": {
-                    "joints": ["Depends"]
-                },
-                "schedule": {
-                    "joints": ["Follows"]
-                }
+        "task": {
+            "state": {
+                "started": ["In Progress"],
+                "completed": ["Done"]
             }
         },
-        "state": {
-            "started": ["In Progress"],
-            "completed": ["Done"]
+        "link": {
+            "type": {
+                "sequence": ["Depends"],
+                "schedule": ["Follows"]
+            }
         }
     },
     "jira": {
@@ -37,16 +35,6 @@
             }, {
                 "attribute": "end",
                 "name": "customfield_10037"
-            }
-        ],
-        "statuses": [
-            {
-                "state": "started",
-                "name": "In Progress"
-            },
-            {
-                "state": "completed",
-                "name": "Done"
             }
         ]
     }

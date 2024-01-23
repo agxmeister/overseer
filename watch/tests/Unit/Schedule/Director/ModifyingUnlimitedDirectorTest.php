@@ -23,7 +23,7 @@ class ModifyingUnlimitedDirectorTest extends AbstractDirectorTest
                 Utils::getIssues($issuesDescription),
                 Utils::getJoints($issuesDescription),
                 Utils::getMilestoneNames($scheduleDescription),
-                new Mapper(["Depends"], ["Follows"], ['In Progress'], ['Done']),
+                new Mapper(['In Progress'], ['Done'], ["Depends"], ["Follows"]),
                 $this->makeEmpty(LimitStrategy::class),
                 new ToDateScheduleStrategy(Utils::getProjectEndDate($scheduleDescription)),
             )

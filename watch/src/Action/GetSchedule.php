@@ -28,10 +28,10 @@ readonly class GetSchedule
                 $sample->joints,
                 ['finish'],
                 new Mapper(
-                    $this->config->schedule->link->type->sequence->joints,
-                    $this->config->schedule->link->type->schedule->joints,
-                    $this->config->schedule->state->started,
-                    $this->config->schedule->state->completed,
+                    $this->config->schedule->task->state->started,
+                    $this->config->schedule->task->state->completed,
+                    $this->config->schedule->link->type->sequence,
+                    $this->config->schedule->link->type->schedule,
                 ),
             )
         );
