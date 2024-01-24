@@ -15,6 +15,7 @@ suites:
     unit:
         actor: UnitTester
         path: ./Unit
+        bootstrap: bootstrap.php
         modules:
             enabled: []
 
