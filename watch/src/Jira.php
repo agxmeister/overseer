@@ -5,7 +5,7 @@ namespace Watch;
 use GuzzleHttp\Exception\GuzzleException;
 use Watch\Jira\Client;
 use Watch\Subject\Model\Issue;
-use Watch\Subject\Model\Joint;
+use Watch\Subject\Model\Link;
 use Watch\Subject\Model\Sample;
 
 readonly class Jira
@@ -27,12 +27,13 @@ readonly class Jira
 
     /**
      * @param string $issueId
-     * @return Joint[]
+     * @return Link[]
+     * @throws GuzzleException
      */
-    public function getJoints(string $issueId): array
+    public function getLinks(string $issueId): array
     {
         $response = $this->client->http->get("issue/$issueId");
-        return $this->getJointsByFields(json_decode($response->getBody()));
+        return $this->getLinksByFields(json_decode($response->getBody()));
     }
 
     /**
@@ -54,10 +55,10 @@ readonly class Jira
             ),
             array_reduce(
                 array_map(
-                    fn($issue) => $this->getJointsByFields($issue),
+                    fn($issue) => $this->getLinksByFields($issue),
                     $issues,
                 ),
-                fn($acc, $joints) => [...$acc, ...$joints],
+                fn($acc, $links) => [...$acc, ...$links],
                 [],
             )
         );
@@ -187,11 +188,11 @@ readonly class Jira
         ]);
     }
 
-    private function getJointsByFields($issue): array
+    private function getLinksByFields($issue): array
     {
         return [
             ...array_values(array_map(
-                fn($link) => new Joint(
+                fn($link) => new Link(
                     $link->id,
                     $link->outwardIssue->key,
                     $issue->key,
@@ -203,7 +204,7 @@ readonly class Jira
                 )
             )),
             ...array_values(array_map(
-                fn($link) => new Joint(
+                fn($link) => new Link(
                     $link->id,
                     $issue->key,
                     $link->inwardIssue->key,

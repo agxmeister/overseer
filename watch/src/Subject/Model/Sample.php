@@ -6,9 +6,9 @@ readonly class Sample
 {
     /**
      * @param Issue[] $issues
-     * @param Joint[] $joints
+     * @param Link[] $links
      */
-    public function __construct(public array $issues, public array $joints = [])
+    public function __construct(public array $issues, public array $links = [])
     {
     }
 }

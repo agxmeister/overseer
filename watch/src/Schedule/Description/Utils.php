@@ -3,7 +3,7 @@
 namespace Watch\Schedule\Description;
 
 use Watch\Subject\Model\Issue;
-use Watch\Subject\Model\Joint;
+use Watch\Subject\Model\Link;
 
 class Utils
 {
@@ -69,9 +69,9 @@ class Utils
 
     /**
      * @param string $description
-     * @return Joint[]
+     * @return Link[]
      */
-    public static function getJoints(string $description): array
+    public static function getLinks(string $description): array
     {
         $getIssueKey = function (string $line): string {
             $issueData = explode('|', $line);
@@ -94,7 +94,7 @@ class Utils
         };
 
         return array_map(
-            fn($link) => new Joint(0, $link['from'], $link['to'], $link['type']),
+            fn($link) => new Link(0, $link['from'], $link['to'], $link['type']),
             array_reduce(
                 array_filter(
                     array_filter(
@@ -105,7 +105,7 @@ class Utils
                 ),
                 fn($acc, $line) => [
                     ...$acc,
-                    ...self::getLinks($getIssueKey($line), $getIssueAttributes($line), 'subject')
+                    ...self::getLinksByAttributes($getIssueKey($line), $getIssueAttributes($line), 'subject')
                 ],
                 [],
             ),
@@ -165,7 +165,7 @@ class Utils
                 ];
             }
 
-            $schedule['links'] = [...$schedule['links'], ...self::getLinks($key, $attributes, 'schedule')];
+            $schedule['links'] = [...$schedule['links'], ...self::getLinksByAttributes($key, $attributes, 'schedule')];
 
             return $schedule;
         }, [
@@ -421,7 +421,7 @@ class Utils
         );
     }
 
-    private static function getLinks(string $from, string $attributes, string $model): array
+    private static function getLinksByAttributes(string $from, string $attributes, string $model): array
     {
         $linkAttributes = array_filter(
             array_map(

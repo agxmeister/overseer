@@ -8,13 +8,13 @@ use Watch\Schedule\Builder\LimitStrategy;
 use Watch\Schedule\Builder\ScheduleStrategy;
 use Watch\Schedule\Model\Buffer;
 use Watch\Schedule\Model\FeedingBuffer;
-use Watch\Schedule\Model\Link;
+use Watch\Schedule\Model\Link as ScheduleLink;
 use Watch\Schedule\Model\Milestone;
 use Watch\Schedule\Model\MilestoneBuffer;
 use Watch\Schedule\Model\Node;
 use Watch\Schedule\Model\Task;
 use Watch\Subject\Model\Issue;
-use Watch\Subject\Model\Joint;
+use Watch\Subject\Model\Link as SubjectLink;
 
 class Builder
 {
@@ -23,15 +23,16 @@ class Builder
     /**
      * @param Context $context
      * @param Issue[] $issues
-     * @param Joint[] $joints
+     * @param SubjectLink[] $links
      * @param string[] $milestones
+     * @param Mapper $mapper
      * @param LimitStrategy|null $limitStrategy
      * @param ScheduleStrategy|null $scheduleStrategy
      */
     public function __construct(
         protected readonly Context $context,
         protected readonly array $issues,
-        protected readonly array $joints,
+        protected readonly array $links,
         protected readonly array $milestones,
         private readonly Mapper $mapper,
         private readonly LimitStrategy|null $limitStrategy = null,
@@ -68,18 +69,18 @@ class Builder
 
         $this->milestone = new Milestone(current($this->milestones));
         foreach ($this->issues as $issue) {
-            $outgoingJoints = array_filter(
-                $this->joints,
-                fn($joint) => $joint->from === $issue->key,
+            $outgoingLinks = array_filter(
+                $this->links,
+                fn($link) => $link->from === $issue->key,
             );
-            foreach ($outgoingJoints as $joint) {
-                $nodes[$joint->to]->follow(
-                    $nodes[$joint->from],
-                    $this->mapper->getLinkType($joint->type),
+            foreach ($outgoingLinks as $link) {
+                $nodes[$link->to]->follow(
+                    $nodes[$link->from],
+                    $this->mapper->getLinkType($link->type),
                 );
             }
-            if (empty($outgoingJoints)) {
-                $this->milestone->follow($nodes[$issue->key], Link::TYPE_SCHEDULE);
+            if (empty($outgoingLinks)) {
+                $this->milestone->follow($nodes[$issue->key], ScheduleLink::TYPE_SCHEDULE);
             }
         }
 
@@ -209,14 +210,14 @@ class Builder
             fn($acc, Node $node) => max($acc, $node->getAttribute('end')),
         )));
         $milestoneLength = Utils::getLongestSequence($milestone->getPreceders())->getLength(true);
-        $milestone->setAttribute('begin', $milestoneEndDate->modify("-{$milestoneLength} day")->format("Y-m-d"));
+        $milestone->setAttribute('begin', $milestoneEndDate->modify("-$milestoneLength day")->format("Y-m-d"));
         $milestone->setAttribute('end', $milestoneEndDate->format("Y-m-d"));
     }
 
     private function addBuffer(Buffer $buffer, Node $beforeNode, array $afterNodes): void
     {
-        array_walk($afterNodes, fn(Node $afterNode) => $afterNode->unprecede($beforeNode, Link::TYPE_SCHEDULE));
-        array_walk($afterNodes, fn(Node $afterNode) => $afterNode->precede($buffer, Link::TYPE_SCHEDULE));
-        $buffer->precede($beforeNode, Link::TYPE_SCHEDULE);
+        array_walk($afterNodes, fn(Node $afterNode) => $afterNode->unprecede($beforeNode, ScheduleLink::TYPE_SCHEDULE));
+        array_walk($afterNodes, fn(Node $afterNode) => $afterNode->precede($buffer, ScheduleLink::TYPE_SCHEDULE));
+        $buffer->precede($beforeNode, ScheduleLink::TYPE_SCHEDULE);
     }
 }

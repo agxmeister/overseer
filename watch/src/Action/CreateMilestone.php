@@ -7,7 +7,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Watch\Jira;
 use Watch\Schedule\Description\Utils as DescriptionUtils;
 use Watch\Subject\Model\Issue;
-use Watch\Subject\Model\Joint;
+use Watch\Subject\Model\Link;
 
 readonly class CreateMilestone
 {
@@ -24,7 +24,7 @@ readonly class CreateMilestone
                 'status' => $started ? 'In Progress' : ($completed ? 'Done' : 'To Do'),
             ]
         );
-        $joints = DescriptionUtils::getJoints($description);
+        $links = DescriptionUtils::getLinks($description);
 
         $issueIds = array_reduce(
             $issues,
@@ -35,11 +35,11 @@ readonly class CreateMilestone
             [],
         );
         array_reduce(
-            $joints,
-            fn($acc, Joint $joint) => $this->jira->addLink(
-                $issueIds[$joint->from],
-                $issueIds[$joint->to],
-                $joint->type
+            $links,
+            fn($acc, Link $link) => $this->jira->addLink(
+                $issueIds[$link->from],
+                $issueIds[$link->to],
+                $link->type
             ),
         );
 

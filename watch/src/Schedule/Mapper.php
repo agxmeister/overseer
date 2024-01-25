@@ -25,11 +25,11 @@ readonly class Mapper
         };
     }
 
-    public function getLinkType(string $jointType): string
+    public function getLinkType(string $linkType): string
     {
         return match (true) {
-            in_array($jointType, $this->sequenceLinkTypes) => Link::TYPE_SEQUENCE,
-            in_array($jointType, $this->scheduleLnkTypes) => Link::TYPE_SCHEDULE,
+            in_array($linkType, $this->sequenceLinkTypes) => Link::TYPE_SEQUENCE,
+            in_array($linkType, $this->scheduleLnkTypes) => Link::TYPE_SCHEDULE,
             default => Link::TYPE_UNKNOWN,
         };
     }

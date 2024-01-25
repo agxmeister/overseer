@@ -5,9 +5,9 @@ namespace Watch\Action;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Watch\Jira;
-use Watch\Subject\Model\Joint;
+use Watch\Subject\Model\Link as SubjectLink;
 
-class Link
+readonly class Link
 {
     public function __construct(private Jira $jira)
     {
@@ -18,16 +18,16 @@ class Link
         $from = $args['from'];
         $to = $args['to'];
         $type = $args['type'];
-        $joint = array_reduce(
-            $this->jira->getJoints($from),
-            fn($acc, Joint $joint) =>
-                $joint->from === $from &&
-                $joint->to === $to &&
-                $joint->type === $type
-                    ? $joint
+        $link = array_reduce(
+            $this->jira->getLinks($from),
+            fn($acc, SubjectLink $link) =>
+                $link->from === $from &&
+                $link->to === $to &&
+                $link->type === $type
+                    ? $link
                     : $acc,
         );
-        $this->jira->removeLink($joint->id);
+        $this->jira->removeLink($link->id);
         return $response
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Access-Control-Allow-Origin', '*')
