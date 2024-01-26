@@ -3,9 +3,9 @@
 namespace Watch\Schedule\Builder\Strategy\Limit;
 
 use Watch\Schedule\Builder\LimitStrategy;
-use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Node;
-use Watch\Schedule\Model\Task;
+use Watch\Schedule\Model\Issue;
+use Watch\Schedule\Model\Link;
 use Watch\Schedule\Utils;
 
 readonly class Corrective implements LimitStrategy
@@ -16,7 +16,7 @@ readonly class Corrective implements LimitStrategy
 
     public function apply(Node $milestone): void
     {
-        $nodes = array_filter($milestone->getPreceders(true), fn(Node $node) => $node->getAttribute('state') !== Task::STATE_COMPLETED);
+        $nodes = array_filter($milestone->getPreceders(true), fn(Node $node) => $node->getAttribute('state') !== Issue::STATE_COMPLETED);
         $shift = 0;
         do {
             $point = $milestone->getDistance(true) - $shift;
@@ -30,7 +30,7 @@ readonly class Corrective implements LimitStrategy
                     array_filter(
                         array_filter(
                             $ongoingNodes,
-                            fn(Node $node) => $node->getAttribute('state') !== Task::STATE_STARTED,
+                            fn(Node $node) => $node->getAttribute('state') !== Issue::STATE_STARTED,
                         ),
                         fn(Node $node) => $node->getName() !== $shortestNode->getName()
                     ),
@@ -52,7 +52,7 @@ readonly class Corrective implements LimitStrategy
         foreach (
             array_filter(
                 $milestone->getPreceders(true),
-                fn(Node $node) => $node->getAttribute('state') === Task::STATE_COMPLETED,
+                fn(Node $node) => $node->getAttribute('state') === Issue::STATE_COMPLETED,
             ) as $node
         ) {
             $node->setAttribute('ignored', true);

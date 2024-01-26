@@ -8,12 +8,12 @@ use Watch\Schedule\Builder\LimitStrategy;
 use Watch\Schedule\Builder\ScheduleStrategy;
 use Watch\Schedule\Model\Buffer;
 use Watch\Schedule\Model\FeedingBuffer;
+use Watch\Schedule\Model\Issue as ScheduleIssue;
 use Watch\Schedule\Model\Link as ScheduleLink;
 use Watch\Schedule\Model\Milestone;
 use Watch\Schedule\Model\MilestoneBuffer;
 use Watch\Schedule\Model\Node;
-use Watch\Schedule\Model\Task;
-use Watch\Subject\Model\Issue;
+use Watch\Subject\Model\Issue as SubjectIssue;
 use Watch\Subject\Model\Link as SubjectLink;
 
 class Builder
@@ -22,7 +22,7 @@ class Builder
 
     /**
      * @param Context $context
-     * @param Issue[] $issues
+     * @param SubjectIssue[] $issues
      * @param SubjectLink[] $links
      * @param string[] $milestones
      * @param Mapper $mapper
@@ -56,10 +56,10 @@ class Builder
     {
         $nodes = array_reduce(
             array_map(
-                fn(Issue $issue) => new Task($issue->key, $issue->duration, [
+                fn(SubjectIssue $issue) => new ScheduleIssue($issue->key, $issue->duration, [
                     'begin' => $issue->begin,
                     'end' => $issue->end,
-                    'state' => $this->mapper->getTaskState($issue->status),
+                    'state' => $this->mapper->getIssueState($issue->status),
                 ]),
                 $this->issues,
             ),
@@ -113,13 +113,13 @@ class Builder
                 $feedingChainLength = array_reduce(
                     array_filter(
                         $notCriticalPreceder->getPreceders(true),
-                        fn(Node $node) => $node->getAttribute('state') !== Task::STATE_COMPLETED
+                        fn(Node $node) => $node->getAttribute('state') !== ScheduleIssue::STATE_COMPLETED
                     ),
                     fn(int $acc, Node $node) => max($acc, $node->getDistance()),
                     $notCriticalPreceder->getDistance()
                 )
                     - $notCriticalPreceder->getDistance()
-                    + ($notCriticalPreceder->getAttribute('state') !== Task::STATE_COMPLETED ? $notCriticalPreceder->getLength() : 0);
+                    + ($notCriticalPreceder->getAttribute('state') !== ScheduleIssue::STATE_COMPLETED ? $notCriticalPreceder->getLength() : 0);
                 if ($feedingChainLength === 0) {
                     continue;
                 }

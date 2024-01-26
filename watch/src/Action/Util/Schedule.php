@@ -4,9 +4,9 @@ namespace Watch\Action\Util;
 
 use Watch;
 use Watch\Schedule\Model\Buffer;
-use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Node;
-use Watch\Schedule\Model\Task;
+use Watch\Schedule\Model\Issue;
+use Watch\Schedule\Model\Link;
 use Watch\Schedule\Utils;
 
 class Schedule
@@ -27,7 +27,7 @@ class Schedule
                     'begin' => $node->getAttribute('begin'),
                     'end' => $node->getAttribute('end'),
                 ],
-                array_filter($milestone->getPreceders(true), fn(Node $node) => $node instanceof Task)
+                array_filter($milestone->getPreceders(true), fn(Node $node) => $node instanceof Issue)
             )),
             self::VOLUME_BUFFERS => array_values(array_map(
                 fn(Node $node) => [

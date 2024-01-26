@@ -2,7 +2,7 @@
 
 namespace Watch\Schedule\Model;
 
-class Task extends Node
+class Issue extends Node
 {
     const STATE_STARTED = 'started';
     const STATE_COMPLETED = 'completed';

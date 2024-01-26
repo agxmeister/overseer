@@ -4,7 +4,7 @@ namespace Watch\Schedule;
 
 use Watch\Schedule\Model\FeedingBuffer;
 use Watch\Schedule\Model\Node;
-use Watch\Schedule\Model\Task;
+use Watch\Schedule\Model\Issue;
 
 class Utils
 {
@@ -73,7 +73,7 @@ class Utils
     static public function getLateDays(Node $node, array $filter, \DateTimeImmutable $now): int
     {
         $nodeLateDays = (
-            $node->getAttribute('state') !== Task::STATE_COMPLETED &&
+            $node->getAttribute('state') !== Issue::STATE_COMPLETED &&
             $node->getAttribute('end') <= $now->format('Y-m-d')
         )
             ? $now->diff(new \DateTimeImmutable($node->getAttribute('end')))->format('%a')

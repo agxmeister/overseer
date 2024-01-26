@@ -3,7 +3,7 @@ namespace Tests\Unit\Schedule\Strategy;
 
 use Codeception\Test\Unit;
 use Watch\Schedule\Builder\Strategy\Limit\Initiative;
-use Watch\Schedule\Model\Task;
+use Watch\Schedule\Model\Issue;
 use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Milestone;
 
@@ -12,10 +12,10 @@ class InitiativeTest extends Unit
     public function testSchedule()
     {
         $milestone = new Milestone("Milestone", 0);
-        $node1 = new Task("Test1", 10);
-        $node2 = new Task("Test2", 11);
-        $node3 = new Task("Test3", 12);
-        $node4 = new Task("Test4", 13);
+        $node1 = new Issue("Test1", 10);
+        $node2 = new Issue("Test2", 11);
+        $node3 = new Issue("Test3", 12);
+        $node4 = new Issue("Test4", 13);
         $node1->precede($milestone);
         $node2->precede($milestone);
         $node3->precede($milestone);

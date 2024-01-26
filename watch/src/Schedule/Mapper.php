@@ -2,8 +2,8 @@
 
 namespace Watch\Schedule;
 
+use Watch\Schedule\Model\Issue;
 use Watch\Schedule\Model\Link;
-use Watch\Schedule\Model\Task;
 
 readonly class Mapper
 {
@@ -16,12 +16,12 @@ readonly class Mapper
     {
     }
 
-    public function getTaskState(string $state): string
+    public function getIssueState(string $state): string
     {
         return match (true) {
-            in_array($state, $this->startedTaskStates) => Task::STATE_STARTED,
-            in_array($state, $this->completedTaskStates) => Task::STATE_COMPLETED,
-            default => Task::STATE_UNKNOWN,
+            in_array($state, $this->startedTaskStates) => Issue::STATE_STARTED,
+            in_array($state, $this->completedTaskStates) => Issue::STATE_COMPLETED,
+            default => Issue::STATE_UNKNOWN,
         };
     }
 
