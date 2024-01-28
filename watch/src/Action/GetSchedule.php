@@ -20,12 +20,12 @@ readonly class GetSchedule
 
     public function __invoke(Request $request, Response $response, $args): Response
     {
-        $sample = $this->jira->getIssues('');
+        $subject = $this->jira->getSubject('');
         $director = new Director(
             new Builder(
                 new Context(new \DateTimeImmutable(date('Y-m-d'))),
-                $sample->issues,
-                $sample->links,
+                $subject->issues,
+                $subject->links,
                 ['finish'],
                 new Mapper(
                     $this->config->schedule->task->state->started,

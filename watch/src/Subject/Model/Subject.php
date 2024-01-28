@@ -2,7 +2,7 @@
 
 namespace Watch\Subject\Model;
 
-readonly class Sample
+readonly class Subject
 {
     /**
      * @param Issue[] $issues

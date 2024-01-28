@@ -6,7 +6,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use Watch\Jira\Client;
 use Watch\Subject\Model\Issue;
 use Watch\Subject\Model\Link;
-use Watch\Subject\Model\Sample;
+use Watch\Subject\Model\Subject;
 
 readonly class Jira
 {
@@ -38,17 +38,17 @@ readonly class Jira
 
     /**
      * @param string $jql
-     * @return Sample
+     * @return Subject
      * @throws GuzzleException
      */
-    public function getIssues(string $jql): Sample
+    public function getSubject(string $jql): Subject
     {
         $issues = json_decode($this->client->http->post('search', [
             'json' => [
                 'jql' => $jql,
             ],
         ])->getBody())->issues;
-        return new Sample(
+        return new Subject(
             array_map(
                 fn($issue) => $this->getIssueByFields($issue),
                 $issues,

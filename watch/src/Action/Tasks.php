@@ -19,7 +19,7 @@ readonly class Tasks
         $response->getBody()->write(json_encode(
             array_map(
                 fn(Issue $issue) => $this->util->serialize($issue),
-                $this->jira->getIssues('')->issues,
+                $this->jira->getSubject('')->issues,
             ),
         ));
         return $response
