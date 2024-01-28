@@ -1,8 +1,6 @@
 <?php
 
-namespace Watch;
-
-use Watch\Schedule\Model\Milestone;
+namespace Watch\Schedule\Model;
 
 readonly class Schedule
 {

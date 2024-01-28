@@ -2,11 +2,11 @@
 
 namespace Watch\Action\Util;
 
-use Watch;
+use Watch\Schedule\Model\Schedule as ScheduleModel;
 use Watch\Schedule\Model\Buffer;
-use Watch\Schedule\Model\Node;
 use Watch\Schedule\Model\Issue;
 use Watch\Schedule\Model\Link;
+use Watch\Schedule\Model\Node;
 use Watch\Schedule\Utils;
 
 class Schedule
@@ -17,7 +17,7 @@ class Schedule
     const VOLUME_LINKS = 'links';
     const VOLUME_CRITICAL_CHAIN = 'criticalChain';
 
-    public function serialize(Watch\Schedule $schedule): array
+    public function serialize(ScheduleModel $schedule): array
     {
         $milestone = current($schedule->milestones);
         return [

@@ -2,7 +2,6 @@
 
 namespace Watch\Schedule;
 
-use Watch\Schedule;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\LimitStrategy;
 use Watch\Schedule\Builder\ScheduleStrategy;
@@ -13,6 +12,7 @@ use Watch\Schedule\Model\Link as ScheduleLink;
 use Watch\Schedule\Model\Milestone;
 use Watch\Schedule\Model\MilestoneBuffer;
 use Watch\Schedule\Model\Node;
+use Watch\Schedule\Model\Schedule;
 use Watch\Subject\Model\Issue as SubjectIssue;
 use Watch\Subject\Model\Link as SubjectLink;
 
