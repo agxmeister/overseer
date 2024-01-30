@@ -48,6 +48,7 @@ class Utils
                     'key' => $key,
                     'summary' => $key,
                     'status' => $started ? 'In Progress' : ($completed ? 'Done' : 'To Do'),
+                    'milestone' => null,
                     'project' => $project,
                     'type' => $type,
                     'duration' => $duration,

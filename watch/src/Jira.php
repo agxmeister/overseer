@@ -180,6 +180,7 @@ readonly class Jira
             'key' => $issue->key,
             'summary' => $issue->fields->summary,
             'status' => $status,
+            'milestone' => null,
             'project' => $issue->fields->project->key,
             'type' => $issue->fields->issuetype->name,
             'duration' => (int)$issue->fields->customfield_10038,
