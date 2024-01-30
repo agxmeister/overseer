@@ -1,7 +1,6 @@
 <?php
 namespace Tests\Unit\Schedule\Director;
 
-use Watch\Action\Util\Schedule as ScheduleUtil;
 use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
@@ -9,6 +8,7 @@ use Watch\Schedule\Builder\Strategy\Limit\Initiative as InitiativeLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Director;
 use Watch\Schedule\Mapper;
+use Watch\Schedule\Serializer\Schedule as ScheduleSerializer;
 
 class ModifyingInitiativeDirectorTest extends AbstractDirectorTest
 {
@@ -28,10 +28,10 @@ class ModifyingInitiativeDirectorTest extends AbstractDirectorTest
                 new ToDateScheduleStrategy(Utils::getProjectEndDate($scheduleDescription)),
             )
         );
-        $scheduleUtil = new ScheduleUtil();
+        $scheduleSerializer = new ScheduleSerializer();
         $this->assertSchedule(
             Utils::getSchedule($scheduleDescription),
-            $scheduleUtil->serialize($director->build()->release())
+            $scheduleSerializer->serialize($director->build()->release())
         );
     }
 

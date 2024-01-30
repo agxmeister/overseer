@@ -1,15 +1,15 @@
 <?php
 
-namespace Watch\Action\Util;
+namespace Watch\Schedule\Serializer;
 
+use Watch\Schedule\Model\Buffer as BufferModel;
+use Watch\Schedule\Model\Issue as IssueModel;
+use Watch\Schedule\Model\Link as LinkModel;
+use Watch\Schedule\Model\Node as NodeModel;
 use Watch\Schedule\Model\Schedule as ScheduleModel;
-use Watch\Schedule\Model\Buffer;
-use Watch\Schedule\Model\Issue;
-use Watch\Schedule\Model\Link;
-use Watch\Schedule\Model\Node;
 use Watch\Schedule\Utils;
 
-class Schedule
+readonly class Schedule
 {
     const VOLUME_ISSUES = 'issues';
     const VOLUME_BUFFERS = 'buffers';
@@ -22,24 +22,24 @@ class Schedule
         $milestone = current($schedule->milestones);
         return [
             self::VOLUME_ISSUES => array_values(array_map(
-                fn(Node $node) => [
+                fn(NodeModel $node) => [
                     'key' => $node->getName(),
                     'begin' => $node->getAttribute('begin'),
                     'end' => $node->getAttribute('end'),
                 ],
-                array_filter($milestone->getPreceders(true), fn(Node $node) => $node instanceof Issue)
+                array_filter($milestone->getPreceders(true), fn(NodeModel $node) => $node instanceof IssueModel)
             )),
             self::VOLUME_BUFFERS => array_values(array_map(
-                fn(Node $node) => [
+                fn(NodeModel $node) => [
                     'key' => $node->getName(),
                     'begin' => $node->getAttribute('begin'),
                     'end' => $node->getAttribute('end'),
                     'consumption' => $node->getAttribute('consumption'),
                 ],
-                array_filter($milestone->getPreceders(true), fn(Node $node) => $node instanceof Buffer)
+                array_filter($milestone->getPreceders(true), fn(NodeModel $node) => $node instanceof BufferModel)
             )),
             self::VOLUME_MILESTONES => array_values(array_map(
-                fn(Node $node) => [
+                fn(NodeModel $node) => [
                     'key' => $node->getName(),
                     'begin' => $node->getAttribute('begin'),
                     'end' => $node->getAttribute('end'),
@@ -49,14 +49,14 @@ class Schedule
             self::VOLUME_LINKS => \Watch\Utils::getUnique(
                 array_reduce(
                     $milestone->getPreceders(true),
-                    fn($acc, Node $node) => [
+                    fn($acc, NodeModel $node) => [
                         ...$acc,
-                        ...array_map(fn(Link $link) => [
+                        ...array_map(fn(LinkModel $link) => [
                             'from' => $node->getName(),
                             'to' => $link->getNode()->getName(),
                             'type' => $link->getType(),
                         ], $node->getFollowLinks()),
-                        ...array_map(fn(Link $link) => [
+                        ...array_map(fn(LinkModel $link) => [
                             'from' => $link->getNode()->getName(),
                             'to' => $node->getName(),
                             'type' => $link->getType(),
@@ -67,8 +67,8 @@ class Schedule
                 fn($link) => implode('-', array_values($link))
             ),
             self::VOLUME_CRITICAL_CHAIN => array_reduce(
-                array_filter(Utils::getCriticalChain($milestone), fn(Node $node) => !($node instanceof Buffer)),
-                fn($acc, Node $node) => [...$acc, $node->getName()],
+                array_filter(Utils::getCriticalChain($milestone), fn(NodeModel $node) => !($node instanceof BufferModel)),
+                fn($acc, NodeModel $node) => [...$acc, $node->getName()],
                 []
             ),
         ];

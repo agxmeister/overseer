@@ -4,17 +4,17 @@ namespace Watch\Action;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Watch\Action\Util\Schedule as Util;
 use Watch\Config;
 use Watch\Jira;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Director;
 use Watch\Schedule\Mapper;
+use Watch\Schedule\Serializer\Schedule as ScheduleSerializer;
 
 readonly class GetSchedule
 {
-    public function __construct(private Config $config, private Jira $jira, private Util $util)
+    public function __construct(private Config $config, private Jira $jira, private ScheduleSerializer $scheduleSerializer)
     {
     }
 
@@ -35,7 +35,7 @@ readonly class GetSchedule
                 ),
             )
         );
-        $schedule = $this->util->serialize($director->build()->release());
+        $schedule = $this->scheduleSerializer->serialize($director->build()->release());
         $response->getBody()->write(json_encode($schedule));
         return $response
             ->withHeader('Content-Type', 'application/json')
