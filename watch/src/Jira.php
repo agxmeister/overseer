@@ -175,12 +175,19 @@ readonly class Jira
             $issue->fields->customfield_10037 >= $begin ?
                 $issue->fields->customfield_10037 :
                 $begin;
+        $milestone = array_reduce(
+            array_map(
+                fn($version) => $version->name,
+                $issue->fields->fixVersions ?? [],
+            ),
+            fn($acc, $versionName) => $versionName,
+        );
         return new Issue(...[
             'id' => $issue->id,
             'key' => $issue->key,
             'summary' => $issue->fields->summary,
             'status' => $status,
-            'milestone' => null,
+            'milestone' => $milestone,
             'project' => $issue->fields->project->key,
             'type' => $issue->fields->issuetype->name,
             'duration' => (int)$issue->fields->customfield_10038,
