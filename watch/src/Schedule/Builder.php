@@ -67,7 +67,18 @@ class Builder
             []
         );
 
-        $milestone = new Milestone(current($this->milestones));
+        $milestones = array_reduce(
+            array_map(
+                fn(string $milestone) => new Milestone($milestone),
+                $this->milestones,
+            ),
+            fn(array $acc, Milestone $milestone) => [
+                ...$acc,
+                $milestone->name => $milestone,
+            ],
+            []
+        );
+        $finalMilestone = reset($milestones);
 
         foreach ($this->issues as $issue) {
             $outgoingLinks = array_filter(
@@ -81,15 +92,20 @@ class Builder
                 );
             }
             if (empty($outgoingLinks)) {
-                $milestone->follow($nodes[$issue->key], ScheduleLink::TYPE_SCHEDULE);
+                $finalMilestone->follow($nodes[$issue->key], ScheduleLink::TYPE_SCHEDULE);
+                if ($issue->milestone) {
+                    $milestones[$issue->milestone]->follow($nodes[$issue->key], ScheduleLink::TYPE_SCHEDULE);
+                }
             }
         }
 
         if (!is_null($this->limitStrategy)) {
-            $this->limitStrategy->apply($milestone);
+            $this->limitStrategy->apply($finalMilestone);
         }
 
-        $this->schedule->addMilestone($milestone);
+        foreach ($milestones as $milestone) {
+            $this->schedule->addMilestone($milestone);
+        }
 
         return $this;
     }
