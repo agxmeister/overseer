@@ -2,12 +2,28 @@
 
 namespace Watch\Schedule\Model;
 
-readonly class Schedule
+class Schedule
 {
     /**
-     * @param Milestone[] $milestones
+     * @var Milestone[]
      */
-    public function __construct(public array $milestones)
+    private array $milestones;
+
+    public function addMilestone(Milestone $milestone): void
     {
+        $this->milestones[] = $milestone;
+    }
+
+    public function getFinalMilestone(): Milestone
+    {
+        return reset($this->milestones);
+    }
+
+    /**
+     * @return Milestone[]
+     */
+    public function getMilestones(): array
+    {
+        return $this->milestones;
     }
 }

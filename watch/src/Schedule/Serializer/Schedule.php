@@ -19,7 +19,7 @@ readonly class Schedule
 
     public function serialize(ScheduleModel $schedule): array
     {
-        $milestone = current($schedule->milestones);
+        $milestone = $schedule->getFinalMilestone();
         return [
             self::VOLUME_ISSUES => array_values(array_map(
                 fn(NodeModel $node) => [
@@ -44,7 +44,7 @@ readonly class Schedule
                     'begin' => $node->getAttribute('begin'),
                     'end' => $node->getAttribute('end'),
                 ],
-                $schedule->milestones
+                $schedule->getMilestones(),
             )),
             self::VOLUME_LINKS => \Watch\Utils::getUnique(
                 array_reduce(

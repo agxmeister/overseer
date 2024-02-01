@@ -18,7 +18,7 @@ use Watch\Subject\Model\Link as SubjectLink;
 
 class Builder
 {
-    protected Milestone|null $milestone = null;
+    protected Schedule|null $schedule = null;
 
     /**
      * @param Context $context
@@ -43,13 +43,13 @@ class Builder
 
     public function run(): self
     {
-        $this->milestone = null;
+        $this->schedule = new Schedule();
         return $this;
     }
 
     public function release(): Schedule
     {
-        return new Schedule([$this->milestone]);
+        return $this->schedule;
     }
 
     public function addMilestone(): self
@@ -67,7 +67,8 @@ class Builder
             []
         );
 
-        $this->milestone = new Milestone(current($this->milestones));
+        $milestone = new Milestone(current($this->milestones));
+
         foreach ($this->issues as $issue) {
             $outgoingLinks = array_filter(
                 $this->links,
@@ -80,31 +81,34 @@ class Builder
                 );
             }
             if (empty($outgoingLinks)) {
-                $this->milestone->follow($nodes[$issue->key], ScheduleLink::TYPE_SCHEDULE);
+                $milestone->follow($nodes[$issue->key], ScheduleLink::TYPE_SCHEDULE);
             }
         }
 
         if (!is_null($this->limitStrategy)) {
-            $this->limitStrategy->apply($this->milestone);
+            $this->limitStrategy->apply($milestone);
         }
+
+        $this->schedule->addMilestone($milestone);
 
         return $this;
     }
 
     public function addMilestoneBuffer(): self
     {
+        $milestone = $this->schedule->getFinalMilestone();
         $buffer = new MilestoneBuffer(
-            "{$this->milestone->getName()}-buffer",
-            (int)ceil($this->milestone->getLength(true) / 2),
+            "{$milestone->getName()}-buffer",
+            (int)ceil($milestone->getLength(true) / 2),
             ['consumption' => 0],
         );
-        $this->addBuffer($buffer, $this->milestone, $this->milestone->getPreceders());
+        $this->addBuffer($buffer, $milestone, $milestone->getPreceders());
         return $this;
     }
 
     public function addFeedingBuffers(): self
     {
-        $criticalChain = Utils::getCriticalChain($this->milestone);
+        $criticalChain = Utils::getCriticalChain($this->schedule->getFinalMilestone());
         foreach ($criticalChain as $node) {
             $preceders = $node->getPreceders();
             $criticalPreceder = Utils::getLongestSequence($preceders);
@@ -136,24 +140,27 @@ class Builder
 
     public function addDates(): self
     {
+        $milestone = $this->schedule->getFinalMilestone();
         if (!is_null($this->scheduleStrategy)) {
-            $this->scheduleStrategy->apply($this->milestone);
+            $this->scheduleStrategy->apply($milestone);
         }
         $this->addBuffersDates(array_filter(
-            $this->milestone->getPreceders(true),
+            $milestone->getPreceders(true),
             fn(Node $node) => $node instanceof Buffer,
         ));
-        $this->addMilestoneDates($this->milestone);
+        $this->addMilestoneDates($milestone);
         return $this;
     }
 
     public function addBuffersConsumption(): self
     {
-        $criticalChain = Utils::getCriticalChain($this->milestone);
+        $milestone = $this->schedule->getFinalMilestone();
+
+        $criticalChain = Utils::getCriticalChain($milestone);
 
         $milestoneBuffer = array_reduce(
             array_filter(
-                $this->milestone->getPreceders(true),
+                $milestone->getPreceders(true),
                 fn(Node $node) => $node instanceof MilestoneBuffer,
             ),
             fn($acc, Node $node) => $node
@@ -166,7 +173,7 @@ class Builder
         $milestoneBuffer->setAttribute('consumption', min($milestoneBuffer->getLength(), $lateDays));
 
         $feedingBuffers = array_filter(
-            $this->milestone->getPreceders(true),
+            $milestone->getPreceders(true),
             fn(Node $node) => $node instanceof FeedingBuffer,
         );
         foreach ($feedingBuffers as $feedingBuffer) {
