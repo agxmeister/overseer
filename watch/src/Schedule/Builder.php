@@ -52,7 +52,7 @@ class Builder
         return $this->schedule;
     }
 
-    public function addMilestone(): self
+    public function addMilestones(): self
     {
         $nodes = array_reduce(
             array_map(

@@ -12,7 +12,7 @@ readonly class Director
     {
         return $this->builder
             ->run()
-            ->addMilestone()
+            ->addMilestones()
             ->addMilestoneBuffer()
             ->addFeedingBuffers()
             ->addDates()

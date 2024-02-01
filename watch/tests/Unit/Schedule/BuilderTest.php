@@ -27,7 +27,7 @@ class BuilderTest extends Unit
             new Mapper(['In Progress'], ['Done'], ["Depends"], ["Follows"]),
         );
         $builder->run();
-        $builder->addMilestone();
+        $builder->addMilestones();
         $scheduleSerializer = new ScheduleSerializer();
         $this->assertEquals(['finish', 'K-01', 'K-03'], $scheduleSerializer->serialize($builder->release())[ScheduleSerializer::VOLUME_CRITICAL_CHAIN]);
     }
@@ -49,7 +49,7 @@ class BuilderTest extends Unit
         );
         $builder->run();
         $builder
-            ->addMilestone()
+            ->addMilestones()
             ->addFeedingBuffers()
             ->addDates();
         $scheduleSerializer = new ScheduleSerializer();
