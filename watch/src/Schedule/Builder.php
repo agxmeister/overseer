@@ -63,7 +63,7 @@ class Builder
                 ]),
                 $this->issues,
             ),
-            fn(array $acc, Node $node) => [...$acc, $node->getName() => $node],
+            fn(array $acc, Node $node) => [...$acc, $node->name => $node],
             []
         );
 
@@ -72,10 +72,7 @@ class Builder
                 fn(string $milestone) => new Milestone($milestone),
                 $this->milestones,
             ),
-            fn(array $acc, Milestone $milestone) => [
-                ...$acc,
-                $milestone->name => $milestone,
-            ],
+            fn(array $acc, Milestone $milestone) => [...$acc, $milestone->name => $milestone],
             []
         );
         $finalMilestone = reset($milestones);
@@ -93,9 +90,9 @@ class Builder
             }
             if (empty($outgoingLinks)) {
                 $finalMilestone->follow($nodes[$issue->key], ScheduleLink::TYPE_SCHEDULE);
-                if ($issue->milestone) {
-                    $milestones[$issue->milestone]->follow($nodes[$issue->key], ScheduleLink::TYPE_SCHEDULE);
-                }
+            }
+            if ($issue->milestone) {
+                $milestones[$issue->milestone]->follow($nodes[$issue->key], ScheduleLink::TYPE_SCHEDULE);
             }
         }
 
@@ -156,15 +153,17 @@ class Builder
 
     public function addDates(): self
     {
-        $milestone = $this->schedule->getFinalMilestone();
+        $finalMilestone = $this->schedule->getFinalMilestone();
         if (!is_null($this->scheduleStrategy)) {
-            $this->scheduleStrategy->apply($milestone);
+            $this->scheduleStrategy->apply($finalMilestone);
         }
         $this->addBuffersDates(array_filter(
-            $milestone->getPreceders(true),
+            $finalMilestone->getPreceders(true),
             fn(Node $node) => $node instanceof Buffer,
         ));
-        $this->addMilestoneDates($milestone);
+        foreach ($this->schedule->getMilestones() as $milestone) {
+            $this->addMilestoneDates($milestone);
+        }
         return $this;
     }
 
