@@ -157,10 +157,14 @@ class Builder
         if (!is_null($this->scheduleStrategy)) {
             $this->scheduleStrategy->apply($finalMilestone);
         }
-        $this->addBuffersDates(array_filter(
-            $finalMilestone->getPreceders(true),
-            fn(Node $node) => $node instanceof Buffer,
-        ));
+        foreach(
+            array_filter(
+                $finalMilestone->getPreceders(true),
+                fn(Node $node) => $node instanceof Buffer,
+            ) as $buffer
+        ) {
+            $this->addBufferDates($buffer);
+        }
         foreach ($this->schedule->getMilestones() as $milestone) {
             $this->addMilestoneDates($milestone);
         }
@@ -213,16 +217,14 @@ class Builder
         return $this;
     }
 
-    protected function addBuffersDates(array $buffers): void
+    protected function addBufferDates(Buffer $buffer): void
     {
-        foreach ($buffers as $buffer) {
-            $maxPrecederEndDate = new \DateTimeImmutable(array_reduce(
-                $buffer->getPreceders(),
-                fn($acc, Node $node) => max($acc, $node->getAttribute('end')),
-            ));
-            $buffer->setAttribute('begin', $maxPrecederEndDate->format("Y-m-d"));
-            $buffer->setAttribute('end', $maxPrecederEndDate->modify("{$buffer->getLength()} day")->format("Y-m-d"));
-        }
+        $maxPrecederEndDate = new \DateTimeImmutable(array_reduce(
+            $buffer->getPreceders(),
+            fn($acc, Node $node) => max($acc, $node->getAttribute('end')),
+        ));
+        $buffer->setAttribute('begin', $maxPrecederEndDate->format("Y-m-d"));
+        $buffer->setAttribute('end', $maxPrecederEndDate->modify("{$buffer->getLength()} day")->format("Y-m-d"));
     }
 
     protected function addMilestoneDates(Milestone $milestone): void
