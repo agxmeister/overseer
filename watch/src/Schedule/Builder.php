@@ -90,15 +90,25 @@ class Builder
         $finalMilestone = $milestones[array_key_first($milestones)];
 
         foreach ($this->issues as $issue) {
-            $outgoingLinks = array_filter(
-                $this->links,
-                fn($link) => $link->from === $issue->key,
-            );
-            foreach ($outgoingLinks as $link) {
+            foreach (
+                array_filter(
+                    $this->links,
+                    fn($link) => $link->from === $issue->key,
+                ) as $link
+            ) {
                 $nodes[$link->to]->follow(
                     $nodes[$link->from],
                     $this->mapper->getLinkType($link->type),
                 );
+            }
+        }
+
+        foreach ($this->issues as $issue) {
+            if (empty(array_filter(
+                $this->links,
+                fn($link) => $link->from === $issue->key,
+            ))) {
+                $finalMilestone->follow($nodes[$issue->key], ScheduleLink::TYPE_SCHEDULE);
             }
         }
 
@@ -114,22 +124,7 @@ class Builder
                     fn($link) => $link->from === $issue->key && $issues[$link->to]->milestone === $issue->milestone,
                 ))) {
                     $milestone->follow($nodes[$issue->key], ScheduleLink::TYPE_SCHEDULE);
-                    $finalMilestone->follow($nodes[$issue->key], ScheduleLink::TYPE_SCHEDULE);
                 }
-            }
-        }
-
-        foreach (
-            array_filter(
-                $this->issues,
-                fn($issue) => is_null($issue->milestone),
-            ) as $issue
-        ) {
-            if (empty(array_filter(
-                $this->links,
-                fn($link) => $link->from === $issue->key,
-            ))) {
-                $finalMilestone->follow($nodes[$issue->key], ScheduleLink::TYPE_SCHEDULE);
             }
         }
 
