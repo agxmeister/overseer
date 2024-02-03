@@ -54,6 +54,17 @@ class Builder
 
     public function addMilestones(): self
     {
+        /** @var SubjectIssue[] $issues */
+        $issues = array_reduce(
+            $this->issues,
+            fn(array $acc, SubjectIssue $issue) => [
+                ...$acc,
+                $issue->key => $issue,
+            ],
+            [],
+        );
+
+        /** @var ScheduleIssue[] $nodes */
         $nodes = array_reduce(
             array_map(
                 fn(SubjectIssue $issue) => new ScheduleIssue($issue->key, $issue->duration, [
@@ -67,6 +78,7 @@ class Builder
             []
         );
 
+        /** @var Milestone[] $milestones */
         $milestones = array_reduce(
             array_map(
                 fn(string $milestone) => new Milestone($milestone),
@@ -75,7 +87,7 @@ class Builder
             fn(array $acc, Milestone $milestone) => [...$acc, $milestone->name => $milestone],
             []
         );
-        $finalMilestone = reset($milestones);
+        $finalMilestone = $milestones[array_key_first($milestones)];
 
         foreach ($this->issues as $issue) {
             $outgoingLinks = array_filter(
@@ -88,11 +100,36 @@ class Builder
                     $this->mapper->getLinkType($link->type),
                 );
             }
-            if (empty($outgoingLinks)) {
-                $finalMilestone->follow($nodes[$issue->key], ScheduleLink::TYPE_SCHEDULE);
+        }
+
+        foreach ($milestones as $milestone) {
+            foreach (
+                array_filter(
+                    $this->issues,
+                    fn($issue) => $issue->milestone === $milestone->name,
+                ) as $issue
+            ) {
+                if (empty(array_filter(
+                    $this->links,
+                    fn($link) => $link->from === $issue->key && $issues[$link->to]->milestone === $issue->milestone,
+                ))) {
+                    $milestone->follow($nodes[$issue->key], ScheduleLink::TYPE_SCHEDULE);
+                    $finalMilestone->follow($nodes[$issue->key], ScheduleLink::TYPE_SCHEDULE);
+                }
             }
-            if ($issue->milestone) {
-                $milestones[$issue->milestone]->follow($nodes[$issue->key], ScheduleLink::TYPE_SCHEDULE);
+        }
+
+        foreach (
+            array_filter(
+                $this->issues,
+                fn($issue) => is_null($issue->milestone),
+            ) as $issue
+        ) {
+            if (empty(array_filter(
+                $this->links,
+                fn($link) => $link->from === $issue->key,
+            ))) {
+                $finalMilestone->follow($nodes[$issue->key], ScheduleLink::TYPE_SCHEDULE);
             }
         }
 
