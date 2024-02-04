@@ -19,7 +19,7 @@ readonly class Schedule
 
     public function serialize(ScheduleModel $schedule): array
     {
-        $milestone = $schedule->getFinalMilestone();
+        $finalMilestone = $schedule->getFinalMilestone();
         return [
             self::VOLUME_ISSUES => array_values(array_map(
                 fn(NodeModel $node) => [
@@ -27,7 +27,7 @@ readonly class Schedule
                     'begin' => $node->getAttribute('begin'),
                     'end' => $node->getAttribute('end'),
                 ],
-                array_filter($milestone->getPreceders(true), fn(NodeModel $node) => $node instanceof IssueModel)
+                array_filter($finalMilestone->getPreceders(true), fn(NodeModel $node) => $node instanceof IssueModel)
             )),
             self::VOLUME_BUFFERS => array_values(array_map(
                 fn(NodeModel $node) => [
@@ -36,7 +36,17 @@ readonly class Schedule
                     'end' => $node->getAttribute('end'),
                     'consumption' => $node->getAttribute('consumption'),
                 ],
-                array_filter($milestone->getPreceders(true), fn(NodeModel $node) => $node instanceof BufferModel)
+                \Watch\Utils::getUnique(
+                    array_reduce(
+                        $schedule->getMilestones(),
+                        fn($acc, $milestone) => [
+                            ...$acc,
+                            ...array_filter($milestone->getPreceders(true), fn(NodeModel $node) => $node instanceof BufferModel)
+                        ],
+                        [],
+                    ),
+                    fn(BufferModel $buffer) => $buffer->name,
+                ),
             )),
             self::VOLUME_MILESTONES => array_values(array_map(
                 fn(NodeModel $node) => [
@@ -48,7 +58,7 @@ readonly class Schedule
             )),
             self::VOLUME_LINKS => \Watch\Utils::getUnique(
                 array_reduce(
-                    $milestone->getPreceders(true),
+                    $finalMilestone->getPreceders(true),
                     fn($acc, NodeModel $node) => [
                         ...$acc,
                         ...array_map(fn(LinkModel $link) => [
@@ -67,7 +77,7 @@ readonly class Schedule
                 fn($link) => implode('-', array_values($link))
             ),
             self::VOLUME_CRITICAL_CHAIN => array_reduce(
-                array_filter(Utils::getCriticalChain($milestone), fn(NodeModel $node) => !($node instanceof BufferModel)),
+                array_filter(Utils::getCriticalChain($finalMilestone), fn(NodeModel $node) => !($node instanceof BufferModel)),
                 fn($acc, NodeModel $node) => [...$acc, $node->getName()],
                 []
             ),

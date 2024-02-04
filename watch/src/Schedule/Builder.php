@@ -139,15 +139,16 @@ class Builder
         return $this;
     }
 
-    public function addMilestoneBuffer(): self
+    public function addMilestoneBuffers(): self
     {
-        $milestone = $this->schedule->getFinalMilestone();
-        $buffer = new MilestoneBuffer(
-            "{$milestone->getName()}-buffer",
-            (int)ceil($milestone->getLength(true) / 2),
-            ['consumption' => 0],
-        );
-        $this->addBuffer($buffer, $milestone, $milestone->getPreceders());
+        foreach ($this->schedule->getMilestones() as $milestone) {
+            $buffer = new MilestoneBuffer(
+                "{$milestone->getName()}-buffer",
+                (int)ceil($milestone->getLength(true) / 2),
+                ['consumption' => 0],
+            );
+            $this->addBuffer($buffer, $milestone, $milestone->getPreceders());
+        }
         return $this;
     }
 
@@ -189,14 +190,18 @@ class Builder
         if (!is_null($this->scheduleStrategy)) {
             $this->scheduleStrategy->apply($finalMilestone);
         }
-        foreach(
-            array_filter(
-                $finalMilestone->getPreceders(true),
-                fn(Node $node) => $node instanceof Buffer,
-            ) as $buffer
-        ) {
-            $this->addBufferDates($buffer);
+
+        foreach ($this->schedule->getMilestones() as $milestone) {
+            foreach(
+                array_filter(
+                    $milestone->getPreceders(true),
+                    fn(Node $node) => $node instanceof Buffer,
+                ) as $buffer
+            ) {
+                $this->addBufferDates($buffer);
+            }
         }
+
         foreach ($this->schedule->getMilestones() as $milestone) {
             $this->addMilestoneDates($milestone);
         }
