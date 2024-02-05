@@ -270,8 +270,12 @@ class Builder
             $milestone->getPreceders(),
             fn($acc, Node $node) => max($acc, $node->getAttribute('end')),
         )));
-        $milestoneLength = Utils::getLongestSequence($milestone->getPreceders())->getLength(true);
-        $milestone->setAttribute('begin', $milestoneEndDate->modify("-$milestoneLength day")->format("Y-m-d"));
+        $milestoneBeginDate = (new \DateTimeImmutable(array_reduce(
+            $milestone->getPreceders(true),
+            fn($acc, Node $node) => min($acc, $node->getAttribute('begin')),
+            $milestoneEndDate->format("Y-m-d"),
+        )));
+        $milestone->setAttribute('begin', $milestoneBeginDate->format("Y-m-d"));
         $milestone->setAttribute('end', $milestoneEndDate->format("Y-m-d"));
     }
 
