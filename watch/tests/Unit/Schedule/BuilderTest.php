@@ -7,7 +7,7 @@ use Watch\Schedule\Builder;
 use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Mapper;
-use Watch\Schedule\Serializer\Schedule as ScheduleSerializer;
+use Watch\Schedule\Serializer\Project as ProjectSerializer;
 
 class BuilderTest extends Unit
 {
@@ -28,8 +28,8 @@ class BuilderTest extends Unit
         );
         $builder->run();
         $builder->addMilestones();
-        $scheduleSerializer = new ScheduleSerializer();
-        $this->assertEquals(['finish', 'K-01', 'K-03'], $scheduleSerializer->serialize($builder->release())[ScheduleSerializer::VOLUME_CRITICAL_CHAIN]);
+        $projectSerializer = new ProjectSerializer();
+        $this->assertEquals(['finish', 'K-01', 'K-03'], $projectSerializer->serialize($builder->release())[ProjectSerializer::VOLUME_CRITICAL_CHAIN]);
     }
 
     public function testAddFeedingBuffers()
@@ -52,7 +52,7 @@ class BuilderTest extends Unit
             ->addMilestones()
             ->addFeedingBuffers()
             ->addDates();
-        $scheduleSerializer = new ScheduleSerializer();
+        $scheduleSerializer = new ProjectSerializer();
         $this->assertEquals([
             [
                 'key' => 'K-02-buffer',
@@ -60,7 +60,7 @@ class BuilderTest extends Unit
                 'end' => '2023-09-17',
                 'consumption' => 0,
             ]
-        ], $scheduleSerializer->serialize($builder->release())[ScheduleSerializer::VOLUME_BUFFERS]);
+        ], $scheduleSerializer->serialize($builder->release())[ProjectSerializer::VOLUME_BUFFERS]);
     }
 
     private function getConfig(): Config

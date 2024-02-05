@@ -12,11 +12,11 @@ use Watch\Schedule\Builder\Strategy\Limit\Initiative as InitiativeLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Director;
 use Watch\Schedule\Mapper;
-use Watch\Schedule\Serializer\Schedule as ScheduleSerializer;
+use Watch\Schedule\Serializer\Project as ProejctSerializer;
 
 readonly class PutSchedule
 {
-    public function __construct(private Config $config, private Jira $jira, private ScheduleSerializer $scheduleSerializer)
+    public function __construct(private Config $config, private Jira $jira, private ProejctSerializer $projectSerializer)
     {
     }
 
@@ -40,8 +40,8 @@ readonly class PutSchedule
                 new ToDateScheduleStrategy(new \DateTimeImmutable($params->date)),
             )
         );
-        $schedule = $this->scheduleSerializer->serialize($director->build()->release());
-        $response->getBody()->write(json_encode($schedule));
+        $project = $this->projectSerializer->serialize($director->build()->release());
+        $response->getBody()->write(json_encode($project));
         return $response
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Access-Control-Allow-Origin', '*');

@@ -8,7 +8,7 @@ use Watch\Schedule\Builder\Strategy\Limit\Initiative as InitiativeLimitStrategy;
 use Watch\Schedule\Builder\Strategy\Schedule\ToDate as ToDateScheduleStrategy;
 use Watch\Schedule\Director;
 use Watch\Schedule\Mapper;
-use Watch\Schedule\Serializer\Schedule as ScheduleSerializer;
+use Watch\Schedule\Serializer\Project as ProjectSerializer;
 
 class ModifyingInitiativeDirectorTest extends AbstractDirectorTest
 {
@@ -28,7 +28,7 @@ class ModifyingInitiativeDirectorTest extends AbstractDirectorTest
                 new ToDateScheduleStrategy(Utils::getProjectEndDate($scheduleDescription)),
             )
         );
-        $scheduleSerializer = new ScheduleSerializer();
+        $scheduleSerializer = new ProjectSerializer();
         $this->assertSchedule(
             Utils::getSchedule($scheduleDescription),
             $scheduleSerializer->serialize($director->build()->release())

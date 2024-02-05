@@ -10,11 +10,11 @@ use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Director;
 use Watch\Schedule\Mapper;
-use Watch\Schedule\Serializer\Schedule as ScheduleSerializer;
+use Watch\Schedule\Serializer\Project as ProjectSerializer;
 
 readonly class GetSchedule
 {
-    public function __construct(private Config $config, private Jira $jira, private ScheduleSerializer $scheduleSerializer)
+    public function __construct(private Config $config, private Jira $jira, private ProjectSerializer $projectSerializer)
     {
     }
 
@@ -35,8 +35,8 @@ readonly class GetSchedule
                 ),
             )
         );
-        $schedule = $this->scheduleSerializer->serialize($director->build()->release());
-        $response->getBody()->write(json_encode($schedule));
+        $project = $this->projectSerializer->serialize($director->build()->release());
+        $response->getBody()->write(json_encode($project));
         return $response
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Access-Control-Allow-Origin', '*');

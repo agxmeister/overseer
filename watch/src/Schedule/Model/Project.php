@@ -2,7 +2,7 @@
 
 namespace Watch\Schedule\Model;
 
-class Schedule
+class Project
 {
     /**
      * @var Milestone[]

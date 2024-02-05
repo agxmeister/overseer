@@ -6,7 +6,7 @@ use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Director;
 use Watch\Schedule\Mapper;
-use Watch\Schedule\Serializer\Schedule as ScheduleSerializer;
+use Watch\Schedule\Serializer\Project as ProjectSerializer;
 
 class PreservingDirectorTest extends AbstractDirectorTest
 {
@@ -24,10 +24,10 @@ class PreservingDirectorTest extends AbstractDirectorTest
                 new Mapper(['In Progress'], ['Done'], ["Depends"], ["Follows"]),
             )
         );
-        $scheduleSerializer = new ScheduleSerializer();
+        $projectSerializer = new ProjectSerializer();
         $this->assertSchedule(
             Utils::getSchedule($scheduleDescription),
-            $scheduleSerializer->serialize($director->build()->release())
+            $projectSerializer->serialize($director->build()->release())
         );
     }
 

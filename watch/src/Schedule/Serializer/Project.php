@@ -6,10 +6,10 @@ use Watch\Schedule\Model\Buffer as BufferModel;
 use Watch\Schedule\Model\Issue as IssueModel;
 use Watch\Schedule\Model\Link as LinkModel;
 use Watch\Schedule\Model\Node as NodeModel;
-use Watch\Schedule\Model\Schedule as ScheduleModel;
+use Watch\Schedule\Model\Project as ProjectModel;
 use Watch\Schedule\Utils;
 
-readonly class Schedule
+readonly class Project
 {
     const VOLUME_ISSUES = 'issues';
     const VOLUME_BUFFERS = 'buffers';
@@ -17,9 +17,9 @@ readonly class Schedule
     const VOLUME_LINKS = 'links';
     const VOLUME_CRITICAL_CHAIN = 'criticalChain';
 
-    public function serialize(ScheduleModel $schedule): array
+    public function serialize(ProjectModel $project): array
     {
-        $finalMilestone = $schedule->getFinalMilestone();
+        $finalMilestone = $project->getFinalMilestone();
         return [
             self::VOLUME_ISSUES => array_values(array_map(
                 fn(NodeModel $node) => [
@@ -38,7 +38,7 @@ readonly class Schedule
                 ],
                 \Watch\Utils::getUnique(
                     array_reduce(
-                        $schedule->getMilestones(),
+                        $project->getMilestones(),
                         fn($acc, $milestone) => [
                             ...$acc,
                             ...array_filter($milestone->getPreceders(true), fn(NodeModel $node) => $node instanceof BufferModel)
@@ -54,7 +54,7 @@ readonly class Schedule
                     'begin' => $node->getAttribute('begin'),
                     'end' => $node->getAttribute('end'),
                 ],
-                $schedule->getMilestones(),
+                $project->getMilestones(),
             )),
             self::VOLUME_LINKS => \Watch\Utils::getUnique(
                 array_reduce(
