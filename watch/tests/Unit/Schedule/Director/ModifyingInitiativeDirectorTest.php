@@ -31,7 +31,7 @@ class ModifyingInitiativeDirectorTest extends AbstractDirectorTest
         $scheduleSerializer = new ProjectSerializer();
         $this->assertSchedule(
             Utils::getSchedule($scheduleDescription),
-            $scheduleSerializer->serialize($director->build()->release())
+            $scheduleSerializer->serialize($director->build()->release()->project)
         );
     }
 

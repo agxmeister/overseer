@@ -31,7 +31,7 @@ class ModifyingUnlimitedDirectorTest extends AbstractDirectorTest
         $projectSerializer = new ProjectSerializer();
         $this->assertSchedule(
             Utils::getSchedule($scheduleDescription),
-            $projectSerializer->serialize($director->build()->release())
+            $projectSerializer->serialize($director->build()->release()->project)
         );
     }
 

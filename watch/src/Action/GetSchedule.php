@@ -35,7 +35,7 @@ readonly class GetSchedule
                 ),
             )
         );
-        $project = $this->projectSerializer->serialize($director->build()->release());
+        $project = $this->projectSerializer->serialize($director->build()->release()->project);
         $response->getBody()->write(json_encode($project));
         return $response
             ->withHeader('Content-Type', 'application/json')

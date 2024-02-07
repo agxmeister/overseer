@@ -7,7 +7,7 @@ class Project
     /**
      * @var Milestone[]
      */
-    private array $milestones;
+    private array $milestones = [];
 
     public function addMilestone(Milestone $milestone): void
     {
