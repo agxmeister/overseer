@@ -34,6 +34,7 @@ class Builder
         protected readonly Context $context,
         protected readonly array $issues,
         protected readonly array $links,
+        protected readonly string $project,
         protected readonly array $milestones,
         private readonly Mapper $mapper,
         private readonly LimitStrategy|null $limitStrategy = null,
@@ -83,12 +84,12 @@ class Builder
         $milestones = array_reduce(
             array_map(
                 fn(string $milestone) => new Milestone($milestone),
-                $this->milestones,
+                [$this->project, ...$this->milestones],
             ),
             fn(array $acc, Milestone $milestone) => [...$acc, $milestone->name => $milestone],
             []
         );
-        $finalMilestone = $milestones[array_key_first($milestones)];
+        $finalMilestone = $milestones[$this->project];
 
         foreach ($this->issues as $issue) {
             foreach (

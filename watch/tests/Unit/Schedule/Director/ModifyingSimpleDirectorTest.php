@@ -22,6 +22,7 @@ class ModifyingSimpleDirectorTest extends AbstractDirectorTest
                 new Context(Utils::getNowDate($scheduleDescription)),
                 Utils::getIssues($issuesDescription),
                 Utils::getLinks($issuesDescription),
+                Utils::getProjectName($scheduleDescription),
                 Utils::getMilestoneNames($scheduleDescription),
                 new Mapper(['In Progress'], ['Done'], ["Depends"], ["Follows"]),
                 new SimpleLimitStrategy(),

@@ -242,6 +242,11 @@ class Utils
         );
     }
 
+    public static function getProjectName(string $description): string
+    {
+        return current(self::getMilestoneNames($description));
+    }
+
     public static function getProjectBeginDate(string $description): \DateTimeImmutable|null
     {
         $projectLength = self::getProjectLength($description);

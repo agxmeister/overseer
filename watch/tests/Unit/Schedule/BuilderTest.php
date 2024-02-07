@@ -23,7 +23,8 @@ class BuilderTest extends Unit
             new Context(new \DateTimeImmutable('2023-01-01')),
             Utils::getIssues($issuesDescription),
             Utils::getLinks($issuesDescription),
-            ['finish'],
+            'finish',
+            [],
             new Mapper(['In Progress'], ['Done'], ["Depends"], ["Follows"]),
         );
         $builder->run();
@@ -44,7 +45,8 @@ class BuilderTest extends Unit
             new Context(new \DateTimeImmutable('2023-01-01')),
             Utils::getIssues($issuesDescription),
             Utils::getLinks($issuesDescription),
-            ['finish'],
+            'finish',
+            [],
             new Mapper(["Depends"], ["Follows"], ['In Progress'], ['Done']),
         );
         $builder->run();

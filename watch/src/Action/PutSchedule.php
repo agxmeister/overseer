@@ -29,7 +29,8 @@ readonly class PutSchedule
                 new Context(new \DateTimeImmutable(date('Y-m-d'))),
                 $subject->issues,
                 $subject->links,
-                ['M2', 'M1'],
+                'PRJ',
+                ['M1'],
                 new Mapper(
                     $this->config->schedule->task->state->started,
                     $this->config->schedule->task->state->completed,
