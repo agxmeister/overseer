@@ -70,7 +70,7 @@ class UtilsTest extends Unit
                     K-01 |...| @ M-01
                     M-01     ^ # 2023-01-01
                 ',
-                ['M-01'],
+                [],
             ], [
                 '
                     K-01 |xxx   | @ M-01
@@ -78,7 +78,7 @@ class UtilsTest extends Unit
                     M-01     ^    # 2023-01-01
                     M-02        ^ # 2023-01-04
                 ',
-                ['M-01', 'M-02'],
+                ['M-01'],
             ],
         ];
     }

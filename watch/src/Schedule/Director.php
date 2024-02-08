@@ -13,6 +13,7 @@ readonly class Director
         return $this->builder
             ->run()
             ->addProject()
+            ->addMilestones()
             ->addMilestoneBuffers()
             ->addFeedingBuffers()
             ->addDates()

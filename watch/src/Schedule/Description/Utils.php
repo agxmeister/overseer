@@ -236,15 +236,18 @@ class Utils
      */
     public static function getMilestoneNames(string $description): array
     {
-        return array_map(
+        return array_slice(array_map(
             fn($milestone) => $milestone['key'],
             self::getMilestones($description)
-        );
+        ), 0, -1);
     }
 
     public static function getProjectName(string $description): string
     {
-        return current(self::getMilestoneNames($description));
+        return current(array_reverse(array_map(
+            fn($milestone) => $milestone['key'],
+            self::getMilestones($description)
+        )));
     }
 
     public static function getProjectBeginDate(string $description): \DateTimeImmutable|null

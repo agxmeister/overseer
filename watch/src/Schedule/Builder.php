@@ -56,40 +56,7 @@ class Builder
 
     public function addProject(): self
     {
-        /** @var SubjectIssue[] $issues */
-        $issues = array_reduce(
-            $this->issues,
-            fn(array $acc, SubjectIssue $issue) => [
-                ...$acc,
-                $issue->key => $issue,
-            ],
-            [],
-        );
-
-        /** @var ScheduleIssue[] $nodes */
-        $nodes = array_reduce(
-            array_map(
-                fn(SubjectIssue $issue) => new ScheduleIssue($issue->key, $issue->duration, [
-                    'begin' => $issue->begin,
-                    'end' => $issue->end,
-                    'state' => $this->mapper->getIssueState($issue->status),
-                ]),
-                $this->issues,
-            ),
-            fn(array $acc, Node $node) => [...$acc, $node->name => $node],
-            []
-        );
-
-        /** @var Milestone[] $milestones */
-        $milestones = array_reduce(
-            array_map(
-                fn(string $milestone) => new Milestone($milestone),
-                [$this->project, ...$this->milestones],
-            ),
-            fn(array $acc, Milestone $milestone) => [...$acc, $milestone->name => $milestone],
-            []
-        );
-        $finalMilestone = $milestones[$this->project];
+        $nodes = $this->getNodes($this->issues);
 
         foreach ($this->issues as $issue) {
             foreach (
@@ -105,6 +72,8 @@ class Builder
             }
         }
 
+        $finalMilestone = new Milestone($this->project);
+
         foreach ($this->issues as $issue) {
             if (empty(array_filter(
                 $this->links,
@@ -113,6 +82,41 @@ class Builder
                 $finalMilestone->follow($nodes[$issue->key], ScheduleLink::TYPE_SCHEDULE);
             }
         }
+
+        if (!is_null($this->limitStrategy)) {
+            $this->limitStrategy->apply($finalMilestone);
+        }
+
+        $project = new Project();
+        $project->addMilestone($finalMilestone);
+        $this->schedule = new Schedule($project);
+
+        return $this;
+    }
+
+    public function addMilestones(): self
+    {
+        $nodes = $this->getNodes($this->issues);
+
+        /** @var SubjectIssue[] $issues */
+        $issues = array_reduce(
+            $this->issues,
+            fn(array $acc, SubjectIssue $issue) => [
+                ...$acc,
+                $issue->key => $issue,
+            ],
+            [],
+        );
+
+        /** @var Milestone[] $milestones */
+        $milestones = array_reduce(
+            array_map(
+                fn(string $milestone) => new Milestone($milestone),
+                $this->milestones,
+            ),
+            fn(array $acc, Milestone $milestone) => [...$acc, $milestone->name => $milestone],
+            []
+        );
 
         foreach ($milestones as $milestone) {
             foreach (
@@ -130,15 +134,9 @@ class Builder
             }
         }
 
-        if (!is_null($this->limitStrategy)) {
-            $this->limitStrategy->apply($finalMilestone);
-        }
-
-        $project = new Project();
         foreach ($milestones as $milestone) {
-            $project->addMilestone($milestone);
+            $this->schedule->project->addMilestone($milestone);
         }
-        $this->schedule = new Schedule($project);
 
         return $this;
     }
@@ -288,5 +286,25 @@ class Builder
         array_walk($afterNodes, fn(Node $afterNode) => $afterNode->unprecede($beforeNode, ScheduleLink::TYPE_SCHEDULE));
         array_walk($afterNodes, fn(Node $afterNode) => $afterNode->precede($buffer, ScheduleLink::TYPE_SCHEDULE));
         $buffer->precede($beforeNode, ScheduleLink::TYPE_SCHEDULE);
+    }
+
+    /**
+     * @param $issues SubjectIssue[]
+     * @return ScheduleIssue[]
+     */
+    private function getNodes(array $issues): array
+    {
+        return array_reduce(
+            array_map(
+                fn(SubjectIssue $issue) => new ScheduleIssue($issue->key, $issue->duration, [
+                    'begin' => $issue->begin,
+                    'end' => $issue->end,
+                    'state' => $this->mapper->getIssueState($issue->status),
+                ]),
+                $issues,
+            ),
+            fn(array $acc, Node $node) => [...$acc, $node->name => $node],
+            []
+        );
     }
 }
