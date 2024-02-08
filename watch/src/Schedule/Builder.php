@@ -54,7 +54,7 @@ class Builder
         return $this->schedule;
     }
 
-    public function addMilestones(): self
+    public function addProject(): self
     {
         /** @var SubjectIssue[] $issues */
         $issues = array_reduce(
