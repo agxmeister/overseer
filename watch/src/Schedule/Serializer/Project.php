@@ -19,7 +19,6 @@ readonly class Project
 
     public function serialize(ProjectModel $project): array
     {
-        $finalMilestone = $project->getFinalMilestone();
         return [
             self::VOLUME_ISSUES => array_values(array_map(
                 fn(NodeModel $node) => [
@@ -27,7 +26,7 @@ readonly class Project
                     'begin' => $node->getAttribute('begin'),
                     'end' => $node->getAttribute('end'),
                 ],
-                array_filter($finalMilestone->getPreceders(true), fn(NodeModel $node) => $node instanceof IssueModel)
+                array_filter($project->getPreceders(true), fn(NodeModel $node) => $node instanceof IssueModel)
             )),
             self::VOLUME_BUFFERS => array_values(array_map(
                 fn(NodeModel $node) => [
@@ -38,7 +37,7 @@ readonly class Project
                 ],
                 \Watch\Utils::getUnique(
                     array_reduce(
-                        $project->getMilestones(),
+                        [$project, ...$project->getMilestones()],
                         fn($acc, $milestone) => [
                             ...$acc,
                             ...array_filter($milestone->getPreceders(true), fn(NodeModel $node) => $node instanceof BufferModel)
@@ -54,11 +53,11 @@ readonly class Project
                     'begin' => $node->getAttribute('begin'),
                     'end' => $node->getAttribute('end'),
                 ],
-                $project->getMilestones(),
+                [$project, ...$project->getMilestones()],
             )),
             self::VOLUME_LINKS => \Watch\Utils::getUnique(
                 array_reduce(
-                    $finalMilestone->getPreceders(true),
+                    $project->getPreceders(true),
                     fn($acc, NodeModel $node) => [
                         ...$acc,
                         ...array_map(fn(LinkModel $link) => [
@@ -77,7 +76,7 @@ readonly class Project
                 fn($link) => implode('-', array_values($link))
             ),
             self::VOLUME_CRITICAL_CHAIN => array_reduce(
-                array_filter(Utils::getCriticalChain($finalMilestone), fn(NodeModel $node) => !($node instanceof BufferModel)),
+                array_filter(Utils::getCriticalChain($project), fn(NodeModel $node) => !($node instanceof BufferModel)),
                 fn($acc, NodeModel $node) => [...$acc, $node->getName()],
                 []
             ),

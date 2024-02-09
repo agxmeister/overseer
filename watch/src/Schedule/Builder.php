@@ -72,23 +72,21 @@ class Builder
             }
         }
 
-        $finalMilestone = new Milestone($this->project);
+        $project = new Project($this->project);
 
         foreach ($this->issues as $issue) {
             if (empty(array_filter(
                 $this->links,
                 fn($link) => $link->from === $issue->key,
             ))) {
-                $finalMilestone->follow($nodes[$issue->key], ScheduleLink::TYPE_SCHEDULE);
+                $project->follow($nodes[$issue->key], ScheduleLink::TYPE_SCHEDULE);
             }
         }
 
         if (!is_null($this->limitStrategy)) {
-            $this->limitStrategy->apply($finalMilestone);
+            $this->limitStrategy->apply($project);
         }
 
-        $project = new Project();
-        $project->addMilestone($finalMilestone);
         $this->schedule = new Schedule($project);
 
         return $this;
@@ -143,7 +141,7 @@ class Builder
 
     public function addMilestoneBuffers(): self
     {
-        foreach ($this->schedule->project->getMilestones() as $milestone) {
+        foreach ([$this->schedule->project, ...$this->schedule->project->getMilestones()] as $milestone) {
             $buffer = new MilestoneBuffer(
                 "{$milestone->getName()}-buffer",
                 (int)ceil($milestone->getLength(true) / 2),
@@ -156,7 +154,7 @@ class Builder
 
     public function addFeedingBuffers(): self
     {
-        $criticalChain = Utils::getCriticalChain($this->schedule->project->getFinalMilestone());
+        $criticalChain = Utils::getCriticalChain($this->schedule->project);
         foreach ($criticalChain as $node) {
             $preceders = $node->getPreceders();
             $criticalPreceder = Utils::getLongestSequence($preceders);
@@ -188,12 +186,12 @@ class Builder
 
     public function addDates(): self
     {
-        $finalMilestone = $this->schedule->project->getFinalMilestone();
+        $project = $this->schedule->project;
         if (!is_null($this->scheduleStrategy)) {
-            $this->scheduleStrategy->apply($finalMilestone);
+            $this->scheduleStrategy->apply($project);
         }
 
-        foreach ($this->schedule->project->getMilestones() as $milestone) {
+        foreach ([$this->schedule->project, ...$this->schedule->project->getMilestones()] as $milestone) {
             foreach(
                 array_filter(
                     $milestone->getPreceders(true),
@@ -204,7 +202,7 @@ class Builder
             }
         }
 
-        foreach ($this->schedule->project->getMilestones() as $milestone) {
+        foreach ([$this->schedule->project, ...$this->schedule->project->getMilestones()] as $milestone) {
             $this->addMilestoneDates($milestone);
         }
         return $this;
@@ -212,13 +210,13 @@ class Builder
 
     public function addBuffersConsumption(): self
     {
-        $milestone = $this->schedule->project->getFinalMilestone();
+        $project = $this->schedule->project;
 
-        $criticalChain = Utils::getCriticalChain($milestone);
+        $criticalChain = Utils::getCriticalChain($project);
 
         $milestoneBuffer = array_reduce(
             array_filter(
-                $milestone->getPreceders(true),
+                $project->getPreceders(true),
                 fn(Node $node) => $node instanceof MilestoneBuffer,
             ),
             fn($acc, Node $node) => $node
@@ -231,7 +229,7 @@ class Builder
         $milestoneBuffer->setAttribute('consumption', min($milestoneBuffer->getLength(), $lateDays));
 
         $feedingBuffers = array_filter(
-            $milestone->getPreceders(true),
+            $project->getPreceders(true),
             fn(Node $node) => $node instanceof FeedingBuffer,
         );
         foreach ($feedingBuffers as $feedingBuffer) {
@@ -266,7 +264,7 @@ class Builder
         $buffer->setAttribute('end', $maxPrecederEndDate->modify("{$buffer->getLength()} day")->format("Y-m-d"));
     }
 
-    protected function addMilestoneDates(Milestone $milestone): void
+    protected function addMilestoneDates(Milestone|Project $milestone): void
     {
         $milestoneEndDate = (new \DateTimeImmutable(array_reduce(
             $milestone->getPreceders(),
