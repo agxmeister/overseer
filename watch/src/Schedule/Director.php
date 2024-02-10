@@ -14,6 +14,7 @@ readonly class Director
             ->run()
             ->addProject()
             ->addMilestones()
+            ->addProjectBuffer()
             ->addMilestoneBuffers()
             ->addFeedingBuffers()
             ->addDates()

@@ -14,6 +14,7 @@ use Watch\Schedule\Model\Milestone;
 use Watch\Schedule\Model\MilestoneBuffer;
 use Watch\Schedule\Model\Node;
 use Watch\Schedule\Model\Project;
+use Watch\Schedule\Model\ProjectBuffer;
 use Watch\Subject\Model\Issue as SubjectIssue;
 use Watch\Subject\Model\Link as SubjectLink;
 
@@ -140,16 +141,33 @@ class Builder
         return $this;
     }
 
-    public function addMilestoneBuffers(): self
+    public function addProjectBuffer(): self
     {
         $project = $this->schedule->getProject();
-        foreach ([$project, ...$project->getMilestones()] as $milestone) {
-            $buffer = new MilestoneBuffer(
-                "{$milestone->getName()}-buffer",
-                (int)ceil($milestone->getLength(true) / 2),
+        $this->addBuffer(
+            new ProjectBuffer(
+                "{$project->getName()}-buffer",
+                (int)ceil($project->getLength(true) / 2),
                 ['consumption' => 0],
+            ),
+            $project,
+            $project->getPreceders(),
+        );
+        return $this;
+    }
+
+    public function addMilestoneBuffers(): self
+    {
+        foreach ($this->schedule->getProject()->getMilestones() as $milestone) {
+            $this->addBuffer(
+                new MilestoneBuffer(
+                    "{$milestone->getName()}-buffer",
+                    (int)ceil($milestone->getLength(true) / 2),
+                    ['consumption' => 0],
+                ),
+                $milestone,
+                $milestone->getPreceders(),
             );
-            $this->addBuffer($buffer, $milestone, $milestone->getPreceders());
         }
         return $this;
     }
@@ -217,10 +235,10 @@ class Builder
 
         $criticalChain = Utils::getCriticalChain($project);
 
-        $milestoneBuffer = array_reduce(
+        $projectBuffer = array_reduce(
             array_filter(
                 $project->getPreceders(true),
-                fn(Node $node) => $node instanceof MilestoneBuffer,
+                fn(Node $node) => $node instanceof ProjectBuffer,
             ),
             fn($acc, Node $node) => $node
         );
@@ -229,7 +247,7 @@ class Builder
             $criticalChain,
             $this->context->now,
         );
-        $milestoneBuffer->setAttribute('consumption', min($milestoneBuffer->getLength(), $lateDays));
+        $projectBuffer->setAttribute('consumption', min($projectBuffer->getLength(), $lateDays));
 
         $feedingBuffers = array_filter(
             $project->getPreceders(true),
