@@ -210,15 +210,23 @@ class Builder
             $this->scheduleStrategy->apply($project);
         }
 
-        foreach ([$project, ...$project->getMilestones()] as $milestone) {
-            foreach(
-                array_filter(
-                    $milestone->getPreceders(true),
-                    fn(Node $node) => $node instanceof Buffer,
-                ) as $buffer
-            ) {
-                $this->addBufferDates($buffer);
-            }
+        foreach (
+            \Watch\Utils::getUnique(
+                array_reduce(
+                    [$project, ...$project->getMilestones()],
+                    fn(array $acc, Node $node) => [
+                        ...$acc,
+                        ...array_filter(
+                            $node->getPreceders(true),
+                            fn(Node $node) => $node instanceof Buffer,
+                        ),
+                    ],
+                    [],
+                ),
+                fn(Node $node) => $node->name,
+            ) as $buffer
+        ) {
+            $this->addBufferDates($buffer);
         }
 
         foreach ([$project, ...$project->getMilestones()] as $milestone) {
