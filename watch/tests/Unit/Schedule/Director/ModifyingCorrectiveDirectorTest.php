@@ -33,7 +33,7 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
         $projectSerializer = new ProjectSerializer();
         $this->assertSchedule(
             Utils::getSchedule($scheduleDescription),
-            $projectSerializer->serialize($director->build()->release()->project)
+            $projectSerializer->serialize($director->build()->release()->getProject())
         );
     }
 
@@ -57,7 +57,7 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
         $scheduleSerializer = new ProjectSerializer();
         $this->assertSchedule(
             Utils::getSchedule($scheduleDescription),
-            $scheduleSerializer->serialize($director->build()->release()->project)
+            $scheduleSerializer->serialize($director->build()->release()->getProject())
         );
     }
 

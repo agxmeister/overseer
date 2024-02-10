@@ -4,8 +4,17 @@ namespace Watch;
 
 use Watch\Schedule\Model\Project;
 
-readonly class Schedule
+class Schedule
 {
-    public function __construct(public Project $project){
+    private Project $project;
+
+    public function getProject(): Project
+    {
+        return $this->project;
+    }
+
+    public function setProject(Project $project): void
+    {
+        $this->project = $project;
     }
 }

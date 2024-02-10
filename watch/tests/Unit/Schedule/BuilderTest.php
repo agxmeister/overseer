@@ -30,7 +30,7 @@ class BuilderTest extends Unit
         $builder->run();
         $builder->addProject();
         $projectSerializer = new ProjectSerializer();
-        $this->assertEquals(['finish', 'K-01', 'K-03'], $projectSerializer->serialize($builder->release()->project)[ProjectSerializer::VOLUME_CRITICAL_CHAIN]);
+        $this->assertEquals(['finish', 'K-01', 'K-03'], $projectSerializer->serialize($builder->release()->getProject())[ProjectSerializer::VOLUME_CRITICAL_CHAIN]);
     }
 
     public function testAddFeedingBuffers()
@@ -62,7 +62,7 @@ class BuilderTest extends Unit
                 'end' => '2023-09-17',
                 'consumption' => 0,
             ]
-        ], $scheduleSerializer->serialize($builder->release()->project)[ProjectSerializer::VOLUME_BUFFERS]);
+        ], $scheduleSerializer->serialize($builder->release()->getProject())[ProjectSerializer::VOLUME_BUFFERS]);
     }
 
     private function getConfig(): Config

@@ -19,12 +19,13 @@ use Watch\Subject\Model\Link as SubjectLink;
 
 class Builder
 {
-    protected Schedule|null $schedule = null;
+    protected Schedule $schedule;
 
     /**
      * @param Context $context
      * @param SubjectIssue[] $issues
      * @param SubjectLink[] $links
+     * @param string $project
      * @param string[] $milestones
      * @param Mapper $mapper
      * @param LimitStrategy|null $limitStrategy
@@ -45,7 +46,7 @@ class Builder
 
     public function run(): self
     {
-        $this->schedule = null;
+        $this->schedule = new Schedule();
         return $this;
     }
 
@@ -87,7 +88,7 @@ class Builder
             $this->limitStrategy->apply($project);
         }
 
-        $this->schedule = new Schedule($project);
+        $this->schedule->setProject($project);
 
         return $this;
     }
@@ -133,7 +134,7 @@ class Builder
         }
 
         foreach ($milestones as $milestone) {
-            $this->schedule->project->addMilestone($milestone);
+            $this->schedule->getProject()->addMilestone($milestone);
         }
 
         return $this;
@@ -141,7 +142,8 @@ class Builder
 
     public function addMilestoneBuffers(): self
     {
-        foreach ([$this->schedule->project, ...$this->schedule->project->getMilestones()] as $milestone) {
+        $project = $this->schedule->getProject();
+        foreach ([$project, ...$project->getMilestones()] as $milestone) {
             $buffer = new MilestoneBuffer(
                 "{$milestone->getName()}-buffer",
                 (int)ceil($milestone->getLength(true) / 2),
@@ -154,7 +156,7 @@ class Builder
 
     public function addFeedingBuffers(): self
     {
-        $criticalChain = Utils::getCriticalChain($this->schedule->project);
+        $criticalChain = Utils::getCriticalChain($this->schedule->getProject());
         foreach ($criticalChain as $node) {
             $preceders = $node->getPreceders();
             $criticalPreceder = Utils::getLongestSequence($preceders);
@@ -186,12 +188,13 @@ class Builder
 
     public function addDates(): self
     {
-        $project = $this->schedule->project;
+        $project = $this->schedule->getProject();
+
         if (!is_null($this->scheduleStrategy)) {
             $this->scheduleStrategy->apply($project);
         }
 
-        foreach ([$this->schedule->project, ...$this->schedule->project->getMilestones()] as $milestone) {
+        foreach ([$project, ...$project->getMilestones()] as $milestone) {
             foreach(
                 array_filter(
                     $milestone->getPreceders(true),
@@ -202,7 +205,7 @@ class Builder
             }
         }
 
-        foreach ([$this->schedule->project, ...$this->schedule->project->getMilestones()] as $milestone) {
+        foreach ([$project, ...$project->getMilestones()] as $milestone) {
             $this->addMilestoneDates($milestone);
         }
         return $this;
@@ -210,7 +213,7 @@ class Builder
 
     public function addBuffersConsumption(): self
     {
-        $project = $this->schedule->project;
+        $project = $this->schedule->getProject();
 
         $criticalChain = Utils::getCriticalChain($project);
 
