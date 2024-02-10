@@ -81,7 +81,7 @@ class Builder
                 $this->links,
                 fn($link) => $link->from === $issue->key,
             ))) {
-                $project->follow($nodes[$issue->key], ScheduleLink::TYPE_SCHEDULE);
+                $this->insertNode($nodes[$issue->key], $project, []);
             }
         }
 
@@ -129,7 +129,7 @@ class Builder
                     $this->links,
                     fn($link) => $link->from === $issue->key && $issues[$link->to]->milestone === $issue->milestone,
                 ))) {
-                    $milestone->follow($nodes[$issue->key], ScheduleLink::TYPE_SCHEDULE);
+                    $this->insertNode($nodes[$issue->key], $milestone, []);
                 }
             }
         }
@@ -144,14 +144,13 @@ class Builder
     public function addProjectBuffer(): self
     {
         $project = $this->schedule->getProject();
-        $this->addBuffer(
+        $this->insertNode(
             new ProjectBuffer(
                 "{$project->getName()}-buffer",
                 (int)ceil($project->getLength(true) / 2),
                 ['consumption' => 0],
             ),
             $project,
-            $project->getPreceders(),
         );
         return $this;
     }
@@ -159,14 +158,13 @@ class Builder
     public function addMilestoneBuffers(): self
     {
         foreach ($this->schedule->getProject()->getMilestones() as $milestone) {
-            $this->addBuffer(
+            $this->insertNode(
                 new MilestoneBuffer(
                     "{$milestone->getName()}-buffer",
                     (int)ceil($milestone->getLength(true) / 2),
                     ['consumption' => 0],
                 ),
                 $milestone,
-                $milestone->getPreceders(),
             );
         }
         return $this;
@@ -198,7 +196,7 @@ class Builder
                     (int)ceil($feedingChainLength / 2),
                     ['consumption' => 0],
                 );
-                $this->addBuffer($buffer, $node, [$notCriticalPreceder]);
+                $this->insertNode($buffer, $node, [$notCriticalPreceder]);
             }
         }
         return $this;
@@ -300,11 +298,13 @@ class Builder
         $milestone->setAttribute('end', $milestoneEndDate->format("Y-m-d"));
     }
 
-    private function addBuffer(Buffer $buffer, Node $beforeNode, array $afterNodes): void
+    private function insertNode(Node $node, Node $follower, array|null $preceders = null): void
     {
-        array_walk($afterNodes, fn(Node $afterNode) => $afterNode->unprecede($beforeNode, ScheduleLink::TYPE_SCHEDULE));
-        array_walk($afterNodes, fn(Node $afterNode) => $afterNode->precede($buffer, ScheduleLink::TYPE_SCHEDULE));
-        $buffer->precede($beforeNode, ScheduleLink::TYPE_SCHEDULE);
+        foreach ($preceders ?? $follower->getPreceders() as $preceder) {
+            $preceder->unprecede($follower, ScheduleLink::TYPE_SCHEDULE);
+            $preceder->precede($node, ScheduleLink::TYPE_SCHEDULE);
+        }
+        $node->precede($follower, ScheduleLink::TYPE_SCHEDULE);
     }
 
     /**
