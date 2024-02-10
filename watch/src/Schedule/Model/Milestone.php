@@ -2,10 +2,6 @@
 
 namespace Watch\Schedule\Model;
 
-class Milestone extends Node
+class Milestone extends Batch
 {
-    public function __construct(string $name)
-    {
-        parent::__construct($name, 0);
-    }
 }

@@ -6,6 +6,7 @@ use Watch\Schedule;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\LimitStrategy;
 use Watch\Schedule\Builder\ScheduleStrategy;
+use Watch\Schedule\Model\Batch;
 use Watch\Schedule\Model\Buffer;
 use Watch\Schedule\Model\FeedingBuffer;
 use Watch\Schedule\Model\Issue as ScheduleIssue;
@@ -229,9 +230,12 @@ class Builder
             $this->addBufferDates($buffer);
         }
 
-        foreach ([$project, ...$project->getMilestones()] as $milestone) {
-            $this->addMilestoneDates($milestone);
+        $this->addBatchDates($project);
+
+        foreach ($project->getMilestones() as $milestone) {
+            $this->addBatchDates($milestone);
         }
+        
         return $this;
     }
 
@@ -291,7 +295,7 @@ class Builder
         $buffer->setAttribute('end', $maxPrecederEndDate->modify("{$buffer->getLength()} day")->format("Y-m-d"));
     }
 
-    protected function addMilestoneDates(Milestone|Project $milestone): void
+    protected function addBatchDates(Batch $milestone): void
     {
         $milestoneEndDate = (new \DateTimeImmutable(array_reduce(
             $milestone->getPreceders(),
