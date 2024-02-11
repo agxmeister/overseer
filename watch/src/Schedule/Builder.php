@@ -235,7 +235,7 @@ class Builder
         foreach ($project->getMilestones() as $milestone) {
             $this->addBatchDates($milestone);
         }
-        
+
         return $this;
     }
 
@@ -252,12 +252,10 @@ class Builder
             ),
             fn($acc, Node $node) => $node
         );
-        $lateDays = Utils::getLateDays(
-            array_reduce($criticalChain, fn($acc, Node $node) => $node),
-            $criticalChain,
-            $this->context->now,
-        );
-        $projectBuffer->setAttribute('consumption', min($projectBuffer->getLength(), $lateDays));
+        $projectBuffer->setAttribute('consumption', min(
+            $projectBuffer->getLength(),
+            Utils::getChainLateDays($criticalChain, $this->context->now),
+        ));
 
         $feedingBuffers = array_filter(
             $project->getPreceders(true),
@@ -270,7 +268,7 @@ class Builder
                     array_udiff(
                         $feedingBuffer->getPreceders(true),
                         $criticalChain,
-                        fn(Node $a, Node $b) => $a->getName() === $b->getName() ? 0 : ($a->getName() > $b->getName() ? 1 : -1),
+                        fn(Node $a, Node $b) => (int)($a->getName() === $b->getName()),
                     ),
                     $this->context->now
                 ),

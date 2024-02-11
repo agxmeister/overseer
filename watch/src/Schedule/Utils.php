@@ -70,14 +70,28 @@ class Utils
         );
     }
 
-    static public function getLateDays(Node $node, array $filter, \DateTimeImmutable $now): int
+    static public function getChainLateDays(array $chain, \DateTimeImmutable $now): int
     {
-        $nodeLateDays = (
+        return array_reduce(
+            $chain,
+            fn(int $acc, Node $node) => $acc + self::getNodeLateDays($node, $now),
+            0,
+        );
+    }
+
+    static public function getNodeLateDays(Node $node, \DateTimeImmutable $now): int
+    {
+        return (
             $node->getAttribute('state') !== Issue::STATE_COMPLETED &&
             $node->getAttribute('end') <= $now->format('Y-m-d')
         )
             ? $now->diff(new \DateTimeImmutable($node->getAttribute('end')))->format('%a')
             : 0;
+    }
+
+    static public function getLateDays(Node $node, array $filter, \DateTimeImmutable $now): int
+    {
+        $nodeLateDays = self::getNodeLateDays($node, $now);
         return max([$nodeLateDays, ...array_map(
             fn(int $followerLateDays) => $followerLateDays + $nodeLateDays,
             array_map(
@@ -85,7 +99,7 @@ class Utils
                 array_uintersect(
                     $node->getFollowers(),
                     $filter,
-                    fn(Node $a, Node $b) => $a->getName() === $b->getName() ? 0 : ($a->getName() > $b->getName() ? 1 : -1),
+                    fn(Node $a, Node $b) => (int)($a->getName() === $b->getName()),
                 ),
             )
         )]);
