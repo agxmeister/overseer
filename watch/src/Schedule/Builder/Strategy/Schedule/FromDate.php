@@ -15,7 +15,7 @@ readonly class FromDate implements ScheduleStrategy
 
     public function apply(Node $milestone): void
     {
-        $milestoneLength = Utils::getLongestSequence($milestone->getPreceders())->getLength(true);
+        $milestoneLength = Utils::getMostDistantNode($milestone->getPreceders())->getLength(true);
         $milestoneEndDate = $this->date->modify("{$milestoneLength} day");
         foreach (
             array_filter(

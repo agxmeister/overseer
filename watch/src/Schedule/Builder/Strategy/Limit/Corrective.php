@@ -22,29 +22,29 @@ readonly class Corrective implements LimitStrategy
             $point = $milestone->getDistance(true) - $shift;
             $ongoingNodes = array_filter($nodes, fn(Node $node) => $this->isOngoingAt($node, $point));
             while (sizeof($ongoingNodes) > $this->limit) {
-                $shortestNode = Utils::getShortestSequence($ongoingNodes, [Link::TYPE_SEQUENCE]);
-                if (is_null($shortestNode)) {
+                $leastDistantNode = Utils::getLeastDistantNode($ongoingNodes, [Link::TYPE_SEQUENCE]);
+                if (is_null($leastDistantNode)) {
                     break;
                 }
-                $longestNode = Utils::getLongestSequence(
+                $mostDistantNode = Utils::getMostDistantNode(
                     array_filter(
                         array_filter(
                             $ongoingNodes,
                             fn(Node $node) => $node->getAttribute('state') !== Issue::STATE_STARTED,
                         ),
-                        fn(Node $node) => $node->getName() !== $shortestNode->getName()
+                        fn(Node $node) => $node->getName() !== $leastDistantNode->getName()
                     ),
                     [Link::TYPE_SEQUENCE]
                 );
-                if (is_null($longestNode)) {
+                if (is_null($mostDistantNode)) {
                     break;
                 }
-                $followers = $shortestNode->getFollowers([Link::TYPE_SCHEDULE]);
-                array_walk($followers, fn(Node $follower) => $shortestNode->unprecede($follower, Link::TYPE_SCHEDULE));
-                $preceders = $longestNode->getPreceders(false, [Link::TYPE_SCHEDULE]);
-                array_walk($preceders, fn(Node $preceder) => $longestNode->unfollow($preceder, Link::TYPE_SCHEDULE));
-                $longestNode->follow($shortestNode, Link::TYPE_SCHEDULE);
-                $ongoingNodes = array_filter($ongoingNodes, fn(Node $node) => $node !== $longestNode);
+                $followers = $leastDistantNode->getFollowers([Link::TYPE_SCHEDULE]);
+                array_walk($followers, fn(Node $follower) => $leastDistantNode->unprecede($follower, Link::TYPE_SCHEDULE));
+                $preceders = $mostDistantNode->getPreceders(false, [Link::TYPE_SCHEDULE]);
+                array_walk($preceders, fn(Node $preceder) => $mostDistantNode->unfollow($preceder, Link::TYPE_SCHEDULE));
+                $mostDistantNode->follow($leastDistantNode, Link::TYPE_SCHEDULE);
+                $ongoingNodes = array_filter($ongoingNodes, fn(Node $node) => $node !== $mostDistantNode);
             }
             $shift++;
         } while ($shift <= $milestone->getLength(true));

@@ -12,24 +12,27 @@ class Utils
      * @param Node|null $node
      * @return Node[]
      */
-    static public function getCriticalChain(Node|null $node): array
+    static public function getLongestChain(Node|null $node): array
     {
         if (is_null($node)) {
             return [];
         }
-        return [$node, ...self::getCriticalChain(Utils::getLongestSequence(
-            array_filter(
+        return [
+            $node,
+            ...self::getLongestChain(Utils::getMostDistantNode(
                 array_filter(
-                    $node->getPreceders(),
-                    fn($node) => get_class($node) !== FeedingBuffer::class,
-                ),
-                fn(Node $node) => !array_reduce(
-                    $node->getFollowers(),
-                    fn($acc, Node $node) => $acc || get_class($node) === FeedingBuffer::class,
-                    false,
-                ),
-            )
-        ))];
+                    array_filter(
+                        $node->getPreceders(),
+                        fn($node) => get_class($node) !== FeedingBuffer::class,
+                    ),
+                    fn(Node $node) => !array_reduce(
+                        $node->getFollowers(),
+                        fn($acc, Node $node) => $acc || get_class($node) === FeedingBuffer::class,
+                        false,
+                    ),
+                )
+            ))
+        ];
     }
 
     /**
@@ -37,17 +40,19 @@ class Utils
      * @param array $types
      * @return Node|null
      */
-    static public function getLongestSequence(array $nodes, array $types = []): Node|null
+    static public function getMostDistantNode(array $nodes, array $types = []): Node|null
     {
-        if (sizeof($nodes) === 0) {
+        $node = reset($nodes);
+        if ($node === false) {
             return null;
         }
-        return array_reduce($nodes, fn(Node|null $acc, Node $node) => is_null($acc) ?
-            $node : (
-            $acc->getDistance(true, $types) < $node->getDistance(true, $types) ?
-                $node :
-                $acc
-            )
+        return array_reduce(
+            $nodes,
+            fn(Node $acc, Node $node) =>
+                $acc->getDistance(true, $types) < $node->getDistance(true, $types)
+                    ? $node
+                    : $acc,
+            $node,
         );
     }
 
@@ -56,7 +61,7 @@ class Utils
      * @param array $types
      * @return Node|null
      */
-    static public function getShortestSequence(array $nodes, array $types = []): Node|null
+    static public function getLeastDistantNode(array $nodes, array $types = []): Node|null
     {
         if (sizeof($nodes) === 0) {
             return null;
