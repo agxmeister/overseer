@@ -20,6 +20,12 @@ abstract class Node
     {
     }
 
+    public function __clone()
+    {
+        $this->followers = [];
+        $this->preceders = [];
+    }
+
     public function follow(Node $node, string $type = Link::TYPE_SEQUENCE): void
     {
         if ($this->hasLink($this->preceders, $node)) {
@@ -80,6 +86,10 @@ abstract class Node
         ));
     }
 
+    /**
+     * @param string[] $types
+     * @return Link[]
+     */
     public function getFollowLinks(array $types = []): array
     {
         return array_filter(
@@ -109,6 +119,10 @@ abstract class Node
         return Utils::getUnique($preceders, fn(Node $node) => $node->getName());
     }
 
+    /**
+     * @param string[] $types
+     * @return Link[]
+     */
     public function getPrecedeLinks(array $types = []): array
     {
         return array_filter(

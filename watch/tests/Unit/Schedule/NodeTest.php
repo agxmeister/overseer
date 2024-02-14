@@ -139,4 +139,22 @@ class NodeTest extends Unit
         $this->assertEquals([$node2], $node5->getPreceders());
         $this->assertEquals([$node2, $node4], $node5->getPreceders(true));
     }
+
+    public function testClone()
+    {
+        $node1 = new Issue("Test1", 10);
+        $node11 = new Issue("Test11", 11);
+        $node12 = new Issue("Test12", 12);
+        $node121 = new Issue("Test121", 12);
+        $node122 = new Issue("Test122", 12);
+        $node121->precede($node12);
+        $node122->precede($node12);
+        $node11->precede($node1);
+        $node12->precede($node1);
+        $node1->setAttribute('test', 'test');
+        $clone = clone $node1;
+        $this->assertEquals([], $clone->getPreceders());
+        $this->assertEquals([], $clone->getFollowers());
+        $this->assertEquals('test', $clone->getAttribute('test'));
+    }
 }
