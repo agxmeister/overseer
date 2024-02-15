@@ -80,9 +80,9 @@ abstract class Node
      */
     public function getFollowers(array $types = []): array
     {
-        return array_map(fn(Link $link) => $link->getNode(), array_filter(
+        return array_map(fn(Link $link) => $link->node, array_filter(
             $this->followers,
-            fn(Link $link) => empty($types) || in_array($link->getType(), $types)
+            fn(Link $link) => empty($types) || in_array($link->type, $types)
         ));
     }
 
@@ -94,7 +94,7 @@ abstract class Node
     {
         return array_filter(
             $this->followers,
-            fn(Link $link) => empty($types) || in_array($link->getType(), $types)
+            fn(Link $link) => empty($types) || in_array($link->type, $types)
         );
     }
 
@@ -107,14 +107,14 @@ abstract class Node
     {
         $links = array_filter(
             $this->preceders,
-            fn(Link $link) => empty($types) || in_array($link->getType(), $types)
+            fn(Link $link) => empty($types) || in_array($link->type, $types)
         );
-        $preceders = array_map(fn(Link $link) => $link->getNode(), $links);
+        $preceders = array_map(fn(Link $link) => $link->node, $links);
         if (!$isRecursively) {
             return [...$preceders];
         }
         foreach ($links as $link) {
-            $preceders = [...$preceders, ...$link->getNode()->getPreceders(true)];
+            $preceders = [...$preceders, ...$link->node->getPreceders(true)];
         }
         return Utils::getUnique($preceders, fn(Node $node) => $node->getName());
     }
@@ -127,7 +127,7 @@ abstract class Node
     {
         return array_filter(
             $this->preceders,
-            fn(Link $link) => empty($types) || in_array($link->getType(), $types)
+            fn(Link $link) => empty($types) || in_array($link->type, $types)
         );
     }
 
@@ -176,7 +176,7 @@ abstract class Node
     private function getLink(array $links, Node $node, string|null $type = null): Link|null
     {
         return array_reduce($links, fn(Link|null $acc, Link $link) => (
-            $link->getNode() === $node && (is_null($type) || $link->getType() === $type)
+            $link->node === $node && (is_null($type) || $link->type === $type)
         ) ? $link : $acc);
     }
 

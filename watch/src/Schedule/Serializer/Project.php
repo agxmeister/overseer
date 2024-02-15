@@ -62,13 +62,13 @@ readonly class Project
                         ...$acc,
                         ...array_map(fn(LinkModel $link) => [
                             'from' => $node->getName(),
-                            'to' => $link->getNode()->getName(),
-                            'type' => $link->getType(),
+                            'to' => $link->node->getName(),
+                            'type' => $link->type,
                         ], $node->getFollowLinks()),
                         ...array_map(fn(LinkModel $link) => [
-                            'from' => $link->getNode()->getName(),
+                            'from' => $link->node->getName(),
                             'to' => $node->getName(),
-                            'type' => $link->getType(),
+                            'type' => $link->type,
                         ], $node->getPrecedeLinks()),
                     ],
                     []
