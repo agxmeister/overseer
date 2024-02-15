@@ -64,11 +64,6 @@ abstract class Node
         $node->unfollow($this, $type);
     }
 
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
     public function hasPreceders(): bool
     {
         return !empty($this->preceders);
@@ -116,7 +111,7 @@ abstract class Node
         foreach ($links as $link) {
             $preceders = [...$preceders, ...$link->node->getPreceders(true)];
         }
-        return Utils::getUnique($preceders, fn(Node $node) => $node->getName());
+        return Utils::getUnique($preceders, fn(Node $node) => $node->name);
     }
 
     /**
@@ -160,7 +155,7 @@ abstract class Node
 
     public function getSchedule(): array|string
     {
-        return array_map(fn(Node $node) => [$node->getName(), $node->getLength(), $node->getDistance()], $this->getPreceders(true));
+        return array_map(fn(Node $node) => [$node->name, $node->getLength(), $node->getDistance()], $this->getPreceders(true));
     }
 
     public function getAttribute(string $name, mixed $default = null): mixed

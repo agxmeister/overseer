@@ -104,7 +104,7 @@ class Utils
                 array_uintersect(
                     $node->getFollowers(),
                     $filter,
-                    fn(Node $a, Node $b) => (int)($a->getName() === $b->getName()),
+                    fn(Node $a, Node $b) => (int)($a->name === $b->name),
                 ),
             )
         )]);

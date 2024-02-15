@@ -26,7 +26,7 @@ readonly class Initiative implements LimitStrategy
                     break;
                 }
                 $leastDistantNode = Utils::getLeastDistantNode(
-                    array_filter($ongoingNodes, fn(Node $node) => $node->getName() !== $mostDistantNode->getName()),
+                    array_filter($ongoingNodes, fn(Node $node) => $node->name !== $mostDistantNode->name),
                     [Link::TYPE_SEQUENCE]
                 );
                 if (is_null($leastDistantNode)) {

@@ -22,7 +22,7 @@ readonly class Project
         return [
             self::VOLUME_ISSUES => array_values(array_map(
                 fn(NodeModel $node) => [
-                    'key' => $node->getName(),
+                    'key' => $node->name,
                     'begin' => $node->getAttribute('begin'),
                     'end' => $node->getAttribute('end'),
                 ],
@@ -30,7 +30,7 @@ readonly class Project
             )),
             self::VOLUME_BUFFERS => array_values(array_map(
                 fn(NodeModel $node) => [
-                    'key' => $node->getName(),
+                    'key' => $node->name,
                     'begin' => $node->getAttribute('begin'),
                     'end' => $node->getAttribute('end'),
                     'consumption' => $node->getAttribute('consumption'),
@@ -49,7 +49,7 @@ readonly class Project
             )),
             self::VOLUME_MILESTONES => array_values(array_map(
                 fn(NodeModel $node) => [
-                    'key' => $node->getName(),
+                    'key' => $node->name,
                     'begin' => $node->getAttribute('begin'),
                     'end' => $node->getAttribute('end'),
                 ],
@@ -61,13 +61,13 @@ readonly class Project
                     fn($acc, NodeModel $node) => [
                         ...$acc,
                         ...array_map(fn(LinkModel $link) => [
-                            'from' => $node->getName(),
-                            'to' => $link->node->getName(),
+                            'from' => $node->name,
+                            'to' => $link->node->name,
                             'type' => $link->type,
                         ], $node->getFollowLinks()),
                         ...array_map(fn(LinkModel $link) => [
-                            'from' => $link->node->getName(),
-                            'to' => $node->getName(),
+                            'from' => $link->node->name,
+                            'to' => $node->name,
                             'type' => $link->type,
                         ], $node->getPrecedeLinks()),
                     ],
@@ -77,7 +77,7 @@ readonly class Project
             ),
             self::VOLUME_CRITICAL_CHAIN => array_reduce(
                 array_filter(Utils::getLongestChain($project), fn(NodeModel $node) => !($node instanceof BufferModel)),
-                fn($acc, NodeModel $node) => [...$acc, $node->getName()],
+                fn($acc, NodeModel $node) => [...$acc, $node->name],
                 []
             ),
         ];

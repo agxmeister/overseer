@@ -32,7 +32,7 @@ readonly class Corrective implements LimitStrategy
                             $ongoingNodes,
                             fn(Node $node) => $node->getAttribute('state') !== Issue::STATE_STARTED,
                         ),
-                        fn(Node $node) => $node->getName() !== $leastDistantNode->getName()
+                        fn(Node $node) => $node->name !== $leastDistantNode->name
                     ),
                     [Link::TYPE_SEQUENCE]
                 );

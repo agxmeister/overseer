@@ -147,7 +147,7 @@ class Builder
         $project = $this->schedule->getProject();
         $this->insertNode(
             new ProjectBuffer(
-                "{$project->getName()}-buffer",
+                "{$project->name}-buffer",
                 (int)ceil($project->getLength(true) / 2),
                 ['consumption' => 0],
             ),
@@ -161,7 +161,7 @@ class Builder
         foreach ($this->schedule->getProject()->getMilestones() as $milestone) {
             $this->insertNode(
                 new MilestoneBuffer(
-                    "{$milestone->getName()}-buffer",
+                    "{$milestone->name}-buffer",
                     (int)ceil($milestone->getLength(true) / 2),
                     ['consumption' => 0],
                 ),
@@ -193,7 +193,7 @@ class Builder
                     continue;
                 }
                 $buffer = new FeedingBuffer(
-                    "{$notCriticalPreceder->getName()}-buffer",
+                    "{$notCriticalPreceder->name}-buffer",
                     (int)ceil($feedingChainLength / 2),
                     ['consumption' => 0],
                 );
@@ -268,7 +268,7 @@ class Builder
                     array_udiff(
                         $feedingBuffer->getPreceders(true),
                         $criticalChain,
-                        fn(Node $a, Node $b) => (int)($a->getName() === $b->getName()),
+                        fn(Node $a, Node $b) => (int)($a->name === $b->name),
                     ),
                     $this->context->now
                 ),
