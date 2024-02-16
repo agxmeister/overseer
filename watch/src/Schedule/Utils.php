@@ -8,6 +8,15 @@ use Watch\Schedule\Model\Issue;
 
 class Utils
 {
+    static public function duplicateNode(Node $origin, Node $copy): void
+    {
+        foreach ($origin->getPrecedeLinks() as $link) {
+            $precederCopy = clone $link->node;
+            $precederCopy->precede($copy, $link->type);
+            self::duplicateNode($link->node, $precederCopy);
+        }
+    }
+
     /**
      * @param Node|null $node
      * @return Node[]
