@@ -58,6 +58,7 @@ class BuilderTest extends Unit
         $this->assertEquals([
             [
                 'key' => 'K-02-buffer',
+                'length' => 2,
                 'begin' => '2023-09-15',
                 'end' => '2023-09-17',
                 'consumption' => 0,

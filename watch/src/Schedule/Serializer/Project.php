@@ -23,6 +23,7 @@ readonly class Project
             self::VOLUME_ISSUES => array_values(array_map(
                 fn(NodeModel $node) => [
                     'key' => $node->name,
+                    'length' => $node->length,
                     'begin' => $node->getAttribute('begin'),
                     'end' => $node->getAttribute('end'),
                 ],
@@ -31,6 +32,7 @@ readonly class Project
             self::VOLUME_BUFFERS => array_values(array_map(
                 fn(NodeModel $node) => [
                     'key' => $node->name,
+                    'length' => $node->length,
                     'begin' => $node->getAttribute('begin'),
                     'end' => $node->getAttribute('end'),
                     'consumption' => $node->getAttribute('consumption'),

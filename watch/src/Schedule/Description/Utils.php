@@ -130,7 +130,7 @@ class Utils
             $issueData = explode('|', $line);
             $ignored = str_ends_with($issueData[0], '-');
             $key = trim(rtrim($issueData[0], '-'));
-            $duration = strlen(trim($issueData[1]));
+            $length = strlen(trim($issueData[1]));
             $attributes = trim($issueData[2]);
             $isScheduled = in_array(trim($issueData[1])[0], ['x', '*', '_']);
             $isIssue = in_array(trim($issueData[1])[0], ['x', '*', '.']);
@@ -138,11 +138,12 @@ class Utils
             $isBuffer = in_array(trim($issueData[1])[0], ['_', '!']);
             $consumption = substr_count(trim($issueData[1]), '!');
             $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1])) - $projectEndGap;
-            $beginGap = $endGap + $duration;
+            $beginGap = $endGap + $length;
 
             if ($isIssue) {
                 $schedule['issues'][] = [
                     'key' => $key,
+                    'length' => $length,
                     'begin' => $isScheduled
                         ? $ignored
                             ? $projectEndDate->modify("-{$endGap} day")->format('Y-m-d')
@@ -160,6 +161,7 @@ class Utils
             if ($isBuffer) {
                 $schedule['buffers'][] = [
                     'key' => $key,
+                    'length' => $length,
                     'begin' => $projectEndDate->modify("-{$beginGap} day")->format('Y-m-d'),
                     'end' => $projectEndDate->modify("-{$endGap} day")->format('Y-m-d'),
                     'consumption' => $consumption,
