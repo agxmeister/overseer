@@ -17,6 +17,22 @@ class Utils
         }
     }
 
+    static public function cropFeedingChains(Node $origin): Node
+    {
+        $copy = clone $origin;
+        self::duplicateNode($origin, $copy);
+        foreach (
+            array_filter(
+                $copy->getPreceders(true),
+                fn(Node $preceder) => $preceder instanceof FeedingBuffer,
+            ) as $feedingBuffer) {
+            foreach ($feedingBuffer->getFollowLinks() as $link) {
+                $feedingBuffer->unprecede($link->node);
+            }
+        }
+        return $copy;
+    }
+
     /**
      * @param Node|null $node
      * @return Node[]

@@ -2,6 +2,7 @@
 namespace Tests\Unit\Schedule;
 
 use Codeception\Test\Unit;
+use Watch\Schedule\Model\FeedingBuffer;
 use Watch\Schedule\Model\Issue;
 use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Node;
@@ -42,6 +43,21 @@ class UtilsTest extends Unit
         }
     }
 
+    public function testCropFeedingChains()
+    {
+        $origin = new Issue("Root", 10);
+        $node1 = new Issue("Node1", 10);
+        $node1->precede($origin);
+        $node11 = new Issue("Node11", 10);
+        $node11->precede($node1);
+        $buffer = new FeedingBuffer("Buffer", 1);
+        $node12 = new Issue("Node12", 2);
+        $node12->precede($buffer);
+        $buffer->precede($node1);
+        $copy = Utils::cropFeedingChains($origin);
+        $this->assertEquals(["Root", "Node1", "Node11"], $this->getNames($copy));
+    }
+
     public function testMostAndLeastDistantNodes()
     {
         $node1 = new Issue("Test1", 10);
@@ -78,5 +94,20 @@ class UtilsTest extends Unit
             fn($acc, Node $node) => [...$acc, $node->name => $node],
             [],
         );
+    }
+
+    /**
+     * @param Node $node
+     * @return string[]
+     */
+    protected function getNames(Node $node): array
+    {
+        return [
+            $node->name,
+            ...array_map(
+                fn(Node $node) => $node->name,
+                $node->getPreceders(true),
+            ),
+        ];
     }
 }
