@@ -43,8 +43,8 @@ class ModifyingSimpleDirectorTest extends AbstractDirectorTest
                 K-01          |....        |
                 K-02          |....        |
             ', '
-                finish-buffer |        ____| @ finish
-                K-01          |    xxxx    | @ finish-buffer
+                PB/finish-buf |        ____| @ finish
+                K-01          |    xxxx    | @ finish-buf
                 K-02          |xxxx        | @ K-01
                 finish                     ^ # 2023-09-21
             '], ['
@@ -52,8 +52,8 @@ class ModifyingSimpleDirectorTest extends AbstractDirectorTest
                 K-02          |....              |
                 K-03          |....              |
             ', '
-                finish-buffer |            ______| @ finish
-                K-01          |        xxxx      | @ finish-buffer
+                PB/finish-buf |            ______| @ finish
+                K-01          |        xxxx      | @ finish-buf
                 K-02          |    xxxx          | @ K-01
                 K-03          |xxxx              | @ K-02
                 finish                           ^ # 2023-09-21

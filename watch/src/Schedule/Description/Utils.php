@@ -2,6 +2,7 @@
 
 namespace Watch\Schedule\Description;
 
+use Watch\Schedule\Model\Buffer;
 use Watch\Subject\Model\Issue;
 use Watch\Subject\Model\Link;
 
@@ -34,15 +35,7 @@ class Utils
                 $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1])) - $projectEndGap;
                 $beginGap = $endGap + $duration;
 
-                list($key, $type, $project) = array_map(
-                    fn($name, $value) => $value ?? match($name) {
-                        'project' => 'PRJ',
-                        'type' => 'T',
-                        default => null,
-                    },
-                    ['key', 'type', 'project'],
-                    array_reverse(explode('/', $name)),
-                );
+                list($key, $type, $project) = self::getNameComponents($name);
 
                 $issues[$key] = [
                     'key' => $key,
@@ -129,7 +122,7 @@ class Utils
         $schedule = array_reduce(array_filter($lines, fn($line) => !str_contains($line, '^') && !str_contains($line, '>')), function ($schedule, $line) use ($projectEndDate, $projectEndGap, &$criticalChain) {
             $issueData = explode('|', $line);
             $ignored = str_ends_with($issueData[0], '-');
-            $key = trim(rtrim($issueData[0], '-'));
+            $name = trim(rtrim($issueData[0], '-'));
             $length = strlen(trim($issueData[1]));
             $attributes = trim($issueData[2]);
             $isScheduled = in_array(trim($issueData[1])[0], ['x', '*', '_']);
@@ -139,6 +132,8 @@ class Utils
             $consumption = substr_count(trim($issueData[1]), '!');
             $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1])) - $projectEndGap;
             $beginGap = $endGap + $length;
+
+            list($key, $type, $project) = self::getNameComponents($name);
 
             if ($isIssue) {
                 $schedule['issues'][] = [
@@ -162,6 +157,12 @@ class Utils
                 $schedule['buffers'][] = [
                     'key' => $key,
                     'length' => $length,
+                    'type' => match($type) {
+                        'PB' => Buffer::TYPE_PROJECT,
+                        'MB' => Buffer::TYPE_MILESTONE,
+                        'FB' => Buffer::TYPE_FEEDING,
+                        default => '',
+                    },
                     'begin' => $projectEndDate->modify("-{$beginGap} day")->format('Y-m-d'),
                     'end' => $projectEndDate->modify("-{$endGap} day")->format('Y-m-d'),
                     'consumption' => $consumption,
@@ -295,6 +296,19 @@ class Utils
             $tracks,
             fn($acc, $track) => min($acc, strlen($track) - strlen(ltrim($track))),
             PHP_INT_MAX
+        );
+    }
+
+    private static function getNameComponents($name)
+    {
+        return array_map(
+            fn($name, $value) => $value ?? match($name) {
+                'project' => 'PRJ',
+                'type' => 'T',
+                default => null,
+            },
+            ['key', 'type', 'project'],
+            array_reverse(explode('/', $name)),
         );
     }
 

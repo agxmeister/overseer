@@ -70,10 +70,10 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
                 K-03          |****           |
                               ^                 # 2023-08-21
             ', '
-                finish-buffer |          _____| @ finish
-                K-01          |    xxxxxx     | @ finish-buffer
-                K-02-buffer   |       ___     | @ finish-buffer
-                K-02          |  *****        | @ K-02-buffer
+                PB/finish-buf |          _____| @ finish
+                K-01          |    xxxxxx     | @ finish-buf
+                FB/K-02-buf   |       ___     | @ finish-buf
+                K-02          |  *****        | @ K-02-buf
                 K-03          |xxxx           | @ K-01
                 finish        ^                 # 2023-08-21
             '], ['
@@ -82,10 +82,10 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
                 K-03          |****            |
                               ^                  # 2023-08-21
             ', '
-                finish-buffer |           _____| @ finish
-                K-01          |      xxxxx     | @ finish-buffer
-                K-02-buffer   |        ___     | @ finish-buffer
-                K-02          |  ******        | @ K-02-buffer
+                PB/finish-buf |           _____| @ finish
+                K-01          |      xxxxx     | @ finish-buf
+                FB/K-02-buf   |        ___     | @ finish-buf
+                K-02          |  ******        | @ K-02-buf
                 K-03          |  xxxx          | @ K-01
                 finish          ^                # 2023-08-23
             '], ['
@@ -94,11 +94,11 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
                 K-03          |****     |
                               ^           # 2023-08-21
             ', '
-                finish-buffer |      ___| @ finish
-                K-01          | xxxxx   | @ finish-buffer
-                K-02         -|******   | @ finish-buffer
-                K-03-buffer   |    __   | @ finish-buffer
-                K-03          |****     | @ K-03-buffer
+                PB/finish-buf |      ___| @ finish
+                K-01          | xxxxx   | @ finish-buf
+                K-02         -|******   | @ finish-buf
+                FB/K-03-buf   |    __   | @ finish-buf
+                K-03          |****     | @ K-03-buf
                 finish        ^           # 2023-08-21
             '],
         ];
@@ -112,10 +112,10 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
                 K-02          |.....          |
                 K-03          |....           |
             ', '
-                finish-buffer |          _____| @ finish
-                K-01          |    xxxxxx     | @ finish-buffer
-                K-02-buffer   |       ___     | @ finish-buffer
-                K-02          |  *****        | @ K-02-buffer
+                PB/finish-buf |          _____| @ finish
+                K-01          |    xxxxxx     | @ finish-buf
+                FB/K-02-buf   |       ___     | @ finish-buf
+                K-02          |  *****        | @ K-02-buf
                 K-03          |xxxx           | @ K-01
                 finish                        ^ # 2023-09-21
             '], ['
@@ -124,10 +124,10 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
                 K-03          |****           |
                               ^                 # 2023-09-06
             ', '
-                finish-buffer |          _____| @ finish
-                K-01-buffer   |       ___     | @ finish-buffer
-                K-01          |  *****        | @ K-01-buffer
-                K-02          |    xxxxxx     | @ finish-buffer
+                PB/finish-buf |          _____| @ finish
+                FB/K-01-buf   |       ___     | @ finish-buf
+                K-01          |  *****        | @ K-01-buf
+                K-02          |    xxxxxx     | @ finish-buf
                 K-03          |xxxx           | @ K-02
                 finish                        ^ # 2023-09-21
             '], ['
@@ -136,11 +136,11 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
                 K-03          |****       |
                               ^             # 2023-09-10
             ', '
-                finish-buffer |        ___| @ finish
-                K-01         -|   *****   | @ finish-buffer
-                K-02          |  xxxxxx   | @ finish-buffer
-                K-03-buffer   |      __   | @ finish-buffer
-                K-03          |  ****     | @ K-03-buffer
+                PB/finish-buf |        ___| @ finish
+                K-01         -|   *****   | @ finish-buf
+                K-02          |  xxxxxx   | @ finish-buf
+                FB/K-03-buf   |      __   | @ finish-buf
+                K-03          |  ****     | @ K-03-buf
                 finish                    ^ # 2023-09-21
             '], ['
                 K-01          |   *****      |
@@ -148,10 +148,10 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
                 K-03          |****          |
                               ^                # 2023-09-07
             ', '
-                finish-buffer |         _____| @ finish
-                K-01          |    xxxxx     | @ finish-buffer
-                K-02-buffer   |      ___     | @ finish-buffer
-                K-02          |******        | @ K-02-buffer
+                PB/finish-buf |         _____| @ finish
+                K-01          |    xxxxx     | @ finish-buf
+                FB/K-02-buf   |      ___     | @ finish-buf
+                K-02          |******        | @ K-02-buf
                 K-03          |xxxx          | @ K-01
                 finish                       ^ # 2023-09-21
             '],

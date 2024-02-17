@@ -7,6 +7,7 @@ use Watch\Schedule\Builder;
 use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Mapper;
+use Watch\Schedule\Model\Buffer;
 use Watch\Schedule\Serializer\Project as ProjectSerializer;
 
 class BuilderTest extends Unit
@@ -57,8 +58,9 @@ class BuilderTest extends Unit
         $scheduleSerializer = new ProjectSerializer();
         $this->assertEquals([
             [
-                'key' => 'K-02-buffer',
+                'key' => 'K-02-buf',
                 'length' => 2,
+                'type' => Buffer::TYPE_FEEDING,
                 'begin' => '2023-09-15',
                 'end' => '2023-09-17',
                 'consumption' => 0,

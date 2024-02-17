@@ -21,7 +21,7 @@ readonly class Project
     {
         return [
             self::VOLUME_ISSUES => array_values(array_map(
-                fn(NodeModel $node) => [
+                fn(IssueModel $node) => [
                     'key' => $node->name,
                     'length' => $node->length,
                     'begin' => $node->getAttribute('begin'),
@@ -30,9 +30,10 @@ readonly class Project
                 array_filter($project->getPreceders(true), fn(NodeModel $node) => $node instanceof IssueModel)
             )),
             self::VOLUME_BUFFERS => array_values(array_map(
-                fn(NodeModel $node) => [
+                fn(BufferModel $node) => [
                     'key' => $node->name,
                     'length' => $node->length,
+                    'type' => $node->type,
                     'begin' => $node->getAttribute('begin'),
                     'end' => $node->getAttribute('end'),
                     'consumption' => $node->getAttribute('consumption'),

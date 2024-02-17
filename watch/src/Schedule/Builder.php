@@ -147,7 +147,7 @@ class Builder
         $project = $this->schedule->getProject();
         $this->insertNode(
             new ProjectBuffer(
-                "{$project->name}-buffer",
+                "{$project->name}-buf",
                 (int)ceil($project->getLength(true) / 2),
                 ['consumption' => 0],
             ),
@@ -161,7 +161,7 @@ class Builder
         foreach ($this->schedule->getProject()->getMilestones() as $milestone) {
             $this->insertNode(
                 new MilestoneBuffer(
-                    "{$milestone->name}-buffer",
+                    "{$milestone->name}-buf",
                     (int)ceil($milestone->getLength(true) / 2),
                     ['consumption' => 0],
                 ),
@@ -193,7 +193,7 @@ class Builder
                     continue;
                 }
                 $buffer = new FeedingBuffer(
-                    "{$notCriticalPreceder->name}-buffer",
+                    "{$notCriticalPreceder->name}-buf",
                     (int)ceil($feedingChainLength / 2),
                     ['consumption' => 0],
                 );

@@ -44,21 +44,21 @@ class ModifyingUnlimitedDirectorTest extends AbstractDirectorTest
                 K-02          |....           | & K-01
                 K-03          |.......        |
             ', '
-                finish-buffer |           ____| @ finish
-                K-01          |       xxxx    | @ finish-buffer
+                PB/finish-buf |           ____| @ finish
+                K-01          |       xxxx    | @ finish-buf
                 K-02          |   xxxx        | & K-01
-                K-03-buffer   |       ____    | @ finish-buffer
-                K-03          |*******        | @ K-03-buffer
+                FB/K-03-buf   |       ____    | @ finish-buf
+                K-03          |*******        | @ K-03-buf
                 finish                        ^ # 2023-09-21
             '], ['
                 K-01          |       ....      |
                 K-02          |....             | & K-01
                 K-03          |.......          | & K-01
             ', '
-                finish-buffer |           ______| @ finish
-                K-01          |       xxxx      | @ finish-buffer
-                K-02-buffer   |     __          | @ K-01
-                K-02          | ****            | & K-01, @ K-02-buffer
+                PB/finish-buf |           ______| @ finish
+                K-01          |       xxxx      | @ finish-buf
+                FB/K-02-buf   |     __          | @ K-01
+                K-02          | ****            | & K-01, @ K-02-buf
                 K-03          |xxxxxxx          | & K-01
                 finish                          ^ # 2023-09-21
             '],
