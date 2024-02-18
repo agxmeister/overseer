@@ -11,7 +11,7 @@ class InitiativeTest extends Unit
 {
     public function testSchedule()
     {
-        $milestone = new Milestone("Milestone", 0);
+        $milestone = new Milestone("Milestone");
         $node1 = new Issue("Test1", 10);
         $node2 = new Issue("Test2", 11);
         $node3 = new Issue("Test3", 12);
