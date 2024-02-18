@@ -3,10 +3,14 @@
 namespace Watch\Schedule\Serializer;
 
 use Watch\Schedule\Model\Buffer as BufferModel;
+use Watch\Schedule\Model\FeedingBuffer;
 use Watch\Schedule\Model\Issue as IssueModel;
 use Watch\Schedule\Model\Link as LinkModel;
+use Watch\Schedule\Model\Milestone;
+use Watch\Schedule\Model\MilestoneBuffer;
 use Watch\Schedule\Model\Node as NodeModel;
 use Watch\Schedule\Model\Project as ProjectModel;
+use Watch\Schedule\Model\ProjectBuffer;
 use Watch\Schedule\Utils;
 
 readonly class Project
@@ -84,5 +88,65 @@ readonly class Project
                 []
             ),
         ];
+    }
+
+    public function deserialize(array $volumes): ProjectModel
+    {
+        /* @var NodeModel[] $nodes */
+        $nodes = array_reduce(
+            [
+                ...array_map(
+                    fn(array $data) => new IssueModel($data['key'], $data['length'], [
+                        'begin' => $data['begin'],
+                        'end' => $data['end'],
+                    ]),
+                    $volumes[self::VOLUME_ISSUES],
+                ),
+                ...array_map(
+                    fn(array $data) => new (
+                        match($data['type']){
+                            BufferModel::TYPE_PROJECT => ProjectBuffer::class,
+                            BufferModel::TYPE_MILESTONE => MilestoneBuffer::class,
+                            BufferModel::TYPE_FEEDING => FeedingBuffer::class,
+                        }
+                    )($data['key'], $data['length'], [
+                        'begin' => $data['begin'],
+                        'end' => $data['end'],
+                        'consumption' => $data['consumption'],
+                    ]),
+                    $volumes[self::VOLUME_BUFFERS],
+                ),
+                ...array_map(
+                    fn(array $data) => new Milestone($data['key'], [
+                        'begin' => $data['begin'],
+                        'end' => $data['end'],
+                    ]),
+                    array_slice($volumes[self::VOLUME_MILESTONES], 1),
+                ),
+            ],
+            fn(array $acc, NodeModel $node) => [...$acc, $node->name => $node],
+            [],
+        );
+
+        $projectData = reset($volumes[self::VOLUME_MILESTONES]);
+        $project = new ProjectModel($projectData['key'], [
+            'begin' => $projectData['begin'],
+            'end' => $projectData['end'],
+        ]);
+        foreach (
+            array_filter(
+                $nodes,
+                fn(NodeModel $node) => $node instanceOf Milestone,
+            ) as $milestone
+        ) {
+            $project->addMilestone($milestone);
+        }
+        $nodes[$project->name] = $project;
+
+        foreach ($volumes[self::VOLUME_LINKS] as $link) {
+            $nodes[$link['from']]->precede($nodes[$link['to']], $link['type']);
+        }
+
+        return $project;
     }
 }
