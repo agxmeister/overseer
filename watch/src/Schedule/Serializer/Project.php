@@ -3,14 +3,14 @@
 namespace Watch\Schedule\Serializer;
 
 use Watch\Schedule\Model\Buffer as BufferModel;
-use Watch\Schedule\Model\FeedingBuffer;
+use Watch\Schedule\Model\ProjectBuffer as ProjectBufferModel;
+use Watch\Schedule\Model\MilestoneBuffer as MilestoneBufferModel;
+use Watch\Schedule\Model\FeedingBuffer as FeedingBufferModel;
 use Watch\Schedule\Model\Issue as IssueModel;
 use Watch\Schedule\Model\Link as LinkModel;
-use Watch\Schedule\Model\Milestone;
-use Watch\Schedule\Model\MilestoneBuffer;
+use Watch\Schedule\Model\Milestone as MilestoneModel;
 use Watch\Schedule\Model\Node as NodeModel;
 use Watch\Schedule\Model\Project as ProjectModel;
-use Watch\Schedule\Model\ProjectBuffer;
 use Watch\Schedule\Utils;
 
 readonly class Project
@@ -20,6 +20,7 @@ readonly class Project
     const VOLUME_MILESTONES = 'milestones';
     const VOLUME_LINKS = 'links';
     const VOLUME_CRITICAL_CHAIN = 'criticalChain';
+    const VOLUME_PROJECT = 'project';
 
     public function serialize(ProjectModel $project): array
     {
@@ -54,13 +55,18 @@ readonly class Project
                     fn(BufferModel $buffer) => $buffer->name,
                 ),
             )),
+            self::VOLUME_PROJECT => [
+                'key' => $project->name,
+                'begin' => $project->getAttribute('begin'),
+                'end' => $project->getAttribute('end'),
+            ],
             self::VOLUME_MILESTONES => array_values(array_map(
                 fn(NodeModel $node) => [
                     'key' => $node->name,
                     'begin' => $node->getAttribute('begin'),
                     'end' => $node->getAttribute('end'),
                 ],
-                [$project, ...$project->getMilestones()],
+                $project->getMilestones(),
             )),
             self::VOLUME_LINKS => \Watch\Utils::getUnique(
                 array_reduce(
@@ -105,9 +111,9 @@ readonly class Project
                 ...array_map(
                     fn(array $data) => new (
                         match($data['type']){
-                            BufferModel::TYPE_PROJECT => ProjectBuffer::class,
-                            BufferModel::TYPE_MILESTONE => MilestoneBuffer::class,
-                            BufferModel::TYPE_FEEDING => FeedingBuffer::class,
+                            BufferModel::TYPE_PROJECT => ProjectBufferModel::class,
+                            BufferModel::TYPE_MILESTONE => MilestoneBufferModel::class,
+                            BufferModel::TYPE_FEEDING => FeedingBufferModel::class,
                         }
                     )($data['key'], $data['length'], [
                         'begin' => $data['begin'],
@@ -117,18 +123,18 @@ readonly class Project
                     $volumes[self::VOLUME_BUFFERS],
                 ),
                 ...array_map(
-                    fn(array $data) => new Milestone($data['key'], [
+                    fn(array $data) => new MilestoneModel($data['key'], [
                         'begin' => $data['begin'],
                         'end' => $data['end'],
                     ]),
-                    array_slice($volumes[self::VOLUME_MILESTONES], 1),
+                    $volumes[self::VOLUME_MILESTONES],
                 ),
             ],
             fn(array $acc, NodeModel $node) => [...$acc, $node->name => $node],
             [],
         );
 
-        $projectData = reset($volumes[self::VOLUME_MILESTONES]);
+        $projectData = $volumes[self::VOLUME_PROJECT];
         $project = new ProjectModel($projectData['key'], [
             'begin' => $projectData['begin'],
             'end' => $projectData['end'],
@@ -136,7 +142,7 @@ readonly class Project
         foreach (
             array_filter(
                 $nodes,
-                fn(NodeModel $node) => $node instanceOf Milestone,
+                fn(NodeModel $node) => $node instanceOf MilestoneModel,
             ) as $milestone
         ) {
             $project->addMilestone($milestone);

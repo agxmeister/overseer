@@ -178,11 +178,13 @@ class Utils
             'links' => [],
         ]);
 
-        $schedule['milestones'] = [[
+        $schedule['project'] = [
             'key' => $projectMilestoneName,
             'begin' => self::getProjectBeginDate($description)->format('Y-m-d'),
             'end' => $projectEndDate->format('Y-m-d'),
-        ]];
+        ];
+
+        $schedule['milestones'] = [];
 
         krsort($criticalChain);
         $schedule['criticalChain'] = array_values($criticalChain);
