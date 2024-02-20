@@ -4,26 +4,23 @@ namespace Tests\Unit\Schedule;
 use Codeception\Test\Unit;
 use Watch\Schedule\Model\FeedingBuffer;
 use Watch\Schedule\Model\Issue;
-use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Node;
-use Watch\Schedule\Utils;
+use Watch\Schedule\Serializer\Project as ProjectSerializer;
+use Watch\Schedule\Utils as ScheduleUtils;
+use Watch\Schedule\Description\Utils as DescriptionUtils;
 
 class UtilsTest extends Unit
 {
-    public function testDuplicateNode()
+    /**
+     * @dataProvider dataGetDuplicate
+     */
+    public function testGetDuplicate($scheduleDescription)
     {
-        $origin = new Issue("Root", 10);
-        $node1 = new Issue("Node1", 10);
-        $node1->precede($origin);
-        $node11 = new Issue("Node11", 10);
-        $node11->precede($node1);
-        $node12 = new Issue("Node12", 10);
-        $node12->precede($node1, Link::TYPE_SCHEDULE);
-        $node2 = new Issue("Node2", 10);
-        $node2->precede($origin);
+        $serializer = new ProjectSerializer();
+        $origin = $serializer->deserialize(DescriptionUtils::getSchedule($scheduleDescription));
 
         $copy = clone $origin;
-        Utils::duplicateNode($origin, $copy);
+        ScheduleUtils::getDuplicate($origin, $copy);
 
         $originPreceders = $this->getPreceders($origin);
         $copyPreceders = $this->getPreceders($copy);
@@ -54,7 +51,7 @@ class UtilsTest extends Unit
         $node12 = new Issue("Node12", 2);
         $node12->precede($buffer);
         $buffer->precede($node1);
-        $copy = Utils::cropFeedingChains($origin);
+        $copy = ScheduleUtils::cropFeedingChains($origin);
         $this->assertEquals(["Root", "Node1", "Node11"], $this->getNames($copy));
     }
 
@@ -65,22 +62,22 @@ class UtilsTest extends Unit
         $node3 = new Issue("Test3", 12);
         $node2->precede($node1);
         $node3->precede($node1);
-        $this->assertEquals($node3, Utils::getMostDistantNode($node1->getPreceders()));
-        $this->assertEquals($node2, Utils::getLeastDistantNode($node1->getPreceders()));
+        $this->assertEquals($node3, ScheduleUtils::getMostDistantNode($node1->getPreceders()));
+        $this->assertEquals($node2, ScheduleUtils::getLeastDistantNode($node1->getPreceders()));
         $node4 = new Issue("Test4", 13);
         $node4->precede($node2);
-        $this->assertEquals($node2, Utils::getMostDistantNode($node1->getPreceders()));
-        $this->assertEquals($node3, Utils::getLeastDistantNode($node1->getPreceders()));
+        $this->assertEquals($node2, ScheduleUtils::getMostDistantNode($node1->getPreceders()));
+        $this->assertEquals($node3, ScheduleUtils::getLeastDistantNode($node1->getPreceders()));
         $node5 = new Issue("Test5", 14);
         $node5->precede($node3);
-        $this->assertEquals($node3, Utils::getMostDistantNode($node1->getPreceders()));
-        $this->assertEquals($node2, Utils::getLeastDistantNode($node1->getPreceders()));
+        $this->assertEquals($node3, ScheduleUtils::getMostDistantNode($node1->getPreceders()));
+        $this->assertEquals($node2, ScheduleUtils::getLeastDistantNode($node1->getPreceders()));
         $node6 = new Issue("Test6", 15);
         $node6->precede($node3);
         $node7 = new Issue("Test7", 17);
         $node7->precede($node2);
-        $this->assertEquals($node2, Utils::getMostDistantNode($node1->getPreceders()));
-        $this->assertEquals($node3, Utils::getLeastDistantNode($node1->getPreceders()));
+        $this->assertEquals($node2, ScheduleUtils::getMostDistantNode($node1->getPreceders()));
+        $this->assertEquals($node3, ScheduleUtils::getLeastDistantNode($node1->getPreceders()));
     }
 
     /**
@@ -108,6 +105,20 @@ class UtilsTest extends Unit
                 fn(Node $node) => $node->name,
                 $node->getPreceders(true),
             ),
+        ];
+    }
+
+    protected function dataGetDuplicate(): array
+    {
+        return [
+            ['
+                PB/finish-buf |         _____| @ finish
+                K-01          |    xxxxx     | @ finish-buf
+                FB/K-02-buf   |      ___     | @ finish-buf
+                K-02          |******        | @ K-02-buf
+                K-03          |xxxx          | @ K-01
+                finish                       ^ # 2023-09-21
+            '],
         ];
     }
 }
