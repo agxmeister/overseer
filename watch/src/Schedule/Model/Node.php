@@ -87,10 +87,10 @@ abstract class Node
      */
     public function getFollowLinks(array $types = []): array
     {
-        return array_filter(
+        return array_values(array_filter(
             $this->followers,
             fn(Link $link) => empty($types) || in_array($link->type, $types)
-        );
+        ));
     }
 
     /**
@@ -120,10 +120,10 @@ abstract class Node
      */
     public function getPrecedeLinks(array $types = []): array
     {
-        return array_filter(
+        return array_values(array_filter(
             $this->preceders,
             fn(Link $link) => empty($types) || in_array($link->type, $types)
-        );
+        ));
     }
 
     public function getDistance(bool $withPreceders = false, array $types = []): int
