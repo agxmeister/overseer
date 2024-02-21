@@ -8,19 +8,14 @@ use Watch\Schedule\Model\Issue;
 
 class Utils
 {
-    static public function getDuplicate(Node $origin, Node $copy): void
+    static public function getDuplicate(Node $origin): Node
     {
-        foreach ($origin->getPrecedeLinks() as $link) {
-            $precederCopy = clone $link->node;
-            $precederCopy->precede($copy, $link->type);
-            self::getDuplicate($link->node, $precederCopy);
-        }
+        return self::getDuplicateRecursively($origin);
     }
 
     static public function cropFeedingChains(Node $origin): Node
     {
-        $copy = clone $origin;
-        self::getDuplicate($origin, $copy);
+        $copy = self::getDuplicate($origin);
         foreach (
             array_filter(
                 $copy->getPreceders(true),
@@ -133,5 +128,18 @@ class Utils
                 ),
             )
         )]);
+    }
+
+    static private function getDuplicateRecursively(Node $origin, &$copies = []): Node
+    {
+        if (!isset($copies[$origin->name])) {
+            $copies[$origin->name] = clone $origin;
+        }
+        $copy = $copies[$origin->name];
+        foreach ($origin->getPrecedeLinks() as $link) {
+            $precederCopy = self::getDuplicateRecursively($link->node, $copies);
+            $precederCopy->precede($copy, $link->type);
+        }
+        return $copy;
     }
 }

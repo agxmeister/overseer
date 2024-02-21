@@ -4,6 +4,7 @@ namespace Tests\Unit\Schedule;
 use Codeception\Test\Unit;
 use Watch\Schedule\Model\FeedingBuffer;
 use Watch\Schedule\Model\Issue;
+use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Node;
 use Watch\Schedule\Serializer\Project as ProjectSerializer;
 use Watch\Schedule\Utils as ScheduleUtils;
@@ -19,11 +20,10 @@ class UtilsTest extends Unit
         $serializer = new ProjectSerializer();
         $origin = $serializer->deserialize(DescriptionUtils::getSchedule($scheduleDescription));
 
-        $copy = clone $origin;
-        ScheduleUtils::getDuplicate($origin, $copy);
+        $copy = ScheduleUtils::getDuplicate($origin);
 
-        $originPreceders = $this->getPreceders($origin);
-        $copyPreceders = $this->getPreceders($copy);
+        $originPreceders = $this->getNodes($origin->getPreceders(true));
+        $copyPreceders = $this->getNodes($copy->getPreceders(true));
 
         self::assertSameSize($originPreceders, $copyPreceders, "A count of preceders is different between the origin and the copy.");
         foreach ($originPreceders as $name => $originPreceder) {
@@ -31,11 +31,16 @@ class UtilsTest extends Unit
             $copyPreceder = $copyPreceders[$name];
             self::assertFalse($originPreceder === $copyPreceder, "Preceders from the origin and the copy are references to the same node '$name'.");
             self::assertEquals($originPreceder->name, $copyPreceder->name, "The name of the copy of the preceder '$name' is not the same as the name of the origin.");
-            $originLinks = $originPreceder->getFollowLinks();
-            $copyLinks = $copyPreceder->getFollowLinks();
+            $originLinks = $this->getLinks($originPreceder->getFollowLinks());
+            $copyLinks = $this->getLinks($copyPreceder->getFollowLinks());
             self::assertSameSize($originLinks, $copyLinks, "A count of links from the node '$name' differs between the origin and the copy.");
-            for ($i = 0; $i < count($originLinks); $i++) {
-                self::assertEquals($originLinks[$i]->type, $copyLinks[$i]->type, "A type of one of the links from the node '$name' differs between the origin and the copy.");
+            $originLinkNames = array_keys($originLinks);
+            sort($originLinkNames);
+            $copyLinkNames = array_keys($copyLinks);
+            sort($copyLinkNames);
+            self::assertEquals($originLinkNames, $copyLinkNames, "Links from the node '$name' differs between the origin and the copy.");
+            foreach ($originLinks as $to => $link) {
+                self::assertEquals($link->type, $copyLinks[$to]->type, "A type of one of the links from the node '$name' differs between the origin and the copy.");
             }
         }
     }
@@ -81,14 +86,27 @@ class UtilsTest extends Unit
     }
 
     /**
-     * @param Node $node
+     * @param Node[] $nodes
      * @return Node[]
      */
-    protected function getPreceders(Node $node): array
+    protected function getNodes(array $nodes): array
     {
         return array_reduce(
-            $node->getPreceders(true),
+            $nodes,
             fn($acc, Node $node) => [...$acc, $node->name => $node],
+            [],
+        );
+    }
+
+    /**
+     * @param Link[] $links
+     * @return Link[]
+     */
+    protected function getLinks(array $links): array
+    {
+        return array_reduce(
+            $links,
+            fn($acc, Link $link) => [...$acc, $link->node->name => $link],
             [],
         );
     }
@@ -118,6 +136,13 @@ class UtilsTest extends Unit
                 K-02          |******        | @ K-02-buf
                 K-03          |xxxx          | @ K-01
                 finish                       ^ # 2023-09-21
+            '], ['
+                PB/finish-buf |           ______| @ finish
+                K-01          |       xxxx      | @ finish-buf
+                FB/K-02-buf   |     __          | @ K-01
+                K-02          | ****            | & K-01, @ K-02-buf
+                K-03          |xxxxxxx          | & K-01
+                finish                          ^ # 2023-09-21
             '],
         ];
     }
