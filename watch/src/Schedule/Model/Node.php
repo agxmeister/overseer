@@ -64,6 +64,16 @@ abstract class Node
         $node->unfollow($this, $type);
     }
 
+    public function unlink(): void
+    {
+        foreach ($this->getFollowLinks() as $link) {
+            $this->unprecede($link->node);
+        }
+        foreach ($this->getPrecedeLinks() as $link) {
+            $this->unfollow($link->node);
+        }
+    }
+
     public function hasPreceders(): bool
     {
         return !empty($this->preceders);

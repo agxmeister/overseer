@@ -140,7 +140,38 @@ class NodeTest extends Unit
         $this->assertEquals([$node2, $node4], $node5->getPreceders(true));
     }
 
+    public function testUnlink()
+    {
+        $nodes = $this->getTestNodes();
+        $nodes['Test12']->unlink();
+        $this->assertNotContains($nodes['Test12']->name, array_map(
+            fn(Issue $node) => $node->name,
+            $nodes['Test1']->getPreceders(),
+        ));
+        $this->assertNotContains($nodes['Test12']->name, array_map(
+            fn(Issue $node) => $node->name,
+            $nodes['Test121']->getFollowers(),
+        ));
+        $this->assertNotContains($nodes['Test12']->name, array_map(
+            fn(Issue $node) => $node->name,
+            $nodes['Test122']->getFollowers(),
+        ));
+    }
+
     public function testClone()
+    {
+        $nodes = $this->getTestNodes();
+        $nodes['Test1']->setAttribute('test', 'test');
+        $clone = clone $nodes['Test1'];
+        $this->assertEquals([], $clone->getPreceders());
+        $this->assertEquals([], $clone->getFollowers());
+        $this->assertEquals('test', $clone->getAttribute('test'));
+    }
+
+    /**
+     * @return Issue[]
+     */
+    protected function getTestNodes(): array
     {
         $node1 = new Issue("Test1", 10);
         $node11 = new Issue("Test11", 11);
@@ -151,10 +182,10 @@ class NodeTest extends Unit
         $node122->precede($node12);
         $node11->precede($node1);
         $node12->precede($node1);
-        $node1->setAttribute('test', 'test');
-        $clone = clone $node1;
-        $this->assertEquals([], $clone->getPreceders());
-        $this->assertEquals([], $clone->getFollowers());
-        $this->assertEquals('test', $clone->getAttribute('test'));
+        return array_reduce(
+            [$node1, ...$node1->getPreceders(true)],
+            fn($acc, Issue $node) => [...$acc, $node->name => $node],
+            [],
+        );
     }
 }
