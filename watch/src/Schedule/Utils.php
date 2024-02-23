@@ -29,6 +29,33 @@ class Utils
     }
 
     /**
+     * @param Node $origin
+     * @return Node[]
+     */
+    static public function getFeedingChains(Node $origin): array
+    {
+        /** @var Node[] $nodes */
+        $nodes = array_reduce(
+            self::getDuplicate($origin)->getPreceders(true),
+            fn($acc, Node $node) => [...$acc, $node->name => $node],
+            []
+        );
+
+        foreach (self::cropFeedingChains($origin)->getPreceders(true) as $node) {
+            $nodes[$node->name]->unlink();
+        }
+
+        return array_reduce(
+            array_filter(
+                $nodes,
+                fn(Node $node) => $node instanceof FeedingBuffer,
+            ),
+            fn($acc, Node $feedingBuffer) => [...$acc, ...$feedingBuffer->getPreceders()],
+            [],
+        );
+    }
+
+    /**
      * @param Node|null $node
      * @return Node[]
      */

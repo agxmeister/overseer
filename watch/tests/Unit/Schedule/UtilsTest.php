@@ -9,6 +9,7 @@ use Watch\Schedule\Model\Node;
 use Watch\Schedule\Serializer\Project as ProjectSerializer;
 use Watch\Schedule\Utils as ScheduleUtils;
 use Watch\Schedule\Description\Utils as DescriptionUtils;
+use function PHPUnit\Framework\assertEquals;
 
 class UtilsTest extends Unit
 {
@@ -58,6 +59,29 @@ class UtilsTest extends Unit
         $buffer->precede($node1);
         $copy = ScheduleUtils::cropFeedingChains($origin);
         $this->assertEquals(["Root", "Node1", "Node11"], $this->getNames($copy));
+    }
+
+    /**
+     * @dataProvider dataGetFeedingChains
+     */
+    public function testGetFeedingChains($scheduleDescription, $expectedFeedingChains)
+    {
+        $serializer = new ProjectSerializer();
+        $origin = $serializer->deserialize(DescriptionUtils::getSchedule($scheduleDescription));
+
+        $actualFeedingChains = array_reduce(
+            array_map(
+                fn(Node $feedingChain) => self::getNames($feedingChain),
+                ScheduleUtils::getFeedingChains($origin),
+            ),
+            fn($acc, array $names) => [...$acc, reset($names) => $names],
+            []
+        );
+
+        $this->assertSameSize($expectedFeedingChains, $actualFeedingChains);
+        foreach ($expectedFeedingChains as $key => $expectedFeedingChain) {
+            assertEquals($expectedFeedingChain, $actualFeedingChains[$key]);
+        }
     }
 
     public function testMostAndLeastDistantNodes()
@@ -144,6 +168,23 @@ class UtilsTest extends Unit
                 K-03          |xxxxxxx          | & K-01
                 finish                          ^ # 2023-09-21
             '],
+        ];
+    }
+
+    protected function dataGetFeedingChains(): array
+    {
+        return [
+            [
+                '
+                    PB/finish-buf |         _____| @ finish
+                    K-01          |    xxxxx     | @ finish-buf
+                    FB/K-02-buf   |      ___     | @ finish-buf
+                    K-02          |******        | @ K-02-buf
+                    K-03          |xxxx          | @ K-01
+                    finish                       ^ # 2023-09-21
+                ',
+                ['K-02' => ['K-02']]
+            ],
         ];
     }
 }
