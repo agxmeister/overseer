@@ -46,7 +46,7 @@ class UtilsTest extends Unit
         }
     }
 
-    public function testCropFeedingChains()
+    public function testGetCriticalChain()
     {
         $origin = new Issue("Root", 10);
         $node1 = new Issue("Node1", 10);
@@ -57,7 +57,7 @@ class UtilsTest extends Unit
         $node12 = new Issue("Node12", 2);
         $node12->precede($buffer);
         $buffer->precede($node1);
-        $copy = ScheduleUtils::cropFeedingChains($origin);
+        $copy = ScheduleUtils::getCriticalChain($origin);
         $this->assertEquals(["Root", "Node1", "Node11"], $this->getNames($copy));
     }
 

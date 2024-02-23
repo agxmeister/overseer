@@ -13,7 +13,7 @@ class Utils
         return self::getDuplicateRecursively($origin);
     }
 
-    static public function cropFeedingChains(Node $origin): Node
+    static public function getCriticalChain(Node $origin): Node
     {
         $copy = self::getDuplicate($origin);
         foreach (
@@ -41,7 +41,7 @@ class Utils
             []
         );
 
-        foreach (self::cropFeedingChains($origin)->getPreceders(true) as $node) {
+        foreach (self::getCriticalChain($origin)->getPreceders(true) as $node) {
             $nodes[$node->name]->unlink();
         }
 
