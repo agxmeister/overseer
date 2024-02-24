@@ -26,11 +26,12 @@ class Utils
                 $feedingBuffer->unprecede($link->node);
             }
         }
+        self::cropBranches($copy);
         return $copy;
     }
 
     /**
-     * @param Node $origin
+     * @param Project $origin
      * @return Node[]
      */
     static public function getFeedingChains(Project $origin): array
@@ -46,7 +47,7 @@ class Utils
             $nodes[$node->name]->unlink();
         }
 
-        return array_reduce(
+        $feedingChains = array_reduce(
             array_filter(
                 $nodes,
                 fn(Node $node) => $node instanceof FeedingBuffer,
@@ -54,6 +55,36 @@ class Utils
             fn($acc, Node $feedingBuffer) => [...$acc, ...$feedingBuffer->getPreceders()],
             [],
         );
+
+        foreach ($feedingChains as $feedingChain) {
+            self::cropBranches($feedingChain);
+        }
+
+        return $feedingChains;
+    }
+
+    static public function cropBranches(Node $node): void
+    {
+        $preceders = $node->getPreceders();
+        if (empty($preceders)) {
+            return;
+        }
+
+        $nodeLengths = array_reduce(
+            $preceders,
+            fn($acc, Node $preceder) => [...$acc, $preceder->name => $preceder->getLength(true)],
+            [],
+        );
+        arsort($nodeLengths);
+        $longestNodeName = array_key_first($nodeLengths);
+
+        foreach ($preceders as $preceder) {
+            if ($preceder->name !== $longestNodeName) {
+                $preceder->unprecede($node);
+                continue;
+            }
+            self::cropBranches($preceder);
+        }
     }
 
     /**

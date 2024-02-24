@@ -8,6 +8,7 @@ use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Node;
 use Watch\Schedule\Model\Project;
 use Watch\Schedule\Serializer\Project as ProjectSerializer;
+use Watch\Schedule\Utils;
 use Watch\Schedule\Utils as ScheduleUtils;
 use Watch\Schedule\Description\Utils as DescriptionUtils;
 use function PHPUnit\Framework\assertEquals;
@@ -83,6 +84,24 @@ class UtilsTest extends Unit
         foreach ($expectedFeedingChains as $key => $expectedFeedingChain) {
             assertEquals($expectedFeedingChain, $actualFeedingChains[$key]);
         }
+    }
+
+    public function testCropBranches()
+    {
+        $node1 = new Issue("Test1", 10);
+        $node11 = new Issue("Test11", 10);
+        $node11->precede($node1);
+        $node12 = new Issue("Test12", 11);
+        $node12->precede($node1);
+        $node121 = new Issue("Test121", 12);
+        $node121->precede($node12);
+        $node122 = new Issue("Test122", 10);
+        $node122->precede($node12);
+        ScheduleUtils::cropBranches($node1);
+        self::assertEquals(['Test1', 'Test12', 'Test121'], array_map(
+            fn(Node $node) => $node->name,
+            [$node1, ...$node1->getPreceders(true)]
+        ));
     }
 
     public function testMostAndLeastDistantNodes()
