@@ -6,6 +6,7 @@ use Watch\Schedule\Model\FeedingBuffer;
 use Watch\Schedule\Model\Issue;
 use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Node;
+use Watch\Schedule\Model\Project;
 use Watch\Schedule\Serializer\Project as ProjectSerializer;
 use Watch\Schedule\Utils as ScheduleUtils;
 use Watch\Schedule\Description\Utils as DescriptionUtils;
@@ -48,7 +49,7 @@ class UtilsTest extends Unit
 
     public function testGetCriticalChain()
     {
-        $origin = new Issue("Root", 10);
+        $origin = new Project("Root");
         $node1 = new Issue("Node1", 10);
         $node1->precede($origin);
         $node11 = new Issue("Node11", 10);

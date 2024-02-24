@@ -5,6 +5,7 @@ namespace Watch\Schedule;
 use Watch\Schedule\Model\FeedingBuffer;
 use Watch\Schedule\Model\Node;
 use Watch\Schedule\Model\Issue;
+use Watch\Schedule\Model\Project;
 
 class Utils
 {
@@ -13,7 +14,7 @@ class Utils
         return self::getDuplicateRecursively($origin);
     }
 
-    static public function getCriticalChain(Node $origin): Node
+    static public function getCriticalChain(Project $origin): Node
     {
         $copy = self::getDuplicate($origin);
         foreach (
@@ -32,7 +33,7 @@ class Utils
      * @param Node $origin
      * @return Node[]
      */
-    static public function getFeedingChains(Node $origin): array
+    static public function getFeedingChains(Project $origin): array
     {
         /** @var Node[] $nodes */
         $nodes = array_reduce(
