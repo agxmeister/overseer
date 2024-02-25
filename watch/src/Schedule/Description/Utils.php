@@ -117,7 +117,7 @@ class Utils
         $projectEndDate = self::getProjectEndDate($description);
         $projectEndGap = self::getProjectEndGap($description);
 
-        $criticalChain = [$projectEndDate->format('Y-m-d') => $projectMilestoneName];
+        $criticalChain = [];
 
         $schedule = array_reduce(array_filter($lines, fn($line) => !str_contains($line, '^') && !str_contains($line, '>')), function ($schedule, $line) use ($projectEndDate, $projectEndGap, &$criticalChain) {
             $issueData = explode('|', $line);

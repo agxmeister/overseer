@@ -31,7 +31,7 @@ class BuilderTest extends Unit
         $builder->run();
         $builder->addProject();
         $projectSerializer = new ProjectSerializer();
-        $this->assertEquals(['finish', 'K-01', 'K-03'], $projectSerializer->serialize($builder->release()->getProject())[ProjectSerializer::VOLUME_CRITICAL_CHAIN]);
+        $this->assertEquals(['K-01', 'K-03'], $projectSerializer->serialize($builder->release()->getProject())[ProjectSerializer::VOLUME_CRITICAL_CHAIN]);
     }
 
     public function testAddFeedingBuffers()
