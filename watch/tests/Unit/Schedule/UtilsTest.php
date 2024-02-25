@@ -129,6 +129,38 @@ class UtilsTest extends Unit
         $this->assertEquals($node3, ScheduleUtils::getLeastDistantNode($node1->getPreceders()));
     }
 
+    public function testGetLongestPath()
+    {
+        $node1 = new Issue('Test1', 2);
+        $node11 = new Issue('Test11', 5);
+        $node11->precede($node1);
+        $node12 = new Issue('Test12', 2);
+        $node12->precede($node1);
+        $node121 = new Issue('Test121', 2);
+        $node121->precede($node12);
+        $this->assertEquals(
+            ['Test1', 'Test11'],
+            array_map(
+                fn(Node $node) => $node->name,
+                ScheduleUtils::getLongestPath($node1),
+            ),
+        );
+        $node1 = new Issue('Test1', 2);
+        $node11 = new Issue('Test11', 3);
+        $node11->precede($node1);
+        $node12 = new Issue('Test12', 2);
+        $node12->precede($node1);
+        $node121 = new Issue('Test121', 2);
+        $node121->precede($node12);
+        $this->assertEquals(
+            ['Test1', 'Test12', 'Test121'],
+            array_map(
+                fn(Node $node) => $node->name,
+                ScheduleUtils::getLongestPath($node1),
+            ),
+        );
+    }
+
     /**
      * @param Node[] $nodes
      * @return Node[]

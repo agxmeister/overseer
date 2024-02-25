@@ -111,19 +111,7 @@ class Utils
         }
         return [
             $node,
-            ...self::getLongestPath(Utils::getMostDistantNode(
-                array_filter(
-                    array_filter(
-                        $node->getPreceders(),
-                        fn($node) => get_class($node) !== FeedingBuffer::class,
-                    ),
-                    fn(Node $node) => !array_reduce(
-                        $node->getFollowers(),
-                        fn($acc, Node $node) => $acc || get_class($node) === FeedingBuffer::class,
-                        false,
-                    ),
-                )
-            ))
+            ...self::getLongestPath(Utils::getMostDistantNode($node->getPreceders()))
         ];
     }
 
