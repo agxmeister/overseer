@@ -173,8 +173,8 @@ class Builder
 
     public function addFeedingBuffers(): self
     {
-        $criticalChain = Utils::getLongestChain($this->schedule->getProject());
-        foreach ($criticalChain as $node) {
+        $longestPath = Utils::getLongestPath($this->schedule->getProject());
+        foreach ($longestPath as $node) {
             $preceders = $node->getPreceders();
             $criticalPreceder = Utils::getMostDistantNode($preceders);
             $notCriticalPreceders = array_filter($preceders, fn(Node $node) => $node !== $criticalPreceder);
@@ -243,7 +243,7 @@ class Builder
     {
         $project = $this->schedule->getProject();
 
-        $criticalChain = Utils::getLongestChain($project);
+        $longestPath = Utils::getPath(Utils::getCriticalChain($project));
 
         $projectBuffer = array_reduce(
             array_filter(
@@ -254,7 +254,7 @@ class Builder
         );
         $projectBuffer->setAttribute('consumption', min(
             $projectBuffer->getLength(),
-            Utils::getChainLateDays($criticalChain, $this->context->now),
+            Utils::getPathLateDays($longestPath, $this->context->now),
         ));
 
         $feedingBuffers = array_filter(
@@ -267,7 +267,7 @@ class Builder
                     $tail,
                     array_udiff(
                         $feedingBuffer->getPreceders(true),
-                        $criticalChain,
+                        $longestPath,
                         fn(Node $a, Node $b) => (int)($a->name === $b->name),
                     ),
                     $this->context->now

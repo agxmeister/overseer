@@ -88,17 +88,30 @@ class Utils
     }
 
     /**
+     * @param Node $chain
+     * @return Node[]
+     */
+    static public function getPath(Node $chain): array
+    {
+        return array_reduce(
+            [$chain, ...$chain->getPreceders(true)],
+            fn($acc, Node $node) => [...$acc, $node],
+            [],
+        );
+    }
+
+    /**
      * @param Node|null $node
      * @return Node[]
      */
-    static public function getLongestChain(Node|null $node): array
+    static public function getLongestPath(Node|null $node): array
     {
         if (is_null($node)) {
             return [];
         }
         return [
             $node,
-            ...self::getLongestChain(Utils::getMostDistantNode(
+            ...self::getLongestPath(Utils::getMostDistantNode(
                 array_filter(
                     array_filter(
                         $node->getPreceders(),
@@ -154,10 +167,10 @@ class Utils
         );
     }
 
-    static public function getChainLateDays(array $chain, \DateTimeImmutable $now): int
+    static public function getPathLateDays(array $path, \DateTimeImmutable $now): int
     {
         return array_reduce(
-            $chain,
+            $path,
             fn(int $acc, Node $node) => $acc + self::getNodeLateDays($node, $now),
             0,
         );
