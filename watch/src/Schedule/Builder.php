@@ -243,7 +243,7 @@ class Builder
     {
         $project = $this->schedule->getProject();
 
-        $longestPath = Utils::getPath(Utils::getCriticalChain($project));
+        $projectLongestPath = Utils::getPath(Utils::getCriticalChain($project));
 
         $projectBuffer = array_reduce(
             array_filter(
@@ -254,29 +254,17 @@ class Builder
         );
         $projectBuffer->setAttribute('consumption', min(
             $projectBuffer->getLength(),
-            Utils::getPathLateDays($longestPath, $this->context->now),
+            Utils::getPathLateDays($projectLongestPath, $this->context->now),
         ));
 
+        $feedingChains = Utils::getFeedingChains($project);
         $feedingBuffers = array_filter(
             $project->getPreceders(true),
             fn(Node $node) => $node instanceof FeedingBuffer,
         );
         foreach ($feedingBuffers as $feedingBuffer) {
-            $lateDays = max(array_map(
-                fn(Node $tail) => Utils::getLateDays(
-                    $tail,
-                    array_udiff(
-                        $feedingBuffer->getPreceders(true),
-                        $longestPath,
-                        fn(Node $a, Node $b) => (int)($a->name === $b->name),
-                    ),
-                    $this->context->now
-                ),
-                array_filter(
-                    $feedingBuffer->getPreceders(true),
-                    fn(Node $node) => !$node->hasPreceders(),
-                ),
-            ));
+            $longestPath = Utils::getPath($feedingChains[$feedingBuffer->name]);
+            $lateDays = Utils::getPathLateDays($longestPath, $this->context->now);
             $feedingBuffer->setAttribute('consumption', min($feedingBuffer->getLength(), $lateDays));
         }
 
