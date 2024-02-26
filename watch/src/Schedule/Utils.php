@@ -47,20 +47,22 @@ class Utils
             $nodes[$node->name]->unlink();
         }
 
-        $feedingChains = array_reduce(
-            array_filter(
-                $nodes,
-                fn(Node $node) => $node instanceof FeedingBuffer,
-            ),
-            fn($acc, Node $feedingBuffer) => [...$acc, ...$feedingBuffer->getPreceders()],
-            [],
+        $feedingBuffers = array_filter(
+            $nodes,
+            fn(Node $node) => $node instanceof FeedingBuffer,
         );
-
-        foreach ($feedingChains as $feedingChain) {
-            self::cropBranches($feedingChain);
+        foreach ($feedingBuffers as $feedingBuffer) {
+            self::cropBranches($feedingBuffer);
         }
 
-        return $feedingChains;
+        return array_reduce(
+            $feedingBuffers,
+            fn($acc, Node $feedingBuffer) => [
+                ...$acc,
+                $feedingBuffer->name => current($feedingBuffer->getPreceders())
+            ],
+            [],
+        );
     }
 
     static public function cropBranches(Node $node): void
