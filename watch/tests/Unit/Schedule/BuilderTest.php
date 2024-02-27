@@ -28,8 +28,10 @@ class BuilderTest extends Unit
             [],
             new Mapper(['In Progress'], ['Done'], ["Depends"], ["Follows"]),
         );
-        $builder->run();
-        $builder->addProject();
+        $builder
+            ->run()
+            ->addProject()
+            ->addProjectBuffer();
         $projectSerializer = new ProjectSerializer();
         $this->assertEquals(['K-01', 'K-03'], $projectSerializer->serialize($builder->release()->getProject())[ProjectSerializer::VOLUME_CRITICAL_CHAIN]);
     }
@@ -53,19 +55,26 @@ class BuilderTest extends Unit
         $builder->run();
         $builder
             ->addProject()
+            ->addProjectBuffer()
             ->addFeedingBuffers()
             ->addDates();
         $scheduleSerializer = new ProjectSerializer();
-        $this->assertEquals([
+        $this->assertEquals(
             [
-                'key' => 'K-02-buf',
-                'length' => 2,
-                'type' => Buffer::TYPE_FEEDING,
-                'begin' => '2023-09-15',
-                'end' => '2023-09-17',
-                'consumption' => 0,
-            ]
-        ], $scheduleSerializer->serialize($builder->release()->getProject())[ProjectSerializer::VOLUME_BUFFERS]);
+                [
+                    'key' => 'K-02-buf',
+                    'length' => 2,
+                    'type' => Buffer::TYPE_FEEDING,
+                    'begin' => '2023-09-15',
+                    'end' => '2023-09-17',
+                    'consumption' => 0,
+                ]
+            ],
+            array_values(array_filter(
+                $scheduleSerializer->serialize($builder->release()->getProject())[ProjectSerializer::VOLUME_BUFFERS],
+                fn($data) => $data['type'] === Buffer::TYPE_FEEDING,
+            )),
+        );
     }
 
     private function getConfig(): Config

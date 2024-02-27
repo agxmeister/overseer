@@ -7,6 +7,7 @@ use Watch\Schedule\Model\Issue;
 use Watch\Schedule\Model\Link;
 use Watch\Schedule\Model\Node;
 use Watch\Schedule\Model\Project;
+use Watch\Schedule\Model\ProjectBuffer;
 use Watch\Schedule\Serializer\Project as ProjectSerializer;
 use Watch\Schedule\Utils;
 use Watch\Schedule\Utils as ScheduleUtils;
@@ -51,16 +52,18 @@ class UtilsTest extends Unit
     public function testGetCriticalChain()
     {
         $origin = new Project("Root");
+        $projectBuffer = new ProjectBuffer("PB", 1);
+        $projectBuffer->precede($origin);
         $node1 = new Issue("Node1", 10);
-        $node1->precede($origin);
+        $node1->precede($projectBuffer);
         $node11 = new Issue("Node11", 10);
         $node11->precede($node1);
-        $buffer = new FeedingBuffer("Buffer", 1);
+        $feedingBuffer = new FeedingBuffer("FB1", 1);
         $node12 = new Issue("Node12", 2);
-        $node12->precede($buffer);
-        $buffer->precede($node1);
+        $node12->precede($feedingBuffer);
+        $feedingBuffer->precede($node1);
         $copy = ScheduleUtils::getCriticalChain($origin);
-        $this->assertEquals(["Root", "Node1", "Node11"], $this->getNames($copy));
+        $this->assertEquals(["Node1", "Node11"], $this->getNames($copy));
     }
 
     /**

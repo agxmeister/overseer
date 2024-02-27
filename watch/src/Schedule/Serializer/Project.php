@@ -89,10 +89,7 @@ readonly class Project
                 fn($link) => implode('-', array_values($link))
             ),
             self::VOLUME_CRITICAL_CHAIN => array_reduce(
-                array_filter(
-                    Utils::getCriticalChain($project)->getPreceders(true),
-                    fn(NodeModel $node) => $node instanceof IssueModel,
-                ),
+                Utils::getPath(Utils::getCriticalChain($project)),
                 fn($acc, NodeModel $node) => [...$acc, $node->name],
                 []
             ),

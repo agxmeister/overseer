@@ -6,6 +6,7 @@ use Watch\Schedule\Model\FeedingBuffer;
 use Watch\Schedule\Model\Node;
 use Watch\Schedule\Model\Issue;
 use Watch\Schedule\Model\Project;
+use Watch\Schedule\Model\ProjectBuffer;
 
 class Utils
 {
@@ -17,17 +18,22 @@ class Utils
     static public function getCriticalChain(Project $origin): Node
     {
         $copy = self::getDuplicate($origin);
+        /** @var ProjectBuffer $projectBuffer */
+        $projectBuffer = current(array_filter(
+            $copy->getPreceders(),
+            fn(Node $node) => $node instanceof ProjectBuffer,
+        ));
         foreach (
             array_filter(
-                $copy->getPreceders(true),
+                $projectBuffer->getPreceders(true),
                 fn(Node $preceder) => $preceder instanceof FeedingBuffer,
             ) as $feedingBuffer) {
             foreach ($feedingBuffer->getFollowLinks() as $link) {
                 $feedingBuffer->unprecede($link->node);
             }
         }
-        self::cropBranches($copy);
-        return $copy;
+        self::cropBranches($projectBuffer);
+        return current($projectBuffer->getPreceders());
     }
 
     /**
