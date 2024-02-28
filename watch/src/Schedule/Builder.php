@@ -257,15 +257,40 @@ class Builder
             Utils::getPathLateDays($projectLongestPath, $this->context->now),
         ));
 
+        $milestoneChains = Utils::getMilestoneChains($project);
+        $milestoneBuffers = array_filter(
+            $project->getPreceders(true),
+            fn(Node $node) => $node instanceof MilestoneBuffer,
+        );
+        foreach ($milestoneBuffers as $milestoneBuffer) {
+            $milestoneBuffer->setAttribute(
+                'consumption',
+                min(
+                    $milestoneBuffer->getLength(),
+                    Utils::getPathLateDays(
+                        Utils::getPath($milestoneChains[$milestoneBuffer->name]),
+                        $this->context->now,
+                    ),
+                ),
+            );
+        }
+
         $feedingChains = Utils::getFeedingChains($project);
         $feedingBuffers = array_filter(
             $project->getPreceders(true),
             fn(Node $node) => $node instanceof FeedingBuffer,
         );
         foreach ($feedingBuffers as $feedingBuffer) {
-            $longestPath = Utils::getPath($feedingChains[$feedingBuffer->name]);
-            $lateDays = Utils::getPathLateDays($longestPath, $this->context->now);
-            $feedingBuffer->setAttribute('consumption', min($feedingBuffer->getLength(), $lateDays));
+            $feedingBuffer->setAttribute(
+                'consumption',
+                min(
+                    $feedingBuffer->getLength(),
+                    Utils::getPathLateDays(
+                        Utils::getPath($feedingChains[$feedingBuffer->name]),
+                        $this->context->now,
+                    ),
+                ),
+            );
         }
 
         return $this;

@@ -3,6 +3,7 @@
 namespace Watch\Schedule;
 
 use Watch\Schedule\Model\FeedingBuffer;
+use Watch\Schedule\Model\MilestoneBuffer;
 use Watch\Schedule\Model\Node;
 use Watch\Schedule\Model\Issue;
 use Watch\Schedule\Model\Project;
@@ -66,6 +67,33 @@ class Utils
             fn($acc, Node $feedingBuffer) => [
                 ...$acc,
                 $feedingBuffer->name => current($feedingBuffer->getPreceders())
+            ],
+            [],
+        );
+    }
+
+    static public function getMilestoneChains(Project $origin): array
+    {
+        /** @var Node[] $nodes */
+        $nodes = array_reduce(
+            self::getDuplicate($origin)->getPreceders(true),
+            fn($acc, Node $node) => [...$acc, $node->name => $node],
+            []
+        );
+
+        $milestoneBuffers = array_filter(
+            $nodes,
+            fn(Node $node) => $node instanceof MilestoneBuffer,
+        );
+        foreach ($milestoneBuffers as $milestoneBuffer) {
+            self::cropBranches($milestoneBuffer);
+        }
+
+        return array_reduce(
+            $milestoneBuffers,
+            fn($acc, Node $milestoneBuffer) => [
+                ...$acc,
+                $milestoneBuffer->name => current($milestoneBuffer->getPreceders())
             ],
             [],
         );
