@@ -112,8 +112,7 @@ class Utils
             array_map(fn($line) => trim($line), explode("\n", $description)),
             fn($line) => strlen($line) > 0)
         ];
-
-        $projectMilestoneName = self::getProjectMilestoneName($description);
+        
         $projectEndDate = self::getProjectEndDate($description);
         $projectEndGap = self::getProjectEndGap($description);
 
@@ -178,13 +177,8 @@ class Utils
             'links' => [],
         ]);
 
-        $schedule['project'] = [
-            'key' => $projectMilestoneName,
-            'begin' => self::getProjectBeginDate($description)->format('Y-m-d'),
-            'end' => $projectEndDate->format('Y-m-d'),
-        ];
-
-        $schedule['milestones'] = [];
+        $schedule['project'] = current(array_slice(self::getMilestones($description), -1));
+        $schedule['milestones'] = array_slice(self::getMilestones($description), 0, -1);
 
         krsort($criticalChain);
         $schedule['criticalChain'] = array_values($criticalChain);
@@ -345,16 +339,6 @@ class Utils
                         : min($acc, self::extractMilestoneDate($milestoneLine))
                 ),
         );
-    }
-
-    private static function getProjectMilestoneName(string $description): string
-    {
-        return self::extractMilestoneName(array_reduce(
-            self::extractMilestoneLines($description),
-            fn($acc, $milestoneLine) => is_null($acc) || strpos($acc, '^') < strpos($milestoneLine, '^')
-                ? $milestoneLine
-                : $acc,
-        ));
     }
 
     private static function isEndMarkers($description): bool
