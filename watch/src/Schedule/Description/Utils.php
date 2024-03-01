@@ -35,13 +35,13 @@ class Utils
                 $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1])) - $projectEndGap;
                 $beginGap = $endGap + $duration;
 
-                list($key, $type, $project) = self::getNameComponents($name);
+                list($key, $type, $project, $milestone) = self::getNameComponents($name);
 
                 $issues[$key] = [
                     'key' => $key,
                     'summary' => $key,
                     'status' => $started ? 'In Progress' : ($completed ? 'Done' : 'To Do'),
-                    'milestone' => null,
+                    'milestone' => $milestone,
                     'project' => $project,
                     'type' => $type,
                     'duration' => $duration,
@@ -112,7 +112,7 @@ class Utils
             array_map(fn($line) => trim($line), explode("\n", $description)),
             fn($line) => strlen($line) > 0)
         ];
-        
+
         $projectEndDate = self::getProjectEndDate($description);
         $projectEndGap = self::getProjectEndGap($description);
 
@@ -132,7 +132,7 @@ class Utils
             $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1])) - $projectEndGap;
             $beginGap = $endGap + $length;
 
-            list($key, $type, $project) = self::getNameComponents($name);
+            list($key, $type) = self::getNameComponents($name);
 
             if ($isIssue) {
                 $schedule['issues'][] = [
@@ -295,7 +295,7 @@ class Utils
         );
     }
 
-    private static function getNameComponents($name)
+    private static function getNameComponents(string $name): array
     {
         return array_map(
             fn($name, $value) => $value ?? match($name) {
@@ -303,8 +303,17 @@ class Utils
                 'type' => 'T',
                 default => null,
             },
-            ['key', 'type', 'project'],
-            array_reverse(explode('/', $name)),
+            ['key', 'type', 'project', 'milestone'],
+            array_reverse(
+                array_reduce(
+                    explode('/', $name),
+                    fn($acc, $name) => [
+                        ...$acc,
+                        ...array_reverse(explode('#', $name))
+                    ],
+                    [],
+                ),
+            ),
         );
     }
 
