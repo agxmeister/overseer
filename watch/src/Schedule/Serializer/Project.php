@@ -70,7 +70,20 @@ readonly class Project
             )),
             self::VOLUME_LINKS => \Watch\Utils::getUnique(
                 array_reduce(
-                    $project->getPreceders(true),
+                    \Watch\Utils::getUnique(
+                        [
+                            ...$project->getPreceders(true),
+                            ...array_reduce(
+                                $project->getMilestones(),
+                                fn($acc, MilestoneModel $milestone) => [
+                                    ...$acc,
+                                    ...$milestone->getPreceders(true)
+                                ],
+                                [],
+                            ),
+                        ],
+                        fn(NodeModel $node) => $node->name,
+                    ),
                     fn($acc, NodeModel $node) => [
                         ...$acc,
                         ...array_map(fn(LinkModel $link) => [
