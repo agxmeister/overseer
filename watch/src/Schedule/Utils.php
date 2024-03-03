@@ -228,14 +228,18 @@ class Utils
 
     static private function getDuplicateRecursively(Node $origin, &$copies = []): Node
     {
-        if (!isset($copies[$origin->name])) {
-            $copies[$origin->name] = clone $origin;
+        if (isset($copies[$origin->name])) {
+            return $copies[$origin->name];
         }
-        $copy = $copies[$origin->name];
+        $copies[$origin->name] = clone $origin;
         foreach ($origin->getPrecedeLinks() as $link) {
             $precederCopy = self::getDuplicateRecursively($link->node, $copies);
-            $precederCopy->precede($copy, $link->type);
+            $precederCopy->precede($copies[$origin->name], $link->type);
         }
-        return $copy;
+        foreach ($origin->getFollowLinks() as $link) {
+            $followerCopy = self::getDuplicateRecursively($link->node, $copies);
+            $followerCopy->follow($copies[$origin->name], $link->type);
+        }
+        return $copies[$origin->name];
     }
 }

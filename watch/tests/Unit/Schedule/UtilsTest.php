@@ -9,7 +9,6 @@ use Watch\Schedule\Model\Node;
 use Watch\Schedule\Model\Project;
 use Watch\Schedule\Model\ProjectBuffer;
 use Watch\Schedule\Serializer\Project as ProjectSerializer;
-use Watch\Schedule\Utils;
 use Watch\Schedule\Utils as ScheduleUtils;
 use Watch\Schedule\Description\Utils as DescriptionUtils;
 use function PHPUnit\Framework\assertEquals;
@@ -26,17 +25,19 @@ class UtilsTest extends Unit
 
         $copy = ScheduleUtils::getDuplicate($origin);
 
-        $originPreceders = $this->getNodes($origin->getPreceders(true));
-        $copyPreceders = $this->getNodes($copy->getPreceders(true));
+        $originTree = [];
+        $this->scanTree($origin, $originTree);
+        $copyTree = [];
+        $this->scanTree($copy, $copyTree);
 
-        self::assertSameSize($originPreceders, $copyPreceders, "A count of preceders is different between the origin and the copy.");
-        foreach ($originPreceders as $name => $originPreceder) {
-            self::assertArrayHasKey($name, $copyPreceders, "The preceder with the name '$name' is missing from the copy.");
-            $copyPreceder = $copyPreceders[$name];
-            self::assertFalse($originPreceder === $copyPreceder, "Preceders from the origin and the copy are references to the same node '$name'.");
-            self::assertEquals($originPreceder->name, $copyPreceder->name, "The name of the copy of the preceder '$name' is not the same as the name of the origin.");
-            $originLinks = $this->getLinks($originPreceder->getFollowLinks());
-            $copyLinks = $this->getLinks($copyPreceder->getFollowLinks());
+        self::assertSameSize($originTree, $copyTree, "A count of nodes is different between the origin and the copy.");
+        foreach ($originTree as $name => $originNode) {
+            self::assertArrayHasKey($name, $copyTree, "The node with the name '$name' is missing from the copy.");
+            $copyNode = $copyTree[$name];
+            self::assertFalse($originNode === $copyNode, "Nodes from the origin and the copy are references to the same node '$name'.");
+            self::assertEquals($originNode->name, $copyNode->name, "The name of the copy of the node '$name' is not the same as the name of the origin.");
+            $originLinks = $this->getLinks($originNode->getFollowLinks());
+            $copyLinks = $this->getLinks($copyNode->getFollowLinks());
             self::assertSameSize($originLinks, $copyLinks, "A count of links from the node '$name' differs between the origin and the copy.");
             $originLinkNames = array_keys($originLinks);
             sort($originLinkNames);
@@ -205,6 +206,25 @@ class UtilsTest extends Unit
         ];
     }
 
+    /**
+     * @param Node $node
+     * @param Node[] $tree
+     * @return void
+     */
+    protected function scanTree(Node $node, array &$tree): void
+    {
+        if (isset($tree[$node->name])) {
+            return;
+        }
+        $tree[$node->name] = $node;
+        foreach ($node->getPreceders() as $preceder) {
+            $this->scanTree($preceder, $tree);
+        }
+        foreach ($node->getFollowers() as $follower) {
+            $this->scanTree($follower, $tree);
+        }
+    }
+
     protected function dataGetDuplicate(): array
     {
         return [
@@ -222,6 +242,14 @@ class UtilsTest extends Unit
                 K-02          | ****            | & K-01, @ K-02-buf
                 K-03          |xxxxxxx          | & K-01
                 finish                          ^ # 2023-09-21
+            '], ['
+                PB/finish-buf |            ______| @ finish
+                PRJ/T/K-01    |        xxxx      | @ finish-buf
+                PRJ/T/K-02    |    xxxx          | @ K-01
+                PRJ#M1/T/K-03 |xxxx              | @ K-02, @ M1-buf
+                MB/M1-buf     |    __            | @ M1
+                M1                   ^             # 2023-09-09
+                finish                           ^ # 2023-09-21
             '],
         ];
     }
