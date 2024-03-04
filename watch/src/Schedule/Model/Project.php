@@ -9,6 +9,12 @@ class Project extends Batch
      */
     private array $milestones = [];
 
+    public function __clone()
+    {
+        parent::__clone();
+        $this->milestones = [];
+    }
+
     public function addMilestone(Milestone $milestone): void
     {
         $this->milestones[] = $milestone;
