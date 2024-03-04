@@ -3,6 +3,7 @@
 namespace Watch\Schedule;
 
 use Watch\Schedule\Model\FeedingBuffer;
+use Watch\Schedule\Model\Milestone;
 use Watch\Schedule\Model\MilestoneBuffer;
 use Watch\Schedule\Model\Node;
 use Watch\Schedule\Model\Issue;
@@ -11,6 +12,21 @@ use Watch\Schedule\Model\ProjectBuffer;
 
 class Utils
 {
+    static public function getDuplicateProject(Project $originProject): Project
+    {
+        /** @var Project $copyProject */
+        $copyProject = self::getDuplicate($originProject);
+        foreach (
+            array_filter(
+                self::getTree($copyProject),
+                fn(Node $node) => $node instanceof Milestone,
+            ) as $milestone
+        ) {
+            $copyProject->addMilestone($milestone);
+        }
+        return $copyProject;
+    }
+
     static public function getDuplicate(Node $origin): Node
     {
         return self::getDuplicateRecursively($origin);
@@ -74,15 +90,8 @@ class Utils
 
     static public function getMilestoneChains(Project $origin): array
     {
-        /** @var Node[] $nodes */
-        $nodes = array_reduce(
-            self::getDuplicate($origin)->getPreceders(true),
-            fn($acc, Node $node) => [...$acc, $node->name => $node],
-            []
-        );
-
         $milestoneBuffers = array_filter(
-            $nodes,
+            self::getTree(self::getDuplicate($origin)),
             fn(Node $node) => $node instanceof MilestoneBuffer,
         );
         foreach ($milestoneBuffers as $milestoneBuffer) {
@@ -121,6 +130,17 @@ class Utils
             }
             self::cropBranches($preceder);
         }
+    }
+
+    /**
+     * @param Node $node
+     * @return Node[]
+     */
+    static public function getTree(Node $node): array
+    {
+        $tree = [];
+        self::getTreeRecursively($node, $tree);
+        return $tree;
     }
 
     /**
@@ -241,5 +261,24 @@ class Utils
             $followerCopy->follow($copies[$origin->name], $link->type);
         }
         return $copies[$origin->name];
+    }
+
+    /**
+     * @param Node $node
+     * @param Node[] $tree
+     * @return void
+     */
+    static private function getTreeRecursively(Node $node, array &$tree): void
+    {
+        if (isset($tree[$node->name])) {
+            return;
+        }
+        $tree[$node->name] = $node;
+        foreach ($node->getPreceders() as $preceder) {
+            self::getTreeRecursively($preceder, $tree);
+        }
+        foreach ($node->getFollowers() as $follower) {
+            self::getTreeRecursively($follower, $tree);
+        }
     }
 }

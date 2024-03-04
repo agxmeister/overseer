@@ -25,10 +25,8 @@ class UtilsTest extends Unit
 
         $copy = ScheduleUtils::getDuplicate($origin);
 
-        $originTree = [];
-        $this->scanTree($origin, $originTree);
-        $copyTree = [];
-        $this->scanTree($copy, $copyTree);
+        $originTree = ScheduleUtils::getTree($origin);
+        $copyTree = ScheduleUtils::getTree($copy);
 
         self::assertSameSize($originTree, $copyTree, "A count of nodes is different between the origin and the copy.");
         foreach ($originTree as $name => $originNode) {
@@ -204,25 +202,6 @@ class UtilsTest extends Unit
                 $node->getPreceders(true),
             ),
         ];
-    }
-
-    /**
-     * @param Node $node
-     * @param Node[] $tree
-     * @return void
-     */
-    protected function scanTree(Node $node, array &$tree): void
-    {
-        if (isset($tree[$node->name])) {
-            return;
-        }
-        $tree[$node->name] = $node;
-        foreach ($node->getPreceders() as $preceder) {
-            $this->scanTree($preceder, $tree);
-        }
-        foreach ($node->getFollowers() as $follower) {
-            $this->scanTree($follower, $tree);
-        }
     }
 
     protected function dataGetDuplicate(): array
