@@ -97,7 +97,9 @@ class Builder
 
     public function addMilestones(): self
     {
-        $nodes = $this->getNodes($this->issues);
+        $project = $this->schedule->getProject();
+
+        $nodes = Utils::getTree($project);
 
         /** @var SubjectIssue[] $issues */
         $issues = array_reduce(
@@ -136,7 +138,7 @@ class Builder
         }
 
         foreach ($milestones as $milestone) {
-            $this->schedule->getProject()->addMilestone($milestone);
+            $project->addMilestone($milestone);
         }
 
         return $this;
