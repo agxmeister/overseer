@@ -8,4 +8,15 @@ abstract class Batch extends Node
     {
         parent::__construct($name, 0, $attributes);
     }
+
+    public function getLength(bool $withPreceders = false, array $types = []): int
+    {
+        if (!$withPreceders) {
+            return 0;
+        }
+        return max(array_map(
+            fn(Node $node) => $node->getLength($withPreceders, $types),
+            $this->getPreceders(),
+        ));
+    }
 }
