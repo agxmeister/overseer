@@ -61,16 +61,18 @@ class PreservingDirectorTest extends AbstractDirectorTest
                 K-03          |****          | & K-01, @ K-03-buf
                 finish                       ^ # 2023-09-21
             '], ['
-                K-01          |        ****      |
-                K-02          |    ****          | @ K-01
-                K-03          |****              | @ K-02
+                PRJ/T/K-01    |        ****      |
+                PRJ/T/K-02    |    ****          | @ K-01
+                PRJ#M1/T/K-03 |****              | @ K-02
                               ^                    # 2023-09-03
             ', '
-                                     >
-                PB/finish-buf |            !!____| @ finish
-                K-01          |        xxxx      | @ finish-buf
-                K-02          |    xxxx          | @ K-01
-                K-03          |xxxx              | @ K-02
+                                    >
+                PB/finish-buf |            !_____| @ finish
+                PRJ/T/K-01    |        xxxx      | @ finish-buf
+                PRJ/T/K-02    |    xxxx          | @ K-01
+                PRJ#M1/T/K-03 |xxxx              | @ K-02, @ M1-buf
+                MB/M1-buf     |    !_            | @ M1
+                M1                   ^             # 2023-09-09
                 finish                           ^ # 2023-09-21
             ']
         ];

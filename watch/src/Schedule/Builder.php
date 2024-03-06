@@ -261,7 +261,7 @@ class Builder
 
         $milestoneChains = Utils::getMilestoneChains($project);
         $milestoneBuffers = array_filter(
-            $project->getPreceders(true),
+            Utils::getTree($project),
             fn(Node $node) => $node instanceof MilestoneBuffer,
         );
         foreach ($milestoneBuffers as $milestoneBuffer) {
