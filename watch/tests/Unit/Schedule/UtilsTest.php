@@ -106,6 +106,19 @@ class UtilsTest extends Unit
         ));
     }
 
+    /**
+     * @dataProvider dataGetChain
+     */
+    public function testGetChain($scheduleDescription, $expectedChainNodeNames)
+    {
+        $serializer = new ProjectSerializer();
+        $project = $serializer->deserialize(DescriptionUtils::getSchedule($scheduleDescription));
+        $this->assertEquals($expectedChainNodeNames, array_map(
+            fn(Node $node) => $node->name,
+            ScheduleUtils::getChain($project)->nodes,
+        ));
+    }
+
     public function testMostAndLeastDistantNodes()
     {
         $node1 = new Issue("Test1", 10);
@@ -246,6 +259,34 @@ class UtilsTest extends Unit
                     finish                       ^ # 2023-09-21
                 ',
                 ['K-02' => ['K-02']]
+            ],
+        ];
+    }
+
+    protected function dataGetChain(): array
+    {
+        return [
+            [
+                '
+                    K01          |         xxxxx| @ PRJ
+                    K02          |    xxxxx     | @ K01
+                    K03          |xxxx          | @ K02
+                    K04          |   ******     | @ K01
+                    K05          | **           | @ K04
+                    PRJ                         ^ # 2023-09-21
+                ',
+                ['PRJ', 'K01', 'K02', 'K03'],
+            ], [
+                '
+                    K01          |          xxxxx| @ PRJ
+                    K02          |     *****     | @ K01
+                    K03          | ****          | @ K02
+                    K04          |    ******     | @ K01
+                    K05          |  **           | @ K04
+                    K06          |xxxxxxxxxx     | @ K01
+                    PRJ                         ^ # 2023-09-21
+                ',
+                ['PRJ', 'K01', 'K06'],
             ],
         ];
     }

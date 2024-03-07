@@ -2,6 +2,7 @@
 
 namespace Watch\Schedule;
 
+use Watch\Schedule\Model\Chain;
 use Watch\Schedule\Model\FeedingBuffer;
 use Watch\Schedule\Model\Milestone;
 use Watch\Schedule\Model\MilestoneBuffer;
@@ -115,13 +116,9 @@ class Utils
             return;
         }
 
-        $nodeLengths = array_reduce(
-            $preceders,
-            fn($acc, Node $preceder) => [...$acc, $preceder->name => $preceder->getLength(true)],
-            [],
-        );
-        arsort($nodeLengths);
-        $longestNodeName = array_key_first($nodeLengths);
+        $lengthsPerNodeName = self::getLengthsPerNodeName($preceders);
+        arsort($lengthsPerNodeName);
+        $longestNodeName = array_key_first($lengthsPerNodeName);
 
         foreach ($preceders as $preceder) {
             if ($preceder->name !== $longestNodeName) {
@@ -141,6 +138,13 @@ class Utils
         $tree = [];
         self::getTreeRecursively($node, $tree);
         return $tree;
+    }
+
+    static public function getChain(Node $node): Chain
+    {
+        $chainNodes = [];
+        self::getChainNodes($node, $chainNodes);
+        return new Chain($chainNodes);
     }
 
     /**
@@ -280,5 +284,55 @@ class Utils
         foreach ($node->getFollowers() as $follower) {
             self::getTreeRecursively($follower, $tree);
         }
+    }
+
+    static private function getChainNodes(Node $node, array &$chainNodes): void
+    {
+        $chainNodes[] = $node;
+
+        $preceders = $node->getPreceders();
+        if (empty($preceders)) {
+            return;
+        }
+
+        $lengths = self::getLengthsPerNodeName($preceders);
+        $nodes = self::getNodesPerNodeName($preceders);
+
+        arsort($lengths);
+        $longestNodeName = array_key_first($lengths);
+
+        self::getChainNodes($nodes[$longestNodeName], $chainNodes);
+    }
+
+    /**
+     * @param Node[] $nodes
+     * @return Node[]
+     */
+    static private function getNodesPerNodeName(array $nodes): array
+    {
+        return array_reduce(
+            $nodes,
+            fn($acc, Node $node) => [
+                ...$acc,
+                $node->name => $node,
+            ],
+            [],
+        );
+    }
+
+    /**
+     * @param Node[] $nodes
+     * @return int[]
+     */
+    static private function getLengthsPerNodeName(array $nodes): array
+    {
+        return array_reduce(
+            $nodes,
+            fn($acc, Node $node) => [
+                ...$acc,
+                $node->name => $node->getLength(true),
+            ],
+            [],
+        );
     }
 }
