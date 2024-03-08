@@ -33,7 +33,7 @@ class Utils
         return self::getDuplicateRecursively($origin);
     }
 
-    static public function getCriticalChain(Project $origin): Node
+    static public function getCriticalChain(Project $origin): Chain
     {
         $copy = self::getDuplicate($origin);
         /** @var ProjectBuffer $projectBuffer */
@@ -50,8 +50,7 @@ class Utils
                 $feedingBuffer->unprecede($link->node);
             }
         }
-        self::cropBranches($projectBuffer);
-        return current($projectBuffer->getPreceders());
+        return self::getChain($projectBuffer, false);
     }
 
     /**
@@ -67,7 +66,7 @@ class Utils
             []
         );
 
-        foreach (self::getCriticalChain($origin)->getPreceders(true) as $node) {
+        foreach (self::getCriticalChain($origin)->nodes as $node) {
             $nodes[$node->name]->unlink();
         }
 
@@ -140,11 +139,11 @@ class Utils
         return $tree;
     }
 
-    static public function getChain(Node $node): Chain
+    static public function getChain(Node $node, bool $includeLeadingNode = true): Chain
     {
         $chainNodes = [];
         self::getChainNodes($node, $chainNodes);
-        return new Chain($chainNodes);
+        return new Chain($includeLeadingNode ? $chainNodes : array_slice($chainNodes, 1));
     }
 
     /**

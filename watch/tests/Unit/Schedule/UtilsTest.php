@@ -61,8 +61,13 @@ class UtilsTest extends Unit
         $node12 = new Issue("Node12", 2);
         $node12->precede($feedingBuffer);
         $feedingBuffer->precede($node1);
-        $copy = ScheduleUtils::getCriticalChain($origin);
-        $this->assertEquals(["Node1", "Node11"], $this->getNames($copy));
+        $this->assertEquals(
+            ["Node1", "Node11"],
+            array_map(
+                fn(Node $node) => $node->name,
+                ScheduleUtils::getCriticalChain($origin)->nodes
+            ),
+        );
     }
 
     /**

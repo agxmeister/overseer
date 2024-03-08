@@ -102,7 +102,7 @@ readonly class Project
                 fn($link) => implode('-', array_values($link))
             ),
             self::VOLUME_CRITICAL_CHAIN => array_reduce(
-                Utils::getPath(Utils::getCriticalChain($project)),
+                Utils::getCriticalChain($project)->nodes,
                 fn($acc, NodeModel $node) => [...$acc, $node->name],
                 []
             ),

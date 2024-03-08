@@ -245,7 +245,7 @@ class Builder
     {
         $project = $this->schedule->getProject();
 
-        $projectLongestPath = Utils::getPath(Utils::getCriticalChain($project));
+        $projectLongestPath = Utils::getCriticalChain($project)->nodes;
 
         $projectBuffer = array_reduce(
             array_filter(
