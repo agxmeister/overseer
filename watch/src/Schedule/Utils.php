@@ -55,7 +55,7 @@ class Utils
 
     /**
      * @param Project $origin
-     * @return Node[]
+     * @return Chain[]
      */
     static public function getFeedingChains(Project $origin): array
     {
@@ -70,19 +70,14 @@ class Utils
             $nodes[$node->name]->unlink();
         }
 
-        $feedingBuffers = array_filter(
-            $nodes,
-            fn(Node $node) => $node instanceof FeedingBuffer,
-        );
-        foreach ($feedingBuffers as $feedingBuffer) {
-            self::cropBranches($feedingBuffer);
-        }
-
         return array_reduce(
-            $feedingBuffers,
+            array_filter(
+                $nodes,
+                fn(Node $node) => $node instanceof FeedingBuffer,
+            ),
             fn($acc, Node $feedingBuffer) => [
                 ...$acc,
-                $feedingBuffer->name => current($feedingBuffer->getPreceders())
+                $feedingBuffer->name => self::getChain($feedingBuffer, false),
             ],
             [],
         );

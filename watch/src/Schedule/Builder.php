@@ -288,7 +288,7 @@ class Builder
                 min(
                     $feedingBuffer->getLength(),
                     Utils::getPathLateDays(
-                        Utils::getPath($feedingChains[$feedingBuffer->name]),
+                        $feedingChains[$feedingBuffer->name]->nodes,
                         $this->context->now,
                     ),
                 ),

@@ -2,6 +2,7 @@
 namespace Tests\Unit\Schedule;
 
 use Codeception\Test\Unit;
+use Watch\Schedule\Model\Chain;
 use Watch\Schedule\Model\FeedingBuffer;
 use Watch\Schedule\Model\Issue;
 use Watch\Schedule\Model\Link;
@@ -80,7 +81,10 @@ class UtilsTest extends Unit
 
         $actualFeedingChains = array_reduce(
             array_map(
-                fn(Node $feedingChain) => self::getNames($feedingChain),
+                fn(Chain $feedingChain) => array_map(
+                    fn(Node $node) => $node->name,
+                    $feedingChain->nodes,
+                ),
                 ScheduleUtils::getFeedingChains($origin),
             ),
             fn($acc, array $names) => [...$acc, reset($names) => $names],
