@@ -83,21 +83,20 @@ class Utils
         );
     }
 
+    /**
+     * @param Project $origin
+     * @return Chain[]
+     */
     static public function getMilestoneChains(Project $origin): array
     {
-        $milestoneBuffers = array_filter(
-            self::getTree(self::getDuplicate($origin)),
-            fn(Node $node) => $node instanceof MilestoneBuffer,
-        );
-        foreach ($milestoneBuffers as $milestoneBuffer) {
-            self::cropBranches($milestoneBuffer);
-        }
-
         return array_reduce(
-            $milestoneBuffers,
+            array_filter(
+                self::getTree(self::getDuplicate($origin)),
+                fn(Node $node) => $node instanceof MilestoneBuffer,
+            ),
             fn($acc, Node $milestoneBuffer) => [
                 ...$acc,
-                $milestoneBuffer->name => current($milestoneBuffer->getPreceders())
+                $milestoneBuffer->name => self::getChain($milestoneBuffer),
             ],
             [],
         );

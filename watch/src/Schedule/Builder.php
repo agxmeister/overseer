@@ -270,7 +270,7 @@ class Builder
                 min(
                     $milestoneBuffer->getLength(),
                     Utils::getPathLateDays(
-                        Utils::getPath($milestoneChains[$milestoneBuffer->name]),
+                        $milestoneChains[$milestoneBuffer->name]->nodes,
                         $this->context->now,
                     ),
                 ),
