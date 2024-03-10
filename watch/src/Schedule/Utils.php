@@ -19,7 +19,7 @@ class Utils
         $copyProject = self::getDuplicate($originProject);
         foreach (
             array_filter(
-                self::getTree($copyProject),
+                self::getLinkedNodes($copyProject),
                 fn(Node $node) => $node instanceof Milestone,
             ) as $milestone
         ) {
@@ -35,22 +35,18 @@ class Utils
 
     static public function getCriticalChain(Project $origin): Chain
     {
+        /** @var Project $copy */
         $copy = self::getDuplicate($origin);
-        /** @var ProjectBuffer $projectBuffer */
-        $projectBuffer = current(array_filter(
-            $copy->getPreceders(),
-            fn(Node $node) => $node instanceof ProjectBuffer,
-        ));
         foreach (
             array_filter(
-                $projectBuffer->getPreceders(true),
-                fn(Node $preceder) => $preceder instanceof FeedingBuffer,
+                self::getLinkedNodes($copy),
+                fn(Node $node) => $node instanceof FeedingBuffer,
             ) as $feedingBuffer) {
             foreach ($feedingBuffer->getFollowLinks() as $link) {
                 $feedingBuffer->unprecede($link->node);
             }
         }
-        return self::getChain($projectBuffer, false);
+        return self::getChain($copy->getBuffer(), false);
     }
 
     /**
@@ -91,7 +87,7 @@ class Utils
     {
         return array_reduce(
             array_filter(
-                self::getTree(self::getDuplicate($origin)),
+                self::getLinkedNodes(self::getDuplicate($origin)),
                 fn(Node $node) => $node instanceof MilestoneBuffer,
             ),
             fn($acc, Node $milestoneBuffer) => [
@@ -126,7 +122,7 @@ class Utils
      * @param Node $node
      * @return Node[]
      */
-    static public function getTree(Node $node): array
+    static public function getLinkedNodes(Node $node): array
     {
         $tree = [];
         self::getTreeRecursively($node, $tree);

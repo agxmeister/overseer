@@ -19,4 +19,12 @@ abstract class Batch extends Node
             $this->getPreceders(),
         ));
     }
+
+    public function getBuffer(): Buffer
+    {
+        return current(array_filter(
+            $this->getPreceders(),
+            fn(Node $node) => $node instanceof Buffer),
+        );
+    }
 }

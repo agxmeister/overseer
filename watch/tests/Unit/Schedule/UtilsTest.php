@@ -26,8 +26,8 @@ class UtilsTest extends Unit
 
         $copy = ScheduleUtils::getDuplicate($origin);
 
-        $originTree = ScheduleUtils::getTree($origin);
-        $copyTree = ScheduleUtils::getTree($copy);
+        $originTree = ScheduleUtils::getLinkedNodes($origin);
+        $copyTree = ScheduleUtils::getLinkedNodes($copy);
 
         self::assertSameSize($originTree, $copyTree, "A count of nodes is different between the origin and the copy.");
         foreach ($originTree as $name => $originNode) {

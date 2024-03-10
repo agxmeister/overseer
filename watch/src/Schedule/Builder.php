@@ -99,7 +99,7 @@ class Builder
     {
         $project = $this->schedule->getProject();
 
-        $nodes = Utils::getTree($project);
+        $nodes = Utils::getLinkedNodes($project);
 
         /** @var SubjectIssue[] $issues */
         $issues = array_reduce(
@@ -245,13 +245,7 @@ class Builder
     {
         $project = $this->schedule->getProject();
 
-        $projectBuffer = array_reduce(
-            array_filter(
-                $project->getPreceders(true),
-                fn(Node $node) => $node instanceof ProjectBuffer,
-            ),
-            fn($acc, Node $node) => $node
-        );
+        $projectBuffer = $project->getBuffer();
         $projectBuffer->setAttribute('consumption', min(
             $projectBuffer->getLength(),
             Utils::getChainLateDays(Utils::getCriticalChain($project), $this->context->now),
@@ -259,7 +253,7 @@ class Builder
 
         $milestoneChains = Utils::getMilestoneChains($project);
         $milestoneBuffers = array_filter(
-            Utils::getTree($project),
+            Utils::getLinkedNodes($project),
             fn(Node $node) => $node instanceof MilestoneBuffer,
         );
         foreach ($milestoneBuffers as $milestoneBuffer) {
