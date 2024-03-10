@@ -141,19 +141,6 @@ class Utils
     }
 
     /**
-     * @param Node $chain
-     * @return Node[]
-     */
-    static public function getPath(Node $chain): array
-    {
-        return array_reduce(
-            [$chain, ...$chain->getPreceders(true)],
-            fn($acc, Node $node) => [...$acc, $node],
-            [],
-        );
-    }
-
-    /**
      * @param Node|null $node
      * @return Node[]
      */
@@ -208,10 +195,10 @@ class Utils
         );
     }
 
-    static public function getPathLateDays(array $path, \DateTimeImmutable $now): int
+    static public function getChainLateDays(Chain $chain, \DateTimeImmutable $now): int
     {
         return array_reduce(
-            $path,
+            $chain->nodes,
             fn(int $acc, Node $node) => $acc + self::getNodeLateDays($node, $now),
             0,
         );

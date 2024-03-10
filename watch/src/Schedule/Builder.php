@@ -245,8 +245,6 @@ class Builder
     {
         $project = $this->schedule->getProject();
 
-        $projectLongestPath = Utils::getCriticalChain($project)->nodes;
-
         $projectBuffer = array_reduce(
             array_filter(
                 $project->getPreceders(true),
@@ -256,7 +254,7 @@ class Builder
         );
         $projectBuffer->setAttribute('consumption', min(
             $projectBuffer->getLength(),
-            Utils::getPathLateDays($projectLongestPath, $this->context->now),
+            Utils::getChainLateDays(Utils::getCriticalChain($project), $this->context->now),
         ));
 
         $milestoneChains = Utils::getMilestoneChains($project);
@@ -269,8 +267,8 @@ class Builder
                 'consumption',
                 min(
                     $milestoneBuffer->getLength(),
-                    Utils::getPathLateDays(
-                        $milestoneChains[$milestoneBuffer->name]->nodes,
+                    Utils::getChainLateDays(
+                        $milestoneChains[$milestoneBuffer->name],
                         $this->context->now,
                     ),
                 ),
@@ -287,8 +285,8 @@ class Builder
                 'consumption',
                 min(
                     $feedingBuffer->getLength(),
-                    Utils::getPathLateDays(
-                        $feedingChains[$feedingBuffer->name]->nodes,
+                    Utils::getChainLateDays(
+                        $feedingChains[$feedingBuffer->name],
                         $this->context->now,
                     ),
                 ),
