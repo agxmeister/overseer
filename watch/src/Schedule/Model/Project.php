@@ -5,26 +5,37 @@ namespace Watch\Schedule\Model;
 class Project extends Batch
 {
     /**
-     * @var Milestone[]
-     */
-    private array $milestones = [];
-
-    public function __clone()
-    {
-        parent::__clone();
-        $this->milestones = [];
-    }
-
-    public function addMilestone(Milestone $milestone): void
-    {
-        $this->milestones[] = $milestone;
-    }
-
-    /**
      * @return Milestone[]
      */
     public function getMilestones(): array
     {
-        return $this->milestones;
+        return array_filter(
+            $this->getNodes(),
+            fn(Node $node) => $node instanceof Milestone,
+        );
+    }
+
+    /**
+     * @return Node[]
+     */
+    public function getNodes(): array
+    {
+        $nodes = [];
+        self::getNodesRecursively($this, $nodes);
+        return $nodes;
+    }
+
+    private function getNodesRecursively(Node $node, array &$nodes): void
+    {
+        if (isset($nodes[$node->name])) {
+            return;
+        }
+        $nodes[$node->name] = $node;
+        foreach ($node->getPreceders() as $preceder) {
+            self::getNodesRecursively($preceder, $nodes);
+        }
+        foreach ($node->getFollowers() as $follower) {
+            self::getNodesRecursively($follower, $nodes);
+        }
     }
 }

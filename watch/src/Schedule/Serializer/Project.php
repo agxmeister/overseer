@@ -152,14 +152,6 @@ readonly class Project
             'begin' => $projectData['begin'],
             'end' => $projectData['end'],
         ]);
-        foreach (
-            array_filter(
-                $nodes,
-                fn(NodeModel $node) => $node instanceOf MilestoneModel,
-            ) as $milestone
-        ) {
-            $project->addMilestone($milestone);
-        }
         $nodes[$project->name] = $project;
 
         foreach ($volumes[self::VOLUME_LINKS] as $link) {

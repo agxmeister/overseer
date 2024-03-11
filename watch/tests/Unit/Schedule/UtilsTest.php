@@ -24,10 +24,11 @@ class UtilsTest extends Unit
         $serializer = new ProjectSerializer();
         $origin = $serializer->deserialize(DescriptionUtils::getSchedule($scheduleDescription));
 
+        /** @var Project $copy */
         $copy = ScheduleUtils::getDuplicate($origin);
 
-        $originTree = ScheduleUtils::getLinkedNodes($origin);
-        $copyTree = ScheduleUtils::getLinkedNodes($copy);
+        $originTree = $origin->getNodes();
+        $copyTree = $copy->getNodes();
 
         self::assertSameSize($originTree, $copyTree, "A count of nodes is different between the origin and the copy.");
         foreach ($originTree as $name => $originNode) {

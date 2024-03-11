@@ -4,30 +4,13 @@ namespace Watch\Schedule;
 
 use Watch\Schedule\Model\Chain;
 use Watch\Schedule\Model\FeedingBuffer;
-use Watch\Schedule\Model\Milestone;
 use Watch\Schedule\Model\MilestoneBuffer;
 use Watch\Schedule\Model\Node;
 use Watch\Schedule\Model\Issue;
 use Watch\Schedule\Model\Project;
-use Watch\Schedule\Model\ProjectBuffer;
 
 class Utils
 {
-    static public function getDuplicateProject(Project $originProject): Project
-    {
-        /** @var Project $copyProject */
-        $copyProject = self::getDuplicate($originProject);
-        foreach (
-            array_filter(
-                self::getLinkedNodes($copyProject),
-                fn(Node $node) => $node instanceof Milestone,
-            ) as $milestone
-        ) {
-            $copyProject->addMilestone($milestone);
-        }
-        return $copyProject;
-    }
-
     static public function getDuplicate(Node $origin): Node
     {
         return self::getDuplicateRecursively($origin);
@@ -39,7 +22,7 @@ class Utils
         $copy = self::getDuplicate($origin);
         foreach (
             array_filter(
-                self::getLinkedNodes($copy),
+                $copy->getNodes(),
                 fn(Node $node) => $node instanceof FeedingBuffer,
             ) as $feedingBuffer) {
             foreach ($feedingBuffer->getFollowLinks() as $link) {
@@ -85,9 +68,11 @@ class Utils
      */
     static public function getMilestoneChains(Project $origin): array
     {
+        /** @var Project $copy */
+        $copy = self::getDuplicate($origin);
         return array_reduce(
             array_filter(
-                self::getLinkedNodes(self::getDuplicate($origin)),
+                $copy->getNodes(),
                 fn(Node $node) => $node instanceof MilestoneBuffer,
             ),
             fn($acc, Node $milestoneBuffer) => [
@@ -116,17 +101,6 @@ class Utils
             }
             self::cropBranches($preceder);
         }
-    }
-
-    /**
-     * @param Node $node
-     * @return Node[]
-     */
-    static public function getLinkedNodes(Node $node): array
-    {
-        $tree = [];
-        self::getTreeRecursively($node, $tree);
-        return $tree;
     }
 
     static public function getChain(Node $node, bool $includeLeadingNode = true): Chain
@@ -241,25 +215,6 @@ class Utils
             $followerCopy->follow($copies[$origin->name], $link->type);
         }
         return $copies[$origin->name];
-    }
-
-    /**
-     * @param Node $node
-     * @param Node[] $tree
-     * @return void
-     */
-    static private function getTreeRecursively(Node $node, array &$tree): void
-    {
-        if (isset($tree[$node->name])) {
-            return;
-        }
-        $tree[$node->name] = $node;
-        foreach ($node->getPreceders() as $preceder) {
-            self::getTreeRecursively($preceder, $tree);
-        }
-        foreach ($node->getFollowers() as $follower) {
-            self::getTreeRecursively($follower, $tree);
-        }
     }
 
     static private function getChainNodes(Node $node, array &$chainNodes): void

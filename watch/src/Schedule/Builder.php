@@ -97,9 +97,7 @@ class Builder
 
     public function addMilestones(): self
     {
-        $project = $this->schedule->getProject();
-
-        $nodes = Utils::getLinkedNodes($project);
+        $nodes = $this->schedule->getProject()->getNodes();
 
         /** @var SubjectIssue[] $issues */
         $issues = array_reduce(
@@ -135,10 +133,6 @@ class Builder
                     $this->insertNode($nodes[$issue->key], $milestone, []);
                 }
             }
-        }
-
-        foreach ($milestones as $milestone) {
-            $project->addMilestone($milestone);
         }
 
         return $this;
@@ -253,7 +247,7 @@ class Builder
 
         $milestoneChains = Utils::getMilestoneChains($project);
         $milestoneBuffers = array_filter(
-            Utils::getLinkedNodes($project),
+            $project->getNodes(),
             fn(Node $node) => $node instanceof MilestoneBuffer,
         );
         foreach ($milestoneBuffers as $milestoneBuffer) {
