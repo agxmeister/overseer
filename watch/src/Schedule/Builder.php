@@ -208,19 +208,9 @@ class Builder
         }
 
         foreach (
-            \Watch\Utils::getUnique(
-                array_reduce(
-                    [$project, ...$project->getMilestones()],
-                    fn(array $acc, Node $node) => [
-                        ...$acc,
-                        ...array_filter(
-                            $node->getPreceders(true),
-                            fn(Node $node) => $node instanceof Buffer,
-                        ),
-                    ],
-                    [],
-                ),
-                fn(Node $node) => $node->name,
+            array_filter(
+                $project->getNodes(),
+                fn(Node $node) => $node instanceof Buffer,
             ) as $buffer
         ) {
             $this->addBufferDates($buffer);
@@ -246,11 +236,12 @@ class Builder
         ));
 
         $milestoneChains = Utils::getMilestoneChains($project);
-        $milestoneBuffers = array_filter(
-            $project->getNodes(),
-            fn(Node $node) => $node instanceof MilestoneBuffer,
-        );
-        foreach ($milestoneBuffers as $milestoneBuffer) {
+        foreach (
+            array_map(
+                fn(Milestone $milestone) => $milestone->getBuffer(),
+                $project->getMilestones(),
+            ) as $milestoneBuffer
+        ) {
             $milestoneBuffer->setAttribute(
                 'consumption',
                 min(
@@ -265,7 +256,7 @@ class Builder
 
         $feedingChains = Utils::getFeedingChains($project);
         $feedingBuffers = array_filter(
-            $project->getPreceders(true),
+            $project->getNodes(),
             fn(Node $node) => $node instanceof FeedingBuffer,
         );
         foreach ($feedingBuffers as $feedingBuffer) {
