@@ -98,34 +98,16 @@ class UtilsTest extends Unit
         }
     }
 
-    public function testCropBranches()
-    {
-        $node1 = new Issue("Test1", 10);
-        $node11 = new Issue("Test11", 10);
-        $node11->precede($node1);
-        $node12 = new Issue("Test12", 11);
-        $node12->precede($node1);
-        $node121 = new Issue("Test121", 12);
-        $node121->precede($node12);
-        $node122 = new Issue("Test122", 10);
-        $node122->precede($node12);
-        ScheduleUtils::cropBranches($node1);
-        self::assertEquals(['Test1', 'Test12', 'Test121'], array_map(
-            fn(Node $node) => $node->name,
-            [$node1, ...$node1->getPreceders(true)]
-        ));
-    }
-
     /**
-     * @dataProvider dataGetChain
+     * @dataProvider dataGetLongestChain
      */
-    public function testGetChain($scheduleDescription, $expectedChainNodeNames)
+    public function testGetLongestChain($scheduleDescription, $expectedChainNodeNames)
     {
         $serializer = new ProjectSerializer();
         $project = $serializer->deserialize(DescriptionUtils::getSchedule($scheduleDescription));
         $this->assertEquals($expectedChainNodeNames, array_map(
             fn(Node $node) => $node->name,
-            ScheduleUtils::getChain($project)->nodes,
+            ScheduleUtils::getLongestChain($project)->nodes,
         ));
     }
 
@@ -273,7 +255,7 @@ class UtilsTest extends Unit
         ];
     }
 
-    protected function dataGetChain(): array
+    protected function dataGetLongestChain(): array
     {
         return [
             [

@@ -29,7 +29,28 @@ class Utils
                 $feedingBuffer->unprecede($link->node);
             }
         }
-        return self::getChain($copy->getBuffer(), false);
+        return self::getLongestChain($copy->getBuffer(), false);
+    }
+
+    /**
+     * @param Project $origin
+     * @return Chain[]
+     */
+    static public function getMilestoneChains(Project $origin): array
+    {
+        /** @var Project $copy */
+        $copy = self::getDuplicate($origin);
+        return array_reduce(
+            array_filter(
+                $copy->getNodes(),
+                fn(Node $node) => $node instanceof MilestoneBuffer,
+            ),
+            fn($acc, Node $milestoneBuffer) => [
+                ...$acc,
+                $milestoneBuffer->name => self::getLongestChain($milestoneBuffer),
+            ],
+            [],
+        );
     }
 
     /**
@@ -56,54 +77,13 @@ class Utils
             ),
             fn($acc, Node $feedingBuffer) => [
                 ...$acc,
-                $feedingBuffer->name => self::getChain($feedingBuffer, false),
+                $feedingBuffer->name => self::getLongestChain($feedingBuffer, false),
             ],
             [],
         );
     }
 
-    /**
-     * @param Project $origin
-     * @return Chain[]
-     */
-    static public function getMilestoneChains(Project $origin): array
-    {
-        /** @var Project $copy */
-        $copy = self::getDuplicate($origin);
-        return array_reduce(
-            array_filter(
-                $copy->getNodes(),
-                fn(Node $node) => $node instanceof MilestoneBuffer,
-            ),
-            fn($acc, Node $milestoneBuffer) => [
-                ...$acc,
-                $milestoneBuffer->name => self::getChain($milestoneBuffer),
-            ],
-            [],
-        );
-    }
-
-    static public function cropBranches(Node $node): void
-    {
-        $preceders = $node->getPreceders();
-        if (empty($preceders)) {
-            return;
-        }
-
-        $lengthsPerNodeName = self::getLengthsPerNodeName($preceders);
-        arsort($lengthsPerNodeName);
-        $longestNodeName = array_key_first($lengthsPerNodeName);
-
-        foreach ($preceders as $preceder) {
-            if ($preceder->name !== $longestNodeName) {
-                $preceder->unprecede($node);
-                continue;
-            }
-            self::cropBranches($preceder);
-        }
-    }
-
-    static public function getChain(Node $node, bool $includeLeadingNode = true): Chain
+    static public function getLongestChain(Node $node, bool $includeLeadingNode = true): Chain
     {
         $chainNodes = [];
         self::getChainNodes($node, $chainNodes);
@@ -182,22 +162,6 @@ class Utils
         )
             ? $now->diff(new \DateTimeImmutable($node->getAttribute('end')))->format('%a')
             : 0;
-    }
-
-    static public function getLateDays(Node $node, array $filter, \DateTimeImmutable $now): int
-    {
-        $nodeLateDays = self::getNodeLateDays($node, $now);
-        return max([$nodeLateDays, ...array_map(
-            fn(int $followerLateDays) => $followerLateDays + $nodeLateDays,
-            array_map(
-                fn(Node $follower) => self::getLateDays($follower, $filter, $now),
-                array_uintersect(
-                    $node->getFollowers(),
-                    $filter,
-                    fn(Node $a, Node $b) => (int)($a->name === $b->name),
-                ),
-            )
-        )]);
     }
 
     static private function getDuplicateRecursively(Node $origin, &$copies = []): Node
