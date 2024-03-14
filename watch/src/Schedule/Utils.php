@@ -86,23 +86,8 @@ class Utils
     static public function getLongestChain(Node $node, bool $includeLeadingNode = true): Chain
     {
         $chainNodes = [];
-        self::getChainNodes($node, $chainNodes);
+        self::getLongestChainNodes($node, $chainNodes);
         return new Chain($includeLeadingNode ? $chainNodes : array_slice($chainNodes, 1));
-    }
-
-    /**
-     * @param Node|null $node
-     * @return Node[]
-     */
-    static public function getLongestPath(Node|null $node): array
-    {
-        if (is_null($node)) {
-            return [];
-        }
-        return [
-            $node,
-            ...self::getLongestPath(Utils::getMostDistantNode($node->getPreceders()))
-        ];
     }
 
     /**
@@ -181,7 +166,7 @@ class Utils
         return $copies[$origin->name];
     }
 
-    static private function getChainNodes(Node $node, array &$chainNodes): void
+    static private function getLongestChainNodes(Node $node, array &$chainNodes): void
     {
         $chainNodes[] = $node;
 
@@ -196,7 +181,7 @@ class Utils
         arsort($lengths);
         $longestNodeName = array_key_first($lengths);
 
-        self::getChainNodes($nodes[$longestNodeName], $chainNodes);
+        self::getLongestChainNodes($nodes[$longestNodeName], $chainNodes);
     }
 
     /**

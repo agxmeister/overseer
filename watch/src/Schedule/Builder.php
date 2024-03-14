@@ -169,8 +169,7 @@ class Builder
 
     public function addFeedingBuffers(): self
     {
-        $longestPath = Utils::getLongestPath($this->schedule->getProject());
-        foreach ($longestPath as $node) {
+        foreach (Utils::getLongestChain($this->schedule->getProject())->nodes as $node) {
             $preceders = $node->getPreceders();
             $criticalPreceder = Utils::getMostDistantNode($preceders);
             $notCriticalPreceders = array_filter($preceders, fn(Node $node) => $node !== $criticalPreceder);
