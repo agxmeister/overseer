@@ -4,6 +4,7 @@ namespace Watch\Schedule;
 
 use Watch\Schedule\Model\Chain;
 use Watch\Schedule\Model\FeedingBuffer;
+use Watch\Schedule\Model\Milestone;
 use Watch\Schedule\Model\MilestoneBuffer;
 use Watch\Schedule\Model\Node;
 use Watch\Schedule\Model\Issue;
@@ -32,25 +33,11 @@ class Utils
         return self::getLongestChain($copy->getBuffer(), false);
     }
 
-    /**
-     * @param Project $origin
-     * @return Chain[]
-     */
-    static public function getMilestoneChains(Project $origin): array
+    static public function getMilestoneChain(Milestone $origin): Chain
     {
-        /** @var Project $copy */
+        /** @var Milestone $copy */
         $copy = self::getDuplicate($origin);
-        return array_reduce(
-            array_filter(
-                $copy->getNodes(),
-                fn(Node $node) => $node instanceof MilestoneBuffer,
-            ),
-            fn($acc, Node $milestoneBuffer) => [
-                ...$acc,
-                $milestoneBuffer->name => self::getLongestChain($milestoneBuffer),
-            ],
-            [],
-        );
+        return self::getLongestChain($copy->getBuffer());
     }
 
     /**

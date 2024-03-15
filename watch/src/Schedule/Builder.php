@@ -234,19 +234,14 @@ class Builder
             Utils::getChainLateDays(Utils::getCriticalChain($project), $this->context->now),
         ));
 
-        $milestoneChains = Utils::getMilestoneChains($project);
-        foreach (
-            array_map(
-                fn(Milestone $milestone) => $milestone->getBuffer(),
-                $project->getMilestones(),
-            ) as $milestoneBuffer
-        ) {
-            $milestoneBuffer->setAttribute(
+        foreach ($project->getMilestones() as $milestone) {
+            $buffer = $milestone->getBuffer();
+            $buffer->setAttribute(
                 'consumption',
                 min(
-                    $milestoneBuffer->getLength(),
+                    $buffer->getLength(),
                     Utils::getChainLateDays(
-                        $milestoneChains[$milestoneBuffer->name],
+                        Utils::getMilestoneChain($milestone),
                         $this->context->now,
                     ),
                 ),
