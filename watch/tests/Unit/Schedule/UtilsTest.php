@@ -73,6 +73,23 @@ class UtilsTest extends Unit
     }
 
     /**
+     * @dataProvider dataGetMilestoneChain
+     */
+     public function testGetMilestoneChain($scheduleDescription, $expectedMilestoneChain)
+     {
+         $serializer = new ProjectSerializer();
+         $origin = $serializer->deserialize(DescriptionUtils::getSchedule($scheduleDescription));
+         $milestone = current($origin->getMilestones());
+         assertEquals(
+             array_map(
+                 fn(Node $node) => $node->name,
+                 ScheduleUtils::getMilestoneChain($milestone)->nodes,
+             ),
+             $expectedMilestoneChain,
+         );
+     }
+
+    /**
      * @dataProvider dataGetFeedingChains
      */
     public function testGetFeedingChains($scheduleDescription, $expectedFeedingChains)
@@ -177,7 +194,7 @@ class UtilsTest extends Unit
         ];
     }
 
-    protected function dataGetDuplicate(): array
+    public static function dataGetDuplicate(): array
     {
         return [
             ['
@@ -206,24 +223,42 @@ class UtilsTest extends Unit
         ];
     }
 
-    protected function dataGetFeedingChains(): array
+    public static function dataGetMilestoneChain(): array
+    {
+        return [
+            [
+                '
+                    PB/finish-buf |            ______| @ finish
+                    K01           |        xxxx      | @ finish-buf
+                    PRJ#M01/T/K02 |    xxxx          | @ K01, @ M01-buf
+                    PRJ#M01/T/K03 |xxxx              | @ K02
+                    MB/M01-buf    |        ____      | @ M01
+                    M01                        ^       # 2023-09-15
+                    finish                           ^ # 2023-09-21
+                ',
+                ['K02', 'K03'],
+            ],
+        ];
+    }
+
+    public static function dataGetFeedingChains(): array
     {
         return [
             [
                 '
                     PB/finish-buf |         _____| @ finish
-                    K-01          |    xxxxx     | @ finish-buf
-                    FB/K-02-buf   |      ___     | @ finish-buf
-                    K-02          |******        | @ K-02-buf
-                    K-03          |xxxx          | @ K-01
+                    K01           |    xxxxx     | @ finish-buf
+                    FB/K02-buf   |      ___     | @ finish-buf
+                    K02           |******        | @ K02-buf
+                    K03           |xxxx          | @ K01
                     finish                       ^ # 2023-09-21
                 ',
-                ['K-02' => ['K-02']]
+                ['K02' => ['K02']]
             ],
         ];
     }
 
-    protected function dataGetLongestChain(): array
+    public static function dataGetLongestChain(): array
     {
         return [
             [

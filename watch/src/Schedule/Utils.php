@@ -37,7 +37,7 @@ class Utils
     {
         /** @var Milestone $copy */
         $copy = self::getDuplicate($origin);
-        return self::getLongestChain($copy->getBuffer());
+        return self::getLongestChain($copy->getBuffer(), false);
     }
 
     /**
