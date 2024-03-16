@@ -63,13 +63,7 @@ class UtilsTest extends Unit
         $node12 = new Issue("Node12", 2);
         $node12->precede($feedingBuffer);
         $feedingBuffer->precede($node1);
-        $this->assertEquals(
-            ["Node1", "Node11"],
-            array_map(
-                fn(Node $node) => $node->name,
-                ScheduleUtils::getCriticalChain($origin)->nodes
-            ),
-        );
+        $this->assertSame([$node1, $node11], ScheduleUtils::getCriticalChain($origin)->nodes);
     }
 
     /**
@@ -79,13 +73,14 @@ class UtilsTest extends Unit
      {
          $serializer = new ProjectSerializer();
          $origin = $serializer->deserialize(DescriptionUtils::getSchedule($scheduleDescription));
+         $originNodes = $origin->getNodes();
          $milestone = current($origin->getMilestones());
-         assertEquals(
+         $this->assertSame(
              array_map(
-                 fn(Node $node) => $node->name,
-                 ScheduleUtils::getMilestoneChain($milestone)->nodes,
+                 fn(string $nodeName) => $originNodes[$nodeName],
+                 $expectedMilestoneChain,
              ),
-             $expectedMilestoneChain,
+             ScheduleUtils::getMilestoneChain($milestone)->nodes,
          );
      }
 
@@ -96,22 +91,17 @@ class UtilsTest extends Unit
     {
         $serializer = new ProjectSerializer();
         $origin = $serializer->deserialize(DescriptionUtils::getSchedule($scheduleDescription));
-
-        $actualFeedingChains = array_reduce(
-            array_map(
-                fn(Chain $feedingChain) => array_map(
-                    fn(Node $node) => $node->name,
-                    $feedingChain->nodes,
-                ),
-                ScheduleUtils::getFeedingChains($origin),
-            ),
-            fn($acc, array $names) => [...$acc, reset($names) => $names],
-            []
-        );
-
+        $actualFeedingChains = ScheduleUtils::getFeedingChains($origin);
         $this->assertSameSize($expectedFeedingChains, $actualFeedingChains);
+        $originNodes = $origin->getNodes();
         foreach ($expectedFeedingChains as $key => $expectedFeedingChain) {
-            assertEquals($expectedFeedingChain, $actualFeedingChains[$key]);
+            $this->assertSame(
+                array_map(
+                    fn(string $nodeName) => $originNodes[$nodeName],
+                    $expectedFeedingChain,
+                ),
+                $actualFeedingChains[$key]->nodes,
+            );
         }
     }
 
@@ -248,12 +238,12 @@ class UtilsTest extends Unit
                 '
                     PB/finish-buf |         _____| @ finish
                     K01           |    xxxxx     | @ finish-buf
-                    FB/K02-buf   |      ___     | @ finish-buf
+                    FB/K02-buf    |      ___     | @ finish-buf
                     K02           |******        | @ K02-buf
                     K03           |xxxx          | @ K01
                     finish                       ^ # 2023-09-21
                 ',
-                ['K02' => ['K02']]
+                ['K02-buf' => ['K02']]
             ],
         ];
     }

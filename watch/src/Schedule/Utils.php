@@ -30,14 +30,16 @@ class Utils
                 $feedingBuffer->unprecede($link->node);
             }
         }
-        return self::getLongestChain($copy->getBuffer(), false);
+        $originNodes = $origin->getNodes();
+        return new Chain(array_map(
+            fn(Node $node) => $originNodes[$node->name],
+            self::getLongestChain($copy->getBuffer(), false)->nodes,
+        ));
     }
 
-    static public function getMilestoneChain(Milestone $origin): Chain
+    static public function getMilestoneChain(Milestone $milestone): Chain
     {
-        /** @var Milestone $copy */
-        $copy = self::getDuplicate($origin);
-        return self::getLongestChain($copy->getBuffer(), false);
+        return self::getLongestChain($milestone->getBuffer(), false);
     }
 
     /**
@@ -57,6 +59,7 @@ class Utils
             $nodes[$node->name]->unlink();
         }
 
+        $originNodes = $origin->getNodes();
         return array_reduce(
             array_filter(
                 $nodes,
@@ -64,7 +67,10 @@ class Utils
             ),
             fn($acc, Node $feedingBuffer) => [
                 ...$acc,
-                $feedingBuffer->name => self::getLongestChain($feedingBuffer, false),
+                $feedingBuffer->name => new Chain(array_map(
+                    fn(Node $node) => $originNodes[$node->name],
+                    self::getLongestChain($feedingBuffer, false)->nodes,
+                )),
             ],
             [],
         );
