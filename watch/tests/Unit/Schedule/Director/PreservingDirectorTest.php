@@ -32,7 +32,7 @@ class PreservingDirectorTest extends AbstractDirectorTest
         );
     }
 
-    protected function dataBuild(): array
+    public static function dataBuild(): array
     {
         return [
             ['

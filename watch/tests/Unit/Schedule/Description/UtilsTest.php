@@ -62,7 +62,7 @@ class UtilsTest extends Unit
         self::assertEquals($criticalChain, Utils::getSchedule($description)['criticalChain']);
     }
 
-    protected function dataGetMilestoneNames(): array
+    public static function dataGetMilestoneNames(): array
     {
         return [
             [
@@ -83,7 +83,7 @@ class UtilsTest extends Unit
         ];
     }
 
-    protected function dataGetMilestones(): array
+    public static function dataGetMilestones(): array
     {
         return [
             [
@@ -150,7 +150,7 @@ class UtilsTest extends Unit
         ];
     }
 
-    protected function dataGetProjectBeginDate(): array
+    public static function dataGetProjectBeginDate(): array
     {
         return [
             [
@@ -181,7 +181,7 @@ class UtilsTest extends Unit
         ];
     }
 
-    protected function dataGetProjectEndDate(): array
+    public static function dataGetProjectEndDate(): array
     {
         return [
             [
@@ -212,7 +212,7 @@ class UtilsTest extends Unit
         ];
     }
 
-    protected function dataGetNowDate(): array
+    public static function dataGetNowDate(): array
     {
         return [
             [
@@ -261,7 +261,7 @@ class UtilsTest extends Unit
         ];
     }
 
-    protected function dataGetProjectLength(): array
+    public static function dataGetProjectLength(): array
     {
         return [
             [
@@ -317,7 +317,7 @@ class UtilsTest extends Unit
         ];
     }
 
-    protected function dataGetScheduleCriticalChain(): array
+    public static function dataGetScheduleCriticalChain(): array
     {
         return [
             [

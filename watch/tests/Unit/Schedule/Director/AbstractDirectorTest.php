@@ -6,7 +6,7 @@ use Watch\Config;
 
 abstract class AbstractDirectorTest extends Unit
 {
-    protected function assertSchedule($expected, $actual)
+    protected function assertSchedule($expected, $actual): void
     {
         $this->assertSameSize($expected, $actual, 'Number of volumes in the schedule is differ from expected.');
         foreach (['issues', 'buffers', 'milestones', 'links'] as $volume) {
@@ -15,7 +15,7 @@ abstract class AbstractDirectorTest extends Unit
         $this->assertEquals($expected['criticalChain'], $actual['criticalChain'], 'Critical chain of the schedule is differ from expected.');
     }
 
-    protected function assertScheduleVolume($expected, $actual, $volume)
+    protected function assertScheduleVolume($expected, $actual, $volume): void
     {
         $this->assertSameSize($expected, $actual, "Number of items in volume '{$volume}' is differ from expected.");
         usort($expected, fn($a, $b) => $a < $b ? -1 : ($a > $b ? 1 : 0));

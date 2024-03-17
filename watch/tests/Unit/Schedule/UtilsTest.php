@@ -2,7 +2,6 @@
 namespace Tests\Unit\Schedule;
 
 use Codeception\Test\Unit;
-use Watch\Schedule\Model\Chain;
 use Watch\Schedule\Model\FeedingBuffer;
 use Watch\Schedule\Model\Issue;
 use Watch\Schedule\Model\Link;
@@ -12,7 +11,6 @@ use Watch\Schedule\Model\ProjectBuffer;
 use Watch\Schedule\Serializer\Project as ProjectSerializer;
 use Watch\Schedule\Utils as ScheduleUtils;
 use Watch\Schedule\Description\Utils as DescriptionUtils;
-use function PHPUnit\Framework\assertEquals;
 
 class UtilsTest extends Unit
 {

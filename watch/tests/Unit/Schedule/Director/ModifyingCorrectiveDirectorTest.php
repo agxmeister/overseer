@@ -61,7 +61,7 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
         );
     }
 
-    protected function dataBuildFromDate(): array
+    public static function dataBuildFromDate(): array
     {
         return [
             ['

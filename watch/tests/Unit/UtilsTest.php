@@ -13,7 +13,8 @@ class UtilsTest extends Unit
     {
         $this->assertEquals($output, Utils::getUnique($input, fn($item) => $item));
     }
-    protected function dataGetUnique(): array
+
+    public static function dataGetUnique(): array
     {
         return [
             [[], []],

@@ -1,10 +1,11 @@
 <?php
+namespace Tests\Unit\Schedule\Serializer;
 
 use Codeception\Test\Unit;
 use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Serializer\Project;
 
-class SerializerTest extends Unit
+class ProjectTest extends Unit
 {
     public function testDeserializeSerialize()
     {
