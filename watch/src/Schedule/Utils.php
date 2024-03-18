@@ -5,7 +5,6 @@ namespace Watch\Schedule;
 use Watch\Schedule\Model\Chain;
 use Watch\Schedule\Model\FeedingBuffer;
 use Watch\Schedule\Model\Milestone;
-use Watch\Schedule\Model\MilestoneBuffer;
 use Watch\Schedule\Model\Node;
 use Watch\Schedule\Model\Issue;
 use Watch\Schedule\Model\Project;
@@ -33,13 +32,13 @@ class Utils
         $originNodes = $origin->getNodes();
         return new Chain(array_map(
             fn(Node $node) => $originNodes[$node->name],
-            self::getLongestChain($copy->getBuffer(), false)->nodes,
+            array_slice(self::getLongestChainNodes($copy->getBuffer()), 1),
         ));
     }
 
     static public function getMilestoneChain(Milestone $milestone): Chain
     {
-        return self::getLongestChain($milestone->getBuffer(), false);
+        return new Chain(array_slice(self::getLongestChainNodes($milestone->getBuffer()), 1));
     }
 
     /**
@@ -69,18 +68,34 @@ class Utils
                 ...$acc,
                 $feedingBuffer->name => new Chain(array_map(
                     fn(Node $node) => $originNodes[$node->name],
-                    self::getLongestChain($feedingBuffer, false)->nodes,
+                    array_slice(self::getLongestChainNodes($feedingBuffer), 1),
                 )),
             ],
             [],
         );
     }
 
-    static public function getLongestChain(Node $node, bool $includeLeadingNode = true): Chain
+    /**
+     * @param Node $node
+     * @return Node[]
+     */
+    static public function getLongestChainNodes(Node $node): array
     {
-        $chainNodes = [];
-        self::getLongestChainNodes($node, $chainNodes);
-        return new Chain($includeLeadingNode ? $chainNodes : array_slice($chainNodes, 1));
+        $preceders = $node->getPreceders();
+        if (empty($preceders)) {
+            return [$node];
+        }
+
+        $lengths = self::getLengthsPerNodeName($preceders);
+        $nodes = self::getNodesPerNodeName($preceders);
+
+        arsort($lengths);
+        $longestNodeName = array_key_first($lengths);
+
+        return [
+            $node,
+            ...self::getLongestChainNodes($nodes[$longestNodeName]),
+        ];
     }
 
     /**
@@ -157,24 +172,6 @@ class Utils
             $followerCopy->follow($copies[$origin->name], $link->type);
         }
         return $copies[$origin->name];
-    }
-
-    static private function getLongestChainNodes(Node $node, array &$chainNodes): void
-    {
-        $chainNodes[] = $node;
-
-        $preceders = $node->getPreceders();
-        if (empty($preceders)) {
-            return;
-        }
-
-        $lengths = self::getLengthsPerNodeName($preceders);
-        $nodes = self::getNodesPerNodeName($preceders);
-
-        arsort($lengths);
-        $longestNodeName = array_key_first($lengths);
-
-        self::getLongestChainNodes($nodes[$longestNodeName], $chainNodes);
     }
 
     /**

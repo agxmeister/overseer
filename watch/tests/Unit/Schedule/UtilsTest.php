@@ -104,15 +104,15 @@ class UtilsTest extends Unit
     }
 
     /**
-     * @dataProvider dataGetLongestChain
+     * @dataProvider dataGetLongestChainNodes
      */
-    public function testGetLongestChain($scheduleDescription, $expectedChainNodeNames)
+    public function testGetLongestChainNodes($scheduleDescription, $expectedChainNodeNames)
     {
         $serializer = new ProjectSerializer();
         $project = $serializer->deserialize(DescriptionUtils::getSchedule($scheduleDescription));
         $this->assertEquals($expectedChainNodeNames, array_map(
             fn(Node $node) => $node->name,
-            ScheduleUtils::getLongestChain($project)->nodes,
+            ScheduleUtils::getLongestChainNodes($project),
         ));
     }
 
@@ -246,7 +246,7 @@ class UtilsTest extends Unit
         ];
     }
 
-    public static function dataGetLongestChain(): array
+    public static function dataGetLongestChainNodes(): array
     {
         return [
             [
