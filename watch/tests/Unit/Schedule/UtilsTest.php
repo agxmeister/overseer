@@ -25,8 +25,8 @@ class UtilsTest extends Unit
         /** @var Project $copy */
         $copy = ScheduleUtils::getDuplicate($origin);
 
-        $originTree = $origin->getNodes();
-        $copyTree = $copy->getNodes();
+        $originTree = $origin->getLinkedNodes();
+        $copyTree = $copy->getLinkedNodes();
 
         self::assertSameSize($originTree, $copyTree, "A count of nodes is different between the origin and the copy.");
         foreach ($originTree as $name => $originNode) {
@@ -71,7 +71,7 @@ class UtilsTest extends Unit
      {
          $serializer = new ProjectSerializer();
          $origin = $serializer->deserialize(DescriptionUtils::getSchedule($scheduleDescription));
-         $originNodes = $origin->getNodes();
+         $originNodes = $origin->getLinkedNodes();
          $milestone = current($origin->getMilestones());
          $this->assertSame(
              array_map(
@@ -91,7 +91,7 @@ class UtilsTest extends Unit
         $origin = $serializer->deserialize(DescriptionUtils::getSchedule($scheduleDescription));
         $actualFeedingChains = ScheduleUtils::getFeedingChains($origin);
         $this->assertSameSize($expectedFeedingChains, $actualFeedingChains);
-        $originNodes = $origin->getNodes();
+        $originNodes = $origin->getLinkedNodes();
         foreach ($expectedFeedingChains as $key => $expectedFeedingChain) {
             $this->assertSame(
                 array_map(

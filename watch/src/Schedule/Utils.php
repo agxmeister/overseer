@@ -11,9 +11,19 @@ use Watch\Schedule\Model\Project;
 
 class Utils
 {
-    static public function getDuplicate(Node $origin): Node
+    static public function getDuplicate(Node $origin, array &$copies = []): Node
     {
-        return self::getDuplicateRecursively($origin);
+        if (isset($copies[$origin->name])) {
+            return $copies[$origin->name];
+        }
+        $copies[$origin->name] = clone $origin;
+        foreach ($origin->getPrecedeLinks() as $link) {
+            self::getDuplicate($link->node, $copies)->precede($copies[$origin->name], $link->type);
+        }
+        foreach ($origin->getFollowLinks() as $link) {
+            self::getDuplicate($link->node, $copies)->follow($copies[$origin->name], $link->type);
+        }
+        return $copies[$origin->name];
     }
 
     static public function getCriticalChain(Project $origin): Chain
@@ -22,14 +32,14 @@ class Utils
         $copy = self::getDuplicate($origin);
         foreach (
             array_filter(
-                $copy->getNodes(),
+                $copy->getLinkedNodes(),
                 fn(Node $node) => $node instanceof FeedingBuffer,
             ) as $feedingBuffer) {
             foreach ($feedingBuffer->getFollowLinks() as $link) {
                 $feedingBuffer->unprecede($link->node);
             }
         }
-        $originNodes = $origin->getNodes();
+        $originNodes = $origin->getLinkedNodes();
         return new Chain(array_map(
             fn(Node $node) => $originNodes[$node->name],
             array_slice(self::getLongestChainNodes($copy->getBuffer()), 1),
@@ -58,7 +68,7 @@ class Utils
             $nodes[$node->name]->unlink();
         }
 
-        $originNodes = $origin->getNodes();
+        $originNodes = $origin->getLinkedNodes();
         return array_reduce(
             array_filter(
                 $nodes,
@@ -155,23 +165,6 @@ class Utils
         )
             ? $now->diff(new \DateTimeImmutable($node->getAttribute('end')))->format('%a')
             : 0;
-    }
-
-    static private function getDuplicateRecursively(Node $origin, &$copies = []): Node
-    {
-        if (isset($copies[$origin->name])) {
-            return $copies[$origin->name];
-        }
-        $copies[$origin->name] = clone $origin;
-        foreach ($origin->getPrecedeLinks() as $link) {
-            $precederCopy = self::getDuplicateRecursively($link->node, $copies);
-            $precederCopy->precede($copies[$origin->name], $link->type);
-        }
-        foreach ($origin->getFollowLinks() as $link) {
-            $followerCopy = self::getDuplicateRecursively($link->node, $copies);
-            $followerCopy->follow($copies[$origin->name], $link->type);
-        }
-        return $copies[$origin->name];
     }
 
     /**

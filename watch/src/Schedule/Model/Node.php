@@ -74,9 +74,34 @@ abstract class Node
         }
     }
 
-    public function hasPreceders(): bool
+    /**
+     * @param Node[] $processedNodes
+     * @return Node[]
+     */
+    public function getLinkedNodes(array &$processedNodes = []): array
     {
-        return !empty($this->preceders);
+        $processedNodes[$this->name] = $this;
+        return array_reduce(
+            [
+                $this,
+                ...array_reduce(
+                    array_filter(
+                        [
+                            ...$this->getPreceders(),
+                            ...$this->getFollowers()
+                        ],
+                        fn(Node $node) => !isset($processedNodes[$node->name]),
+                    ),
+                    fn(array $acc, Node $node) => [...$acc, ...$node->getLinkedNodes($processedNodes)],
+                    []
+                ),
+            ],
+            fn(array $acc, Node $node) => [
+                ...$acc,
+                $node->name => $node,
+            ],
+            [],
+        );
     }
 
     /**
@@ -161,11 +186,6 @@ abstract class Node
     public function getCompletion(): int
     {
         return $this->getDistance() - $this->getLength();
-    }
-
-    public function getSchedule(): array|string
-    {
-        return array_map(fn(Node $node) => [$node->name, $node->getLength(), $node->getDistance()], $this->getPreceders(true));
     }
 
     public function getAttribute(string $name, mixed $default = null): mixed

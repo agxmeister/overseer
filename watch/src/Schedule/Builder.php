@@ -97,7 +97,7 @@ class Builder
 
     public function addMilestones(): self
     {
-        $nodes = $this->schedule->getProject()->getNodes();
+        $nodes = $this->schedule->getProject()->getLinkedNodes();
 
         /** @var SubjectIssue[] $issues */
         $issues = array_reduce(
@@ -208,7 +208,7 @@ class Builder
 
         foreach (
             array_filter(
-                $project->getNodes(),
+                $project->getLinkedNodes(),
                 fn(Node $node) => $node instanceof Buffer,
             ) as $buffer
         ) {
@@ -250,7 +250,7 @@ class Builder
 
         $feedingChains = Utils::getFeedingChains($project);
         $feedingBuffers = array_filter(
-            $project->getNodes(),
+            $project->getLinkedNodes(),
             fn(Node $node) => $node instanceof FeedingBuffer,
         );
         foreach ($feedingBuffers as $feedingBuffer) {
