@@ -118,64 +118,69 @@ class Utils
 
         $criticalChain = [];
 
-        $schedule = array_reduce(array_filter($lines, fn($line) => !str_contains($line, '^') && !str_contains($line, '>')), function ($schedule, $line) use ($projectEndDate, $projectEndGap, &$criticalChain) {
-            $issueData = explode('|', $line);
-            $ignored = str_ends_with($issueData[0], '-');
-            $name = trim(rtrim($issueData[0], '-'));
-            $length = strlen(trim($issueData[1]));
-            $attributes = trim($issueData[2]);
-            $isScheduled = in_array(trim($issueData[1])[0], ['x', '*', '_']);
-            $isIssue = in_array(trim($issueData[1])[0], ['x', '*', '.']);
-            $isCritical = in_array(trim($issueData[1])[0], ['x']);
-            $isBuffer = in_array(trim($issueData[1])[0], ['_', '!']);
-            $consumption = substr_count(trim($issueData[1]), '!');
-            $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1])) - $projectEndGap;
-            $beginGap = $endGap + $length;
+        $schedule = array_reduce(
+            array_filter($lines, fn($line) => !str_contains($line, '^') && !str_contains($line, '>')),
+            function ($acc, $line) use ($projectEndDate, $projectEndGap, &$criticalChain)
+            {
+                $issueData = explode('|', $line);
+                $ignored = str_ends_with($issueData[0], '-');
+                $name = trim(rtrim($issueData[0], '-'));
+                $length = strlen(trim($issueData[1]));
+                $attributes = trim($issueData[2]);
+                $isScheduled = in_array(trim($issueData[1])[0], ['x', '*', '_']);
+                $isIssue = in_array(trim($issueData[1])[0], ['x', '*', '.']);
+                $isCritical = in_array(trim($issueData[1])[0], ['x']);
+                $isBuffer = in_array(trim($issueData[1])[0], ['_', '!']);
+                $consumption = substr_count(trim($issueData[1]), '!');
+                $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1])) - $projectEndGap;
+                $beginGap = $endGap + $length;
 
-            list($key, $type) = self::getNameComponents($name);
+                list($key, $type) = self::getNameComponents($name);
 
-            if ($isIssue) {
-                $schedule['issues'][] = [
-                    'key' => $key,
-                    'length' => $length,
-                    'begin' => $isScheduled
-                        ? $ignored
+                if ($isIssue) {
+                    $acc['issues'][] = [
+                        'key' => $key,
+                        'length' => $length,
+                        'begin' => $isScheduled
+                            ? $ignored
+                                ? $projectEndDate->modify("-{$endGap} day")->format('Y-m-d')
+                                : $projectEndDate->modify("-{$beginGap} day")->format('Y-m-d')
+                            : null,
+                        'end' => $isScheduled
                             ? $projectEndDate->modify("-{$endGap} day")->format('Y-m-d')
-                            : $projectEndDate->modify("-{$beginGap} day")->format('Y-m-d')
-                        : null,
-                    'end' => $isScheduled
-                        ? $projectEndDate->modify("-{$endGap} day")->format('Y-m-d')
-                        : null,
-                ];
-                if ($isCritical) {
-                    $criticalChain[$projectEndDate->modify("-{$beginGap} day")->format('Y-m-d')] = $key;
+                            : null,
+                    ];
+                    if ($isCritical) {
+                        $criticalChain[$projectEndDate->modify("-{$beginGap} day")->format('Y-m-d')] = $key;
+                    }
                 }
-            }
 
-            if ($isBuffer) {
-                $schedule['buffers'][] = [
-                    'key' => $key,
-                    'length' => $length,
-                    'type' => match($type) {
-                        'PB' => Buffer::TYPE_PROJECT,
-                        'MB' => Buffer::TYPE_MILESTONE,
-                        'FB' => Buffer::TYPE_FEEDING,
-                        default => '',
-                    },
-                    'begin' => $projectEndDate->modify("-{$beginGap} day")->format('Y-m-d'),
-                    'end' => $projectEndDate->modify("-{$endGap} day")->format('Y-m-d'),
-                    'consumption' => $consumption,
-                ];
-            }
+                if ($isBuffer) {
+                    $acc['buffers'][] = [
+                        'key' => $key,
+                        'length' => $length,
+                        'type' => match($type) {
+                            'PB' => Buffer::TYPE_PROJECT,
+                            'MB' => Buffer::TYPE_MILESTONE,
+                            'FB' => Buffer::TYPE_FEEDING,
+                            default => '',
+                        },
+                        'begin' => $projectEndDate->modify("-{$beginGap} day")->format('Y-m-d'),
+                        'end' => $projectEndDate->modify("-{$endGap} day")->format('Y-m-d'),
+                        'consumption' => $consumption,
+                    ];
+                }
 
-            $schedule['links'] = [...$schedule['links'], ...self::getLinksByAttributes($key, $attributes, 'schedule')];
+                $acc['links'] = [...$acc['links'], ...self::getLinksByAttributes($key, $attributes, 'schedule')];
 
-            return $schedule;
-        }, [
-            'issues' => [],
-            'buffers' => [],
-            'links' => [],
-        ]);
+                return $acc;
+            },
+            [
+                'issues' => [],
+                'buffers' => [],
+                'links' => [],
+            ]
+        );
 
         $schedule['project'] = current(array_slice(self::getMilestones($description), -1));
         $schedule['milestones'] = array_slice(self::getMilestones($description), 0, -1);
