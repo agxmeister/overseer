@@ -215,10 +215,8 @@ class Builder
             $this->addBufferDates($buffer);
         }
 
-        $this->addBatchDates($project);
-
-        foreach ($project->getMilestones() as $milestone) {
-            $this->addBatchDates($milestone);
+        foreach ([$project, ...$project->getMilestones()] as $batch) {
+            $this->addBatchDates($batch);
         }
 
         return $this;
@@ -275,23 +273,31 @@ class Builder
             $buffer->getPreceders(),
             fn($acc, Node $node) => max($acc, $node->getAttribute('end')),
         ));
-        $buffer->setAttribute('begin', $maxPrecederEndDate->format("Y-m-d"));
-        $buffer->setAttribute('end', $maxPrecederEndDate->modify("{$buffer->getLength()} day")->format("Y-m-d"));
+        $buffer
+            ->setAttribute(
+                'begin',
+                $maxPrecederEndDate->format("Y-m-d")
+            )
+            ->setAttribute(
+                'end',
+                $maxPrecederEndDate->modify("{$buffer->getLength()} day")->format("Y-m-d")
+            );
     }
 
-    protected function addBatchDates(Batch $milestone): void
+    protected function addBatchDates(Batch $batch): void
     {
-        $milestoneEndDate = (new \DateTimeImmutable(array_reduce(
-            $milestone->getPreceders(),
+        $batchEndDate = (new \DateTimeImmutable(array_reduce(
+            $batch->getPreceders(),
             fn($acc, Node $node) => max($acc, $node->getAttribute('end')),
         )));
-        $milestoneBeginDate = (new \DateTimeImmutable(array_reduce(
-            $milestone->getPreceders(true),
+        $batchBeginDate = (new \DateTimeImmutable(array_reduce(
+            $batch->getPreceders(true),
             fn($acc, Node $node) => min($acc, $node->getAttribute('begin')),
-            $milestoneEndDate->format("Y-m-d"),
+            $batchEndDate->format("Y-m-d"),
         )));
-        $milestone->setAttribute('begin', $milestoneBeginDate->format("Y-m-d"));
-        $milestone->setAttribute('end', $milestoneEndDate->format("Y-m-d"));
+        $batch
+            ->setAttribute('begin', $batchBeginDate->format("Y-m-d"))
+            ->setAttribute('end', $batchEndDate->format("Y-m-d"));
     }
 
     private function insertNode(Node $node, Node $follower, array|null $preceders = null): void

@@ -23,12 +23,15 @@ readonly class FromDate implements ScheduleStrategy
                 fn(Node $node) => $node instanceof Issue,
             ) as $node
         ) {
-            $node->setAttribute('begin', $milestoneEndDate
-                ->modify("-{$node->getDistance()} day")
-                ->format("Y-m-d"));
-            $node->setAttribute('end', $milestoneEndDate
-                ->modify("-{$node->getCompletion()} day")
-                ->format("Y-m-d"));
+            $node
+                ->setAttribute(
+                    'begin',
+                    $milestoneEndDate->modify("-{$node->getDistance()} day")->format("Y-m-d")
+                )
+                ->setAttribute(
+                    'end',
+                    $milestoneEndDate->modify("-{$node->getCompletion()} day")->format("Y-m-d")
+                );
         }
     }
 }

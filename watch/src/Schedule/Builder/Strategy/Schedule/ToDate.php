@@ -20,12 +20,15 @@ readonly class ToDate implements ScheduleStrategy
                 fn(Node $node) => $node instanceof Issue,
             ) as $node
         ) {
-            $node->setAttribute('begin', $this->date
-                ->modify("-{$node->getDistance()} day")
-                ->format("Y-m-d"));
-            $node->setAttribute('end', $this->date
-                ->modify("-{$node->getCompletion()} day")
-                ->format("Y-m-d"));
+            $node
+                ->setAttribute(
+                    'begin',
+                    $this->date->modify("-{$node->getDistance()} day")->format("Y-m-d")
+                )
+                ->setAttribute(
+                    'end',
+                    $this->date->modify("-{$node->getCompletion()} day")->format("Y-m-d")
+                );
         }
     }
 }

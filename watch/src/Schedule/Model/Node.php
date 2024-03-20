@@ -193,9 +193,10 @@ abstract class Node
         return $this->attributes[$name] ?? $default;
     }
 
-    public function setAttribute(string $name, mixed $value): void
+    public function setAttribute(string $name, mixed $value): self
     {
         $this->attributes[$name] = $value;
+        return $this;
     }
 
     private function getLink(array $links, Node $node, string|null $type = null): Link|null
