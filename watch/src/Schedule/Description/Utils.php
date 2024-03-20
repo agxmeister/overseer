@@ -2,6 +2,7 @@
 
 namespace Watch\Schedule\Description;
 
+use Watch\Schedule\Serializer\Project;
 use Watch\Schedule\Model\Buffer;
 use Watch\Subject\Model\Issue;
 use Watch\Subject\Model\Link;
@@ -138,7 +139,7 @@ class Utils
                 list($key, $type) = self::getNameComponents($name);
 
                 if ($isIssue) {
-                    $acc['issues'][] = [
+                    $acc[Project::VOLUME_ISSUES][] = [
                         'key' => $key,
                         'length' => $length,
                         'begin' => $isScheduled
@@ -156,7 +157,7 @@ class Utils
                 }
 
                 if ($isBuffer) {
-                    $acc['buffers'][] = [
+                    $acc[Project::VOLUME_BUFFERS][] = [
                         'key' => $key,
                         'length' => $length,
                         'type' => match($type) {
@@ -171,22 +172,22 @@ class Utils
                     ];
                 }
 
-                $acc['links'] = [...$acc['links'], ...self::getLinksByAttributes($key, $attributes, 'schedule')];
+                $acc[Project::VOLUME_LINKS] = [...$acc[Project::VOLUME_LINKS], ...self::getLinksByAttributes($key, $attributes, 'schedule')];
 
                 return $acc;
             },
             [
-                'issues' => [],
-                'buffers' => [],
-                'links' => [],
+                Project::VOLUME_ISSUES => [],
+                Project::VOLUME_BUFFERS => [],
+                Project::VOLUME_LINKS => [],
             ]
         );
 
-        $schedule['project'] = current(array_slice(self::getMilestones($description), -1));
-        $schedule['milestones'] = array_slice(self::getMilestones($description), 0, -1);
+        $schedule[Project::VOLUME_PROJECT] = current(array_slice(self::getMilestones($description), -1));
+        $schedule[Project::VOLUME_MILESTONES] = array_slice(self::getMilestones($description), 0, -1);
 
         krsort($criticalChain);
-        $schedule['criticalChain'] = array_values($criticalChain);
+        $schedule[Project::VOLUME_CRITICAL_CHAIN] = array_values($criticalChain);
 
         return $schedule;
     }
