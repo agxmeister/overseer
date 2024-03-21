@@ -2,6 +2,7 @@
 
 namespace Watch\Schedule\Description;
 
+use Watch\Schedule\Mapper;
 use Watch\Schedule\Serializer\Project;
 use Watch\Schedule\Model\Buffer;
 use Watch\Subject\Model\Issue;
@@ -11,10 +12,11 @@ class Utils
 {
     /**
      * @param string $description
+     * @param Mapper $mapper
      * @param callable|null $getAttributesByState
      * @return Issue[]
      */
-    public static function getIssues(string $description, callable $getAttributesByState = null): array
+    public static function getIssues(string $description, Mapper $mapper, callable $getAttributesByState = null): array
     {
         $lines = [...array_filter(
             array_map(fn($line) => trim($line), explode("\n", $description)),
@@ -26,7 +28,7 @@ class Utils
 
         $issues = array_reduce(
             array_filter($lines, fn($line) => !str_contains($line, '^')),
-            function($issues, $line) use ($getAttributesByState, $projectEndDate, $projectEndGap, &$links) {
+            function($issues, $line) use ($getAttributesByState, $projectEndDate, $projectEndGap, &$links, $mapper) {
                 $issueData = explode('|', $line);
                 $started = str_ends_with($issueData[0], '~');
                 $completed = str_ends_with($issueData[0], '+');
@@ -41,7 +43,13 @@ class Utils
                 $issues[$key] = [
                     'key' => $key,
                     'summary' => $key,
-                    'status' => $started ? 'In Progress' : ($completed ? 'Done' : 'To Do'),
+                    'status' => $started
+                        ? current($mapper->startedIssueStates)
+                        : (
+                            $completed
+                                ? current($mapper->completedIssueStates)
+                                : 'To Do'
+                        ),
                     'milestone' => $milestone,
                     'project' => $project,
                     'type' => $type,

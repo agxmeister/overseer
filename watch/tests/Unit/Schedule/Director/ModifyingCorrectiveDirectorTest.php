@@ -18,14 +18,15 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
      */
     public function testBuildFromDate($issuesDescription, $scheduleDescription)
     {
+        $mapper = new Mapper(['In Progress'], ['Done'], ["Depends"], ["Follows"]);
         $director = new Director(
             new Builder(
                 new Context(Utils::getNowDate($scheduleDescription)),
-                Utils::getIssues($issuesDescription),
+                Utils::getIssues($issuesDescription, $mapper),
                 Utils::getLinks($issuesDescription),
                 Utils::getProjectName($scheduleDescription),
                 Utils::getMilestoneNames($scheduleDescription),
-                new Mapper(['In Progress'], ['Done'], ["Depends"], ["Follows"]),
+                $mapper,
                 new CorrectiveLimitStrategy(2),
                 new FromDateScheduleStrategy(Utils::getProjectBeginDate($scheduleDescription)),
             )
@@ -42,14 +43,15 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
      */
     public function testBuildToDate($issuesDescription, $scheduleDescription)
     {
+        $mapper = new Mapper(['In Progress'], ['Done'], ["Depends"], ["Follows"]);
         $director = new Director(
             new Builder(
                 new Context(Utils::getNowDate($scheduleDescription)),
-                Utils::getIssues($issuesDescription),
+                Utils::getIssues($issuesDescription, $mapper),
                 Utils::getLinks($issuesDescription),
                 Utils::getProjectName($scheduleDescription),
                 Utils::getMilestoneNames($scheduleDescription),
-                new Mapper(['In Progress'], ['Done'], ["Depends"], ["Follows"]),
+                $mapper,
                 new CorrectiveLimitStrategy(2),
                 new ToDateScheduleStrategy(Utils::getProjectEndDate($scheduleDescription)),
             )

@@ -6,12 +6,13 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Watch\Jira;
 use Watch\Schedule\Description\Utils as DescriptionUtils;
+use Watch\Schedule\Mapper;
 use Watch\Subject\Model\Issue;
 use Watch\Subject\Model\Link;
 
 readonly class CreateMilestone
 {
-    public function __construct(private Jira $jira)
+    public function __construct(private Jira $jira, private Mapper $mapper)
     {
     }
 
@@ -20,6 +21,7 @@ readonly class CreateMilestone
         $description = file_get_contents('php://input');
         $issues = DescriptionUtils::getIssues(
             $description,
+            $this->mapper,
             fn($started, $completed) => [
                 'status' => $started ? 'In Progress' : ($completed ? 'Done' : 'To Do'),
             ]
