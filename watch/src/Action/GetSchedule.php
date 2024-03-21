@@ -4,7 +4,6 @@ namespace Watch\Action;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Watch\Config;
 use Watch\Jira;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
@@ -14,7 +13,7 @@ use Watch\Schedule\Serializer\Project as ProjectSerializer;
 
 readonly class GetSchedule
 {
-    public function __construct(private Config $config, private Jira $jira, private ProjectSerializer $projectSerializer)
+    public function __construct(private Jira $jira, private Mapper $mapper, private ProjectSerializer $projectSerializer)
     {
     }
 
@@ -28,12 +27,7 @@ readonly class GetSchedule
                 $subject->links,
                 'PRJ',
                 ['M1'],
-                new Mapper(
-                    $this->config->schedule->task->state->started,
-                    $this->config->schedule->task->state->completed,
-                    $this->config->schedule->link->type->sequence,
-                    $this->config->schedule->link->type->schedule,
-                ),
+                $this->mapper,
             )
         );
         $project = $this->projectSerializer->serialize($director->build()->release()->getProject());
