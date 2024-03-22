@@ -20,7 +20,7 @@ class BuilderTest extends Unit
             K-03   |xxxxxxx    | @ K-01
                                ^ # 2023-09-21
         ';
-        $mapper = new Mapper(['In Progress'], ['Done'], ["Depends"], ["Follows"]);
+        $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
         $builder = new Builder(
             new Context(new \DateTimeImmutable('2023-01-01')),
             Utils::getIssues($issuesDescription, $mapper),
@@ -45,7 +45,7 @@ class BuilderTest extends Unit
             K-03   |xxxxxxx    | @ K-01
                                ^ # 2023-09-21
         ';
-        $mapper = new Mapper(["Depends"], ["Follows"], ['In Progress'], ['Done']);
+        $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
         $builder = new Builder(
             new Context(new \DateTimeImmutable('2023-01-01')),
             Utils::getIssues($issuesDescription, $mapper),

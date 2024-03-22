@@ -16,6 +16,7 @@ return function (ContainerBuilder $containerBuilder) use ($config) {
         ),
         Config::class => DI\autowire()->constructor($config),
         Mapper::class => DI\autowire()->constructor(
+            $config->schedule->task->state->queued,
             $config->schedule->task->state->started,
             $config->schedule->task->state->completed,
             $config->schedule->link->type->sequence,

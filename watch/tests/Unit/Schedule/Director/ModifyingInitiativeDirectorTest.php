@@ -17,7 +17,7 @@ class ModifyingInitiativeDirectorTest extends AbstractDirectorTest
      */
     public function testBuild($issuesDescription, $scheduleDescription)
     {
-        $mapper = new Mapper(['In Progress'], ['Done'], ["Depends"], ["Follows"]);
+        $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
         $director = new Director(
             new Builder(
                 new Context(Utils::getNowDate($scheduleDescription)),

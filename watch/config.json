@@ -2,6 +2,7 @@
     "schedule": {
         "task": {
             "state": {
+                "queued": ["To Do"],
                 "started": ["In Progress"],
                 "completed": ["Done"]
             }

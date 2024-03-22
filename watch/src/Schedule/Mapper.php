@@ -8,6 +8,7 @@ use Watch\Schedule\Model\Link;
 readonly class Mapper
 {
     public function __construct(
+        public array $queuedIssueStates,
         public array $startedIssueStates,
         public array $completedIssueStates,
         public array $sequenceLinkTypes,
@@ -19,6 +20,7 @@ readonly class Mapper
     public function getIssueState(string $state): string
     {
         return match (true) {
+            in_array($state, $this->queuedIssueStates) => Issue::STATE_QUEUED,
             in_array($state, $this->startedIssueStates) => Issue::STATE_STARTED,
             in_array($state, $this->completedIssueStates) => Issue::STATE_COMPLETED,
             default => Issue::STATE_UNKNOWN,

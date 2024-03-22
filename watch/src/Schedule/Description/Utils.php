@@ -48,7 +48,7 @@ class Utils
                         : (
                             $completed
                                 ? current($mapper->completedIssueStates)
-                                : 'To Do'
+                                : current($mapper->queuedIssueStates)
                         ),
                     'milestone' => $milestone,
                     'project' => $project,
