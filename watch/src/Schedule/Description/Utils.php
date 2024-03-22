@@ -13,10 +13,9 @@ class Utils
     /**
      * @param string $description
      * @param Mapper $mapper
-     * @param callable|null $getAttributesByState
      * @return Issue[]
      */
-    public static function getIssues(string $description, Mapper $mapper, callable $getAttributesByState = null): array
+    public static function getIssues(string $description, Mapper $mapper): array
     {
         $lines = [...array_filter(
             array_map(fn($line) => trim($line), explode("\n", $description)),
@@ -28,7 +27,7 @@ class Utils
 
         $issues = array_reduce(
             array_filter($lines, fn($line) => !str_contains($line, '^')),
-            function($issues, $line) use ($getAttributesByState, $projectEndDate, $projectEndGap, &$links, $mapper) {
+            function($issues, $line) use ($mapper, $projectEndDate, $projectEndGap, &$links) {
                 $issueData = explode('|', $line);
                 $started = str_ends_with($issueData[0], '~');
                 $completed = str_ends_with($issueData[0], '+');
@@ -56,10 +55,6 @@ class Utils
                     'duration' => $duration,
                     'begin' => $isScheduled ? $projectEndDate->modify("-{$beginGap} day")->format('Y-m-d') : null,
                     'end' => $isScheduled ? $projectEndDate->modify("-{$endGap} day")->format('Y-m-d') : null,
-                    ...(!is_null($getAttributesByState)
-                        ? $getAttributesByState($started, $completed)
-                        : []
-                    ),
                 ];
 
                 return $issues;
