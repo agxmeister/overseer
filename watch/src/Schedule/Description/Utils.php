@@ -17,17 +17,18 @@ class Utils
      */
     public static function getIssues(string $description, Mapper $mapper): array
     {
-        $lines = [...array_filter(
-            array_map(fn($line) => trim($line), explode("\n", $description)),
-            fn($line) => strlen($line) > 0)
-        ];
-
         $projectEndDate = self::getProjectEndDate($description);
         $projectEndGap = self::getProjectEndGap($description);
 
         $issues = array_reduce(
-            array_filter($lines, fn($line) => !str_contains($line, '^')),
-            function($issues, $line) use ($mapper, $projectEndDate, $projectEndGap, &$links) {
+            array_filter(
+                array_map(
+                    fn($line) => trim($line),
+                    explode("\n", $description),
+                ),
+                fn($line) => strlen($line) > 0 && !str_contains($line, '^'),
+            ),
+            function($issues, $line) use ($mapper, $projectEndDate, $projectEndGap) {
                 $issueData = explode('|', $line);
                 $started = str_ends_with($issueData[0], '~');
                 $completed = str_ends_with($issueData[0], '+');
