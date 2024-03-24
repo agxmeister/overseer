@@ -28,37 +28,33 @@ class Utils
                 ),
                 fn($line) => strlen($line) > 0 && !str_contains($line, '^'),
             ),
-            function($issues, $line) use ($mapper, $projectEndDate, $projectEndGap) {
-                $issueData = explode('|', $line);
-                $started = str_ends_with($issueData[0], '~');
-                $completed = str_ends_with($issueData[0], '+');
-                $name = trim(rtrim($issueData[0], '~+'));
-                $duration = strlen(trim($issueData[1]));
-                $isScheduled = in_array(trim($issueData[1])[0], ['*']);
-                $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1])) - $projectEndGap;
-                $beginGap = $endGap + $duration;
-
+            function($acc, $line) use ($mapper, $projectEndDate, $projectEndGap) {
+                list($name, $duration, $started, $completed, $scheduled, $gap) = array_values(
+                    self::getIssueComponents($line)
+                );
                 list($key, $type, $project, $milestone) = self::getNameComponents($name);
-
-                $issues[$key] = [
-                    'key' => $key,
-                    'summary' => $key,
-                    'status' => $started
-                        ? current($mapper->startedIssueStates)
-                        : (
+                $endGap = $gap - $projectEndGap;
+                $beginGap = $endGap + $duration;
+                return [
+                    ...$acc,
+                    $key => [
+                        'key' => $key,
+                        'summary' => $key,
+                        'status' => $started
+                            ? current($mapper->startedIssueStates)
+                            : (
                             $completed
                                 ? current($mapper->completedIssueStates)
                                 : current($mapper->queuedIssueStates)
-                        ),
-                    'milestone' => $milestone,
-                    'project' => $project,
-                    'type' => $type,
-                    'duration' => $duration,
-                    'begin' => $isScheduled ? $projectEndDate->modify("-{$beginGap} day")->format('Y-m-d') : null,
-                    'end' => $isScheduled ? $projectEndDate->modify("-{$endGap} day")->format('Y-m-d') : null,
+                            ),
+                        'milestone' => $milestone,
+                        'project' => $project,
+                        'type' => $type,
+                        'duration' => $duration,
+                        'begin' => $scheduled ? $projectEndDate->modify("-{$beginGap} day")->format('Y-m-d') : null,
+                        'end' => $scheduled ? $projectEndDate->modify("-{$endGap} day")->format('Y-m-d') : null,
+                    ],
                 ];
-
-                return $issues;
             },
             []
         );
@@ -303,6 +299,19 @@ class Utils
             fn($acc, $track) => min($acc, strlen($track) - strlen(ltrim($track))),
             PHP_INT_MAX
         );
+    }
+
+    private static function getIssueComponents(string $line): array
+    {
+        $data = explode('|', $line);
+        return [
+            'name' => trim(rtrim($data[0], '~+')),
+            'duration' => strlen(trim($data[1])),
+            'started' => str_ends_with($data[0], '~'),
+            'completed' => str_ends_with($data[0], '+'),
+            'scheduled' => in_array(trim($data[1])[0], ['*']),
+            'gap' => strlen($data[1]) - strlen(rtrim($data[1])),
+        ];
     }
 
     private static function getNameComponents(string $name): array
