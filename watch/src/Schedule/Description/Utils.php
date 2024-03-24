@@ -68,39 +68,13 @@ class Utils
      */
     public static function getLinks(string $description): array
     {
-        $getIssueKey = function (string $line): string {
-            $issueData = explode('|', $line);
-            $name = trim(rtrim($issueData[0], '~+'));
-            list($key, $type, $project) = array_map(
-                fn($name, $value) => $value ?? match($name) {
-                    'project' => 'PRJ',
-                    'type' => 'T',
-                    default => null,
-                },
-                ['key', 'type', 'project'],
-                array_reverse(explode('/', $name)),
-            );
-            return $key;
-        };
-
-        $getIssueAttributes = function (string $line): string {
-            $issueData = explode('|', $line);
-            return trim($issueData[2]);
-        };
-
         return array_map(
             fn($link) => new Link(0, $link['from'], $link['to'], $link['type']),
             array_reduce(
-                array_filter(
-                    array_filter(
-                        array_map(fn($line) => trim($line), explode("\n", $description)),
-                        fn($line) => strlen($line) > 0
-                    ),
-                    fn($line) => !str_contains($line, '^'),
-                ),
+                self::extractIssueLines($description),
                 fn($acc, $line) => [
                     ...$acc,
-                    ...self::getLinksByAttributes($getIssueKey($line), $getIssueAttributes($line), 'subject')
+                    ...self::getLinksByAttributes(self::getIssueKey($line), self::getIssueAttributes($line), 'subject')
                 ],
                 [],
             ),
@@ -312,6 +286,20 @@ class Utils
             'scheduled' => in_array(trim($data[1])[0], ['*']),
             'gap' => strlen($data[1]) - strlen(rtrim($data[1])),
         ];
+    }
+
+    private static function getIssueKey(string $line): string
+    {
+        $data = explode('|', $line);
+        $name = trim(rtrim($data[0], '~+'));
+        list($key) = self::getNameComponents($name);
+        return $key;
+    }
+
+    private static function getIssueAttributes(string $line): string
+    {
+        $data = explode('|', $line);
+        return trim($data[2]);
     }
 
     private static function getNameComponents(string $name): array
