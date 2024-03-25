@@ -74,7 +74,7 @@ class Utils
                 self::extractIssueLines($description),
                 fn($acc, $line) => [
                     ...$acc,
-                    ...self::getLinksByAttributes(self::getIssueKey($line), self::getIssueAttributes($line), 'subject')
+                    ...self::getLinksByAttributes(self::getIssueKey($line), self::getIssueAttributes($line), 'subject'),
                 ],
                 [],
             ),
@@ -101,7 +101,6 @@ class Utils
                 $ignored = str_ends_with($issueData[0], '-');
                 $name = trim(rtrim($issueData[0], '-'));
                 $length = strlen(trim($issueData[1]));
-                $attributes = trim($issueData[2]);
                 $isScheduled = in_array(trim($issueData[1])[0], ['x', '*', '_']);
                 $isIssue = in_array(trim($issueData[1])[0], ['x', '*', '.']);
                 $isCritical = in_array(trim($issueData[1])[0], ['x']);
@@ -146,7 +145,10 @@ class Utils
                     ];
                 }
 
-                $acc[Project::VOLUME_LINKS] = [...$acc[Project::VOLUME_LINKS], ...self::getLinksByAttributes($key, $attributes, 'schedule')];
+                $acc[Project::VOLUME_LINKS] = [
+                    ...$acc[Project::VOLUME_LINKS],
+                    ...self::getLinksByAttributes($key, self::getIssueAttributes($line), 'schedule'),
+                ];
 
                 return $acc;
             },
@@ -296,10 +298,20 @@ class Utils
         return $key;
     }
 
-    private static function getIssueAttributes(string $line): string
+    /**
+     * @param string $line
+     * @return string[]
+     */
+    private static function getIssueAttributes(string $line): array
     {
         $data = explode('|', $line);
-        return trim($data[2]);
+        return array_filter(
+            array_map(
+                fn(string $attribute) => trim($attribute),
+                explode(',', trim($data[2]))
+            ),
+            fn(string $attribute) => !empty($attribute),
+        );
     }
 
     private static function getNameComponents(string $name): array
@@ -448,14 +460,11 @@ class Utils
         );
     }
 
-    private static function getLinksByAttributes(string $from, string $attributes, string $model): array
+    private static function getLinksByAttributes(string $from, array $attributes, string $model): array
     {
         $linkAttributes = array_filter(
-            array_map(
-                fn($attribute) => trim($attribute),
-                explode(',', $attributes)
-            ),
-            fn($attribute) => $attribute && in_array($attribute[0], ['&', '@'])
+            $attributes,
+            fn(string $attribute) => in_array($attribute[0], ['&', '@']),
         );
         $links = [];
         if (!empty($linkAttributes)) {
