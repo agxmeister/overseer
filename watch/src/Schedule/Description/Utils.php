@@ -462,26 +462,25 @@ class Utils
 
     private static function getLinksByAttributes(string $from, array $attributes, string $model): array
     {
-        $linkAttributes = array_filter(
-            $attributes,
-            fn(string $attribute) => in_array($attribute[0], ['&', '@']),
-        );
-        $links = [];
-        if (!empty($linkAttributes)) {
-            foreach ($linkAttributes as $linkAttribute) {
-                $linkData = explode(' ', $linkAttribute);
-                $to = $linkData[1];
-                $type = $model === 'subject'
-                    ? ($linkData[0] === '&' ? 'Depends' : 'Follows')
-                    : ($linkData[0] === '&' ? 'sequence' : 'schedule')
-                ;
-                $links[] = [
+        return array_reduce(
+            array_map(
+                fn(string $linkAttribute) => explode(' ', $linkAttribute),
+                array_filter(
+                    $attributes,
+                    fn(string $attribute) => in_array($attribute[0], ['&', '@']),
+                ),
+            ),
+            fn(array $acc, array $linkAttributeData) => [
+                ...$acc,
+                [
                     'from' => $from,
-                    'to' => $to,
-                    'type' => $type,
-                ];
-            }
-        }
-        return $links;
+                    'to' => $linkAttributeData[1],
+                    'type' => $model === 'subject'
+                        ? ($linkAttributeData[0] === '&' ? 'Depends' : 'Follows')
+                        : ($linkAttributeData[0] === '&' ? 'sequence' : 'schedule'),
+                ],
+            ],
+            [],
+        );
     }
 }
