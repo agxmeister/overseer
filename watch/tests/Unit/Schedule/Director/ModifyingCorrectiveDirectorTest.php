@@ -23,7 +23,7 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
             new Builder(
                 new Context(Utils::getNowDate($scheduleDescription)),
                 Utils::getIssues($issuesDescription, $mapper),
-                Utils::getLinks($issuesDescription),
+                Utils::getLinks($issuesDescription, $mapper),
                 Utils::getProjectName($scheduleDescription),
                 Utils::getMilestoneNames($scheduleDescription),
                 $mapper,
@@ -48,7 +48,7 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
             new Builder(
                 new Context(Utils::getNowDate($scheduleDescription)),
                 Utils::getIssues($issuesDescription, $mapper),
-                Utils::getLinks($issuesDescription),
+                Utils::getLinks($issuesDescription, $mapper),
                 Utils::getProjectName($scheduleDescription),
                 Utils::getMilestoneNames($scheduleDescription),
                 $mapper,

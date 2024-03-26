@@ -24,7 +24,7 @@ class BuilderTest extends Unit
         $builder = new Builder(
             new Context(new \DateTimeImmutable('2023-01-01')),
             Utils::getIssues($issuesDescription, $mapper),
-            Utils::getLinks($issuesDescription),
+            Utils::getLinks($issuesDescription, $mapper),
             'finish',
             [],
             $mapper,
@@ -49,7 +49,7 @@ class BuilderTest extends Unit
         $builder = new Builder(
             new Context(new \DateTimeImmutable('2023-01-01')),
             Utils::getIssues($issuesDescription, $mapper),
-            Utils::getLinks($issuesDescription),
+            Utils::getLinks($issuesDescription, $mapper),
             'finish',
             [],
             $mapper,

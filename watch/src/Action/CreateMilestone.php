@@ -20,7 +20,7 @@ readonly class CreateMilestone
     {
         $description = file_get_contents('php://input');
         $issues = DescriptionUtils::getIssues($description, $this->mapper);
-        $links = DescriptionUtils::getLinks($description);
+        $links = DescriptionUtils::getLinks($description, $this->mapper);
 
         $issueIds = array_reduce(
             $issues,

@@ -66,7 +66,7 @@ class Utils
      * @param string $description
      * @return Link[]
      */
-    public static function getLinks(string $description): array
+    public static function getLinks(string $description, Mapper $mapper): array
     {
         return array_map(
             fn($link) => new Link(0, $link['from'], $link['to'], $link['type']),
@@ -74,7 +74,7 @@ class Utils
                 self::extractIssueLines($description),
                 fn($acc, $line) => [
                     ...$acc,
-                    ...self::getLinksByAttributes(self::getIssueKey($line), self::getIssueAttributes($line), 'subject'),
+                    ...self::getLinksByAttributes(self::getIssueKey($line), self::getIssueAttributes($line), $mapper),
                 ],
                 [],
             ),
@@ -147,7 +147,7 @@ class Utils
 
                 $acc[Project::VOLUME_LINKS] = [
                     ...$acc[Project::VOLUME_LINKS],
-                    ...self::getLinksByAttributes($key, self::getIssueAttributes($line), 'schedule'),
+                    ...self::getLinksByAttributes($key, self::getIssueAttributes($line)),
                 ];
 
                 return $acc;
@@ -460,7 +460,7 @@ class Utils
         );
     }
 
-    private static function getLinksByAttributes(string $from, array $attributes, string $model): array
+    private static function getLinksByAttributes(string $from, array $attributes, Mapper $mapper = null): array
     {
         return array_reduce(
             array_map(
@@ -475,8 +475,8 @@ class Utils
                 [
                     'from' => $from,
                     'to' => $linkAttributeData[1],
-                    'type' => $model === 'subject'
-                        ? ($linkAttributeData[0] === '&' ? 'Depends' : 'Follows')
+                    'type' => !is_null($mapper)
+                        ? ($linkAttributeData[0] === '&' ? current($mapper->sequenceLinkTypes) : current($mapper->scheduleLnkTypes))
                         : ($linkAttributeData[0] === '&' ? 'sequence' : 'schedule'),
                 ],
             ],
