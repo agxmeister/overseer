@@ -177,7 +177,7 @@ class Utils
     {
         $milestones = array_map(
             fn($line) => [
-                'key' => self::extractMilestoneName($line),
+                'key' => self::getMilestoneKey($line),
                 'date' => self::extractMilestoneDate($line),
             ],
             self::extractMilestoneLines($description),
@@ -296,9 +296,19 @@ class Utils
 
     private static function getIssueKey(string $line): string
     {
-        $data = explode('|', $line);
-        $name = trim(rtrim($data[0], '~+'));
-        list($key) = self::getNameComponents($name);
+        return self::getKey($line, '|');
+    }
+
+    private static function getMilestoneKey(string $line): string
+    {
+        return self::getKey($line, '^');
+    }
+
+    private static function getKey(string $line, string $separator): string
+    {
+        list($key) = self::getNameComponents(
+            trim(explode(' ', trim(explode($separator, $line)[0]))[0])
+        );
         return $key;
     }
 
@@ -411,15 +421,6 @@ class Utils
                 )
             )[1]
         );
-    }
-
-    private static function extractMilestoneName(string $milestoneLine): string
-    {
-        list($milestoneName) = array_map(
-            fn(string $milestoneLinePart) => trim($milestoneLinePart),
-            explode('^', $milestoneLine),
-        );
-        return $milestoneName;
     }
 
     private static function extractNowDate(string $contextLine, array $milestoneLines): \DateTimeImmutable|null
