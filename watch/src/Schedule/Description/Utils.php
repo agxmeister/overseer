@@ -64,6 +64,7 @@ class Utils
 
     /**
      * @param string $description
+     * @param Mapper $mapper
      * @return Link[]
      */
     public static function getLinks(string $description, Mapper $mapper): array
@@ -205,7 +206,7 @@ class Utils
             fn($milestone) => array_filter(
                 (array)$milestone,
                 fn($key) => in_array($key, ['key', 'begin', 'end']),
-                ARRAY_FILTER_USE_KEY
+                ARRAY_FILTER_USE_KEY,
             ),
             $milestones,
         );
@@ -262,19 +263,22 @@ class Utils
     public static function getProjectLength(string $description): int
     {
         $tracks = self::extractTracks($description);
-        return array_reduce(
-            $tracks,
-            fn($acc, $track) => max($acc, strlen($track)),
-            0
-        ) - array_reduce(
-            $tracks,
-            fn($acc, $track) => min($acc, strlen($track) - strlen(rtrim($track))),
-            PHP_INT_MAX
-        ) - array_reduce(
-            $tracks,
-            fn($acc, $track) => min($acc, strlen($track) - strlen(ltrim($track))),
-            PHP_INT_MAX
-        );
+        return
+            array_reduce(
+                $tracks,
+                fn($acc, $track) => max($acc, strlen($track)),
+                0
+            ) -
+            array_reduce(
+                $tracks,
+                fn($acc, $track) => min($acc, strlen($track) - strlen(rtrim($track))),
+                PHP_INT_MAX
+            ) -
+            array_reduce(
+                $tracks,
+                fn($acc, $track) => min($acc, strlen($track) - strlen(ltrim($track))),
+                PHP_INT_MAX
+            );
     }
 
     private static function getIssueComponents(string $line): array
@@ -304,11 +308,20 @@ class Utils
      */
     private static function getIssueAttributes(string $line): array
     {
-        $data = explode('|', $line);
+        return self::getAttributes($line, '|');
+    }
+
+    private static function getMilestoneAttributes(string $line): array
+    {
+        return self::getAttributes($line, '^');
+    }
+
+    private static function getAttributes(string $line, string $separator): array
+    {
         return array_filter(
             array_map(
-                fn(string $attribute) => trim($attribute),
-                explode(',', trim($data[2]))
+                fn($attribute) => trim($attribute),
+                explode(',', trim(array_reverse(explode($separator, $line))[0]))
             ),
             fn(string $attribute) => !empty($attribute),
         );
@@ -356,10 +369,9 @@ class Utils
 
     private static function getProjectDate(string $description): \DateTimeImmutable|null
     {
-        $isEndMarkers = self::isEndMarkers($description);
         return array_reduce(
             self::extractMilestoneLines($description),
-            fn($acc, string $milestoneLine) => $isEndMarkers
+            fn($acc, string $milestoneLine) => self::isEndMarkers($description)
                 ? max($acc, self::extractMilestoneDate($milestoneLine))
                 : (
                     is_null($acc)
@@ -371,35 +383,34 @@ class Utils
 
     private static function isEndMarkers($description): bool
     {
-        return array_reduce(
-            self::extractMilestoneLines($description),
-            fn($acc, $line) => max($acc, strrpos($line, '^')),
-        ) >= array_reduce(
-            array_map(
-                fn($line) => rtrim(substr($line, 0, strrpos($line, '|'))),
-                self::extractIssueLines($description)
-            ),
-            fn($acc, $line) => max($acc, strlen($line)),
-        );
+        return
+            array_reduce(
+                self::extractMilestoneLines($description),
+                fn($acc, $line) => max($acc, strrpos($line, '^')),
+            ) >=
+            array_reduce(
+                array_map(
+                    fn($line) => rtrim(substr($line, 0, strrpos($line, '|'))),
+                    self::extractIssueLines($description)
+                ),
+                fn($acc, $line) => max($acc, strlen($line)),
+            );
     }
 
     private static function extractMilestoneDate(string $milestoneLine): \DateTimeImmutable|null
     {
-        if (empty($milestoneLine)) {
-            return null;
-        }
-        $milestoneAttributes = trim(array_reverse(explode('^', $milestoneLine))[0]);
-        $dateAttribute =
-            array_reduce(
-                array_filter(
-                    array_map(
-                        fn($attribute) => trim($attribute),
-                        explode(',', $milestoneAttributes)
+        return new \DateTimeImmutable(
+            explode(
+                ' ',
+                array_reduce(
+                    array_filter(
+                        self::getMilestoneAttributes($milestoneLine),
+                        fn($attribute) => str_starts_with($attribute, '#')
                     ),
-                    fn($attribute) => str_starts_with($attribute, '#')),
-                fn($acc, $attribute) => $attribute
-            );
-        return new \DateTimeImmutable(explode(' ', $dateAttribute)[1] ?? '');
+                    fn($acc, $attribute) => $attribute
+                )
+            )[1]
+        );
     }
 
     private static function extractMilestoneName(string $milestoneLine): string
