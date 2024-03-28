@@ -178,7 +178,7 @@ class Utils
         $milestones = array_map(
             fn($line) => [
                 'key' => self::getMilestoneKey($line),
-                'date' => self::extractMilestoneDate($line),
+                'date' => self::getMilestoneDate($line),
             ],
             self::extractMilestoneLines($description),
         );
@@ -250,14 +250,17 @@ class Utils
 
     public static function getNowDate(string $description): \DateTimeImmutable|null
     {
+        $milestoneLines = self::extractMilestoneLines($description);
+        if (empty($milestoneLines)) {
+            return null;
+        }
         $contextLine = self::extractContextLine($description);
-        if (empty($contextLine)) {
+        if (is_null($contextLine)) {
             return self::getProjectBeginDate($description);
         }
-        return self::extractNowDate(
-            $contextLine,
-            self::extractMilestoneLines($description),
-        );
+        $milestoneLine = current($milestoneLines);
+        $gap = strpos($contextLine, '>') - strpos($milestoneLine, '^');
+        return self::getMilestoneDate($milestoneLine)->modify("{$gap} day");
     }
 
     public static function getProjectLength(string $description): int
@@ -292,6 +295,28 @@ class Utils
             'scheduled' => in_array(trim($data[1])[0], ['*']),
             'gap' => strlen($data[1]) - strlen(rtrim($data[1])),
         ];
+    }
+
+    private static function getNameComponents(string $name): array
+    {
+        return array_map(
+            fn($name, $value) => $value ?? match($name) {
+                'project' => 'PRJ',
+                'type' => 'T',
+                default => null,
+            },
+            ['key', 'type', 'project', 'milestone'],
+            array_reverse(
+                array_reduce(
+                    explode('/', $name),
+                    fn($acc, $name) => [
+                        ...$acc,
+                        ...array_reverse(explode('#', $name))
+                    ],
+                    [],
+                ),
+            ),
+        );
     }
 
     private static function getIssueKey(string $line): string
@@ -337,25 +362,27 @@ class Utils
         );
     }
 
-    private static function getNameComponents(string $name): array
+    private static function getLinksByAttributes(string $from, array $attributes, Mapper $mapper = null): array
     {
-        return array_map(
-            fn($name, $value) => $value ?? match($name) {
-                'project' => 'PRJ',
-                'type' => 'T',
-                default => null,
-            },
-            ['key', 'type', 'project', 'milestone'],
-            array_reverse(
-                array_reduce(
-                    explode('/', $name),
-                    fn($acc, $name) => [
-                        ...$acc,
-                        ...array_reverse(explode('#', $name))
-                    ],
-                    [],
+        return array_reduce(
+            array_map(
+                fn(string $linkAttribute) => explode(' ', $linkAttribute),
+                array_filter(
+                    $attributes,
+                    fn(string $attribute) => in_array($attribute[0], ['&', '@']),
                 ),
             ),
+            fn(array $acc, array $linkAttributeData) => [
+                ...$acc,
+                [
+                    'from' => $from,
+                    'to' => $linkAttributeData[1],
+                    'type' => !is_null($mapper)
+                        ? ($linkAttributeData[0] === '&' ? current($mapper->sequenceLinkTypes) : current($mapper->scheduleLnkTypes))
+                        : ($linkAttributeData[0] === '&' ? 'sequence' : 'schedule'),
+                ],
+            ],
+            [],
         );
     }
 
@@ -382,12 +409,28 @@ class Utils
         return array_reduce(
             self::extractMilestoneLines($description),
             fn($acc, string $milestoneLine) => self::isEndMarkers($description)
-                ? max($acc, self::extractMilestoneDate($milestoneLine))
+                ? max($acc, self::getMilestoneDate($milestoneLine))
                 : (
                     is_null($acc)
-                        ? self::extractMilestoneDate($milestoneLine)
-                        : min($acc, self::extractMilestoneDate($milestoneLine))
+                        ? self::getMilestoneDate($milestoneLine)
+                        : min($acc, self::getMilestoneDate($milestoneLine))
                 ),
+        );
+    }
+
+    private static function getMilestoneDate(string $milestoneLine): \DateTimeImmutable|null
+    {
+        return new \DateTimeImmutable(
+            explode(
+                ' ',
+                array_reduce(
+                    array_filter(
+                        self::getMilestoneAttributes($milestoneLine),
+                        fn($attribute) => str_starts_with($attribute, '#')
+                    ),
+                    fn($acc, $attribute) => $attribute
+                )
+            )[1]
         );
     }
 
@@ -405,32 +448,6 @@ class Utils
                 ),
                 fn($acc, $line) => max($acc, strlen($line)),
             );
-    }
-
-    private static function extractMilestoneDate(string $milestoneLine): \DateTimeImmutable|null
-    {
-        return new \DateTimeImmutable(
-            explode(
-                ' ',
-                array_reduce(
-                    array_filter(
-                        self::getMilestoneAttributes($milestoneLine),
-                        fn($attribute) => str_starts_with($attribute, '#')
-                    ),
-                    fn($acc, $attribute) => $attribute
-                )
-            )[1]
-        );
-    }
-
-    private static function extractNowDate(string $contextLine, array $milestoneLines): \DateTimeImmutable|null
-    {
-        if (empty($contextLine) || empty($milestoneLines)) {
-            return null;
-        }
-        $milestoneLine = current($milestoneLines);
-        $gap = (strpos($milestoneLine, '^') - strpos($contextLine, '>')) * -1;
-        return self::extractMilestoneDate($milestoneLine)->modify("{$gap} day");
     }
 
     private static function extractIssueLines(string $description): array
@@ -460,7 +477,7 @@ class Utils
         ));
     }
 
-    private static function extractContextLine(string $description): string
+    private static function extractContextLine(string $description): string|null
     {
         return array_reduce(
             array_filter(
@@ -468,31 +485,6 @@ class Utils
                 fn($line) => str_contains($line, '>')
             ),
             fn($acc, $line) => $line,
-            '',
-        );
-    }
-
-    private static function getLinksByAttributes(string $from, array $attributes, Mapper $mapper = null): array
-    {
-        return array_reduce(
-            array_map(
-                fn(string $linkAttribute) => explode(' ', $linkAttribute),
-                array_filter(
-                    $attributes,
-                    fn(string $attribute) => in_array($attribute[0], ['&', '@']),
-                ),
-            ),
-            fn(array $acc, array $linkAttributeData) => [
-                ...$acc,
-                [
-                    'from' => $from,
-                    'to' => $linkAttributeData[1],
-                    'type' => !is_null($mapper)
-                        ? ($linkAttributeData[0] === '&' ? current($mapper->sequenceLinkTypes) : current($mapper->scheduleLnkTypes))
-                        : ($linkAttributeData[0] === '&' ? 'sequence' : 'schedule'),
-                ],
-            ],
-            [],
         );
     }
 }
