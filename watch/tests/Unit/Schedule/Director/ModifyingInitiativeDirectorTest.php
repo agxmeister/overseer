@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Unit\Schedule\Director;
 
-use Watch\Schedule\Description\Utils;
+use Watch\Description\Utils;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\Strategy\Limit\Initiative as InitiativeLimitStrategy;

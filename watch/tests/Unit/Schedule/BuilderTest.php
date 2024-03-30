@@ -3,8 +3,8 @@ namespace Tests\Unit\Schedule;
 
 use Codeception\Test\Unit;
 use Watch\Config;
+use Watch\Description\Utils;
 use Watch\Schedule\Builder;
-use Watch\Schedule\Description\Utils;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Mapper;
 use Watch\Schedule\Model\Buffer;

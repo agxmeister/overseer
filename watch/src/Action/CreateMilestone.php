@@ -4,8 +4,8 @@ namespace Watch\Action;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Watch\Description\Utils as DescriptionUtils;
 use Watch\Jira;
-use Watch\Schedule\Description\Utils as DescriptionUtils;
 use Watch\Schedule\Mapper;
 use Watch\Subject\Model\Issue;
 use Watch\Subject\Model\Link;

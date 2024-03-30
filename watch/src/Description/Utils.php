@@ -1,10 +1,10 @@
 <?php
 
-namespace Watch\Schedule\Description;
+namespace Watch\Description;
 
 use Watch\Schedule\Mapper;
-use Watch\Schedule\Serializer\Project;
 use Watch\Schedule\Model\Buffer;
+use Watch\Schedule\Serializer\Project;
 use Watch\Subject\Model\Issue;
 use Watch\Subject\Model\Link;
 

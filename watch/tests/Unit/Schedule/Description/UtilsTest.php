@@ -2,7 +2,7 @@
 namespace Tests\Unit\Schedule\Description;
 
 use Codeception\Test\Unit;
-use Watch\Schedule\Description\Utils;
+use Watch\Description\Utils;
 
 class UtilsTest extends Unit
 {
