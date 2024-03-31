@@ -2,11 +2,12 @@
 
 namespace Watch;
 
+use Watch\Description\Line;
 use Watch\Schedule\Mapper;
 
 class Description
 {
-    /** @var string[] */
+    /** @var Line[] */
     protected array|null $lines = null;
 
     public function __construct(readonly protected string $description)
@@ -62,7 +63,7 @@ class Description
     {
         return array_slice(array_map(
             fn($milestone) => $milestone['key'],
-            $this->getMilestones($this->description)
+            $this->getMilestones()
         ), 0, -1);
     }
 
@@ -70,33 +71,33 @@ class Description
     {
         return current(array_reverse(array_map(
             fn($milestone) => $milestone['key'],
-            $this->getMilestones($this->description)
+            $this->getMilestones()
         )));
     }
 
     public function getProjectBeginDate(): \DateTimeImmutable|null
     {
-        $projectLength = $this->getProjectLength($this->description);
-        return $this->isEndMarkers($this->description)
-            ? $this->getProjectDate($this->description)?->modify("-{$projectLength} day")
-            : $this->getProjectDate($this->description);
+        $projectLength = $this->getProjectLength();
+        return $this->isEndMarkers()
+            ? $this->getProjectDate()?->modify("-{$projectLength} day")
+            : $this->getProjectDate();
     }
 
     public function getProjectEndDate(): \DateTimeImmutable|null
     {
-        $projectLength = $this->getProjectLength($this->description);
-        return $this->isEndMarkers($this->description)
-            ? $this->getProjectDate($this->description)
-            : $this->getProjectDate($this->description)?->modify("{$projectLength} day");
+        $projectLength = $this->getProjectLength();
+        return $this->isEndMarkers()
+            ? $this->getProjectDate()
+            : $this->getProjectDate()?->modify("{$projectLength} day");
     }
 
     public function getNowDate(): \DateTimeImmutable|null
     {
-        $milestoneLines = $this->getMilestoneLines($this->description);
+        $milestoneLines = $this->getMilestoneLines();
         if (empty($milestoneLines)) {
             return null;
         }
-        $contextLine = $this->getContextLine($this->description);
+        $contextLine = $this->getContextLine();
         if (is_null($contextLine)) {
             return $this->getProjectBeginDate();
         }
@@ -107,7 +108,7 @@ class Description
 
     public function getProjectLength(): int
     {
-        $tracks = $this->getTracks($this->description);
+        $tracks = $this->getTracks();
         return
             array_reduce(
                 $tracks,
@@ -231,7 +232,7 @@ class Description
     protected function getProjectBeginGap(): int
     {
         return array_reduce(
-            self::getTracks($this->description),
+            self::getTracks(),
             fn($acc, $track) => min($acc, strlen($track) - strlen(ltrim($track))),
             PHP_INT_MAX
         );
@@ -240,7 +241,7 @@ class Description
     protected function getProjectEndGap(): int
     {
         return array_reduce(
-            self::getTracks($this->description),
+            self::getTracks(),
             fn($acc, $track) => min($acc, strlen($track) - strlen(rtrim($track))),
             PHP_INT_MAX
         );
@@ -249,8 +250,8 @@ class Description
     protected function getProjectDate(): \DateTimeImmutable|null
     {
         return array_reduce(
-            self::getMilestoneLines($this->description),
-            fn($acc, string $milestoneLine) => self::isEndMarkers($this->description)
+            self::getMilestoneLines(),
+            fn($acc, string $milestoneLine) => self::isEndMarkers()
                 ? max($acc, self::getMilestoneDate($milestoneLine))
                 : (
                 is_null($acc)
@@ -280,13 +281,13 @@ class Description
     {
         return
             array_reduce(
-                self::getMilestoneLines($this->description),
+                self::getMilestoneLines(),
                 fn($acc, $line) => max($acc, strrpos($line, '^')),
             ) >=
             array_reduce(
                 array_map(
                     fn($line) => rtrim(substr($line, 0, strrpos($line, '|'))),
-                    self::getIssueLines($this->description)
+                    self::getIssueLines()
                 ),
                 fn($acc, $line) => max($acc, strlen($line)),
             );
@@ -322,7 +323,7 @@ class Description
         );
     }
 
-    protected function getContextLine(): string|null
+    protected function getContextLine(): Line|null
     {
         return array_reduce(
             array_filter(
@@ -334,7 +335,7 @@ class Description
     }
 
     /**
-     * @return string[]
+     * @return Line[]
      */
     protected function getLines(): array
     {
@@ -342,9 +343,12 @@ class Description
             return $this->lines;
         }
         return $this->lines = array_values(
-            array_filter(
-                explode("\n", $this->description),
-                fn($line) => !empty(trim($line)),
+            array_map(
+                fn(string $content) => new Line($content),
+                array_filter(
+                    explode("\n", $this->description),
+                    fn($line) => !empty(trim($line)),
+                )
             )
         );
     }
