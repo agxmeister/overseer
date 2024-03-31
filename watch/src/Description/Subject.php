@@ -7,7 +7,7 @@ use Watch\Schedule\Mapper;
 use Watch\Subject\Model\Issue;
 use Watch\Subject\Model\Link;
 
-readonly class Subject extends Description
+class Subject extends Description
 {
     /**
      * @param Mapper $mapper
@@ -69,7 +69,7 @@ readonly class Subject extends Description
         return array_map(
             fn($link) => new Link(0, $link['from'], $link['to'], $link['type']),
             array_reduce(
-                $this->extractIssueLines(),
+                $this->getIssueLines(),
                 fn($acc, $line) => [
                     ...$acc,
                     ...$this->getLinksByAttributes($this->getIssueKey($line), $this->getIssueAttributes($line), $mapper),

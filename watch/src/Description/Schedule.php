@@ -6,7 +6,7 @@ use Watch\Description;
 use Watch\Schedule\Model\Buffer;
 use Watch\Schedule\Serializer\Project;
 
-readonly class Schedule extends Description
+class Schedule extends Description
 {
     public function getSchedule(): array
     {

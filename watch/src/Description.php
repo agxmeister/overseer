@@ -4,9 +4,12 @@ namespace Watch;
 
 use Watch\Schedule\Mapper;
 
-readonly class Description
+class Description
 {
-    public function __construct(protected string $description)
+    /** @var string[] */
+    protected array|null $lines = null;
+
+    public function __construct(readonly protected string $description)
     {
     }
 
@@ -20,7 +23,7 @@ readonly class Description
                 'key' => self::getMilestoneKey($line),
                 'date' => self::getMilestoneDate($line),
             ],
-            self::extractMilestoneLines(),
+            self::getMilestoneLines(),
         );
         usort($milestones, fn($a, $b) => $a['date'] < $b['date'] ? -1 : ($a['date'] > $b['date'] ? 1 : 0));
 
@@ -89,11 +92,11 @@ readonly class Description
 
     public function getNowDate(): \DateTimeImmutable|null
     {
-        $milestoneLines = $this->extractMilestoneLines($this->description);
+        $milestoneLines = $this->getMilestoneLines($this->description);
         if (empty($milestoneLines)) {
             return null;
         }
-        $contextLine = $this->extractContextLine($this->description);
+        $contextLine = $this->getContextLine($this->description);
         if (is_null($contextLine)) {
             return $this->getProjectBeginDate();
         }
@@ -104,7 +107,7 @@ readonly class Description
 
     public function getProjectLength(): int
     {
-        $tracks = $this->extractTracks($this->description);
+        $tracks = $this->getTracks($this->description);
         return
             array_reduce(
                 $tracks,
@@ -228,7 +231,7 @@ readonly class Description
     protected function getProjectBeginGap(): int
     {
         return array_reduce(
-            self::extractTracks($this->description),
+            self::getTracks($this->description),
             fn($acc, $track) => min($acc, strlen($track) - strlen(ltrim($track))),
             PHP_INT_MAX
         );
@@ -237,7 +240,7 @@ readonly class Description
     protected function getProjectEndGap(): int
     {
         return array_reduce(
-            self::extractTracks($this->description),
+            self::getTracks($this->description),
             fn($acc, $track) => min($acc, strlen($track) - strlen(rtrim($track))),
             PHP_INT_MAX
         );
@@ -246,7 +249,7 @@ readonly class Description
     protected function getProjectDate(): \DateTimeImmutable|null
     {
         return array_reduce(
-            self::extractMilestoneLines($this->description),
+            self::getMilestoneLines($this->description),
             fn($acc, string $milestoneLine) => self::isEndMarkers($this->description)
                 ? max($acc, self::getMilestoneDate($milestoneLine))
                 : (
@@ -277,53 +280,72 @@ readonly class Description
     {
         return
             array_reduce(
-                self::extractMilestoneLines($this->description),
+                self::getMilestoneLines($this->description),
                 fn($acc, $line) => max($acc, strrpos($line, '^')),
             ) >=
             array_reduce(
                 array_map(
                     fn($line) => rtrim(substr($line, 0, strrpos($line, '|'))),
-                    self::extractIssueLines($this->description)
+                    self::getIssueLines($this->description)
                 ),
                 fn($acc, $line) => max($acc, strlen($line)),
             );
     }
 
-    protected function extractIssueLines(): array
+    protected function getIssueLines(): array
     {
         return array_reduce(
             array_filter(
-                array_map(fn($line) => $line, explode("\n", $this->description)),
+                $this->getLines(),
                 fn(string $line) => str_contains($line, '|')
             ),
             fn(array $acc, string $line) => [...$acc, $line],
-            []);
-    }
-
-    protected function extractTracks(): array
-    {
-        return array_map(
-            fn(string $line) => explode('|', $line)[1],
-            self::extractIssueLines(),
+            []
         );
     }
 
-    protected function extractMilestoneLines(): array
+    protected function getTracks(): array
     {
-        return array_values(array_filter(
-            array_map(fn($line) => $line, explode("\n", $this->description)),
-            fn($line) => str_contains($line, '^')
-        ));
+        return array_map(
+            fn(string $line) => explode('|', $line)[1],
+            self::getIssueLines(),
+        );
     }
 
-    protected function extractContextLine(): string|null
+    protected function getMilestoneLines(): array
+    {
+        return array_values(
+            array_filter(
+                $this->getLines(),
+                fn($line) => str_contains($line, '^')
+            )
+        );
+    }
+
+    protected function getContextLine(): string|null
     {
         return array_reduce(
             array_filter(
-                array_map(fn($line) => $line, explode("\n", $this->description)),
+                $this->getLines(),
                 fn($line) => str_contains($line, '>')
             ),
             fn($acc, $line) => $line,
+        );
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function getLines(): array
+    {
+        if (!is_null($this->lines)) {
+            return $this->lines;
+        }
+        return $this->lines = array_values(
+            array_filter(
+                explode("\n", $this->description),
+                fn($line) => !empty(trim($line)),
+            )
         );
     }
 }
