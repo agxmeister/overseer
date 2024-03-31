@@ -2,7 +2,7 @@
 namespace Tests\Unit\Schedule;
 
 use Codeception\Test\Unit;
-use Watch\Description\Utils as DescriptionUtils;
+use Watch\Description\Schedule;
 use Watch\Schedule\Model\FeedingBuffer;
 use Watch\Schedule\Model\Issue;
 use Watch\Schedule\Model\Link;
@@ -19,8 +19,9 @@ class UtilsTest extends Unit
      */
     public function testGetDuplicate($scheduleDescription)
     {
+        $description = new Schedule($scheduleDescription);
         $serializer = new ProjectSerializer();
-        $origin = $serializer->deserialize(DescriptionUtils::getSchedule($scheduleDescription));
+        $origin = $serializer->deserialize($description->getSchedule());
 
         /** @var Project $copy */
         $copy = ScheduleUtils::getDuplicate($origin);
@@ -69,8 +70,9 @@ class UtilsTest extends Unit
      */
      public function testGetMilestoneChain($scheduleDescription, $expectedMilestoneChain)
      {
+         $description = new Schedule($scheduleDescription);
          $serializer = new ProjectSerializer();
-         $origin = $serializer->deserialize(DescriptionUtils::getSchedule($scheduleDescription));
+         $origin = $serializer->deserialize($description->getSchedule());
          $originNodes = $origin->getLinkedNodes();
          $milestone = current($origin->getMilestones());
          $this->assertSame(
@@ -87,8 +89,9 @@ class UtilsTest extends Unit
      */
     public function testGetFeedingChains($scheduleDescription, $expectedFeedingChains)
     {
+        $description = new Schedule($scheduleDescription);
         $serializer = new ProjectSerializer();
-        $origin = $serializer->deserialize(DescriptionUtils::getSchedule($scheduleDescription));
+        $origin = $serializer->deserialize($description->getSchedule());
         $actualFeedingChains = ScheduleUtils::getFeedingChains($origin);
         $this->assertSameSize($expectedFeedingChains, $actualFeedingChains);
         $originNodes = $origin->getLinkedNodes();
@@ -108,8 +111,9 @@ class UtilsTest extends Unit
      */
     public function testGetLongestChainNodes($scheduleDescription, $expectedChainNodeNames)
     {
+        $description = new Schedule($scheduleDescription);
         $serializer = new ProjectSerializer();
-        $project = $serializer->deserialize(DescriptionUtils::getSchedule($scheduleDescription));
+        $project = $serializer->deserialize($description->getSchedule());
         $this->assertEquals($expectedChainNodeNames, array_map(
             fn(Node $node) => $node->name,
             ScheduleUtils::getLongestChainNodes($project),

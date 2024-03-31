@@ -4,7 +4,7 @@ namespace Watch\Action;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Watch\Description\Utils as DescriptionUtils;
+use Watch\Description\Subject;
 use Watch\Jira;
 use Watch\Schedule\Mapper;
 use Watch\Subject\Model\Issue;
@@ -18,12 +18,10 @@ readonly class CreateMilestone
 
     public function __invoke(Request $request, Response $response, $args): Response
     {
-        $description = file_get_contents('php://input');
-        $issues = DescriptionUtils::getIssues($description, $this->mapper);
-        $links = DescriptionUtils::getLinks($description, $this->mapper);
+        $description = new Subject(file_get_contents('php://input'));
 
         $issueIds = array_reduce(
-            $issues,
+            $description->getIssues($this->mapper),
             fn(array $acc, Issue $issue) => [
                 ...$acc,
                 $issue->key => $this->jira->createIssue(get_object_vars($issue)),
@@ -31,7 +29,7 @@ readonly class CreateMilestone
             [],
         );
         array_reduce(
-            $links,
+            $description->getLinks($this->mapper),
             fn($acc, Link $link) => $this->jira->addLink(
                 $issueIds[$link->from],
                 $issueIds[$link->to],

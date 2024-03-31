@@ -2,7 +2,7 @@
 namespace Tests\Unit\Schedule\Description;
 
 use Codeception\Test\Unit;
-use Watch\Description\Utils;
+use Watch\Description\Schedule;
 
 class UtilsTest extends Unit
 {
@@ -11,7 +11,8 @@ class UtilsTest extends Unit
      */
     public function testGetMilestoneNames($description, $milestoneNames)
     {
-        self::assertEquals($milestoneNames, Utils::getMilestoneNames($description));
+        $schedule = new Schedule($description);
+        self::assertEquals($milestoneNames, $schedule->getMilestoneNames());
     }
 
     /**
@@ -19,7 +20,8 @@ class UtilsTest extends Unit
      */
     public function testGetMilestones($description, $milestones)
     {
-        self::assertEquals($milestones, Utils::getMilestones($description));
+        $schedule = new Schedule($description);
+        self::assertEquals($milestones, $schedule->getMilestones());
     }
 
     /**
@@ -27,7 +29,8 @@ class UtilsTest extends Unit
      */
     public function testGetProjectBeginDate($description, $beginDate)
     {
-        self::assertEquals(new \DateTimeImmutable($beginDate), Utils::getProjectBeginDate($description));
+        $schedule = new Schedule($description);
+        self::assertEquals(new \DateTimeImmutable($beginDate), $schedule->getProjectBeginDate());
     }
 
     /**
@@ -35,7 +38,8 @@ class UtilsTest extends Unit
      */
     public function testGetProjectEndDate($description, $endDate)
     {
-        self::assertEquals(new \DateTimeImmutable($endDate), Utils::getProjectEndDate($description));
+        $schedule = new Schedule($description);
+        self::assertEquals(new \DateTimeImmutable($endDate), $schedule->getProjectEndDate());
     }
 
     /**
@@ -43,7 +47,8 @@ class UtilsTest extends Unit
      */
     public function testGetNowDate($description, $nowDate)
     {
-        self::assertEquals(new \DateTimeImmutable($nowDate), Utils::getNowDate($description));
+        $schedule = new Schedule($description);
+        self::assertEquals(new \DateTimeImmutable($nowDate), $schedule->getNowDate());
     }
 
     /**
@@ -51,7 +56,8 @@ class UtilsTest extends Unit
      */
     public function testGetProjectLength($description, $length)
     {
-        self::assertEquals($length, Utils::getProjectLength($description));
+        $schedule = new Schedule($description);
+        self::assertEquals($length, $schedule->getProjectLength());
     }
 
     /**
@@ -59,7 +65,8 @@ class UtilsTest extends Unit
      */
     public function testGetScheduleCriticalChain($description, $criticalChain)
     {
-        self::assertEquals($criticalChain, Utils::getSchedule($description)['criticalChain']);
+        $schedule = new Schedule($description);
+        self::assertEquals($criticalChain, $schedule->getSchedule()['criticalChain']);
     }
 
     public static function dataGetMilestoneNames(): array

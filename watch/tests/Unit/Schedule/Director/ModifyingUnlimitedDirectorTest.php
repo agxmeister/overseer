@@ -1,7 +1,8 @@
 <?php
 namespace Tests\Unit\Schedule\Director;
 
-use Watch\Description\Utils;
+use Watch\Description\Schedule;
+use Watch\Description\Subject;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\LimitStrategy;
@@ -15,24 +16,26 @@ class ModifyingUnlimitedDirectorTest extends AbstractDirectorTest
     /**
      * @dataProvider dataBuild
      */
-    public function testBuild($issuesDescription, $scheduleDescription)
+    public function testBuild($subjectDescription, $scheduleDescription)
     {
+        $subject = new Subject($subjectDescription);
+        $schedule = new Schedule($scheduleDescription);
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
         $director = new Director(
             new Builder(
-                new Context(Utils::getNowDate($scheduleDescription)),
-                Utils::getIssues($issuesDescription, $mapper),
-                Utils::getLinks($issuesDescription, $mapper),
-                Utils::getProjectName($scheduleDescription),
-                Utils::getMilestoneNames($scheduleDescription),
+                new Context($schedule->getNowDate()),
+                $subject->getIssues($mapper),
+                $subject->getLinks($mapper),
+                $schedule->getProjectName(),
+                $schedule->getMilestoneNames(),
                 $mapper,
                 $this->makeEmpty(LimitStrategy::class),
-                new ToDateScheduleStrategy(Utils::getProjectEndDate($scheduleDescription)),
+                new ToDateScheduleStrategy($schedule->getProjectEndDate()),
             )
         );
         $projectSerializer = new ProjectSerializer();
         $this->assertSchedule(
-            Utils::getSchedule($scheduleDescription),
+            $schedule->getSchedule(),
             $projectSerializer->serialize($director->build()->release()->getProject())
         );
     }
