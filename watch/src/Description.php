@@ -3,6 +3,7 @@
 namespace Watch;
 
 use Watch\Description\Line;
+use Watch\Description\LineType;
 use Watch\Schedule\Mapper;
 
 class Description
@@ -293,32 +294,39 @@ class Description
             );
     }
 
+    /**
+     * @return Line[]
+     */
     protected function getIssueLines(): array
     {
-        return array_reduce(
+        return array_values(
             array_filter(
                 $this->getLines(),
-                fn(string $line) => str_contains($line, '|')
+                fn(Line $line) => $line->type === LineType::Issue,
             ),
-            fn(array $acc, string $line) => [...$acc, $line],
-            []
         );
     }
 
+    /**
+     * @return string[]
+     */
     protected function getTracks(): array
     {
         return array_map(
-            fn(string $line) => explode('|', $line)[1],
+            fn(Line $line) => explode('|', $line)[1],
             self::getIssueLines(),
         );
     }
 
+    /**
+     * @return Line[]
+     */
     protected function getMilestoneLines(): array
     {
         return array_values(
             array_filter(
                 $this->getLines(),
-                fn($line) => str_contains($line, '^')
+                fn(Line $line) => $line->type === LineType::Milestone,
             )
         );
     }
@@ -328,7 +336,7 @@ class Description
         return array_reduce(
             array_filter(
                 $this->getLines(),
-                fn($line) => str_contains($line, '>')
+                fn(Line $line) => $line->type === LineType::Context,
             ),
             fn($acc, $line) => $line,
         );
