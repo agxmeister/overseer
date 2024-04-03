@@ -2,9 +2,10 @@
 
 namespace Watch;
 
+use Watch\Description\ContextLine;
 use Watch\Description\IssueLine;
 use Watch\Description\Line;
-use Watch\Description\LineType;
+use Watch\Description\MilestoneLine;
 use Watch\Description\Track;
 use Watch\Schedule\Mapper;
 
@@ -328,7 +329,7 @@ class Description
         return array_values(
             array_filter(
                 $this->getLines(),
-                fn(Line $line) => $line->type === LineType::Milestone,
+                fn(Line $line) => $line instanceof MilestoneLine,
             )
         );
     }
@@ -338,7 +339,7 @@ class Description
         return array_reduce(
             array_filter(
                 $this->getLines(),
-                fn(Line $line) => $line->type === LineType::Context,
+                fn(Line $line) => $line instanceof ContextLine,
             ),
             fn($acc, $line) => $line,
         );
@@ -356,8 +357,8 @@ class Description
             array_map(
                 fn(string $content) => match (true) {
                     str_contains($content, '|') => new IssueLine($content),
-                    str_contains($content, '^') => new Line($content),
-                    str_contains($content, '>') => new Line($content),
+                    str_contains($content, '^') => new MilestoneLine($content),
+                    str_contains($content, '>') => new ContextLine($content),
                     default => new Line($content),
                 },
                 array_filter(
