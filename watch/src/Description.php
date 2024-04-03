@@ -2,8 +2,10 @@
 
 namespace Watch;
 
+use Watch\Description\IssueLine;
 use Watch\Description\Line;
 use Watch\Description\LineType;
+use Watch\Description\Track;
 use Watch\Schedule\Mapper;
 
 class Description
@@ -302,18 +304,18 @@ class Description
         return array_values(
             array_filter(
                 $this->getLines(),
-                fn(Line $line) => $line->type === LineType::Issue,
+                fn(Line $line) => $line instanceof IssueLine,
             ),
         );
     }
 
     /**
-     * @return string[]
+     * @return Track[]
      */
     protected function getTracks(): array
     {
         return array_map(
-            fn(Line $line) => explode('|', $line)[1],
+            fn(IssueLine $line) => $line->track,
             self::getIssueLines(),
         );
     }
@@ -352,7 +354,12 @@ class Description
         }
         return $this->lines = array_values(
             array_map(
-                fn(string $content) => new Line($content),
+                fn(string $content) => match (true) {
+                    str_contains($content, '|') => new IssueLine($content),
+                    str_contains($content, '^') => new Line($content),
+                    str_contains($content, '>') => new Line($content),
+                    default => new Line($content),
+                },
                 array_filter(
                     explode("\n", $this->description),
                     fn($line) => !empty(trim($line)),
