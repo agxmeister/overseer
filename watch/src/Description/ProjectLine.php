@@ -2,10 +2,10 @@
 
 namespace Watch\Description;
 
-readonly class ContextLine extends Line
+readonly class ProjectLine extends Line
 {
     public function getMarkerPosition(): int
     {
-        return strrpos($this->content, '>');
+        return strrpos($this->content, '^');
     }
 }

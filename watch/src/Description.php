@@ -6,6 +6,7 @@ use Watch\Description\ContextLine;
 use Watch\Description\IssueLine;
 use Watch\Description\Line;
 use Watch\Description\MilestoneLine;
+use Watch\Description\ProjectLine;
 use Watch\Description\Track;
 use Watch\Schedule\Mapper;
 
@@ -97,17 +98,16 @@ class Description
 
     public function getNowDate(): \DateTimeImmutable|null
     {
-        $milestoneLines = $this->getMilestoneLines();
-        if (empty($milestoneLines)) {
+        $projectLine = $this->getProjectLine();
+        if (is_null($projectLine)) {
             return null;
         }
         $contextLine = $this->getContextLine();
         if (is_null($contextLine)) {
             return $this->getProjectBeginDate();
         }
-        $milestoneLine = current($milestoneLines);
-        $gap = strpos($contextLine, '>') - strpos($milestoneLine, '^');
-        return $this->getMilestoneDate($milestoneLine)->modify("{$gap} day");
+        $gap = $contextLine->getMarkerPosition() - $projectLine->getMarkerPosition();
+        return $this->getMilestoneDate($projectLine)->modify("{$gap} day");
     }
 
     public function getProjectLength(): int
@@ -283,22 +283,17 @@ class Description
 
     protected function isEndMarkers(): bool
     {
-        return
-            array_reduce(
-                self::getMilestoneLines(),
-                fn($acc, $line) => max($acc, strrpos($line, '^')),
-            ) >=
-            array_reduce(
-                array_map(
-                    fn($line) => rtrim(substr($line, 0, strrpos($line, '|'))),
-                    self::getIssueLines()
-                ),
-                fn($acc, $line) => max($acc, strlen($line)),
-            );
+        return $this->getProjectLine()?->getMarkerPosition() >= array_reduce(
+            array_map(
+                fn($line) => rtrim(substr($line, 0, strrpos($line, '|'))),
+                self::getIssueLines()
+            ),
+            fn($acc, $line) => max($acc, strlen($line)),
+        );
     }
 
     /**
-     * @return Line[]
+     * @return IssueLine[]
      */
     protected function getIssueLines(): array
     {
@@ -322,24 +317,35 @@ class Description
     }
 
     /**
-     * @return Line[]
+     * @return MilestoneLine[]
      */
     protected function getMilestoneLines(): array
     {
         return array_values(
             array_filter(
                 $this->getLines(),
-                fn(Line $line) => $line instanceof MilestoneLine,
+                fn(Line $line) => $line instanceof MilestoneLine || $line instanceof ProjectLine,
             )
         );
     }
 
-    protected function getContextLine(): Line|null
+    protected function getContextLine(): ContextLine|null
     {
         return array_reduce(
             array_filter(
                 $this->getLines(),
                 fn(Line $line) => $line instanceof ContextLine,
+            ),
+            fn($acc, $line) => $line,
+        );
+    }
+
+    protected function getProjectLine(): ProjectLine|null
+    {
+        return array_reduce(
+            array_filter(
+                $this->getLines(),
+                fn(Line $line) => $line instanceof ProjectLine,
             ),
             fn($acc, $line) => $line,
         );
@@ -353,7 +359,12 @@ class Description
         if (!is_null($this->lines)) {
             return $this->lines;
         }
-        return $this->lines = array_values(
+        $contents = array_filter(
+            explode("\n", $this->description),
+            fn($line) => !empty(trim($line)),
+        );
+        $projectLineExists = str_contains($contents[array_key_last($contents)], '^');
+        $this->lines = array_values(
             array_map(
                 fn(string $content) => match (true) {
                     str_contains($content, '|') => new IssueLine($content),
@@ -361,11 +372,12 @@ class Description
                     str_contains($content, '>') => new ContextLine($content),
                     default => new Line($content),
                 },
-                array_filter(
-                    explode("\n", $this->description),
-                    fn($line) => !empty(trim($line)),
-                )
-            )
+                $projectLineExists ? array_slice($contents, 0, -1) : $contents,
+            ),
         );
+        if ($projectLineExists) {
+            $this->lines[] = new ProjectLine($contents[array_key_last($contents)]);
+        }
+        return $this->lines;
     }
 }
