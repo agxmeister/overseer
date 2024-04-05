@@ -2,7 +2,7 @@
 
 namespace Watch\Description;
 
-readonly class Line
+abstract readonly class Line
 {
     public function __construct(public string $content)
     {
@@ -12,4 +12,20 @@ readonly class Line
     {
         return $this->content;
     }
+
+    /**
+     * @return string[]
+     */
+    public function getAttributes(): array
+    {
+        return array_filter(
+            array_map(
+                fn($attribute) => trim($attribute),
+                explode(',', $this->getAttributesContent())
+            ),
+            fn(string $attribute) => !empty($attribute),
+        );
+    }
+
+    abstract protected function getAttributesContent();
 }

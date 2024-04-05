@@ -2,10 +2,6 @@
 
 namespace Watch\Description;
 
-readonly class ProjectLine extends Line
+readonly class ProjectLine extends MilestoneLine
 {
-    public function getMarkerPosition(): int
-    {
-        return strrpos($this->content, '^');
-    }
 }

@@ -25,9 +25,9 @@ class Description
     public function getMilestones(): array
     {
         $milestones = array_map(
-            fn($line) => [
+            fn(MilestoneLine $line) => [
                 'key' => self::getMilestoneKey($line),
-                'date' => self::getMilestoneDate($line),
+                'date' => $line->getDate(),
             ],
             self::getMilestoneLines(),
         );
@@ -107,7 +107,7 @@ class Description
             return $this->getProjectBeginDate();
         }
         $gap = $contextLine->getMarkerPosition() - $projectLine->getMarkerPosition();
-        return $this->getMilestoneDate($projectLine)->modify("{$gap} day");
+        return $projectLine->getDate()->modify("{$gap} day");
     }
 
     public function getProjectLength(): int
@@ -255,29 +255,13 @@ class Description
     {
         return array_reduce(
             self::getMilestoneLines(),
-            fn($acc, string $milestoneLine) => self::isEndMarkers()
-                ? max($acc, self::getMilestoneDate($milestoneLine))
+            fn($acc, MilestoneLine $milestoneLine) => self::isEndMarkers()
+                ? max($acc, $milestoneLine->getDate())
                 : (
                 is_null($acc)
-                    ? self::getMilestoneDate($milestoneLine)
-                    : min($acc, self::getMilestoneDate($milestoneLine))
+                    ? $milestoneLine->getDate()
+                    : min($acc, $milestoneLine->getDate())
                 ),
-        );
-    }
-
-    protected function getMilestoneDate(string $milestoneLine): \DateTimeImmutable|null
-    {
-        return new \DateTimeImmutable(
-            explode(
-                ' ',
-                array_reduce(
-                    array_filter(
-                        self::getMilestoneAttributes($milestoneLine),
-                        fn($attribute) => str_starts_with($attribute, '#')
-                    ),
-                    fn($acc, $attribute) => $attribute
-                )
-            )[1]
         );
     }
 
@@ -365,15 +349,18 @@ class Description
         );
         $projectLineExists = str_contains($contents[array_key_last($contents)], '^');
         $this->lines = array_values(
-            array_map(
-                fn(string $content) => match (true) {
-                    str_contains($content, '|') => new IssueLine($content),
-                    str_contains($content, '^') => new MilestoneLine($content),
-                    str_contains($content, '>') => new ContextLine($content),
-                    default => new Line($content),
-                },
-                $projectLineExists ? array_slice($contents, 0, -1) : $contents,
-            ),
+            array_filter(
+                array_map(
+                    fn(string $content) => match (true) {
+                        str_contains($content, '|') => new IssueLine($content),
+                        str_contains($content, '^') => new MilestoneLine($content),
+                        str_contains($content, '>') => new ContextLine($content),
+                        default => null,
+                    },
+                    $projectLineExists ? array_slice($contents, 0, -1) : $contents,
+                ),
+                fn(Line|null $line) => !is_null($line),
+            )
         );
         if ($projectLineExists) {
             $this->lines[] = new ProjectLine($contents[array_key_last($contents)]);
