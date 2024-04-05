@@ -33,7 +33,7 @@ class Schedule extends Description
                 $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1])) - $projectEndGap;
                 $beginGap = $endGap + $length;
 
-                list($key, $type) = $this->getNameComponents($name);
+                list($key, $type) = $this->getNameComponents($name, ['key', 'type']);
 
                 if ($isIssue) {
                     $acc[Project::VOLUME_ISSUES][] = [

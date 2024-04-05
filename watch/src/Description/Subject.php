@@ -27,7 +27,7 @@ class Subject extends Description
                 list($name, $duration, $started, $completed, $scheduled, $gap) = array_values(
                     $this->getIssueComponents($line)
                 );
-                list($key, $type, $project, $milestone) = $this->getNameComponents($name);
+                list($key, $type, $project, $milestone) = $this->getNameComponents($name, ['key', 'type', 'project', 'milestone']);
                 $endGap = $gap - $projectEndGap;
                 $beginGap = $endGap + $duration;
                 return [

@@ -154,7 +154,7 @@ class Description
         ];
     }
 
-    protected function getNameComponents(string $name): array
+    protected function getNameComponents(string $name, array $components): array
     {
         return array_map(
             fn($name, $value) => $value ?? match($name) {
@@ -162,13 +162,15 @@ class Description
                 'type' => 'T',
                 default => null,
             },
-            ['key', 'type', 'project', 'milestone'],
+            $components,
             array_reverse(
                 array_reduce(
                     explode('/', $name),
                     fn($acc, $name) => [
                         ...$acc,
-                        ...array_reverse(explode('#', $name))
+                        ...array_reverse(
+                            explode('#', $name)
+                        )
                     ],
                     [],
                 ),
@@ -189,7 +191,8 @@ class Description
     protected function getKey(string $line, string $separator): string
     {
         list($key) = $this->getNameComponents(
-            trim(explode(' ', trim(explode($separator, $line)[0]))[0])
+            trim(explode(' ', trim(explode($separator, $line)[0]))[0]),
+            ['key'],
         );
         return $key;
     }
