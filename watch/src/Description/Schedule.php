@@ -10,20 +10,17 @@ class Schedule extends Description
 {
     public function getSchedule(): array
     {
-        $lines = [...array_filter(
-            array_map(fn($line) => trim($line), explode("\n", $this->description)),
-            fn($line) => strlen($line) > 0)
-        ];
-
         $projectEndDate = $this->getProjectEndDate();
         $projectEndGap = $this->getProjectEndGap();
 
         $criticalChain = [];
 
         $schedule = array_reduce(
-            array_filter($lines, fn($line) => !str_contains($line, '^') && !str_contains($line, '>')),
-            function ($acc, $line) use ($projectEndDate, $projectEndGap, &$criticalChain)
-            {
+            array_filter(
+                $this->getLines(),
+                fn(Line $line) => $line instanceof IssueLine
+            ),
+            function ($acc, IssueLine $line) use ($projectEndDate, $projectEndGap, &$criticalChain) {
                 $issueData = explode('|', $line);
                 $ignored = str_ends_with($issueData[0], '-');
                 $name = trim(rtrim($issueData[0], '-'));
@@ -74,7 +71,7 @@ class Schedule extends Description
 
                 $acc[Project::VOLUME_LINKS] = [
                     ...$acc[Project::VOLUME_LINKS],
-                    ...$this->getLinksByAttributes($key, $this->getIssueAttributes($line)),
+                    ...$this->getLinksByAttributes($key, $line->getAttributes()),
                 ];
 
                 return $acc;

@@ -194,31 +194,6 @@ class Description
         return $key;
     }
 
-    /**
-     * @param string $line
-     * @return string[]
-     */
-    protected function getIssueAttributes(string $line): array
-    {
-        return self::getAttributes($line, '|');
-    }
-
-    protected function getMilestoneAttributes(string $line): array
-    {
-        return self::getAttributes($line, '^');
-    }
-
-    protected function getAttributes(string $line, string $separator): array
-    {
-        return array_filter(
-            array_map(
-                fn($attribute) => trim($attribute),
-                explode(',', trim(array_reverse(explode($separator, $line))[0]))
-            ),
-            fn(string $attribute) => !empty($attribute),
-        );
-    }
-
     protected function getLinksByAttributes(string $from, array $attributes, Mapper $mapper = null): array
     {
         return array_reduce(

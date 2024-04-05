@@ -70,9 +70,9 @@ class Subject extends Description
             fn($link) => new Link(0, $link['from'], $link['to'], $link['type']),
             array_reduce(
                 $this->getIssueLines(),
-                fn($acc, $line) => [
+                fn($acc, IssueLine $line) => [
                     ...$acc,
-                    ...$this->getLinksByAttributes($this->getIssueKey($line), $this->getIssueAttributes($line), $mapper),
+                    ...$this->getLinksByAttributes($this->getIssueKey($line), $line->getAttributes(), $mapper),
                 ],
                 [],
             ),
