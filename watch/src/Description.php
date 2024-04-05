@@ -26,23 +26,23 @@ class Description
     {
         $milestones = array_map(
             fn(MilestoneLine $line) => [
-                'key' => self::getMilestoneKey($line),
+                'key' => $this->getMilestoneKey($line),
                 'date' => $line->getDate(),
             ],
             array_filter(
-                self::getMilestoneLines(),
+                $this->getMilestoneLines(),
                 fn(MilestoneLine $line) => !($line instanceof ProjectLine),
             ),
         );
         usort($milestones, fn($a, $b) => $a['date'] < $b['date'] ? -1 : ($a['date'] > $b['date'] ? 1 : 0));
 
-        $isEndMarkers = self::isEndMarkers();
+        $isEndMarkers = $this->isEndMarkers();
         for ($i = 0; $i < sizeof($milestones); $i++) {
             $milestones[$i]['begin'] = ($isEndMarkers
                 ? (
                 $i > 0
                     ? $milestones[$i - 1]['date']
-                    : self::getProjectBeginDate()
+                    : $this->getProjectBeginDate()
                 )
                 : $milestones[$i]['date'])->format('Y-m-d');
             $milestones[$i]['end'] = ($isEndMarkers
@@ -50,7 +50,7 @@ class Description
                 : (
                 $i < sizeof($milestones) - 1
                     ? $milestones[$i + 1]['date']
-                    : self::getProjectEndDate()
+                    : $this->getProjectEndDate()
                 ))->format('Y-m-d');
         }
 
@@ -178,17 +178,17 @@ class Description
 
     protected function getIssueKey(string $line): string
     {
-        return self::getKey($line, '|');
+        return $this->getKey($line, '|');
     }
 
     protected function getMilestoneKey(string $line): string
     {
-        return self::getKey($line, '^');
+        return $this->getKey($line, '^');
     }
 
     protected function getKey(string $line, string $separator): string
     {
-        list($key) = self::getNameComponents(
+        list($key) = $this->getNameComponents(
             trim(explode(' ', trim(explode($separator, $line)[0]))[0])
         );
         return $key;
@@ -221,7 +221,7 @@ class Description
     protected function getProjectBeginGap(): int
     {
         return array_reduce(
-            self::getTracks(),
+            $this->getTracks(),
             fn($acc, $track) => min($acc, strlen($track) - strlen(ltrim($track))),
             PHP_INT_MAX
         );
@@ -230,7 +230,7 @@ class Description
     protected function getProjectEndGap(): int
     {
         return array_reduce(
-            self::getTracks(),
+            $this->getTracks(),
             fn($acc, $track) => min($acc, strlen($track) - strlen(rtrim($track))),
             PHP_INT_MAX
         );
@@ -241,7 +241,7 @@ class Description
         return $this->getProjectLine()?->getMarkerPosition() >= array_reduce(
             array_map(
                 fn($line) => rtrim(substr($line, 0, strrpos($line, '|'))),
-                self::getIssueLines()
+                $this->getIssueLines()
             ),
             fn($acc, $line) => max($acc, strlen($line)),
         );
@@ -267,7 +267,7 @@ class Description
     {
         return array_map(
             fn(IssueLine $line) => $line->track,
-            self::getIssueLines(),
+            $this->getIssueLines(),
         );
     }
 

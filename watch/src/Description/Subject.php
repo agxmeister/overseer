@@ -20,11 +20,8 @@ class Subject extends Description
 
         $issues = array_reduce(
             array_filter(
-                array_map(
-                    fn($line) => trim($line),
-                    explode("\n", $this->description),
-                ),
-                fn($line) => strlen($line) > 0 && !str_contains($line, '^'),
+                $this->getLines(),
+                fn(Line $line) => $line instanceof IssueLine
             ),
             function($acc, $line) use ($mapper, $projectEndDate, $projectEndGap) {
                 list($name, $duration, $started, $completed, $scheduled, $gap) = array_values(
