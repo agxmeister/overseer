@@ -123,6 +123,7 @@ class UtilsTest extends Unit
                     K-02 |   xxx| @ M-02
                     M-01     ^    # 2023-01-01
                     M-02        ^ # 2023-01-04
+                    PRJ         ^ # 2023-01-04
                 ',
                 [
                     [
@@ -133,6 +134,10 @@ class UtilsTest extends Unit
                         'key' => 'M-02',
                         'begin' => '2023-01-01',
                         'end' => '2023-01-04',
+                    ], [
+                        'key' => 'PRJ',
+                        'begin' => '2022-12-29',
+                        'end' => '2023-01-04',
                     ],
                 ],
             ], [
@@ -141,6 +146,7 @@ class UtilsTest extends Unit
                     K-02 |   xxx| @ M-02
                     M-01 ^        # 2023-01-01
                     M-02     ^    # 2023-01-04
+                    PRJ  ^        # 2023-01-01
                 ',
                 [
                     [
@@ -150,6 +156,10 @@ class UtilsTest extends Unit
                     ], [
                         'key' => 'M-02',
                         'begin' => '2023-01-04',
+                        'end' => '2023-01-07',
+                    ],  [
+                        'key' => 'PRJ',
+                        'begin' => '2023-01-01',
                         'end' => '2023-01-07',
                     ],
                 ],

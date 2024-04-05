@@ -29,7 +29,10 @@ class Description
                 'key' => self::getMilestoneKey($line),
                 'date' => $line->getDate(),
             ],
-            self::getMilestoneLines(),
+            array_filter(
+                self::getMilestoneLines(),
+                fn(MilestoneLine $line) => !($line instanceof ProjectLine),
+            ),
         );
         usort($milestones, fn($a, $b) => $a['date'] < $b['date'] ? -1 : ($a['date'] > $b['date'] ? 1 : 0));
 
@@ -57,7 +60,14 @@ class Description
                 fn($key) => in_array($key, ['key', 'begin', 'end']),
                 ARRAY_FILTER_USE_KEY,
             ),
-            $milestones,
+            [
+                ...$milestones,
+                [
+                    'key' => $this->getMilestoneKey($this->getProjectLine()),
+                    'begin' => $this->getProjectBeginDate()->format('Y-m-d'),
+                    'end' => $this->getProjectEndDate()->format('Y-m-d'),
+                ]
+            ],
         );
     }
 
@@ -84,16 +94,16 @@ class Description
     {
         $projectLength = $this->getProjectLength();
         return $this->isEndMarkers()
-            ? $this->getProjectDate()?->modify("-{$projectLength} day")
-            : $this->getProjectDate();
+            ? $this->getProjectLine()?->getDate()?->modify("-{$projectLength} day")
+            : $this->getProjectLine()?->getDate();
     }
 
     public function getProjectEndDate(): \DateTimeImmutable|null
     {
         $projectLength = $this->getProjectLength();
         return $this->isEndMarkers()
-            ? $this->getProjectDate()
-            : $this->getProjectDate()?->modify("{$projectLength} day");
+            ? $this->getProjectLine()?->getDate()
+            : $this->getProjectLine()?->getDate()?->modify("{$projectLength} day");
     }
 
     public function getNowDate(): \DateTimeImmutable|null
@@ -248,20 +258,6 @@ class Description
             self::getTracks(),
             fn($acc, $track) => min($acc, strlen($track) - strlen(rtrim($track))),
             PHP_INT_MAX
-        );
-    }
-
-    protected function getProjectDate(): \DateTimeImmutable|null
-    {
-        return array_reduce(
-            self::getMilestoneLines(),
-            fn($acc, MilestoneLine $milestoneLine) => self::isEndMarkers()
-                ? max($acc, $milestoneLine->getDate())
-                : (
-                is_null($acc)
-                    ? $milestoneLine->getDate()
-                    : min($acc, $milestoneLine->getDate())
-                ),
         );
     }
 
