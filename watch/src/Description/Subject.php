@@ -23,11 +23,11 @@ class Subject extends Description
                 $this->getLines(),
                 fn(Line $line) => $line instanceof IssueLine
             ),
-            function($acc, $line) use ($mapper, $projectEndDate, $projectEndGap) {
-                list($name, $duration, $started, $completed, $scheduled, $gap) = array_values(
+            function($acc, IssueLine $line) use ($mapper, $projectEndDate, $projectEndGap) {
+                list($duration, $started, $completed, $scheduled, $gap) = array_values(
                     $this->getIssueComponents($line)
                 );
-                list($key, $type, $project, $milestone) = $this->getNameComponents($name, ['key', 'type', 'project', 'milestone']);
+                list($key, $type, $project, $milestone) = $this->getNameComponents($line->name, ['key', 'type', 'project', 'milestone']);
                 $endGap = $gap - $projectEndGap;
                 $beginGap = $endGap + $duration;
                 return [

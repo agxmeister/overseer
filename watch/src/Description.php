@@ -145,7 +145,6 @@ class Description
     {
         $data = explode('|', $line);
         return [
-            'name' => trim(rtrim($data[0], '~+')),
             'duration' => strlen(trim($data[1])),
             'started' => str_ends_with($data[0], '~'),
             'completed' => str_ends_with($data[0], '+'),

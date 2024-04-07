@@ -23,7 +23,6 @@ class Schedule extends Description
             function ($acc, IssueLine $line) use ($projectEndDate, $projectEndGap, &$criticalChain) {
                 $issueData = explode('|', $line);
                 $ignored = str_ends_with($issueData[0], '-');
-                $name = trim(rtrim($issueData[0], '-'));
                 $length = strlen(trim($issueData[1]));
                 $isScheduled = in_array(trim($issueData[1])[0], ['x', '*', '_']);
                 $isIssue = in_array(trim($issueData[1])[0], ['x', '*', '.']);
@@ -33,7 +32,7 @@ class Schedule extends Description
                 $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1])) - $projectEndGap;
                 $beginGap = $endGap + $length;
 
-                list($key, $type) = $this->getNameComponents($name, ['key', 'type']);
+                list($key, $type) = $this->getNameComponents($line->name, ['key', 'type']);
 
                 if ($isIssue) {
                     $acc[Project::VOLUME_ISSUES][] = [
