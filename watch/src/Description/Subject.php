@@ -69,7 +69,7 @@ class Subject extends Description
                 $this->getIssueLines(),
                 fn($acc, IssueLine $line) => [
                     ...$acc,
-                    ...$this->getLinksByAttributes($this->getIssueKey($line), $line->getAttributes(), $mapper),
+                    ...$this->getLinksByAttributes($line->key, $line->getAttributes(), $mapper),
                 ],
                 [],
             ),

@@ -26,7 +26,7 @@ class Description
     {
         $milestones = array_map(
             fn(MilestoneLine $line) => [
-                'key' => $this->getMilestoneKey($line),
+                'key' => $line->key,
                 'date' => $line->getDate(),
             ],
             array_filter(
@@ -63,7 +63,7 @@ class Description
             [
                 ...$milestones,
                 [
-                    'key' => $this->getMilestoneKey($this->getProjectLine()),
+                    'key' => $this->getProjectLine()->key,
                     'begin' => $this->getProjectBeginDate()->format('Y-m-d'),
                     'end' => $this->getProjectEndDate()->format('Y-m-d'),
                 ]
@@ -175,25 +175,6 @@ class Description
                 ),
             ),
         );
-    }
-
-    protected function getIssueKey(string $line): string
-    {
-        return $this->getKey($line, '|');
-    }
-
-    protected function getMilestoneKey(string $line): string
-    {
-        return $this->getKey($line, '^');
-    }
-
-    protected function getKey(string $line, string $separator): string
-    {
-        list($key) = $this->getNameComponents(
-            trim(explode(' ', trim(explode($separator, $line)[0]))[0]),
-            ['key'],
-        );
-        return $key;
     }
 
     protected function getLinksByAttributes(string $from, array $attributes, Mapper $mapper = null): array

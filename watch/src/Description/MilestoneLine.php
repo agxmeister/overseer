@@ -3,10 +3,20 @@
 namespace Watch\Description;
 
 use DateTimeImmutable;
-use Exception;
 
 readonly class MilestoneLine extends Line
 {
+    public string $name;
+    public string $key;
+
+    public function __construct($content)
+    {
+        parent::__construct($content);
+        list($meta) = $this->getValues($this->content, '^', ['']);
+        list($this->name) = $this->getValues($meta, ' ', ['']);
+        list($this->key) = $this->getValues($this->name, '/', [''], true);
+    }
+
     public function getDate(): DateTimeImmutable
     {
         return new DateTimeImmutable(
