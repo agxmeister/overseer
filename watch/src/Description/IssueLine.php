@@ -9,6 +9,7 @@ readonly class IssueLine extends Line
     public bool $scheduled;
     public bool $started;
     public bool $completed;
+    public bool $ignored;
 
 
     public Track $track;
@@ -21,6 +22,7 @@ readonly class IssueLine extends Line
         list($this->key) = $this->getValues($this->name, '/', [''], true);
         $this->started = $modifier === '~';
         $this->completed = $modifier === '+';
+        $this->ignored = $modifier === '-';
         $this->scheduled = str_contains($track, '*');
         $this->track = new Track($track);
     }

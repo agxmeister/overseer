@@ -22,24 +22,22 @@ class Schedule extends Description
             ),
             function ($acc, IssueLine $line) use ($projectEndDate, $projectEndGap, &$criticalChain) {
                 $issueData = explode('|', $line);
-                $ignored = str_ends_with($issueData[0], '-');
-                $length = strlen(trim($issueData[1]));
                 $isScheduled = in_array(trim($issueData[1])[0], ['x', '*', '_']);
                 $isIssue = in_array(trim($issueData[1])[0], ['x', '*', '.']);
                 $isCritical = in_array(trim($issueData[1])[0], ['x']);
                 $isBuffer = in_array(trim($issueData[1])[0], ['_', '!']);
                 $consumption = substr_count(trim($issueData[1]), '!');
-                $endGap = strlen($issueData[1]) - strlen(rtrim($issueData[1])) - $projectEndGap;
-                $beginGap = $endGap + $length;
+                $endGap = $line->track->gap - $projectEndGap;
+                $beginGap = $endGap + $line->track->duration;
 
                 list($key, $type) = $this->getNameComponents($line->name, ['key', 'type']);
 
                 if ($isIssue) {
                     $acc[Project::VOLUME_ISSUES][] = [
                         'key' => $key,
-                        'length' => $length,
+                        'length' => $line->track->duration,
                         'begin' => $isScheduled
-                            ? $ignored
+                            ? $line->ignored
                                 ? $projectEndDate->modify("-{$endGap} day")->format('Y-m-d')
                                 : $projectEndDate->modify("-{$beginGap} day")->format('Y-m-d')
                             : null,
@@ -55,7 +53,7 @@ class Schedule extends Description
                 if ($isBuffer) {
                     $acc[Project::VOLUME_BUFFERS][] = [
                         'key' => $key,
-                        'length' => $length,
+                        'length' => $line->track->duration,
                         'type' => match($type) {
                             'PB' => Buffer::TYPE_PROJECT,
                             'MB' => Buffer::TYPE_MILESTONE,
