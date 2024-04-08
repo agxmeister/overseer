@@ -141,18 +141,6 @@ class Description
             );
     }
 
-    protected function getIssueComponents(string $line): array
-    {
-        $data = explode('|', $line);
-        return [
-            'duration' => strlen(trim($data[1])),
-            'started' => str_ends_with($data[0], '~'),
-            'completed' => str_ends_with($data[0], '+'),
-            'scheduled' => in_array(trim($data[1])[0], ['*']),
-            'gap' => strlen($data[1]) - strlen(rtrim($data[1])),
-        ];
-    }
-
     protected function getNameComponents(string $name, array $components): array
     {
         return array_map(

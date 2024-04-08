@@ -6,6 +6,10 @@ readonly class IssueLine extends Line
 {
     public string $name;
     public string $key;
+    public bool $scheduled;
+    public bool $started;
+    public bool $completed;
+
 
     public Track $track;
 
@@ -13,8 +17,11 @@ readonly class IssueLine extends Line
     {
         parent::__construct($content);
         list($meta, $track) = $this->getValues($this->content, '|', ['', '']);
-        list($this->name) = $this->getValues($meta, ' ', ['']);
+        list($this->name, $modifier) = $this->getValues($meta, ' ', ['', '']);
         list($this->key) = $this->getValues($this->name, '/', [''], true);
+        $this->started = $modifier === '~';
+        $this->completed = $modifier === '+';
+        $this->scheduled = str_contains($track, '*');
         $this->track = new Track($track);
     }
 
