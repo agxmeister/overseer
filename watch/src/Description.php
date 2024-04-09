@@ -141,30 +141,6 @@ class Description
             );
     }
 
-    protected function getNameComponents(string $name, array $components): array
-    {
-        return array_map(
-            fn($name, $value) => $value ?? match($name) {
-                'project' => 'PRJ',
-                'type' => 'T',
-                default => null,
-            },
-            $components,
-            array_reverse(
-                array_reduce(
-                    explode('/', $name),
-                    fn($acc, $name) => [
-                        ...$acc,
-                        ...array_reverse(
-                            explode('#', $name)
-                        )
-                    ],
-                    [],
-                ),
-            ),
-        );
-    }
-
     protected function getLinksByAttributes(string $from, array $attributes, Mapper $mapper = null): array
     {
         return array_reduce(

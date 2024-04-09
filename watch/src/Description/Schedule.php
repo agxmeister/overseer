@@ -30,11 +30,9 @@ class Schedule extends Description
                 $endGap = $line->track->gap - $projectEndGap;
                 $beginGap = $endGap + $line->track->duration;
 
-                list($key, $type) = $this->getNameComponents($line->name, ['key', 'type']);
-
                 if ($isIssue) {
                     $acc[Project::VOLUME_ISSUES][] = [
-                        'key' => $key,
+                        'key' => $line->key,
                         'length' => $line->track->duration,
                         'begin' => $isScheduled
                             ? $line->ignored
@@ -46,15 +44,15 @@ class Schedule extends Description
                             : null,
                     ];
                     if ($isCritical) {
-                        $criticalChain[$projectEndDate->modify("-{$beginGap} day")->format('Y-m-d')] = $key;
+                        $criticalChain[$projectEndDate->modify("-{$beginGap} day")->format('Y-m-d')] = $line->key;
                     }
                 }
 
                 if ($isBuffer) {
                     $acc[Project::VOLUME_BUFFERS][] = [
-                        'key' => $key,
+                        'key' => $line->key,
                         'length' => $line->track->duration,
-                        'type' => match($type) {
+                        'type' => match($line->type) {
                             'PB' => Buffer::TYPE_PROJECT,
                             'MB' => Buffer::TYPE_MILESTONE,
                             'FB' => Buffer::TYPE_FEEDING,
@@ -68,7 +66,7 @@ class Schedule extends Description
 
                 $acc[Project::VOLUME_LINKS] = [
                     ...$acc[Project::VOLUME_LINKS],
-                    ...$this->getLinksByAttributes($key, $line->getAttributes()),
+                    ...$this->getLinksByAttributes($line->key, $line->getAttributes()),
                 ];
 
                 return $acc;

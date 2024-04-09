@@ -24,14 +24,13 @@ class Subject extends Description
                 fn(Line $line) => $line instanceof IssueLine
             ),
             function($acc, IssueLine $line) use ($mapper, $projectEndDate, $projectEndGap) {
-                list($key, $type, $project, $milestone) = $this->getNameComponents($line->name, ['key', 'type', 'project', 'milestone']);
                 $endGap = $line->track->gap - $projectEndGap;
                 $beginGap = $endGap + $line->track->duration;
                 return [
                     ...$acc,
-                    $key => [
-                        'key' => $key,
-                        'summary' => $key,
+                    $line->key => [
+                        'key' => $line->key,
+                        'summary' => $line->key,
                         'status' => $line->started
                             ? current($mapper->startedIssueStates)
                             : (
@@ -39,9 +38,9 @@ class Subject extends Description
                                 ? current($mapper->completedIssueStates)
                                 : current($mapper->queuedIssueStates)
                             ),
-                        'milestone' => $milestone,
-                        'project' => $project,
-                        'type' => $type,
+                        'milestone' => $line->milestone,
+                        'project' => $line->project,
+                        'type' => $line->type,
                         'duration' => $line->track->duration,
                         'begin' => $line->scheduled ? $projectEndDate->modify("-{$beginGap} day")->format('Y-m-d') : null,
                         'end' => $line->scheduled ? $projectEndDate->modify("-{$endGap} day")->format('Y-m-d') : null,

@@ -6,6 +6,9 @@ readonly class IssueLine extends Line
 {
     public string $name;
     public string $key;
+    public string $type;
+    public string $project;
+    public string $milestone;
     public bool $scheduled;
     public bool $started;
     public bool $completed;
@@ -19,7 +22,8 @@ readonly class IssueLine extends Line
         parent::__construct($content);
         list($meta, $track) = $this->getValues($this->content, '|', ['', '']);
         list($this->name, $modifier) = $this->getValues($meta, ' ', ['', '']);
-        list($this->key) = $this->getValues($this->name, '/', [''], true);
+        list($this->key, $this->type, $delivery) = $this->getValues($this->name, '/', ['', 'T', ''], true);
+        list($this->project, $this->milestone) = $this->getValues($delivery, '#', ['PRJ', '']);
         $this->started = $modifier === '~';
         $this->completed = $modifier === '+';
         $this->ignored = $modifier === '-';
