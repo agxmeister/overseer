@@ -29,10 +29,7 @@ class Description
                 'key' => $line->key,
                 'date' => $line->getDate(),
             ],
-            array_filter(
-                $this->getMilestoneLines(),
-                fn(MilestoneLine $line) => !($line instanceof ProjectLine),
-            ),
+            $this->getMilestoneLines(),
         );
         usort($milestones, fn($a, $b) => $a['date'] < $b['date'] ? -1 : ($a['date'] > $b['date'] ? 1 : 0));
 
@@ -76,10 +73,10 @@ class Description
      */
     public function getMilestoneNames(): array
     {
-        return array_slice(array_map(
-            fn($milestone) => $milestone['key'],
-            $this->getMilestones()
-        ), 0, -1);
+        return array_map(
+            fn(MilestoneLine $milestone) => $milestone->key,
+            $this->getMilestoneLines()
+        );
     }
 
     public function getProjectName(): string
@@ -223,7 +220,7 @@ class Description
         return array_values(
             array_filter(
                 $this->getLines(),
-                fn(Line $line) => $line instanceof MilestoneLine || $line instanceof ProjectLine,
+                fn(Line $line) => get_class($line) === MilestoneLine::class,
             )
         );
     }
