@@ -84,10 +84,7 @@ class Description
 
     public function getProjectName(): string
     {
-        return current(array_reverse(array_map(
-            fn($milestone) => $milestone['key'],
-            $this->getMilestones()
-        )));
+        return $this->getProjectLine()?->key;
     }
 
     public function getProjectBeginDate(): \DateTimeImmutable|null
