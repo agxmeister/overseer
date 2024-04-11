@@ -179,12 +179,11 @@ class Description
 
     protected function isEndMarkers(): bool
     {
-        return $this->getProjectLine()?->getMarkerPosition() >= array_reduce(
+        return $this->getProjectLine()?->getMarkerPosition() >= max(
             array_map(
-                fn($line) => rtrim(substr($line, 0, strrpos($line, '|'))),
-                $this->getIssueLines()
-            ),
-            fn($acc, $line) => max($acc, strlen($line)),
+                fn(IssueLine $issueLine) => $issueLine->getEndPosition(),
+                $this->getIssueLines(),
+            )
         );
     }
 

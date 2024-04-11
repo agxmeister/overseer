@@ -31,6 +31,11 @@ readonly class IssueLine extends Line
         $this->track = new Track($track);
     }
 
+    public function getEndPosition(): int
+    {
+        return strrpos($this->content, '|') - $this->track->gap;
+    }
+
     protected function getAttributesContent(): string
     {
         return trim(array_reverse(explode('|', $this->content))[0]);
