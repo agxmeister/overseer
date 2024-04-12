@@ -2,6 +2,8 @@
 
 namespace Watch;
 
+use Watch\Description\Attribute;
+use Watch\Description\AttributeType;
 use Watch\Description\ContextLine;
 use Watch\Description\IssueLine;
 use Watch\Description\Line;
@@ -135,24 +137,27 @@ class Description
             );
     }
 
+    /**
+     * @param string $from
+     * @param Attribute[] $attributes
+     * @param Mapper|null $mapper
+     * @return array
+     */
     protected function getLinksByAttributes(string $from, array $attributes, Mapper $mapper = null): array
     {
         return array_reduce(
-            array_map(
-                fn(string $linkAttribute) => explode(' ', $linkAttribute),
-                array_filter(
-                    $attributes,
-                    fn(string $attribute) => in_array($attribute[0], ['&', '@']),
-                ),
+            array_filter(
+                $attributes,
+                fn(Attribute $attribute) => in_array($attribute->type, [AttributeType::Schedule, AttributeType::Sequence]),
             ),
-            fn(array $acc, array $linkAttributeData) => [
+            fn(array $acc, Attribute $attribute) => [
                 ...$acc,
                 [
                     'from' => $from,
-                    'to' => $linkAttributeData[1],
+                    'to' => $attribute->value,
                     'type' => !is_null($mapper)
-                        ? ($linkAttributeData[0] === '&' ? current($mapper->sequenceLinkTypes) : current($mapper->scheduleLnkTypes))
-                        : ($linkAttributeData[0] === '&' ? 'sequence' : 'schedule'),
+                        ? ($attribute->type === AttributeType::Sequence ? current($mapper->sequenceLinkTypes) : current($mapper->scheduleLnkTypes))
+                        : ($attribute->type === AttributeType::Sequence ? 'sequence' : 'schedule'),
                 ],
             ],
             [],

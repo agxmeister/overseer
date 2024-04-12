@@ -16,6 +16,7 @@ readonly class IssueLine extends Line
 
     public Track $track;
 
+    /** @var Attribute[]  */
     public array $attributes;
 
     public function __construct($content)
@@ -30,12 +31,17 @@ readonly class IssueLine extends Line
         $this->ignored = $modifier === '-';
         $this->scheduled = str_contains($track, '*');
         $this->track = new Track($track);
-        $this->attributes = array_filter(
-            array_map(
-                fn($attribute) => trim($attribute),
-                explode(',', $attributes)
-            ),
-            fn(string $attribute) => !empty($attribute),
+        $this->attributes = array_map(
+            fn(string $content) => new Attribute($content),
+            array_values(
+                array_filter(
+                    array_map(
+                        fn($attribute) => trim($attribute),
+                        explode(',', $attributes)
+                    ),
+                    fn(string $attribute) => !empty($attribute),
+                )
+            )
         );
     }
 
