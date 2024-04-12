@@ -9,12 +9,21 @@ readonly class MilestoneLine extends Line
     public string $name;
     public string $key;
 
+    public array $attributes;
+
     public function __construct($content)
     {
         parent::__construct($content);
-        list($meta) = $this->getValues($this->content, '^', ['']);
+        list($meta, $attributes) = $this->getValues($this->content, '^', ['', '']);
         list($this->name) = $this->getValues($meta, ' ', ['']);
         list($this->key) = $this->getValues($this->name, '/', [''], true);
+        $this->attributes = array_filter(
+            array_map(
+                fn($attribute) => trim($attribute),
+                explode(',', $attributes)
+            ),
+            fn(string $attribute) => !empty($attribute),
+        );
     }
 
     public function getDate(): DateTimeImmutable
@@ -24,7 +33,7 @@ readonly class MilestoneLine extends Line
                 ' ',
                 array_reduce(
                     array_filter(
-                        $this->getAttributes(),
+                        $this->attributes,
                         fn($attribute) => str_starts_with($attribute, '#')
                     ),
                     fn($acc, $attribute) => $attribute
@@ -36,10 +45,5 @@ readonly class MilestoneLine extends Line
     public function getMarkerPosition(): int
     {
         return strrpos($this->content, '^');
-    }
-
-    protected function getAttributesContent(): string
-    {
-        return trim(array_reverse(explode('^', $this->content))[0]);
     }
 }

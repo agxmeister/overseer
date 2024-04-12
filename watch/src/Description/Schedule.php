@@ -66,7 +66,7 @@ class Schedule extends Description
 
                 $acc[Project::VOLUME_LINKS] = [
                     ...$acc[Project::VOLUME_LINKS],
-                    ...$this->getLinksByAttributes($line->key, $line->getAttributes()),
+                    ...$this->getLinksByAttributes($line->key, $line->attributes),
                 ];
 
                 return $acc;

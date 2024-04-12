@@ -8,9 +8,4 @@ readonly class ContextLine extends Line
     {
         return strrpos($this->content, '>');
     }
-
-    protected function getAttributesContent(): string
-    {
-        return trim(array_reverse(explode('>', $this->content))[0]);
-    }
 }

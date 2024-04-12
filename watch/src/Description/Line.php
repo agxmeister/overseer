@@ -13,20 +13,6 @@ abstract readonly class Line
         return $this->content;
     }
 
-    /**
-     * @return string[]
-     */
-    public function getAttributes(): array
-    {
-        return array_filter(
-            array_map(
-                fn($attribute) => trim($attribute),
-                explode(',', $this->getAttributesContent())
-            ),
-            fn(string $attribute) => !empty($attribute),
-        );
-    }
-
     protected function getValues($string, $separator, $defaults, $reverse = false): array
     {
         return array_map(
@@ -40,6 +26,4 @@ abstract readonly class Line
             )
         );
     }
-
-    abstract protected function getAttributesContent();
 }
