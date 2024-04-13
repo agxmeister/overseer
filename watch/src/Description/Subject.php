@@ -62,8 +62,8 @@ class Subject extends Description
         return array_map(
             fn($link) => new Link(0, $link['from'], $link['to'], $link['type']),
             array_reduce(
-                $this->getIssueLines(),
-                fn($acc, IssueLine $line) => [
+                $this->getTrackLines(),
+                fn($acc, TrackLine $line) => [
                     ...$acc,
                     ...$this->getLinksByAttributes($line->key, $line->attributes, $mapper),
                 ],

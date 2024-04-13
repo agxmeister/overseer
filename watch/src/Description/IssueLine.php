@@ -2,11 +2,8 @@
 
 namespace Watch\Description;
 
-readonly class IssueLine extends Line
+readonly class IssueLine extends TrackLine
 {
-    public string $name;
-    public string $key;
-    public string $type;
     public string $project;
     public string $milestone;
     public bool $scheduled;
@@ -14,39 +11,16 @@ readonly class IssueLine extends Line
     public bool $completed;
     public bool $ignored;
 
-    public Track $track;
-
-    /** @var Attribute[]  */
-    public array $attributes;
-
     public function __construct($content)
     {
         parent::__construct($content);
-        list($meta, $track, $attributes) = $this->getValues($this->content, '|', ['', '', '']);
-        list($this->name, $modifier) = $this->getValues($meta, ' ', ['', '']);
-        list($this->key, $this->type, $delivery) = $this->getValues($this->name, '/', ['', 'T', ''], true);
+        list($meta, $track) = $this->getValues($this->content, '|', ['', '']);
+        list($name, $modifier) = $this->getValues($meta, ' ', ['', '']);
+        list($key, $type, $delivery) = $this->getValues($name, '/', ['', 'T', ''], true);
         list($this->project, $this->milestone) = $this->getValues($delivery, '#', ['PRJ', '']);
         $this->started = $modifier === '~';
         $this->completed = $modifier === '+';
         $this->ignored = $modifier === '-';
         $this->scheduled = str_contains($track, '*');
-        $this->track = new Track($track);
-        $this->attributes = array_map(
-            fn(string $content) => new Attribute($content),
-            array_values(
-                array_filter(
-                    array_map(
-                        fn($attribute) => trim($attribute),
-                        explode(',', $attributes)
-                    ),
-                    fn(string $attribute) => !empty($attribute),
-                )
-            )
-        );
-    }
-
-    public function getEndPosition(): int
-    {
-        return strrpos($this->content, '|') - $this->track->gap;
     }
 }

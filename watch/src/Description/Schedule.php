@@ -18,19 +18,17 @@ class Schedule extends Description
         $schedule = array_reduce(
             array_filter(
                 $this->getLines(),
-                fn(Line $line) => $line instanceof IssueLine
+                fn(Line $line) => $line instanceof TrackLine
             ),
-            function ($acc, IssueLine $line) use ($projectEndDate, $projectEndGap, &$criticalChain) {
+            function ($acc, TrackLine $line) use ($projectEndDate, $projectEndGap, &$criticalChain) {
                 $issueData = explode('|', $line);
                 $isScheduled = in_array(trim($issueData[1])[0], ['x', '*', '_']);
-                $isIssue = in_array(trim($issueData[1])[0], ['x', '*', '.']);
                 $isCritical = in_array(trim($issueData[1])[0], ['x']);
-                $isBuffer = in_array(trim($issueData[1])[0], ['_', '!']);
                 $consumption = substr_count(trim($issueData[1]), '!');
                 $endGap = $line->track->gap - $projectEndGap;
                 $beginGap = $endGap + $line->track->duration;
 
-                if ($isIssue) {
+                if ($line instanceof IssueLine) {
                     $acc[Project::VOLUME_ISSUES][] = [
                         'key' => $line->key,
                         'length' => $line->track->duration,
@@ -48,7 +46,7 @@ class Schedule extends Description
                     }
                 }
 
-                if ($isBuffer) {
+                if ($line instanceof BufferLine) {
                     $acc[Project::VOLUME_BUFFERS][] = [
                         'key' => $line->key,
                         'length' => $line->track->duration,
