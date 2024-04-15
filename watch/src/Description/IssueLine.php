@@ -7,6 +7,7 @@ readonly class IssueLine extends TrackLine
     public string $project;
     public string $milestone;
     public bool $scheduled;
+    public bool $critical;
     public bool $started;
     public bool $completed;
     public bool $ignored;
@@ -21,6 +22,7 @@ readonly class IssueLine extends TrackLine
         $this->started = $modifier === '~';
         $this->completed = $modifier === '+';
         $this->ignored = $modifier === '-';
-        $this->scheduled = str_contains($track, '*');
+        $this->scheduled = str_contains($track, '*') || str_contains($track, 'x');
+        $this->critical = str_contains($track, 'x');
     }
 }

@@ -21,10 +21,6 @@ class Schedule extends Description
                 fn(Line $line) => $line instanceof TrackLine
             ),
             function ($acc, TrackLine $line) use ($projectEndDate, $projectEndGap, &$criticalChain) {
-                $issueData = explode('|', $line);
-                $isScheduled = in_array(trim($issueData[1])[0], ['x', '*', '_']);
-                $isCritical = in_array(trim($issueData[1])[0], ['x']);
-                $consumption = substr_count(trim($issueData[1]), '!');
                 $endGap = $line->track->gap - $projectEndGap;
                 $beginGap = $endGap + $line->track->duration;
 
@@ -32,16 +28,16 @@ class Schedule extends Description
                     $acc[Project::VOLUME_ISSUES][] = [
                         'key' => $line->key,
                         'length' => $line->track->duration,
-                        'begin' => $isScheduled
+                        'begin' => $line->scheduled
                             ? $line->ignored
                                 ? $projectEndDate->modify("-{$endGap} day")->format('Y-m-d')
                                 : $projectEndDate->modify("-{$beginGap} day")->format('Y-m-d')
                             : null,
-                        'end' => $isScheduled
+                        'end' => $line->scheduled
                             ? $projectEndDate->modify("-{$endGap} day")->format('Y-m-d')
                             : null,
                     ];
-                    if ($isCritical) {
+                    if ($line->critical) {
                         $criticalChain[$projectEndDate->modify("-{$beginGap} day")->format('Y-m-d')] = $line->key;
                     }
                 }
@@ -58,7 +54,7 @@ class Schedule extends Description
                         },
                         'begin' => $projectEndDate->modify("-{$beginGap} day")->format('Y-m-d'),
                         'end' => $projectEndDate->modify("-{$endGap} day")->format('Y-m-d'),
-                        'consumption' => $consumption,
+                        'consumption' => $line->consumption,
                     ];
                 }
 
