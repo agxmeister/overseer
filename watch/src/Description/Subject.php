@@ -71,4 +71,14 @@ class Subject extends Description
             ),
         );
     }
+
+    protected function getLine(string $content): Line
+    {
+        return match (1) {
+            preg_match('/[*.]+/', $content) => new IssueLine($content),
+            preg_match('/>/', $content) => new ContextLine($content),
+            preg_match('/\^/', $content) => new MilestoneLine($content),
+            default => null,
+        };
+    }
 }

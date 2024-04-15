@@ -84,4 +84,15 @@ class Schedule extends Description
 
         return $schedule;
     }
+
+    protected function getLine(string $content): Line
+    {
+        return match (1) {
+            preg_match('/[x*.]+/', $content) => new IssueLine($content),
+            preg_match('/[_!]+/', $content) => new BufferLine($content),
+            preg_match('/>/', $content) => new ContextLine($content),
+            preg_match('/\^/', $content) => new MilestoneLine($content),
+            default => null,
+        };
+    }
 }

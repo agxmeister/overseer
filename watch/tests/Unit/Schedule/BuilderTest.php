@@ -15,9 +15,9 @@ class BuilderTest extends Unit
     public function testAddCriticalChain()
     {
         $description = new Subject('
-            K-01   |       xxxx|
+            K-01   |       ****|
             K-02   |   ****    | & K-01
-            K-03   |xxxxxxx    | @ K-01
+            K-03   |*******    | @ K-01
                                ^ # 2023-09-21
         ');
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
@@ -40,9 +40,9 @@ class BuilderTest extends Unit
     public function testAddFeedingBuffers()
     {
         $description = new Subject('
-            K-01   |       xxxx|
+            K-01   |       ****|
             K-02   | ****      | & K-01
-            K-03   |xxxxxxx    | @ K-01
+            K-03   |*******    | @ K-01
                                ^ # 2023-09-21
         ');
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);

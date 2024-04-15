@@ -4,7 +4,6 @@ namespace Watch;
 
 use Watch\Description\Attribute;
 use Watch\Description\AttributeType;
-use Watch\Description\BufferLine;
 use Watch\Description\ContextLine;
 use Watch\Description\IssueLine;
 use Watch\Description\Line;
@@ -14,7 +13,7 @@ use Watch\Description\Track;
 use Watch\Description\TrackLine;
 use Watch\Schedule\Mapper;
 
-class Description
+abstract class Description
 {
     /** @var Line[] */
     protected array|null $lines = null;
@@ -269,16 +268,7 @@ class Description
         $this->lines = array_values(
             array_filter(
                 array_map(
-                    fn(string $content) => match (true) {
-                        str_contains($content, '|') => match (1) {
-                            preg_match('|[x*.]+|', $content) => new IssueLine($content),
-                            preg_match('|[_!]+|', $content) => new BufferLine($content),
-                            default => null,
-                        },
-                        str_contains($content, '^') => new MilestoneLine($content),
-                        str_contains($content, '>') => new ContextLine($content),
-                        default => null,
-                    },
+                    fn(string $content) => $this->getLine($content),
                     $projectLineExists ? array_slice($contents, 0, -1) : $contents,
                 ),
                 fn(Line|null $line) => !is_null($line),
@@ -289,4 +279,6 @@ class Description
         }
         return $this->lines;
     }
+
+    protected abstract function getLine(string $content): Line;
 }
