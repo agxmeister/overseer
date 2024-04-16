@@ -8,11 +8,6 @@ abstract readonly class Line
     {
     }
 
-    public function __toString(): string
-    {
-        return $this->content;
-    }
-
     protected function getValues($string, $separator, $defaults, $reverse = false): array
     {
         return array_map(
