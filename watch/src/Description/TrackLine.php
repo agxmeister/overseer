@@ -16,9 +16,9 @@ readonly abstract class TrackLine extends Line
     {
         parent::__construct($content);
 
-        list($meta, $track, $attributes) = $this->getValues($this->content, '|', ['', '', '']);
-        list($name) = $this->getValues($meta, ' ', ['']);
-        list($this->key, $this->type) = $this->getValues($name, '/', ['', 'T'], true);
+        list($meta, $track, $attributes) = $this->getValues($this->content, '|', false, meta: '', track: '', attributes: '');
+        list($name) = $this->getValues($meta, ' ', false, name: '');
+        list($this->key, $this->type) = $this->getValues($name, '/', true, key: '', type: '');
 
         $this->track = new Track($track);
 

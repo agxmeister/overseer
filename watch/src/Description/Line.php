@@ -8,7 +8,7 @@ abstract readonly class Line
     {
     }
 
-    protected function getValues($string, $separator, $defaults, $reverse = false): array
+    protected function getValues($string, $separator, $reverse = false, ...$defaults): array
     {
         return array_map(
             fn($default, $value) => $value ?? $default,

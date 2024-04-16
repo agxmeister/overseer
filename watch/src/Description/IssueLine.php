@@ -15,10 +15,10 @@ readonly class IssueLine extends TrackLine
     public function __construct($content)
     {
         parent::__construct($content);
-        list($meta, $track) = $this->getValues($this->content, '|', ['', '']);
-        list($name, $modifier) = $this->getValues($meta, ' ', ['', '']);
-        list($key, $type, $delivery) = $this->getValues($name, '/', ['', 'T', ''], true);
-        list($this->project, $this->milestone) = $this->getValues($delivery, '#', ['PRJ', '']);
+        list($meta, $track) = $this->getValues($this->content, '|', false, meta: '', track: '');
+        list($name, $modifier) = $this->getValues($meta, ' ', false, name: '', modifier: '');
+        list($key, $type, $delivery) = $this->getValues($name, '/', true, key: '', type: 'T', delivery: '');
+        list($this->project, $this->milestone) = $this->getValues($delivery, '#', false, project: 'PRJ', milestone: '');
         $this->started = $modifier === '~';
         $this->completed = $modifier === '+';
         $this->ignored = $modifier === '-';

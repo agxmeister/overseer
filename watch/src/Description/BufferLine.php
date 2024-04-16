@@ -8,7 +8,7 @@ readonly class BufferLine extends TrackLine
     public function __construct($content)
     {
         parent::__construct($content);
-        list($meta, $track) = $this->getValues($this->content, '|', ['', '']);
+        list($meta, $track) = $this->getValues($this->content, '|', false, meta: '', track: '');
         $this->consumption = substr_count(trim($track), '!');
     }
 }

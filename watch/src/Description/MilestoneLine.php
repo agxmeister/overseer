@@ -16,9 +16,9 @@ readonly class MilestoneLine extends Line
     public function __construct($content)
     {
         parent::__construct($content);
-        list($meta, $attributes) = $this->getValues($this->content, '^', ['', '']);
-        list($this->name) = $this->getValues($meta, ' ', ['']);
-        list($this->key) = $this->getValues($this->name, '/', [''], true);
+        list($meta, $attributes) = $this->getValues($this->content, '^', false, meta: '', attributes: '');
+        list($this->name) = $this->getValues($meta, ' ', false, name: '');
+        list($this->key) = $this->getValues($this->name, '/', true, key: '');
         $this->attributes = array_map(
             fn(string $content) => new Attribute($content),
             array_values(
