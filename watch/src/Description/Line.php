@@ -21,4 +21,15 @@ abstract readonly class Line
             )
         );
     }
+
+    protected function getValuesByPattern($string, $pattern): array
+    {
+        $matches = [];
+        preg_match($pattern, $string, $matches, PREG_UNMATCHED_AS_NULL);
+        return array_filter(
+            $matches,
+            fn($key) => is_string($key),
+            ARRAY_FILTER_USE_KEY,
+        );
+    }
 }
