@@ -5,7 +5,7 @@ namespace Watch\Description;
 readonly class IssueLine extends TrackLine
 {
     public string $project;
-    public string $milestone;
+    public string|null $milestone;
     public bool $scheduled;
     public bool $critical;
     public bool $started;
@@ -15,12 +15,20 @@ readonly class IssueLine extends TrackLine
     public function __construct($content)
     {
         parent::__construct($content);
-        ['name' => $name, 'modifier' => $modifier, 'track' => $track] = $this->getValuesByPattern(
+        [
+            'project' => $project,
+            'milestone' => $milestone,
+            'type' => $type,
+            'key' => $key,
+            'modifier' => $modifier,
+            'track' => $track,
+            'attributes' => $attributes,
+        ] = $this->getValuesByPattern(
             $this->content,
-            '/\s*(?<name>\s*[\w\d\-\/#]+)\s+(?<modifier>[~+\-]?)\|(?<track>[x*. ]*)\|\s*(?<attributes>.*)/',
+            '/\s*(((((?<project>[\w\d\-]+)(#(?<milestone>[\w\d\-]+))?)\/)?(?<type>[\w\d]+)\/)?(?<key>[\w\d\-]+))\s+(?<modifier>[~+\-]?)\|(?<track>[x*. ]*)\|\s*(?<attributes>.*)/',
         );
-        list($key, $type, $delivery) = $this->getValues($name, '/', true, key: '', type: 'T', delivery: '');
-        list($this->project, $this->milestone) = $this->getValues($delivery, '#', false, project: 'PRJ', milestone: '');
+        $this->project = $project ?? 'PRJ';
+        $this->milestone = $milestone;
         $this->started = $modifier === '~';
         $this->completed = $modifier === '+';
         $this->ignored = $modifier === '-';
