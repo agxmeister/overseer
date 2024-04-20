@@ -22,7 +22,7 @@ abstract readonly class Line
         );
     }
 
-    protected function getValuesByPattern($string, $pattern, ...$defaults): array
+    protected function getValuesByPattern(string $string, string $pattern, ...$defaults): array
     {
         $matches = [];
         preg_match($pattern, $string, $matches, PREG_UNMATCHED_AS_NULL);

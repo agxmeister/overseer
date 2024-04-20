@@ -25,7 +25,7 @@ readonly class IssueLine extends TrackLine
             'attributes' => $attributes,
         ] = $this->getValuesByPattern(
             $this->content,
-            '/\s*(((((?<project>[\w\d\-]+)(#(?<milestone>[\w\d\-]+))?)\/)?(?<type>[\w\d]+)\/)?(?<key>[\w\d\-]+))\s+(?<modifier>[~+\-]?)\|(?<track>[x*. ]*)\|\s*(?<attributes>.*)/',
+            '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+\-]?)\|(?<track>[x*.\s]*)\|\s*(?<attributes>.*)/',
             project: 'PRJ',
             type: 'T',
         );
