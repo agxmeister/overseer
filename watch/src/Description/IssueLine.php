@@ -16,8 +16,8 @@ readonly class IssueLine extends TrackLine
     {
         parent::__construct($content);
         [
-            'project' => $project,
-            'milestone' => $milestone,
+            'project' => $this->project,
+            'milestone' => $this->milestone,
             'type' => $type,
             'key' => $key,
             'modifier' => $modifier,
@@ -26,9 +26,9 @@ readonly class IssueLine extends TrackLine
         ] = $this->getValuesByPattern(
             $this->content,
             '/\s*(((((?<project>[\w\d\-]+)(#(?<milestone>[\w\d\-]+))?)\/)?(?<type>[\w\d]+)\/)?(?<key>[\w\d\-]+))\s+(?<modifier>[~+\-]?)\|(?<track>[x*. ]*)\|\s*(?<attributes>.*)/',
+            project: 'PRJ',
+            type: 'T',
         );
-        $this->project = $project ?? 'PRJ';
-        $this->milestone = $milestone;
         $this->started = $modifier === '~';
         $this->completed = $modifier === '+';
         $this->ignored = $modifier === '-';

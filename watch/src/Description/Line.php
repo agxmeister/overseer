@@ -22,10 +22,14 @@ abstract readonly class Line
         );
     }
 
-    protected function getValuesByPattern($string, $pattern): array
+    protected function getValuesByPattern($string, $pattern, ...$defaults): array
     {
         $matches = [];
         preg_match($pattern, $string, $matches, PREG_UNMATCHED_AS_NULL);
+        array_walk(
+            $matches,
+            fn(&$value, $key) => $value = $value ?? $defaults[$key] ?? null,
+        );
         return array_filter(
             $matches,
             fn($key) => is_string($key),
