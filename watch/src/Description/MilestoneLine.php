@@ -3,7 +3,6 @@
 namespace Watch\Description;
 
 use DateTimeImmutable;
-use function DI\value;
 
 readonly class MilestoneLine extends Line
 {

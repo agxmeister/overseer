@@ -4,7 +4,10 @@ namespace Watch\Description;
 
 abstract readonly class Line
 {
-    public function __construct(public string $content)
+    /** @var Attribute[]  */
+    public array $attributes;
+
+    public function __construct(protected string $content)
     {
     }
 
@@ -34,6 +37,22 @@ abstract readonly class Line
             $matches,
             fn($key) => is_string($key),
             ARRAY_FILTER_USE_KEY,
+        );
+    }
+
+    protected function setAttributes(string $attributesContent): void
+    {
+        $this->attributes = array_map(
+            fn(string $attributeContent) => new Attribute($attributeContent),
+            array_values(
+                array_filter(
+                    array_map(
+                        fn($attributeContent) => trim($attributeContent),
+                        explode(',', $attributesContent)
+                    ),
+                    fn(string $attributeContent) => !empty($attributeContent),
+                )
+            )
         );
     }
 }

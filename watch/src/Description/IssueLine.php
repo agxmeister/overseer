@@ -4,6 +4,8 @@ namespace Watch\Description;
 
 readonly class IssueLine extends TrackLine
 {
+    public string $key;
+    public string $type;
     public string $project;
     public string|null $milestone;
     public bool $scheduled;
@@ -16,23 +18,25 @@ readonly class IssueLine extends TrackLine
     {
         parent::__construct($content);
         [
+            'key' => $this->key,
+            'type' => $this->type,
             'project' => $this->project,
             'milestone' => $this->milestone,
-            'type' => $type,
-            'key' => $key,
             'modifier' => $modifier,
-            'track' => $track,
-            'attributes' => $attributes,
+            'track' => $trackContent,
+            'attributes' => $attributesContent,
         ] = $this->getValuesByPattern(
             $this->content,
             '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+\-]?)\|(?<track>[x*.\s]*)\|\s*(?<attributes>.*)/',
             project: 'PRJ',
             type: 'T',
         );
+        $this->setTrack($trackContent);
+        $this->setAttributes($attributesContent);
         $this->started = $modifier === '~';
         $this->completed = $modifier === '+';
         $this->ignored = $modifier === '-';
-        $this->scheduled = str_contains($track, '*') || str_contains($track, 'x');
-        $this->critical = str_contains($track, 'x');
+        $this->scheduled = str_contains($trackContent, '*') || str_contains($trackContent, 'x');
+        $this->critical = str_contains($trackContent, 'x');
     }
 }
