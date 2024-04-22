@@ -6,7 +6,6 @@ use DateTimeImmutable;
 
 readonly class MilestoneLine extends Line
 {
-    public string $name;
     public string $key;
 
     /** @var Attribute[] */
@@ -15,21 +14,15 @@ readonly class MilestoneLine extends Line
     public function __construct($content)
     {
         parent::__construct($content);
-        list($meta, $attributes) = $this->getValues($this->content, '^', false, meta: '', attributes: '');
-        list($this->name) = $this->getValues($meta, ' ', false, name: '');
-        list($this->key) = $this->getValues($this->name, '/', true, key: '');
-        $this->attributes = array_map(
-            fn(string $content) => new Attribute($content),
-            array_values(
-                array_filter(
-                    array_map(
-                        fn($attribute) => trim($attribute),
-                        explode(',', $attributes)
-                    ),
-                    fn(string $attribute) => !empty($attribute),
-                )
-            )
+        [
+            'key' => $this->key,
+            'attributes' => $attributesContent,
+        ] = $this->getValuesByPattern(
+            $this->content,
+            '/\s*(?<key>[\w\-]+)?\s+\^\s+(?<attributes>.*)/',
+            key: 'PRJ',
         );
+        $this->setAttributes($attributesContent);
     }
 
     public function getDate(): DateTimeImmutable

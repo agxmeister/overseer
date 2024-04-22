@@ -11,20 +11,6 @@ abstract readonly class Line
     {
     }
 
-    protected function getValues($string, $separator, $reverse = false, ...$defaults): array
-    {
-        return array_map(
-            fn($default, $value) => $value ?? $default,
-            $defaults,
-            array_filter(
-                $reverse
-                    ? array_reverse(explode($separator, $string))
-                    : explode($separator, $string),
-                fn(string $part) => !empty($part),
-            )
-        );
-    }
-
     protected function getValuesByPattern(string $string, string $pattern, ...$defaults): array
     {
         $matches = [];
