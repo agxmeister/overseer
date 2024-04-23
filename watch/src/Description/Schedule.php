@@ -24,7 +24,7 @@ class Schedule extends Description
                 $endGap = $line->track->gap - $projectEndGap;
                 $beginGap = $endGap + $line->track->duration;
 
-                if ($line instanceof IssueLine) {
+                if ($line instanceof ScheduleIssueLine) {
                     $acc[Project::VOLUME_ISSUES][] = [
                         'key' => $line->key,
                         'length' => $line->track->duration,
@@ -84,7 +84,7 @@ class Schedule extends Description
     protected function getLine(string $content): Line
     {
         return match (1) {
-            preg_match('/[x*.]+/', $content) => new IssueLine($content),
+            preg_match('/[x*.]+/', $content) => new ScheduleIssueLine($content),
             preg_match('/[_!]+/', $content) => new BufferLine($content),
             preg_match('/>/', $content) => new ContextLine($content),
             preg_match('/\^/', $content) => new MilestoneLine($content),

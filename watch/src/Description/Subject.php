@@ -21,9 +21,9 @@ class Subject extends Description
         $issues = array_reduce(
             array_filter(
                 $this->getLines(),
-                fn(Line $line) => $line instanceof IssueLine
+                fn(Line $line) => $line instanceof SubjectIssueLine
             ),
-            function($acc, IssueLine $line) use ($mapper, $projectEndDate, $projectEndGap) {
+            function($acc, SubjectIssueLine $line) use ($mapper, $projectEndDate, $projectEndGap) {
                 $endGap = $line->track->gap - $projectEndGap;
                 $beginGap = $endGap + $line->track->duration;
                 return [
@@ -75,7 +75,7 @@ class Subject extends Description
     protected function getLine(string $content): Line
     {
         return match (1) {
-            preg_match('/[*.]+/', $content) => new IssueLine($content),
+            preg_match('/[*.]+/', $content) => new SubjectIssueLine($content),
             preg_match('/>/', $content) => new ContextLine($content),
             preg_match('/\^/', $content) => new MilestoneLine($content),
             default => null,

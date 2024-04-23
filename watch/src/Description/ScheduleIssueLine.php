@@ -2,16 +2,16 @@
 
 namespace Watch\Description;
 
-readonly class IssueLine extends TrackLine
+readonly class ScheduleIssueLine extends TrackLine
 {
     public string $key;
     public string $type;
     public string $project;
     public string|null $milestone;
-    public bool $scheduled;
-    public bool $critical;
     public bool $started;
     public bool $completed;
+    public bool $scheduled;
+    public bool $critical;
     public bool $ignored;
 
     public function __construct($content)
@@ -35,8 +35,8 @@ readonly class IssueLine extends TrackLine
         $this->setAttributes($attributesContent);
         $this->started = $modifier === '~';
         $this->completed = $modifier === '+';
-        $this->ignored = $modifier === '-';
         $this->scheduled = str_contains($trackContent, '*') || str_contains($trackContent, 'x');
         $this->critical = str_contains($trackContent, 'x');
+        $this->ignored = $modifier === '-';
     }
 }
