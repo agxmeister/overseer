@@ -4,7 +4,7 @@ namespace Tests\Unit\Schedule\Description;
 use Codeception\Test\Unit;
 use Watch\Description\Schedule;
 
-class UtilsTest extends Unit
+class ScheduleTest extends Unit
 {
     /**
      * @dataProvider dataGetMilestoneNames
