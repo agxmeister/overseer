@@ -25,7 +25,7 @@ readonly class ScheduleIssueLine extends TrackLine
             'modifier' => $modifier,
             'track' => $trackContent,
             'attributes' => $attributesContent,
-        ] = $this->getValuesByPattern(
+        ] = Utils::getStringParts(
             $this->content,
             '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+\-]?)\|(?<track>[x*.\s]*)\|\s*(?<attributes>.*)/',
             project: 'PRJ',

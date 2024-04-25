@@ -23,7 +23,7 @@ readonly class SubjectIssueLine extends TrackLine
             'modifier' => $modifier,
             'track' => $trackContent,
             'attributes' => $attributesContent,
-        ] = $this->getValuesByPattern(
+        ] = Utils::getStringParts(
             $this->content,
             '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+]?)\|(?<track>[*.\s]*)\|\s*(?<attributes>.*)/',
             project: 'PRJ',

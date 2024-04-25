@@ -17,7 +17,7 @@ readonly class MilestoneLine extends Line
         [
             'key' => $this->key,
             'attributes' => $attributesContent,
-        ] = $this->getValuesByPattern(
+        ] = Utils::getStringParts(
             $this->content,
             '/\s*(?<key>[\w\-]+)?\s+\^\s+(?<attributes>.*)/',
             key: 'PRJ',

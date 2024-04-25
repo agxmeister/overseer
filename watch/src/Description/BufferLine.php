@@ -15,7 +15,7 @@ readonly class BufferLine extends TrackLine
             'type' => $this->type,
             'track' => $trackContent,
             'attributes' => $attributesContent,
-        ] = $this->getValuesByPattern(
+        ] = Utils::getStringParts(
             $this->content,
             '/\s*(((?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+\|(?<track>[_!\s]*)\|\s*(?<attributes>.*)/',
             type: 'T',
