@@ -8,7 +8,6 @@ use Watch\Description\ContextLine;
 use Watch\Description\ScheduleIssueLine;
 use Watch\Description\Line;
 use Watch\Description\MilestoneLine;
-use Watch\Description\ProjectLine;
 use Watch\Description\Track;
 use Watch\Description\TrackLine;
 use Watch\Schedule\Mapper;
@@ -222,11 +221,22 @@ abstract class Description
      */
     protected function getMilestoneLines(): array
     {
-        return array_values(
+        return array_slice(array_values(
             array_filter(
                 $this->getLines(),
                 fn(Line $line) => get_class($line) === MilestoneLine::class,
             )
+        ), 0, -1);
+    }
+
+    protected function getProjectLine(): MilestoneLine|null
+    {
+        return array_reduce(
+            array_filter(
+                $this->getLines(),
+                fn(Line $line) => $line instanceof MilestoneLine,
+            ),
+            fn($acc, $line) => $line,
         );
     }
 
@@ -236,17 +246,6 @@ abstract class Description
             array_filter(
                 $this->getLines(),
                 fn(Line $line) => $line instanceof ContextLine,
-            ),
-            fn($acc, $line) => $line,
-        );
-    }
-
-    protected function getProjectLine(): ProjectLine|null
-    {
-        return array_reduce(
-            array_filter(
-                $this->getLines(),
-                fn(Line $line) => $line instanceof ProjectLine,
             ),
             fn($acc, $line) => $line,
         );
@@ -264,19 +263,15 @@ abstract class Description
             explode("\n", $this->description),
             fn($line) => !empty(trim($line)),
         );
-        $projectLineExists = str_contains($contents[array_key_last($contents)], '^');
         $this->lines = array_values(
             array_filter(
                 array_map(
                     fn(string $content) => $this->getLine($content),
-                    $projectLineExists ? array_slice($contents, 0, -1) : $contents,
+                    $contents,
                 ),
                 fn(Line|null $line) => !is_null($line),
             )
         );
-        if ($projectLineExists) {
-            $this->lines[] = new ProjectLine($contents[array_key_last($contents)]);
-        }
         return $this->lines;
     }
 
