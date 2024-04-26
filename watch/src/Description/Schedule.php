@@ -84,10 +84,10 @@ class Schedule extends Description
     protected function getLine(string $content): Line
     {
         return match (1) {
-            preg_match('/[x*.]+/', $content) => new ScheduleIssueLine($content),
-            preg_match('/[_!]+/', $content) => new BufferLine($content),
-            preg_match('/>/', $content) => new ContextLine($content),
-            preg_match('/\^/', $content) => new MilestoneLine($content),
+            preg_match(ScheduleIssueLine::PATTERN, $content) => new ScheduleIssueLine($content),
+            preg_match(BufferLine::PATTERN, $content) => new BufferLine($content),
+            preg_match(ContextLine::PATTERN, $content) => new ContextLine($content),
+            preg_match(MilestoneLine::PATTERN, $content) => new MilestoneLine($content),
             default => null,
         };
     }

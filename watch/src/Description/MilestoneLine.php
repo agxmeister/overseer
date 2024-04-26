@@ -6,6 +6,8 @@ use DateTimeImmutable;
 
 readonly class MilestoneLine extends Line
 {
+    const string PATTERN = '/\s*(?<key>[\w\-]+)?\s+\^\s+(?<attributes>.*)/';
+
     public string $key;
 
     /** @var Attribute[] */
@@ -19,7 +21,7 @@ readonly class MilestoneLine extends Line
             'attributes' => $attributesContent,
         ] = Utils::getStringParts(
             $this->content,
-            '/\s*(?<key>[\w\-]+)?\s+\^\s+(?<attributes>.*)/',
+            self::PATTERN,
             key: 'PRJ',
         );
         $this->setAttributes($attributesContent);

@@ -75,9 +75,9 @@ class Subject extends Description
     protected function getLine(string $content): Line
     {
         return match (1) {
-            preg_match('/[*.]+/', $content) => new SubjectIssueLine($content),
-            preg_match('/>/', $content) => new ContextLine($content),
-            preg_match('/\^/', $content) => new MilestoneLine($content),
+            preg_match(SubjectIssueLine::PATTERN, $content) => new SubjectIssueLine($content),
+            preg_match(ContextLine::PATTERN, $content) => new ContextLine($content),
+            preg_match(MilestoneLine::PATTERN, $content) => new MilestoneLine($content),
             default => null,
         };
     }

@@ -4,6 +4,8 @@ namespace Watch\Description;
 
 readonly class BufferLine extends TrackLine
 {
+    const string PATTERN = '/\s*(((?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+\|(?<track>[_!\s]*)\|\s*(?<attributes>.*)/';
+
     public string $key;
     public string $type;
     public int $consumption;
@@ -17,7 +19,7 @@ readonly class BufferLine extends TrackLine
             'attributes' => $attributesContent,
         ] = Utils::getStringParts(
             $this->content,
-            '/\s*(((?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+\|(?<track>[_!\s]*)\|\s*(?<attributes>.*)/',
+            self::PATTERN,
             type: 'T',
         );
         $this->setTrack($trackContent);

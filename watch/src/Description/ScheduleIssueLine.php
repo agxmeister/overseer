@@ -4,6 +4,8 @@ namespace Watch\Description;
 
 readonly class ScheduleIssueLine extends TrackLine
 {
+    const string PATTERN = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+\-]?)\|(?<track>[x*.\s]*)\|\s*(?<attributes>.*)/';
+
     public string $key;
     public string $type;
     public string $project;
@@ -27,7 +29,7 @@ readonly class ScheduleIssueLine extends TrackLine
             'attributes' => $attributesContent,
         ] = Utils::getStringParts(
             $this->content,
-            '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+\-]?)\|(?<track>[x*.\s]*)\|\s*(?<attributes>.*)/',
+            self::PATTERN,
             project: 'PRJ',
             type: 'T',
         );
