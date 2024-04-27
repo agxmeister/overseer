@@ -65,7 +65,7 @@ class Subject extends Description
                 $this->getTrackLines(),
                 fn($acc, TrackLine $line) => [
                     ...$acc,
-                    ...$this->getLinksByAttributes($line->key, $line->attributes, $mapper),
+                    ...$this->getSubjectLinksByAttributes($line->key, $line->attributes, $mapper),
                 ],
                 [],
             ),

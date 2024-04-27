@@ -140,10 +140,10 @@ abstract class Description
     /**
      * @param string $from
      * @param Attribute[] $attributes
-     * @param Mapper|null $mapper
+     * @param Mapper $mapper
      * @return array
      */
-    protected function getLinksByAttributes(string $from, array $attributes, Mapper $mapper = null): array
+    protected function getSubjectLinksByAttributes(string $from, array $attributes, Mapper $mapper): array
     {
         return array_reduce(
             array_filter(
@@ -155,9 +155,9 @@ abstract class Description
                 [
                     'from' => $from,
                     'to' => $attribute->value,
-                    'type' => !is_null($mapper)
-                        ? ($attribute->type === AttributeType::Sequence ? current($mapper->sequenceLinkTypes) : current($mapper->scheduleLnkTypes))
-                        : ($attribute->type === AttributeType::Sequence ? 'sequence' : 'schedule'),
+                    'type' => $attribute->type === AttributeType::Sequence
+                        ? current($mapper->sequenceLinkTypes)
+                        : current($mapper->scheduleLnkTypes),
                 ],
             ],
             [],
