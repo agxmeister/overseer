@@ -6,25 +6,13 @@ use DateTimeImmutable;
 
 readonly class MilestoneLine extends Line
 {
-    const string PATTERN = '/\s*(?<key>[\w\-]+)?\s+\^\s+(?<attributes>.*)/';
-
-    public string $key;
-
     /** @var Attribute[] */
     public array $attributes;
 
-    public function __construct($content)
+    public function __construct(string $content, public string $key, string $attributes)
     {
         parent::__construct($content);
-        [
-            'key' => $this->key,
-            'attributes' => $attributesContent,
-        ] = Utils::getStringParts(
-            $this->content,
-            self::PATTERN,
-            key: 'PRJ',
-        );
-        $this->setAttributes($attributesContent);
+        $this->setAttributes($attributes);
     }
 
     public function getDate(): DateTimeImmutable

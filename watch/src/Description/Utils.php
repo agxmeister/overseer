@@ -4,10 +4,13 @@ namespace Watch\Description;
 
 class Utils
 {
-    static public function getStringParts(string $string, string $pattern, ...$defaults): array
+    static public function getStringParts(string $string, string $pattern, ...$defaults): array|null
     {
         $matches = [];
-        preg_match($pattern, $string, $matches, PREG_UNMATCHED_AS_NULL);
+        $result = preg_match($pattern, $string, $matches, PREG_UNMATCHED_AS_NULL);
+        if (!$result) {
+            return null;
+        }
         array_walk(
             $matches,
             fn(&$value, $key) => $value = $value ?? $defaults[$key] ?? null,

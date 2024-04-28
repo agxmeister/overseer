@@ -8,6 +8,8 @@ use Watch\Schedule\Serializer\Project;
 
 class Schedule extends Description
 {
+    const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+\^\s+(?<attributes>.*)/';
+
     public function getSchedule(): array
     {
         $projectEndDate = $this->getProjectEndDate();
@@ -83,11 +85,15 @@ class Schedule extends Description
 
     protected function getLine(string $content): Line
     {
+        $milestoneLineProperties = Utils::getStringParts($content, self::PATTERN_MILESTONE_LINE, key: 'PRJ');
+        if (!is_null($milestoneLineProperties)) {
+            return new MilestoneLine($content, ...$milestoneLineProperties);
+        }
+
         return match (1) {
             preg_match(ScheduleIssueLine::PATTERN, $content) => new ScheduleIssueLine($content),
             preg_match(BufferLine::PATTERN, $content) => new BufferLine($content),
             preg_match(ContextLine::PATTERN, $content) => new ContextLine($content),
-            preg_match(MilestoneLine::PATTERN, $content) => new MilestoneLine($content),
             default => null,
         };
     }
