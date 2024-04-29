@@ -9,6 +9,7 @@ use Watch\Schedule\Serializer\Project;
 class Schedule extends Description
 {
     const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+\^\s+(?<attributes>.*)/';
+    const string PATTERN_BUFFER_LINE = '/\s*(((?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+\|(?<track>[_!\s]*)\|\s*(?<attributes>.*)/';
 
     public function getSchedule(): array
     {
@@ -90,9 +91,13 @@ class Schedule extends Description
             return new MilestoneLine($content, ...$milestoneLineProperties);
         }
 
+        $bufferLineProperties = Utils::getStringParts($content, self::PATTERN_BUFFER_LINE, type: 'T');
+        if (!is_null($bufferLineProperties)) {
+            return new BufferLine($content, ...$bufferLineProperties);
+        }
+
         return match (1) {
             preg_match(ScheduleIssueLine::PATTERN, $content) => new ScheduleIssueLine($content),
-            preg_match(BufferLine::PATTERN, $content) => new BufferLine($content),
             preg_match(ContextLine::PATTERN, $content) => new ContextLine($content),
             default => null,
         };
