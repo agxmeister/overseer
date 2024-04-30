@@ -9,6 +9,7 @@ use Watch\Subject\Model\Link;
 
 class Subject extends Description
 {
+    const string PATTERN_ISSUE_LINE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+]?)\|(?<track>[*.\s]*)\|\s*(?<attributes>.*)/';
     const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+\^\s+(?<attributes>.*)/';
     const string PATTERN_CONTEXT_LINE = '/>/';
 
@@ -75,8 +76,13 @@ class Subject extends Description
         );
     }
 
-    protected function getLine(string $content): Line
+    protected function getLine(string $content): Line|null
     {
+        $issueLineProperties = Utils::getStringParts($content, self::PATTERN_ISSUE_LINE, project: 'PRJ', type: 'T');
+        if (!is_null($issueLineProperties)) {
+            return new SubjectIssueLine($content, ...$issueLineProperties);
+        }
+
         $milestoneLineProperties = Utils::getStringParts($content, self::PATTERN_MILESTONE_LINE, key: 'PRJ');
         if (!is_null($milestoneLineProperties)) {
             return new MilestoneLine($content, ...$milestoneLineProperties);
@@ -87,9 +93,6 @@ class Subject extends Description
             return new ContextLine($content);
         }
 
-        return match (1) {
-            preg_match(SubjectIssueLine::PATTERN, $content) => new SubjectIssueLine($content),
-            default => null,
-        };
+        return null;
     }
 }

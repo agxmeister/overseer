@@ -275,5 +275,5 @@ abstract class Description
         return $this->lines;
     }
 
-    protected abstract function getLine(string $content): Line;
+    protected abstract function getLine(string $content): Line|null;
 }

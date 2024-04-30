@@ -8,6 +8,7 @@ use Watch\Schedule\Serializer\Project;
 
 class Schedule extends Description
 {
+    const string PATTERN_ISSUE_LINE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+\-]?)\|(?<track>[x*.\s]*)\|\s*(?<attributes>.*)/';
     const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+\^\s+(?<attributes>.*)/';
     const string PATTERN_BUFFER_LINE = '/\s*(((?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+\|(?<track>[_!\s]*)\|\s*(?<attributes>.*)/';
     const string PATTERN_CONTEXT_LINE = '/>/';
@@ -85,8 +86,13 @@ class Schedule extends Description
         return $schedule;
     }
 
-    protected function getLine(string $content): Line
+    protected function getLine(string $content): Line|null
     {
+        $issueLineProperties = Utils::getStringParts($content, self::PATTERN_ISSUE_LINE, project: 'PRJ', type: 'T');
+        if (!is_null($issueLineProperties)) {
+            return new ScheduleIssueLine($content, ...$issueLineProperties);
+        }
+
         $milestoneLineProperties = Utils::getStringParts($content, self::PATTERN_MILESTONE_LINE, key: 'PRJ');
         if (!is_null($milestoneLineProperties)) {
             return new MilestoneLine($content, ...$milestoneLineProperties);
@@ -102,9 +108,6 @@ class Schedule extends Description
             return new ContextLine($content);
         }
 
-        return match (1) {
-            preg_match(ScheduleIssueLine::PATTERN, $content) => new ScheduleIssueLine($content),
-            default => null,
-        };
+        return null;
     }
 }

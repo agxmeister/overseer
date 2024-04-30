@@ -4,37 +4,26 @@ namespace Watch\Description;
 
 readonly class SubjectIssueLine extends TrackLine
 {
-    const string PATTERN = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+]?)\|(?<track>[*.\s]*)\|\s*(?<attributes>.*)/';
-
-    public string $key;
-    public string $type;
-    public string $project;
-    public string|null $milestone;
     public bool $scheduled;
     public bool $started;
     public bool $completed;
 
-    public function __construct($content)
+    public function __construct(
+        $content,
+        public string $key,
+        public string $type,
+        public string $project,
+        public string|null $milestone,
+        string $modifier,
+        string $track,
+        string $attributes,
+    )
     {
         parent::__construct($content);
-        [
-            'key' => $this->key,
-            'type' => $this->type,
-            'project' => $this->project,
-            'milestone' => $this->milestone,
-            'modifier' => $modifier,
-            'track' => $trackContent,
-            'attributes' => $attributesContent,
-        ] = Utils::getStringParts(
-            $this->content,
-            self::PATTERN,
-            project: 'PRJ',
-            type: 'T',
-        );
-        $this->setTrack($trackContent);
-        $this->setAttributes($attributesContent);
+        $this->setTrack($track);
+        $this->setAttributes($attributes);
         $this->started = $modifier === '~';
         $this->completed = $modifier === '+';
-        $this->scheduled = str_contains($trackContent, '*');
+        $this->scheduled = str_contains($track, '*');
     }
 }
