@@ -10,6 +10,7 @@ use Watch\Subject\Model\Link;
 class Subject extends Description
 {
     const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+\^\s+(?<attributes>.*)/';
+    const string PATTERN_CONTEXT_LINE = '/>/';
 
     /**
      * @param Mapper $mapper
@@ -81,9 +82,13 @@ class Subject extends Description
             return new MilestoneLine($content, ...$milestoneLineProperties);
         }
 
+        $contextLineProperties = Utils::getStringParts($content, self::PATTERN_CONTEXT_LINE);
+        if (!is_null($contextLineProperties)) {
+            return new ContextLine($content);
+        }
+
         return match (1) {
             preg_match(SubjectIssueLine::PATTERN, $content) => new SubjectIssueLine($content),
-            preg_match(ContextLine::PATTERN, $content) => new ContextLine($content),
             default => null,
         };
     }

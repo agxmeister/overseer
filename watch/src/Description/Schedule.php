@@ -10,6 +10,7 @@ class Schedule extends Description
 {
     const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+\^\s+(?<attributes>.*)/';
     const string PATTERN_BUFFER_LINE = '/\s*(((?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+\|(?<track>[_!\s]*)\|\s*(?<attributes>.*)/';
+    const string PATTERN_CONTEXT_LINE = '/>/';
 
     public function getSchedule(): array
     {
@@ -96,9 +97,13 @@ class Schedule extends Description
             return new BufferLine($content, ...$bufferLineProperties);
         }
 
+        $contextLineProperties = Utils::getStringParts($content, self::PATTERN_CONTEXT_LINE);
+        if (!is_null($contextLineProperties)) {
+            return new ContextLine($content);
+        }
+
         return match (1) {
             preg_match(ScheduleIssueLine::PATTERN, $content) => new ScheduleIssueLine($content),
-            preg_match(ContextLine::PATTERN, $content) => new ContextLine($content),
             default => null,
         };
     }
