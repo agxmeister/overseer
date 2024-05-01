@@ -12,8 +12,8 @@ readonly class ScheduleIssueLine extends TrackLine
 
     public function __construct(
         $content,
-        public string $key,
-        public string $type,
+        string $key,
+        string $type,
         public string $project,
         public string|null $milestone,
         string $modifier,
@@ -21,8 +21,7 @@ readonly class ScheduleIssueLine extends TrackLine
         string $attributes,
     )
     {
-        parent::__construct($content);
-        $this->setTrack($track);
+        parent::__construct($content, $key, $type, $track);
         $this->setAttributes($attributes);
         $this->started = $modifier === '~';
         $this->completed = $modifier === '+';

@@ -6,10 +6,9 @@ readonly class BufferLine extends TrackLine
 {
     public int $consumption;
 
-    public function __construct($content, public string $key, public  string $type, string $track, string $attributes)
+    public function __construct($content, string $key, string $type, string $track, string $attributes)
     {
-        parent::__construct($content);
-        $this->setTrack($track);
+        parent::__construct($content, $key, $type, $track);
         $this->setAttributes($attributes);
         $this->consumption = substr_count(trim($track), '!');
     }
