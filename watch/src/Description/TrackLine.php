@@ -6,7 +6,12 @@ readonly abstract class TrackLine extends Line
 {
     public Track $track;
 
-    public function __construct(string $content, public string $key, public string $type, string $track)
+    public function __construct(
+        string $content,
+        public string $key,
+        public string $type,
+        string $track,
+    )
     {
         parent::__construct($content);
         $this->setTrack($track);
