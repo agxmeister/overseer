@@ -11,9 +11,10 @@ readonly abstract class TrackLine extends Line
         public string $key,
         public string $type,
         string $track,
+        string $attributes,
     )
     {
-        parent::__construct($content);
+        parent::__construct($content, $attributes);
         $this->setTrack($track);
     }
 

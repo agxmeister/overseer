@@ -7,21 +7,22 @@ abstract readonly class Line
     /** @var Attribute[]  */
     public array $attributes;
 
-    public function __construct(protected string $content)
+    public function __construct(protected string $content, string $attributes = '')
     {
+        $this->setAttributes($attributes);
     }
 
-    protected function setAttributes(string $attributesContent): void
+    protected function setAttributes(string $attributes): void
     {
         $this->attributes = array_map(
-            fn(string $attributeContent) => new Attribute($attributeContent),
+            fn(string $attribute) => new Attribute($attribute),
             array_values(
                 array_filter(
                     array_map(
-                        fn($attributeContent) => trim($attributeContent),
-                        explode(',', $attributesContent)
+                        fn($attribute) => trim($attribute),
+                        explode(',', $attributes)
                     ),
-                    fn(string $attributeContent) => !empty($attributeContent),
+                    fn(string $attribute) => !empty($attribute),
                 )
             )
         );

@@ -21,8 +21,7 @@ readonly class ScheduleIssueLine extends IssueLine
         string $attributes,
     )
     {
-        parent::__construct($content, $key, $type, $project, $milestone, $track);
-        $this->setAttributes($attributes);
+        parent::__construct($content, $key, $type, $project, $milestone, $track, $attributes);
         $this->started = $modifier === '~';
         $this->completed = $modifier === '+';
         $this->scheduled = str_contains($track, '*') || str_contains($track, 'x');

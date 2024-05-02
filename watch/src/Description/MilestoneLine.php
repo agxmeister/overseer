@@ -11,8 +11,7 @@ readonly class MilestoneLine extends Line
 
     public function __construct(string $content, public string $key, string $attributes)
     {
-        parent::__construct($content);
-        $this->setAttributes($attributes);
+        parent::__construct($content, $attributes);
     }
 
     public function getDate(): DateTimeImmutable
