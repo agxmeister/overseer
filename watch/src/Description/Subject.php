@@ -91,7 +91,8 @@ class Subject extends Description
         $offsets = [];
         $contextLineProperties = Utils::getStringParts($content, self::PATTERN_CONTEXT_LINE, $offsets);
         if (!is_null($contextLineProperties)) {
-            return new ContextLine($content);
+            list('marker' => $markerOffset) = $offsets;
+            return new ContextLine($content, $markerOffset);
         }
 
         return null;

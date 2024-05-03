@@ -112,7 +112,7 @@ abstract class Description
         if (is_null($contextLine)) {
             return $this->getProjectBeginDate();
         }
-        $gap = $contextLine->getMarkerPosition() - $projectLine->getMarkerPosition();
+        $gap = $contextLine->markerOffset - $projectLine->getMarkerPosition();
         return $projectLine->getDate()->modify("{$gap} day");
     }
 

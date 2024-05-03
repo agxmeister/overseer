@@ -4,8 +4,8 @@ namespace Watch\Description;
 
 readonly class ContextLine extends Line
 {
-    public function getMarkerPosition(): int
+    public function __construct(string $content, public int $markerOffset)
     {
-        return strrpos($this->content, '>');
+        parent::__construct($content);
     }
 }
