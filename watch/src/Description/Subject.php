@@ -10,7 +10,7 @@ use Watch\Subject\Model\Link;
 class Subject extends Description
 {
     const string PATTERN_ISSUE_LINE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+]?)\|(?<track>[*.\s]*)\|\s*(?<attributes>.*)/';
-    const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+\^\s+(?<attributes>.*)/';
+    const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/';
     const string PATTERN_CONTEXT_LINE = '/(?<marker>>)/';
 
     /**
@@ -83,9 +83,17 @@ class Subject extends Description
             return new SubjectIssueLine($content, ...$issueLineProperties);
         }
 
-        $milestoneLineProperties = Utils::getStringParts($content, self::PATTERN_MILESTONE_LINE, key: 'PRJ');
+        $offsets = [];
+        $milestoneLineProperties = Utils::getStringParts($content, self::PATTERN_MILESTONE_LINE, $offsets, key: 'PRJ');
         if (!is_null($milestoneLineProperties)) {
-            return new MilestoneLine($content, ...$milestoneLineProperties);
+            list('key' => $key, 'attributes' => $attributes) = $milestoneLineProperties;
+            list('marker' => $markerOffset) = $offsets;
+            return new MilestoneLine(
+                $content,
+                $key,
+                $attributes,
+                $markerOffset,
+            );
         }
 
         $offsets = [];

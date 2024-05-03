@@ -112,7 +112,7 @@ abstract class Description
         if (is_null($contextLine)) {
             return $this->getProjectBeginDate();
         }
-        $gap = $contextLine->markerOffset - $projectLine->getMarkerPosition();
+        $gap = $contextLine->markerOffset - $projectLine->markerOffset;
         return $projectLine->getDate()->modify("{$gap} day");
     }
 
@@ -184,7 +184,7 @@ abstract class Description
 
     protected function isEndMarkers(): bool
     {
-        return $this->getProjectLine()?->getMarkerPosition() >= max(
+        return $this->getProjectLine()?->markerOffset >= max(
             array_map(
                 fn(TrackLine $issueLine) => $issueLine->getEndPosition(),
                 $this->getTrackLines(),

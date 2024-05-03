@@ -9,7 +9,7 @@ readonly class MilestoneLine extends Line
     /** @var Attribute[] */
     public array $attributes;
 
-    public function __construct(string $content, public string $key, string $attributes)
+    public function __construct(string $content, public string $key, string $attributes, public int $markerOffset)
     {
         parent::__construct($content, $attributes);
     }
@@ -25,10 +25,5 @@ readonly class MilestoneLine extends Line
                 fn(Attribute|null $acc, Attribute $attribute) => $attribute,
             )?->value,
         );
-    }
-
-    public function getMarkerPosition(): int
-    {
-        return strrpos($this->content, '^');
     }
 }

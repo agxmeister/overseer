@@ -9,7 +9,7 @@ use Watch\Schedule\Serializer\Project;
 class Schedule extends Description
 {
     const string PATTERN_ISSUE_LINE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+\-]?)\|(?<track>[x*.\s]*)\|\s*(?<attributes>.*)/';
-    const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+\^\s+(?<attributes>.*)/';
+    const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/';
     const string PATTERN_BUFFER_LINE = '/\s*(((?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+\|(?<track>[_!\s]*)\|\s*(?<attributes>.*)/';
     const string PATTERN_CONTEXT_LINE = '/(?<marker>>)/';
 
@@ -93,9 +93,17 @@ class Schedule extends Description
             return new ScheduleIssueLine($content, ...$issueLineProperties);
         }
 
-        $milestoneLineProperties = Utils::getStringParts($content, self::PATTERN_MILESTONE_LINE, key: 'PRJ');
+        $offsets = [];
+        $milestoneLineProperties = Utils::getStringParts($content, self::PATTERN_MILESTONE_LINE, $offsets, key: 'PRJ');
         if (!is_null($milestoneLineProperties)) {
-            return new MilestoneLine($content, ...$milestoneLineProperties);
+            list('key' => $key, 'attributes' => $attributes) = $milestoneLineProperties;
+            list('marker' => $markerOffset) = $offsets;
+            return new MilestoneLine(
+                $content,
+                $key,
+                $attributes,
+                $markerOffset,
+            );
         }
 
         $bufferLineProperties = Utils::getStringParts($content, self::PATTERN_BUFFER_LINE, type: 'T');
