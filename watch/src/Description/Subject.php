@@ -11,7 +11,7 @@ class Subject extends Description
 {
     const string PATTERN_ISSUE_LINE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+]?)\|(?<track>[*.\s]*)\|\s*(?<attributes>.*)/';
     const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+\^\s+(?<attributes>.*)/';
-    const string PATTERN_CONTEXT_LINE = '/>/';
+    const string PATTERN_CONTEXT_LINE = '/(?<marker>>)/';
 
     /**
      * @param Mapper $mapper
@@ -88,7 +88,8 @@ class Subject extends Description
             return new MilestoneLine($content, ...$milestoneLineProperties);
         }
 
-        $contextLineProperties = Utils::getStringParts($content, self::PATTERN_CONTEXT_LINE);
+        $offsets = [];
+        $contextLineProperties = Utils::getStringParts($content, self::PATTERN_CONTEXT_LINE, $offsets);
         if (!is_null($contextLineProperties)) {
             return new ContextLine($content);
         }
