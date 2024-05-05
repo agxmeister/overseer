@@ -8,7 +8,7 @@ use Watch\Schedule\Serializer\Project;
 
 class Schedule extends Description
 {
-    const string PATTERN_ISSUE_LINE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+\-]?)\|(?<track>[x*.\s]*)\|\s*(?<attributes>.*)/';
+    const string PATTERN_ISSUE_LINE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+\-]?)(?<beginMarker>\|)(?<track>[x*.\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
     const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/';
     const string PATTERN_BUFFER_LINE = '/\s*(((?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+\|(?<track>[_!\s]*)\|\s*(?<attributes>.*)/';
     const string PATTERN_CONTEXT_LINE = '/(?<marker>>)/';
@@ -90,7 +90,16 @@ class Schedule extends Description
     {
         $issueLineProperties = Utils::getStringParts($content, self::PATTERN_ISSUE_LINE, project: 'PRJ', type: 'T');
         if (!is_null($issueLineProperties)) {
-            return new ScheduleIssueLine($content, ...$issueLineProperties);
+            list(
+                'key' => $key,
+                'type' => $type,
+                'project' => $project,
+                'milestone' => $milestone,
+                'modifier' => $modifier,
+                'track' => $track,
+                'attributes' => $attributes,
+            ) = $issueLineProperties;
+            return new ScheduleIssueLine($content, $key, $type, $project, $milestone, $modifier, $track, $attributes);
         }
 
         $offsets = [];

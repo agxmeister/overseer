@@ -9,7 +9,7 @@ use Watch\Subject\Model\Link;
 
 class Subject extends Description
 {
-    const string PATTERN_ISSUE_LINE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+]?)\|(?<track>[*.\s]*)\|\s*(?<attributes>.*)/';
+    const string PATTERN_ISSUE_LINE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+]?)(?<beginMarker>\|)(?<track>[*.\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
     const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/';
     const string PATTERN_CONTEXT_LINE = '/(?<marker>>)/';
 
@@ -80,7 +80,16 @@ class Subject extends Description
     {
         $issueLineProperties = Utils::getStringParts($content, self::PATTERN_ISSUE_LINE, project: 'PRJ', type: 'T');
         if (!is_null($issueLineProperties)) {
-            return new SubjectIssueLine($content, ...$issueLineProperties);
+            list(
+                'key' => $key,
+                'type' => $type,
+                'project' => $project,
+                'milestone' => $milestone,
+                'modifier' => $modifier,
+                'track' => $track,
+                'attributes' => $attributes,
+            ) = $issueLineProperties;
+            return new SubjectIssueLine($content, $key, $type, $project, $milestone, $modifier, $track, $attributes);
         }
 
         $offsets = [];
