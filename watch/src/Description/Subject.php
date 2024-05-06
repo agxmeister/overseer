@@ -78,7 +78,8 @@ class Subject extends Description
 
     protected function getLine(string $content): Line|null
     {
-        $issueLineProperties = Utils::getStringParts($content, self::PATTERN_ISSUE_LINE, project: 'PRJ', type: 'T');
+        $offsets = [];
+        $issueLineProperties = Utils::getStringParts($content, self::PATTERN_ISSUE_LINE, $offsets, project: 'PRJ', type: 'T');
         if (!is_null($issueLineProperties)) {
             list(
                 'key' => $key,
@@ -89,7 +90,8 @@ class Subject extends Description
                 'track' => $track,
                 'attributes' => $attributes,
             ) = $issueLineProperties;
-            return new SubjectIssueLine($content, $key, $type, $project, $milestone, $modifier, $track, $attributes);
+            list('endMarker' => $endMarkerOffset) = $offsets;
+            return new SubjectIssueLine($content, $key, $type, $project, $milestone, $modifier, $track, $attributes, $endMarkerOffset);
         }
 
         $offsets = [];

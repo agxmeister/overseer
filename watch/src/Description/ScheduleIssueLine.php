@@ -19,9 +19,10 @@ readonly class ScheduleIssueLine extends IssueLine
         string $modifier,
         string $track,
         string $attributes,
+        int $endMarkerOffset,
     )
     {
-        parent::__construct($content, $key, $type, $project, $milestone, $track, $attributes);
+        parent::__construct($content, $key, $type, $project, $milestone, $track, $attributes, $endMarkerOffset);
         $this->started = $modifier === '~';
         $this->completed = $modifier === '+';
         $this->scheduled = str_contains($track, '*') || str_contains($track, 'x');

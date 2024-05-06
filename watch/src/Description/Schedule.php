@@ -88,7 +88,8 @@ class Schedule extends Description
 
     protected function getLine(string $content): Line|null
     {
-        $issueLineProperties = Utils::getStringParts($content, self::PATTERN_ISSUE_LINE, project: 'PRJ', type: 'T');
+        $offsets = [];
+        $issueLineProperties = Utils::getStringParts($content, self::PATTERN_ISSUE_LINE, $offsets, project: 'PRJ', type: 'T');
         if (!is_null($issueLineProperties)) {
             list(
                 'key' => $key,
@@ -99,7 +100,8 @@ class Schedule extends Description
                 'track' => $track,
                 'attributes' => $attributes,
             ) = $issueLineProperties;
-            return new ScheduleIssueLine($content, $key, $type, $project, $milestone, $modifier, $track, $attributes);
+            list('endMarker' => $endMarkerOffset) = $offsets;
+            return new ScheduleIssueLine($content, $key, $type, $project, $milestone, $modifier, $track, $attributes, $endMarkerOffset);
         }
 
         $offsets = [];
@@ -118,7 +120,8 @@ class Schedule extends Description
             );
         }
 
-        $bufferLineProperties = Utils::getStringParts($content, self::PATTERN_BUFFER_LINE, type: 'T');
+        $offsets = [];
+        $bufferLineProperties = Utils::getStringParts($content, self::PATTERN_BUFFER_LINE, $offsets, type: 'T');
         if (!is_null($bufferLineProperties)) {
             list(
                 'key' => $key,
@@ -126,7 +129,8 @@ class Schedule extends Description
                 'track' => $track,
                 'attributes' => $attributes,
             ) = $bufferLineProperties;
-            return new BufferLine($content, $key, $type, $track, $attributes);
+            list('endMarker' => $endMarkerOffset) = $offsets;
+            return new BufferLine($content, $key, $type, $track, $attributes, $endMarkerOffset);
         }
 
         $offsets = [];

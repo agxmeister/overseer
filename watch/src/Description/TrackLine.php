@@ -12,6 +12,7 @@ readonly abstract class TrackLine extends Line
         public string $type,
         string $track,
         string $attributes,
+        public int $endMarkerOffset,
     )
     {
         parent::__construct($content, $attributes);
@@ -20,7 +21,7 @@ readonly abstract class TrackLine extends Line
 
     public function getEndPosition(): int
     {
-        return strrpos($this->content, '|') - $this->track->gap;
+        return $this->endMarkerOffset - $this->track->gap;
     }
 
     public function getLinks(): array
