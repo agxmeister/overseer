@@ -10,7 +10,7 @@ class Schedule extends Description
 {
     const string PATTERN_ISSUE_LINE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+\-]?)(?<beginMarker>\|)(?<track>[x*.\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
     const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/';
-    const string PATTERN_BUFFER_LINE = '/\s*(((?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+\|(?<track>[_!\s]*)\|\s*(?<attributes>.*)/';
+    const string PATTERN_BUFFER_LINE = '/\s*(((?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<beginMarker>\|)(?<track>[_!\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
     const string PATTERN_CONTEXT_LINE = '/(?<marker>>)/';
 
     public function getSchedule(): array
@@ -105,7 +105,10 @@ class Schedule extends Description
         $offsets = [];
         $milestoneLineProperties = Utils::getStringParts($content, self::PATTERN_MILESTONE_LINE, $offsets, key: 'PRJ');
         if (!is_null($milestoneLineProperties)) {
-            list('key' => $key, 'attributes' => $attributes) = $milestoneLineProperties;
+            list(
+                'key' => $key,
+                'attributes' => $attributes
+            ) = $milestoneLineProperties;
             list('marker' => $markerOffset) = $offsets;
             return new MilestoneLine(
                 $content,
@@ -117,7 +120,13 @@ class Schedule extends Description
 
         $bufferLineProperties = Utils::getStringParts($content, self::PATTERN_BUFFER_LINE, type: 'T');
         if (!is_null($bufferLineProperties)) {
-            return new BufferLine($content, ...$bufferLineProperties);
+            list(
+                'key' => $key,
+                'type' => $type,
+                'track' => $track,
+                'attributes' => $attributes,
+            ) = $bufferLineProperties;
+            return new BufferLine($content, $key, $type, $track, $attributes);
         }
 
         $offsets = [];
