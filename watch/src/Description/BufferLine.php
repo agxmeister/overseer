@@ -7,7 +7,6 @@ readonly class BufferLine extends TrackLine
     public int $consumption;
 
     public function __construct(
-        $content,
         string $key,
         string $type,
         string $track,
@@ -15,7 +14,7 @@ readonly class BufferLine extends TrackLine
         int $endMarkerOffset,
     )
     {
-        parent::__construct($content, $key, $type, $track, $attributes, $endMarkerOffset);
+        parent::__construct($key, $type, $track, $attributes, $endMarkerOffset);
         $this->consumption = substr_count(trim($track), '!');
     }
 }

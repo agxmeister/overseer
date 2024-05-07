@@ -101,7 +101,16 @@ class Schedule extends Description
                 'attributes' => $attributes,
             ) = $issueLineProperties;
             list('endMarker' => $endMarkerOffset) = $offsets;
-            return new ScheduleIssueLine($content, $key, $type, $project, $milestone, $modifier, $track, $attributes, $endMarkerOffset);
+            return new ScheduleIssueLine(
+                $key,
+                $type,
+                $project,
+                $milestone,
+                $modifier,
+                $track,
+                $attributes,
+                $endMarkerOffset,
+            );
         }
 
         $offsets = [];
@@ -112,12 +121,7 @@ class Schedule extends Description
                 'attributes' => $attributes
             ) = $milestoneLineProperties;
             list('marker' => $markerOffset) = $offsets;
-            return new MilestoneLine(
-                $content,
-                $key,
-                $attributes,
-                $markerOffset,
-            );
+            return new MilestoneLine($key, $attributes, $markerOffset);
         }
 
         $offsets = [];
@@ -130,14 +134,14 @@ class Schedule extends Description
                 'attributes' => $attributes,
             ) = $bufferLineProperties;
             list('endMarker' => $endMarkerOffset) = $offsets;
-            return new BufferLine($content, $key, $type, $track, $attributes, $endMarkerOffset);
+            return new BufferLine($key, $type, $track, $attributes, $endMarkerOffset);
         }
 
         $offsets = [];
         $contextLineProperties = Utils::getStringParts($content, self::PATTERN_CONTEXT_LINE, $offsets);
         if (!is_null($contextLineProperties)) {
             list('marker' => $markerOffset) = $offsets;
-            return new ContextLine($content, $markerOffset);
+            return new ContextLine($markerOffset);
         }
 
         return null;

@@ -9,9 +9,9 @@ readonly class MilestoneLine extends Line
     /** @var Attribute[] */
     public array $attributes;
 
-    public function __construct(string $content, public string $key, string $attributes, public int $markerOffset)
+    public function __construct(public string $key, string $attributes, public int $markerOffset)
     {
-        parent::__construct($content, $attributes);
+        parent::__construct($attributes);
     }
 
     public function getDate(): DateTimeImmutable

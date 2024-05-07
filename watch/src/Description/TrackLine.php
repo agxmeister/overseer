@@ -7,7 +7,6 @@ readonly abstract class TrackLine extends Line
     public Track $track;
 
     public function __construct(
-        string $content,
         public string $key,
         public string $type,
         string $track,
@@ -15,7 +14,7 @@ readonly abstract class TrackLine extends Line
         public int $endMarkerOffset,
     )
     {
-        parent::__construct($content, $attributes);
+        parent::__construct($attributes);
         $this->setTrack($track);
     }
 

@@ -4,8 +4,8 @@ namespace Watch\Description;
 
 readonly class ContextLine extends Line
 {
-    public function __construct(string $content, public int $markerOffset)
+    public function __construct(public int $markerOffset)
     {
-        parent::__construct($content);
+        parent::__construct();
     }
 }

@@ -7,7 +7,7 @@ abstract readonly class Line
     /** @var Attribute[]  */
     public array $attributes;
 
-    public function __construct(protected string $content, string $attributes = '')
+    public function __construct(string $attributes = '')
     {
         $this->setAttributes($attributes);
     }

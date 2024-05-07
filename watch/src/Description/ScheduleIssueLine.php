@@ -11,7 +11,6 @@ readonly class ScheduleIssueLine extends IssueLine
     public bool $ignored;
 
     public function __construct(
-        $content,
         string $key,
         string $type,
         string $project,
@@ -22,7 +21,7 @@ readonly class ScheduleIssueLine extends IssueLine
         int $endMarkerOffset,
     )
     {
-        parent::__construct($content, $key, $type, $project, $milestone, $track, $attributes, $endMarkerOffset);
+        parent::__construct($key, $type, $project, $milestone, $track, $attributes, $endMarkerOffset);
         $this->started = $modifier === '~';
         $this->completed = $modifier === '+';
         $this->scheduled = str_contains($track, '*') || str_contains($track, 'x');

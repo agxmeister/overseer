@@ -5,7 +5,6 @@ namespace Watch\Description;
 readonly abstract class IssueLine extends TrackLine
 {
     public function __construct(
-        $content,
         string $key,
         string $type,
         public string $project,
@@ -15,6 +14,6 @@ readonly abstract class IssueLine extends TrackLine
         int $endMarkerOffset,
     )
     {
-        parent::__construct($content, $key, $type, $track, $attributes, $endMarkerOffset);
+        parent::__construct($key, $type, $track, $attributes, $endMarkerOffset);
     }
 }

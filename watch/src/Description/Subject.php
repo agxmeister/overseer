@@ -91,7 +91,16 @@ class Subject extends Description
                 'attributes' => $attributes,
             ) = $issueLineProperties;
             list('endMarker' => $endMarkerOffset) = $offsets;
-            return new SubjectIssueLine($content, $key, $type, $project, $milestone, $modifier, $track, $attributes, $endMarkerOffset);
+            return new SubjectIssueLine(
+                $key,
+                $type,
+                $project,
+                $milestone,
+                $modifier,
+                $track,
+                $attributes,
+                $endMarkerOffset,
+            );
         }
 
         $offsets = [];
@@ -99,19 +108,14 @@ class Subject extends Description
         if (!is_null($milestoneLineProperties)) {
             list('key' => $key, 'attributes' => $attributes) = $milestoneLineProperties;
             list('marker' => $markerOffset) = $offsets;
-            return new MilestoneLine(
-                $content,
-                $key,
-                $attributes,
-                $markerOffset,
-            );
+            return new MilestoneLine($key, $attributes, $markerOffset);
         }
 
         $offsets = [];
         $contextLineProperties = Utils::getStringParts($content, self::PATTERN_CONTEXT_LINE, $offsets);
         if (!is_null($contextLineProperties)) {
             list('marker' => $markerOffset) = $offsets;
-            return new ContextLine($content, $markerOffset);
+            return new ContextLine($markerOffset);
         }
 
         return null;
