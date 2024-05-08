@@ -1,8 +1,9 @@
 <?php
 
-namespace Watch\Description;
+namespace Watch\Description\Line;
 
 use DateTimeImmutable;
+use Watch\Description\Line;
 
 readonly class MilestoneLine extends Line
 {

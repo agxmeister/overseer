@@ -2,14 +2,14 @@
 
 namespace Watch;
 
-use Watch\Description\Attribute;
-use Watch\Description\AttributeType;
-use Watch\Description\ContextLine;
-use Watch\Description\ScheduleIssueLine;
 use Watch\Description\Line;
-use Watch\Description\MilestoneLine;
-use Watch\Description\Track;
-use Watch\Description\TrackLine;
+use Watch\Description\Line\Attribute;
+use Watch\Description\Line\AttributeType;
+use Watch\Description\Line\ContextLine;
+use Watch\Description\Line\MilestoneLine;
+use Watch\Description\Line\Schedule\IssueLine;
+use Watch\Description\Line\Track;
+use Watch\Description\Line\TrackLine;
 use Watch\Schedule\Mapper;
 
 abstract class Description
@@ -193,7 +193,7 @@ abstract class Description
     }
 
     /**
-     * @return ScheduleIssueLine[]
+     * @return IssueLine[]
      */
     protected function getTrackLines(): array
     {

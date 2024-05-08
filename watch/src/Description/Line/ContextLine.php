@@ -1,6 +1,8 @@
 <?php
 
-namespace Watch\Description;
+namespace Watch\Description\Line;
+
+use Watch\Description\Line;
 
 readonly class ContextLine extends Line
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Watch\Description;
+namespace Watch\Description\Line;
 
 readonly class Track
 {

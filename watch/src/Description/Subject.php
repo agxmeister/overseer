@@ -3,6 +3,10 @@
 namespace Watch\Description;
 
 use Watch\Description;
+use Watch\Description\Line\ContextLine;
+use Watch\Description\Line\MilestoneLine;
+use Watch\Description\Line\Subject\IssueLine;
+use Watch\Description\Line\TrackLine;
 use Watch\Schedule\Mapper;
 use Watch\Subject\Model\Issue;
 use Watch\Subject\Model\Link;
@@ -25,9 +29,9 @@ class Subject extends Description
         $issues = array_reduce(
             array_filter(
                 $this->getLines(),
-                fn(Line $line) => $line instanceof SubjectIssueLine
+                fn(Line $line) => $line instanceof IssueLine
             ),
-            function($acc, SubjectIssueLine $line) use ($mapper, $projectEndDate, $projectEndGap) {
+            function($acc, IssueLine $line) use ($mapper, $projectEndDate, $projectEndGap) {
                 $endGap = $line->track->gap - $projectEndGap;
                 $beginGap = $endGap + $line->track->duration;
                 return [
@@ -91,7 +95,7 @@ class Subject extends Description
                 'attributes' => $attributes,
             ) = $issueLineProperties;
             list('endMarker' => $endMarkerOffset) = $offsets;
-            return new SubjectIssueLine(
+            return new IssueLine(
                 $key,
                 $type,
                 $project,

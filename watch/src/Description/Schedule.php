@@ -3,6 +3,11 @@
 namespace Watch\Description;
 
 use Watch\Description;
+use Watch\Description\Line\BufferLine;
+use Watch\Description\Line\ContextLine;
+use Watch\Description\Line\MilestoneLine;
+use Watch\Description\Line\Schedule\IssueLine;
+use Watch\Description\Line\TrackLine;
 use Watch\Schedule\Model\Buffer;
 use Watch\Schedule\Serializer\Project;
 
@@ -29,7 +34,7 @@ class Schedule extends Description
                 $endGap = $line->track->gap - $projectEndGap;
                 $beginGap = $endGap + $line->track->duration;
 
-                if ($line instanceof ScheduleIssueLine) {
+                if ($line instanceof IssueLine) {
                     $acc[Project::VOLUME_ISSUES][] = [
                         'key' => $line->key,
                         'length' => $line->track->duration,
@@ -101,7 +106,7 @@ class Schedule extends Description
                 'attributes' => $attributes,
             ) = $issueLineProperties;
             list('endMarker' => $endMarkerOffset) = $offsets;
-            return new ScheduleIssueLine(
+            return new IssueLine(
                 $key,
                 $type,
                 $project,

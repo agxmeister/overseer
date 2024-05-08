@@ -2,6 +2,8 @@
 
 namespace Watch\Description;
 
+use Watch\Description\Line\Attribute;
+
 abstract readonly class Line
 {
     /** @var Attribute[]  */

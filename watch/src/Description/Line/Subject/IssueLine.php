@@ -1,14 +1,14 @@
 <?php
 
-namespace Watch\Description;
+namespace Watch\Description\Line\Subject;
 
-readonly class ScheduleIssueLine extends IssueLine
+use Watch\Description\Line\IssueLine as AbstractIssueLine;
+
+readonly class IssueLine extends AbstractIssueLine
 {
+    public bool $scheduled;
     public bool $started;
     public bool $completed;
-    public bool $scheduled;
-    public bool $critical;
-    public bool $ignored;
 
     public function __construct(
         string $key,
@@ -24,8 +24,6 @@ readonly class ScheduleIssueLine extends IssueLine
         parent::__construct($key, $type, $project, $milestone, $track, $attributes, $endMarkerOffset);
         $this->started = $modifier === '~';
         $this->completed = $modifier === '+';
-        $this->scheduled = str_contains($track, '*') || str_contains($track, 'x');
-        $this->critical = str_contains($track, 'x');
-        $this->ignored = $modifier === '-';
+        $this->scheduled = str_contains($track, '*');
     }
 }
