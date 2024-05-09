@@ -1,8 +1,6 @@
 <?php
 
-namespace Watch\Blueprint;
-
-use Watch\Blueprint\Line\Attribute;
+namespace Watch\Blueprint\Line;
 
 abstract readonly class Line
 {

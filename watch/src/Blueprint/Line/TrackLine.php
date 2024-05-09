@@ -2,8 +2,6 @@
 
 namespace Watch\Blueprint\Line;
 
-use Watch\Blueprint\Line;
-
 readonly abstract class TrackLine extends Line
 {
     public Track $track;

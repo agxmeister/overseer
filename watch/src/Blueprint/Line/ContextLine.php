@@ -2,8 +2,6 @@
 
 namespace Watch\Blueprint\Line;
 
-use Watch\Blueprint\Line;
-
 readonly class ContextLine extends Line
 {
     public function __construct(public int $markerOffset)

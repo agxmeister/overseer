@@ -1,11 +1,11 @@
 <?php
 
-namespace Watch;
+namespace Watch\Blueprint;
 
-use Watch\Blueprint\Line;
 use Watch\Blueprint\Line\Attribute;
 use Watch\Blueprint\Line\AttributeType;
 use Watch\Blueprint\Line\ContextLine;
+use Watch\Blueprint\Line\Line;
 use Watch\Blueprint\Line\MilestoneLine;
 use Watch\Blueprint\Line\Schedule\IssueLine;
 use Watch\Blueprint\Line\Track;

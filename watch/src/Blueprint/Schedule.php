@@ -2,9 +2,9 @@
 
 namespace Watch\Blueprint;
 
-use Watch\Blueprint;
 use Watch\Blueprint\Line\BufferLine;
 use Watch\Blueprint\Line\ContextLine;
+use Watch\Blueprint\Line\Line;
 use Watch\Blueprint\Line\MilestoneLine;
 use Watch\Blueprint\Line\Schedule\IssueLine;
 use Watch\Blueprint\Line\TrackLine;

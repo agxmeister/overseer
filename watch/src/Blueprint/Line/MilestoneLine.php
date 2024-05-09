@@ -3,7 +3,6 @@
 namespace Watch\Blueprint\Line;
 
 use DateTimeImmutable;
-use Watch\Blueprint\Line;
 
 readonly class MilestoneLine extends Line
 {
