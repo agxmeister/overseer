@@ -1,3 +1,3 @@
-FROM php:8.2-fpm
+FROM php:8.3-fpm
 
 WORKDIR /var/www/overseer/watch
