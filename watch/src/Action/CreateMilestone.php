@@ -4,7 +4,7 @@ namespace Watch\Action;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Watch\Blueprint\Subject;
+use Watch\Blueprint\Factory\Subject as SubjectBlueprintFactory;
 use Watch\Jira;
 use Watch\Schedule\Mapper;
 use Watch\Subject\Model\Issue;
@@ -18,7 +18,8 @@ readonly class CreateMilestone
 
     public function __invoke(Request $request, Response $response, $args): Response
     {
-        $blueprint = new Subject(file_get_contents('php://input'));
+        $blueprintFactory = new SubjectBlueprintFactory;
+        $blueprint = $blueprintFactory->create(file_get_contents('php://input'));
 
         $issueIds = array_reduce(
             $blueprint->getIssues($this->mapper),
