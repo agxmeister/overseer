@@ -3,7 +3,7 @@ namespace Tests\Unit\Schedule;
 
 use Codeception\Test\Unit;
 use Watch\Config;
-use Watch\Description\Subject;
+use Watch\Blueprint\Subject;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Mapper;

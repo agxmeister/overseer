@@ -1,6 +1,6 @@
 <?php
 
-namespace Watch\Description\Line;
+namespace Watch\Blueprint\Line;
 
 readonly class BufferLine extends TrackLine
 {

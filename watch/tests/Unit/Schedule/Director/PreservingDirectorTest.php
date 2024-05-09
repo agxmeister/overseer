@@ -1,8 +1,8 @@
 <?php
 namespace Tests\Unit\Schedule\Director;
 
-use Watch\Description\Schedule;
-use Watch\Description\Subject;
+use Watch\Blueprint\Schedule;
+use Watch\Blueprint\Subject;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Director;

@@ -1,8 +1,8 @@
 <?php
-namespace Tests\Unit\Schedule\Description;
+namespace Tests\Unit\Schedule\Blueprint;
 
 use Codeception\Test\Unit;
-use Watch\Description\Schedule;
+use Watch\Blueprint\Schedule;
 
 class ScheduleTest extends Unit
 {

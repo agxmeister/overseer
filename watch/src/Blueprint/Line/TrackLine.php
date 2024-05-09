@@ -1,8 +1,8 @@
 <?php
 
-namespace Watch\Description\Line;
+namespace Watch\Blueprint\Line;
 
-use Watch\Description\Line;
+use Watch\Blueprint\Line;
 
 readonly abstract class TrackLine extends Line
 {

@@ -1,8 +1,8 @@
 <?php
-namespace Tests\Unit\Schedule\Description;
+namespace Tests\Unit\Schedule\Blueprint;
 
 use Codeception\Test\Unit;
-use Watch\Description\Subject;
+use Watch\Blueprint\Subject;
 use Watch\Schedule\Mapper;
 use Watch\Subject\Model\Issue;
 

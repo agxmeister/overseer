@@ -2,7 +2,7 @@
 namespace Tests\Unit\Schedule\Serializer;
 
 use Codeception\Test\Unit;
-use Watch\Description\Schedule;
+use Watch\Blueprint\Schedule;
 use Watch\Schedule\Serializer\Project;
 
 class ProjectTest extends Unit

@@ -2,22 +2,22 @@
 
 namespace Watch;
 
-use Watch\Description\Line;
-use Watch\Description\Line\Attribute;
-use Watch\Description\Line\AttributeType;
-use Watch\Description\Line\ContextLine;
-use Watch\Description\Line\MilestoneLine;
-use Watch\Description\Line\Schedule\IssueLine;
-use Watch\Description\Line\Track;
-use Watch\Description\Line\TrackLine;
+use Watch\Blueprint\Line;
+use Watch\Blueprint\Line\Attribute;
+use Watch\Blueprint\Line\AttributeType;
+use Watch\Blueprint\Line\ContextLine;
+use Watch\Blueprint\Line\MilestoneLine;
+use Watch\Blueprint\Line\Schedule\IssueLine;
+use Watch\Blueprint\Line\Track;
+use Watch\Blueprint\Line\TrackLine;
 use Watch\Schedule\Mapper;
 
-abstract class Description
+abstract class Blueprint
 {
     /** @var Line[] */
     protected array|null $lines = null;
 
-    public function __construct(readonly protected string $description)
+    public function __construct(readonly protected string $content)
     {
     }
 
@@ -260,7 +260,7 @@ abstract class Description
             return $this->lines;
         }
         $contents = array_filter(
-            explode("\n", $this->description),
+            explode("\n", $this->content),
             fn($line) => !empty(trim($line)),
         );
         $this->lines = array_values(

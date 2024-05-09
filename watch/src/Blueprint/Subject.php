@@ -1,17 +1,17 @@
 <?php
 
-namespace Watch\Description;
+namespace Watch\Blueprint;
 
-use Watch\Description;
-use Watch\Description\Line\ContextLine;
-use Watch\Description\Line\MilestoneLine;
-use Watch\Description\Line\Subject\IssueLine;
-use Watch\Description\Line\TrackLine;
+use Watch\Blueprint;
+use Watch\Blueprint\Line\ContextLine;
+use Watch\Blueprint\Line\MilestoneLine;
+use Watch\Blueprint\Line\Subject\IssueLine;
+use Watch\Blueprint\Line\TrackLine;
 use Watch\Schedule\Mapper;
 use Watch\Subject\Model\Issue;
 use Watch\Subject\Model\Link;
 
-class Subject extends Description
+class Subject extends Blueprint
 {
     const string PATTERN_ISSUE_LINE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+]?)(?<beginMarker>\|)(?<track>[*.\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
     const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/';
