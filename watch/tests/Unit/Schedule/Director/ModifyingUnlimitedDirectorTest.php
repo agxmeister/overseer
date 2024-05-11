@@ -1,8 +1,8 @@
 <?php
 namespace Tests\Unit\Schedule\Director;
 
-use Watch\Blueprint\Schedule;
-use Watch\Blueprint\Subject;
+use Watch\Blueprint\Factory\Schedule as ScheduleBlueprintFactory;
+use Watch\Blueprint\Factory\Subject as SubjectBlueprintFactory;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\LimitStrategy;
@@ -18,24 +18,26 @@ class ModifyingUnlimitedDirectorTest extends AbstractDirectorTest
      */
     public function testBuild($subjectDescription, $scheduleDescription)
     {
-        $subject = new Subject($subjectDescription);
-        $schedule = new Schedule($scheduleDescription);
+        $subjectBlueprintFactory = new SubjectBlueprintFactory;
+        $subjectBlueprint = $subjectBlueprintFactory->create($subjectDescription);
+        $scheduleBlueprintFactory = new ScheduleBlueprintFactory;
+        $scheduleBlueprint = $scheduleBlueprintFactory->create($scheduleDescription);
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
         $director = new Director(
             new Builder(
-                new Context($schedule->getNowDate()),
-                $subject->getIssues($mapper),
-                $subject->getLinks($mapper),
-                $schedule->getProjectName(),
-                $schedule->getMilestoneNames(),
+                new Context($scheduleBlueprint->getNowDate()),
+                $subjectBlueprint->getIssues($mapper),
+                $subjectBlueprint->getLinks($mapper),
+                $scheduleBlueprint->getProjectName(),
+                $scheduleBlueprint->getMilestoneNames(),
                 $mapper,
                 $this->makeEmpty(LimitStrategy::class),
-                new ToDateScheduleStrategy($schedule->getProjectEndDate()),
+                new ToDateScheduleStrategy($scheduleBlueprint->getProjectEndDate()),
             )
         );
         $projectSerializer = new ProjectSerializer();
         $this->assertSchedule(
-            $schedule->getSchedule(),
+            $scheduleBlueprint->getSchedule(),
             $projectSerializer->serialize($director->build()->release()->getProject())
         );
     }

@@ -2,7 +2,7 @@
 namespace Tests\Unit\Schedule;
 
 use Codeception\Test\Unit;
-use Watch\Blueprint\Schedule;
+use Watch\Blueprint\Factory\Schedule as ScheduleBlueprintFactory;
 use Watch\Schedule\Model\FeedingBuffer;
 use Watch\Schedule\Model\Issue;
 use Watch\Schedule\Model\Link;
@@ -19,9 +19,10 @@ class UtilsTest extends Unit
      */
     public function testGetDuplicate($scheduleDescription)
     {
-        $description = new Schedule($scheduleDescription);
+        $blueprintFactory = new ScheduleBlueprintFactory;
+        $blueprint = $blueprintFactory->create($scheduleDescription);
         $serializer = new ProjectSerializer();
-        $origin = $serializer->deserialize($description->getSchedule());
+        $origin = $serializer->deserialize($blueprint->getSchedule());
 
         /** @var Project $copy */
         $copy = ScheduleUtils::getDuplicate($origin);
@@ -70,9 +71,10 @@ class UtilsTest extends Unit
      */
      public function testGetMilestoneChain($scheduleDescription, $expectedMilestoneChain)
      {
-         $description = new Schedule($scheduleDescription);
+         $blueprintFactory = new ScheduleBlueprintFactory;
+         $blueprint = $blueprintFactory->create($scheduleDescription);
          $serializer = new ProjectSerializer();
-         $origin = $serializer->deserialize($description->getSchedule());
+         $origin = $serializer->deserialize($blueprint->getSchedule());
          $originNodes = $origin->getLinkedNodes();
          $milestone = current($origin->getMilestones());
          $this->assertSame(
@@ -89,9 +91,10 @@ class UtilsTest extends Unit
      */
     public function testGetFeedingChains($scheduleDescription, $expectedFeedingChains)
     {
-        $description = new Schedule($scheduleDescription);
+        $blueprintFactory = new ScheduleBlueprintFactory;
+        $blueprint = $blueprintFactory->create($scheduleDescription);
         $serializer = new ProjectSerializer();
-        $origin = $serializer->deserialize($description->getSchedule());
+        $origin = $serializer->deserialize($blueprint->getSchedule());
         $actualFeedingChains = ScheduleUtils::getFeedingChains($origin);
         $this->assertSameSize($expectedFeedingChains, $actualFeedingChains);
         $originNodes = $origin->getLinkedNodes();
@@ -111,9 +114,10 @@ class UtilsTest extends Unit
      */
     public function testGetLongestChainNodes($scheduleDescription, $expectedChainNodeNames)
     {
-        $description = new Schedule($scheduleDescription);
+        $blueprintFactory = new ScheduleBlueprintFactory;
+        $blueprint = $blueprintFactory->create($scheduleDescription);
         $serializer = new ProjectSerializer();
-        $project = $serializer->deserialize($description->getSchedule());
+        $project = $serializer->deserialize($blueprint->getSchedule());
         $this->assertEquals($expectedChainNodeNames, array_map(
             fn(Node $node) => $node->name,
             ScheduleUtils::getLongestChainNodes($project),

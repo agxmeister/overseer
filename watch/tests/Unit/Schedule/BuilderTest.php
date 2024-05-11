@@ -2,8 +2,8 @@
 namespace Tests\Unit\Schedule;
 
 use Codeception\Test\Unit;
+use Watch\Blueprint\Factory\Subject as SubjectBlueprintFactory;
 use Watch\Config;
-use Watch\Blueprint\Subject;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Mapper;
@@ -14,7 +14,8 @@ class BuilderTest extends Unit
 {
     public function testAddCriticalChain()
     {
-        $description = new Subject('
+        $blueprintFactory = new SubjectBlueprintFactory;
+        $blueprint = $blueprintFactory->create('
             K-01   |       ****|
             K-02   |   ****    | & K-01
             K-03   |*******    | @ K-01
@@ -23,8 +24,8 @@ class BuilderTest extends Unit
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
         $builder = new Builder(
             new Context(new \DateTimeImmutable('2023-01-01')),
-            $description->getIssues($mapper),
-            $description->getLinks($mapper),
+            $blueprint->getIssues($mapper),
+            $blueprint->getLinks($mapper),
             'finish',
             [],
             $mapper,
@@ -39,7 +40,8 @@ class BuilderTest extends Unit
 
     public function testAddFeedingBuffers()
     {
-        $description = new Subject('
+        $blueprintFactory = new SubjectBlueprintFactory;
+        $blueprint = $blueprintFactory->create('
             K-01   |       ****|
             K-02   | ****      | & K-01
             K-03   |*******    | @ K-01
@@ -48,8 +50,8 @@ class BuilderTest extends Unit
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
         $builder = new Builder(
             new Context(new \DateTimeImmutable('2023-01-01')),
-            $description->getIssues($mapper),
-            $description->getLinks($mapper),
+            $blueprint->getIssues($mapper),
+            $blueprint->getLinks($mapper),
             'finish',
             [],
             $mapper,

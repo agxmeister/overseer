@@ -2,7 +2,7 @@
 namespace Tests\Unit\Schedule\Blueprint;
 
 use Codeception\Test\Unit;
-use Watch\Blueprint\Schedule;
+use Watch\Blueprint\Factory\Schedule as ScheduleBlueprintFactory;
 
 class ScheduleTest extends Unit
 {
@@ -11,8 +11,9 @@ class ScheduleTest extends Unit
      */
     public function testGetMilestoneNames($description, $milestoneNames)
     {
-        $schedule = new Schedule($description);
-        self::assertEquals($milestoneNames, $schedule->getMilestoneNames());
+        $blueprintFactory = new ScheduleBlueprintFactory;
+        $blueprint = $blueprintFactory->create($description);
+        self::assertEquals($milestoneNames, $blueprint->getMilestoneNames());
     }
 
     /**
@@ -20,8 +21,9 @@ class ScheduleTest extends Unit
      */
     public function testGetMilestones($description, $milestones)
     {
-        $schedule = new Schedule($description);
-        self::assertEquals($milestones, $schedule->getMilestones());
+        $blueprintFactory = new ScheduleBlueprintFactory;
+        $blueprint = $blueprintFactory->create($description);
+        self::assertEquals($milestones, $blueprint->getMilestones());
     }
 
     /**
@@ -29,8 +31,9 @@ class ScheduleTest extends Unit
      */
     public function testGetProjectBeginDate($description, $beginDate)
     {
-        $schedule = new Schedule($description);
-        self::assertEquals(new \DateTimeImmutable($beginDate), $schedule->getProjectBeginDate());
+        $blueprintFactory = new ScheduleBlueprintFactory;
+        $blueprint = $blueprintFactory->create($description);
+        self::assertEquals(new \DateTimeImmutable($beginDate), $blueprint->getProjectBeginDate());
     }
 
     /**
@@ -38,8 +41,9 @@ class ScheduleTest extends Unit
      */
     public function testGetProjectEndDate($description, $endDate)
     {
-        $schedule = new Schedule($description);
-        self::assertEquals(new \DateTimeImmutable($endDate), $schedule->getProjectEndDate());
+        $blueprintFactory = new ScheduleBlueprintFactory;
+        $blueprint = $blueprintFactory->create($description);
+        self::assertEquals(new \DateTimeImmutable($endDate), $blueprint->getProjectEndDate());
     }
 
     /**
@@ -47,8 +51,9 @@ class ScheduleTest extends Unit
      */
     public function testGetNowDate($description, $nowDate)
     {
-        $schedule = new Schedule($description);
-        self::assertEquals(new \DateTimeImmutable($nowDate), $schedule->getNowDate());
+        $blueprintFactory = new ScheduleBlueprintFactory;
+        $blueprint = $blueprintFactory->create($description);
+        self::assertEquals(new \DateTimeImmutable($nowDate), $blueprint->getNowDate());
     }
 
     /**
@@ -56,8 +61,9 @@ class ScheduleTest extends Unit
      */
     public function testGetProjectLength($description, $length)
     {
-        $schedule = new Schedule($description);
-        self::assertEquals($length, $schedule->getProjectLength());
+        $blueprintFactory = new ScheduleBlueprintFactory;
+        $blueprint = $blueprintFactory->create($description);
+        self::assertEquals($length, $blueprint->getProjectLength());
     }
 
     /**
@@ -65,8 +71,9 @@ class ScheduleTest extends Unit
      */
     public function testGetScheduleCriticalChain($description, $criticalChain)
     {
-        $schedule = new Schedule($description);
-        self::assertEquals($criticalChain, $schedule->getSchedule()['criticalChain']);
+        $blueprintFactory = new ScheduleBlueprintFactory;
+        $blueprint = $blueprintFactory->create($description);
+        self::assertEquals($criticalChain, $blueprint->getSchedule()['criticalChain']);
     }
 
     public static function dataGetMilestoneNames(): array
