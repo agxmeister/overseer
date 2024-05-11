@@ -12,12 +12,9 @@ use Watch\Blueprint\Line\Track;
 use Watch\Blueprint\Line\TrackLine;
 use Watch\Schedule\Mapper;
 
-abstract class Blueprint
+readonly abstract class Blueprint
 {
-    /** @var Line[] */
-    protected array|null $lines = null;
-
-    public function __construct(readonly protected string $content)
+    public function __construct(protected array $lines)
     {
     }
 
@@ -199,7 +196,7 @@ abstract class Blueprint
     {
         return array_values(
             array_filter(
-                $this->getLines(),
+                $this->lines,
                 fn(Line $line) => $line instanceof TrackLine,
             ),
         );
@@ -223,7 +220,7 @@ abstract class Blueprint
     {
         return array_slice(array_values(
             array_filter(
-                $this->getLines(),
+                $this->lines,
                 fn(Line $line) => get_class($line) === MilestoneLine::class,
             )
         ), 0, -1);
@@ -233,7 +230,7 @@ abstract class Blueprint
     {
         return array_reduce(
             array_filter(
-                $this->getLines(),
+                $this->lines,
                 fn(Line $line) => $line instanceof MilestoneLine,
             ),
             fn($acc, $line) => $line,
@@ -244,36 +241,10 @@ abstract class Blueprint
     {
         return array_reduce(
             array_filter(
-                $this->getLines(),
+                $this->lines,
                 fn(Line $line) => $line instanceof ContextLine,
             ),
             fn($acc, $line) => $line,
         );
     }
-
-    /**
-     * @return Line[]
-     */
-    protected function getLines(): array
-    {
-        if (!is_null($this->lines)) {
-            return $this->lines;
-        }
-        $contents = array_filter(
-            explode("\n", $this->content),
-            fn($line) => !empty(trim($line)),
-        );
-        $this->lines = array_values(
-            array_filter(
-                array_map(
-                    fn(string $content) => $this->getLine($content),
-                    $contents,
-                ),
-                fn(Line|null $line) => !is_null($line),
-            )
-        );
-        return $this->lines;
-    }
-
-    protected abstract function getLine(string $content): Line|null;
 }
