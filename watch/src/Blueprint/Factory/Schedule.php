@@ -44,7 +44,7 @@ readonly class Schedule extends Blueprint
                 $milestone,
                 $modifier,
                 $track,
-                $attributes,
+                $this->getLineAttributes($attributes),
                 $endMarkerOffset,
             );
         }
@@ -57,7 +57,7 @@ readonly class Schedule extends Blueprint
                 'attributes' => $attributes
                 ) = $milestoneLineProperties;
             list('marker' => $markerOffset) = $offsets;
-            return new MilestoneLine($key, $attributes, $markerOffset);
+            return new MilestoneLine($key, $this->getLineAttributes($attributes), $markerOffset);
         }
 
         $offsets = [];
@@ -70,7 +70,7 @@ readonly class Schedule extends Blueprint
                 'attributes' => $attributes,
                 ) = $bufferLineProperties;
             list('endMarker' => $endMarkerOffset) = $offsets;
-            return new BufferLine($key, $type, $track, $attributes, $endMarkerOffset);
+            return new BufferLine($key, $type, $track, $this->getLineAttributes($attributes), $endMarkerOffset);
         }
 
         $offsets = [];

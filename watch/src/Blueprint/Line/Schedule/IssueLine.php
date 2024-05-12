@@ -19,7 +19,7 @@ readonly class IssueLine extends AbstractIssueLine
         string|null $milestone,
         string $modifier,
         string $track,
-        string $attributes,
+        array $attributes,
         int $endMarkerOffset,
     )
     {

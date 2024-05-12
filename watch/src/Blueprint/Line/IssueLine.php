@@ -10,7 +10,7 @@ readonly abstract class IssueLine extends TrackLine
         public string $project,
         public string|null $milestone,
         string $track,
-        string $attributes,
+        array $attributes,
         int $endMarkerOffset,
     )
     {

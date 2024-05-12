@@ -6,10 +6,7 @@ use DateTimeImmutable;
 
 readonly class MilestoneLine extends Line
 {
-    /** @var Attribute[] */
-    public array $attributes;
-
-    public function __construct(public string $key, string $attributes, public int $markerOffset)
+    public function __construct(public string $key, array $attributes, public int $markerOffset)
     {
         parent::__construct($attributes);
     }

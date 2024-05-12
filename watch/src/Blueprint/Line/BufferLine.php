@@ -10,7 +10,7 @@ readonly class BufferLine extends TrackLine
         string $key,
         string $type,
         string $track,
-        string $attributes,
+        array $attributes,
         int $endMarkerOffset,
     )
     {

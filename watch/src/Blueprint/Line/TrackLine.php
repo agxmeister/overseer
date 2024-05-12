@@ -10,7 +10,7 @@ readonly abstract class TrackLine extends Line
         public string $key,
         public string $type,
         string $track,
-        string $attributes,
+        array $attributes,
         public int $endMarkerOffset,
     )
     {

@@ -42,7 +42,7 @@ readonly class Subject extends Blueprint
                 $milestone,
                 $modifier,
                 $track,
-                $attributes,
+                $this->getLineAttributes($attributes),
                 $endMarkerOffset,
             );
         }
@@ -52,7 +52,7 @@ readonly class Subject extends Blueprint
         if (!is_null($milestoneLineProperties)) {
             list('key' => $key, 'attributes' => $attributes) = $milestoneLineProperties;
             list('marker' => $markerOffset) = $offsets;
-            return new MilestoneLine($key, $attributes, $markerOffset);
+            return new MilestoneLine($key, $this->getLineAttributes($attributes), $markerOffset);
         }
 
         $offsets = [];

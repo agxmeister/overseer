@@ -4,27 +4,10 @@ namespace Watch\Blueprint\Line;
 
 abstract readonly class Line
 {
-    /** @var Attribute[]  */
-    public array $attributes;
-
-    public function __construct(string $attributes = '')
+    /**
+     * @param Attribute[] $attributes
+     */
+    public function __construct(public array $attributes)
     {
-        $this->setAttributes($attributes);
-    }
-
-    protected function setAttributes(string $attributes): void
-    {
-        $this->attributes = array_map(
-            fn(string $attribute) => new Attribute($attribute),
-            array_values(
-                array_filter(
-                    array_map(
-                        fn($attribute) => trim($attribute),
-                        explode(',', $attributes)
-                    ),
-                    fn(string $attribute) => !empty($attribute),
-                )
-            )
-        );
     }
 }

@@ -3,6 +3,7 @@
 namespace Watch\Blueprint\Factory;
 
 use Watch\Blueprint\Blueprint as BlueprintModel;
+use Watch\Blueprint\Line\Attribute;
 use Watch\Blueprint\Line\Line;
 
 abstract readonly class Blueprint
@@ -26,6 +27,22 @@ abstract readonly class Blueprint
                     $contents,
                 ),
                 fn(Line|null $line) => !is_null($line),
+            )
+        );
+    }
+
+    protected function getLineAttributes(string $content): array
+    {
+        return array_map(
+            fn(string $attribute) => new Attribute($attribute),
+            array_values(
+                array_filter(
+                    array_map(
+                        fn($attribute) => trim($attribute),
+                        explode(',', $content)
+                    ),
+                    fn(string $attribute) => !empty($attribute),
+                )
             )
         );
     }
