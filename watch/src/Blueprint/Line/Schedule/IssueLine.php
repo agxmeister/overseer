@@ -3,6 +3,7 @@
 namespace Watch\Blueprint\Line\Schedule;
 
 use Watch\Blueprint\Line\IssueLine as AbstractIssueLine;
+use Watch\Blueprint\Line\Track;
 
 readonly class IssueLine extends AbstractIssueLine
 {
@@ -18,7 +19,7 @@ readonly class IssueLine extends AbstractIssueLine
         string $project,
         string|null $milestone,
         string $modifier,
-        string $track,
+        Track $track,
         array $attributes,
         int $endMarkerOffset,
     )

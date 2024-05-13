@@ -5,6 +5,7 @@ namespace Watch\Blueprint\Factory;
 use Watch\Blueprint\Blueprint as BlueprintModel;
 use Watch\Blueprint\Line\Attribute;
 use Watch\Blueprint\Line\Line;
+use Watch\Blueprint\Line\Track;
 
 abstract readonly class Blueprint
 {
@@ -45,6 +46,11 @@ abstract readonly class Blueprint
                 )
             )
         );
+    }
+
+    protected function getTrack(string $content): Track
+    {
+        return new Track($content);
     }
 
     abstract protected function getLine(string $content): ?Line;

@@ -43,7 +43,7 @@ readonly class Schedule extends Blueprint
                 $project,
                 $milestone,
                 $modifier,
-                $track,
+                $this->getTrack($track),
                 $this->getLineAttributes($attributes),
                 $endMarkerOffset,
             );
@@ -70,7 +70,13 @@ readonly class Schedule extends Blueprint
                 'attributes' => $attributes,
                 ) = $bufferLineProperties;
             list('endMarker' => $endMarkerOffset) = $offsets;
-            return new BufferLine($key, $type, $track, $this->getLineAttributes($attributes), $endMarkerOffset);
+            return new BufferLine(
+                $key,
+                $type,
+                $this->getTrack($track),
+                $this->getLineAttributes($attributes),
+                $endMarkerOffset,
+            );
         }
 
         $offsets = [];

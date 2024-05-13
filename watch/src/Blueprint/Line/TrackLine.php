@@ -4,18 +4,15 @@ namespace Watch\Blueprint\Line;
 
 readonly abstract class TrackLine extends Line
 {
-    public Track $track;
-
     public function __construct(
         public string $key,
         public string $type,
-        string $track,
+        public Track $track,
         array $attributes,
         public int $endMarkerOffset,
     )
     {
         parent::__construct($attributes);
-        $this->setTrack($track);
     }
 
     public function getEndPosition(): int
@@ -40,10 +37,5 @@ readonly abstract class TrackLine extends Line
             ],
             [],
         );
-    }
-
-    protected function setTrack(string $trackContent): void
-    {
-        $this->track = new Track($trackContent);
     }
 }

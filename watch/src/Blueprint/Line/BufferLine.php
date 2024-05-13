@@ -9,7 +9,7 @@ readonly class BufferLine extends TrackLine
     public function __construct(
         string $key,
         string $type,
-        string $track,
+        Track $track,
         array $attributes,
         int $endMarkerOffset,
     )
