@@ -4,6 +4,7 @@ namespace Watch\Blueprint\Factory;
 
 use Watch\Blueprint\Blueprint as BlueprintModel;
 use Watch\Blueprint\Line\Attribute;
+use Watch\Blueprint\Line\AttributeType;
 use Watch\Blueprint\Line\Line;
 use Watch\Blueprint\Line\Track;
 
@@ -35,7 +36,7 @@ abstract readonly class Blueprint
     protected function getLineAttributes(string $content): array
     {
         return array_map(
-            fn(string $attribute) => new Attribute($attribute),
+            fn(string $attribute) => $this->getLineAttribute($attribute),
             array_values(
                 array_filter(
                     array_map(
@@ -46,6 +47,18 @@ abstract readonly class Blueprint
                 )
             )
         );
+    }
+
+    protected function getLineAttribute(string $content): Attribute
+    {
+        list($code, $value) = explode(' ', $content);
+        $type = match ($code) {
+            '@' => AttributeType::Schedule,
+            '&' => AttributeType::Sequence,
+            '#' => AttributeType::Date,
+            default => AttributeType::Default,
+        };
+        return new Attribute($type, $value);
     }
 
     protected function getTrack(string $content): Track
