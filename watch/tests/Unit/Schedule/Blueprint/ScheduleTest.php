@@ -3,6 +3,7 @@ namespace Tests\Unit\Schedule\Blueprint;
 
 use Codeception\Test\Unit;
 use Watch\Blueprint\Factory\Schedule as ScheduleBlueprintFactory;
+use Watch\Schedule\Serializer\Project;
 
 class ScheduleTest extends Unit
 {
@@ -73,7 +74,19 @@ class ScheduleTest extends Unit
     {
         $blueprintFactory = new ScheduleBlueprintFactory;
         $blueprint = $blueprintFactory->create($description);
-        self::assertEquals($criticalChain, $blueprint->getSchedule()['criticalChain']);
+        self::assertEquals($criticalChain, $blueprint->getSchedule()[Project::VOLUME_CRITICAL_CHAIN]);
+    }
+
+    /**
+     * @dataProvider dataGetBufferConsumption
+     */
+    public function testGetBufferConsumption($blueprintContent, $bufferConsumption)
+    {
+        $blueprintFactory = new ScheduleBlueprintFactory;
+        $blueprint = $blueprintFactory->create($blueprintContent);
+        foreach ($blueprint->getSchedule()[Project::VOLUME_BUFFERS] as $buffer) {
+            self::assertEquals($bufferConsumption[$buffer['key']], $buffer['consumption']);
+        }
     }
 
     public static function dataGetMilestoneNames(): array
@@ -372,6 +385,30 @@ class ScheduleTest extends Unit
                 ',
                 ['K-01'],
             ],
+        ];
+    }
+
+    public static function dataGetBufferConsumption(): array
+    {
+        return [
+            [
+                '
+                              > 
+                    K-01 |xxxx  | @ M-01
+                    PB   |    __| @ M-01
+                    PRJ         ^ # 2023-07-15
+                ',
+                ['PB' => 0],
+            ],
+            [
+                '
+                               >
+                    K-01 |xxxx  | @ M-01
+                    PB   |    !_| @ M-01
+                    PRJ         ^ # 2023-07-15
+                ',
+                ['PB' => 1],
+            ]
         ];
     }
 }
