@@ -25,6 +25,6 @@ readonly class IssueLine extends AbstractIssueLine
         parent::__construct($key, $type, $project, $milestone, $track, $attributes, $endMarkerOffset);
         $this->started = $modifier === '~';
         $this->completed = $modifier === '+';
-        $this->scheduled = str_contains($track, '*');
+        $this->scheduled = str_contains($track->content, '*');
     }
 }

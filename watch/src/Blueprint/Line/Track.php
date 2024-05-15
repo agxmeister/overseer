@@ -12,9 +12,4 @@ readonly class Track
         $this->duration = strlen(trim($this->content));
         $this->gap = strlen($this->content) - strlen(rtrim($this->content));
     }
-
-    public function __toString(): string
-    {
-        return $this->content;
-    }
 }

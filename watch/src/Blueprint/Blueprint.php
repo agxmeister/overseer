@@ -119,17 +119,17 @@ readonly abstract class Blueprint
         return
             array_reduce(
                 $tracks,
-                fn($acc, $track) => max($acc, strlen($track)),
+                fn($acc, Track $track) => max($acc, strlen($track->content)),
                 0
             ) -
             array_reduce(
                 $tracks,
-                fn($acc, $track) => min($acc, strlen($track) - strlen(rtrim($track))),
+                fn($acc, Track $track) => min($acc, strlen($track->content) - strlen(rtrim($track->content))),
                 PHP_INT_MAX
             ) -
             array_reduce(
                 $tracks,
-                fn($acc, $track) => min($acc, strlen($track) - strlen(ltrim($track))),
+                fn($acc, Track $track) => min($acc, strlen($track->content) - strlen(ltrim($track->content))),
                 PHP_INT_MAX
             );
     }
@@ -174,7 +174,7 @@ readonly abstract class Blueprint
     {
         return array_reduce(
             $this->getTracks(),
-            fn($acc, $track) => min($acc, strlen($track) - strlen(rtrim($track))),
+            fn($acc, Track $track) => min($acc, strlen($track->content) - strlen(rtrim($track->content))),
             PHP_INT_MAX
         );
     }
