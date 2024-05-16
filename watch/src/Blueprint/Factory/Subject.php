@@ -40,10 +40,12 @@ readonly class Subject extends Blueprint
                 $type,
                 $project,
                 $milestone,
-                $modifier,
                 $this->getTrack($track),
                 $this->getLineAttributes($attributes),
                 $endMarkerOffset,
+                $modifier === '~',
+                $modifier === '+',
+                str_contains($track, '*'),
             );
         }
 

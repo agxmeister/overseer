@@ -42,10 +42,14 @@ readonly class Schedule extends Blueprint
                 $type,
                 $project,
                 $milestone,
-                $modifier,
                 $this->getTrack($track),
                 $this->getLineAttributes($attributes),
                 $endMarkerOffset,
+                $modifier === '~',
+                $modifier === '+',
+                str_contains($track, '*') || str_contains($track, 'x'),
+                str_contains($track, 'x'),
+                $modifier === '-',
             );
         }
 

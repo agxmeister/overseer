@@ -7,28 +7,21 @@ use Watch\Blueprint\Line\Track;
 
 readonly class IssueLine extends AbstractIssueLine
 {
-    public bool $started;
-    public bool $completed;
-    public bool $scheduled;
-    public bool $critical;
-    public bool $ignored;
-
     public function __construct(
         string $key,
         string $type,
         string $project,
         string|null $milestone,
-        string $modifier,
         Track $track,
         array $attributes,
         int $endMarkerOffset,
+        public bool $started,
+        public bool $completed,
+        public bool $scheduled,
+        public bool $critical,
+        public bool $ignored,
     )
     {
         parent::__construct($key, $type, $project, $milestone, $track, $attributes, $endMarkerOffset);
-        $this->started = $modifier === '~';
-        $this->completed = $modifier === '+';
-        $this->scheduled = str_contains($track->content, '*') || str_contains($track->content, 'x');
-        $this->critical = str_contains($track->content, 'x');
-        $this->ignored = $modifier === '-';
     }
 }
