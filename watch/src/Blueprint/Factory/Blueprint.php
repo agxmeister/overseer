@@ -3,6 +3,7 @@
 namespace Watch\Blueprint\Factory;
 
 use Watch\Blueprint\Blueprint as BlueprintModel;
+use Watch\Blueprint\Factory\Context\Context;
 use Watch\Blueprint\Line\Attribute;
 use Watch\Blueprint\Line\AttributeType;
 use Watch\Blueprint\Line\Line;
@@ -16,7 +17,7 @@ abstract readonly class Blueprint
      * @param string $content
      * @return Line[]
      */
-    protected function getLines(string $content): array
+    protected function getLines(string $content, Context &$context): array
     {
         $contents = array_filter(
             explode("\n", $content),
@@ -25,7 +26,7 @@ abstract readonly class Blueprint
         return array_values(
             array_filter(
                 array_map(
-                    fn(string $content) => $this->getLine($content),
+                    fn(string $content) => $this->getLine($content, $context),
                     $contents,
                 ),
                 fn(Line|null $line) => !is_null($line),
@@ -66,5 +67,5 @@ abstract readonly class Blueprint
         return new Track($content);
     }
 
-    abstract protected function getLine(string $content): ?Line;
+    abstract protected function getLine(string $content, Context &$context): ?Line;
 }

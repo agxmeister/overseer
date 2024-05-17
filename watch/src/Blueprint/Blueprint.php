@@ -14,7 +14,7 @@ use Watch\Schedule\Mapper;
 
 readonly abstract class Blueprint
 {
-    public function __construct(protected array $lines)
+    public function __construct(protected array $lines, public bool $isEndMarkers)
     {
     }
 
@@ -32,16 +32,15 @@ readonly abstract class Blueprint
         );
         usort($milestones, fn($a, $b) => $a['date'] < $b['date'] ? -1 : ($a['date'] > $b['date'] ? 1 : 0));
 
-        $isEndMarkers = $this->isEndMarkers();
         for ($i = 0; $i < sizeof($milestones); $i++) {
-            $milestones[$i]['begin'] = ($isEndMarkers
+            $milestones[$i]['begin'] = ($this->isEndMarkers
                 ? (
                 $i > 0
                     ? $milestones[$i - 1]['date']
                     : $this->getProjectBeginDate()
                 )
                 : $milestones[$i]['date'])->format('Y-m-d');
-            $milestones[$i]['end'] = ($isEndMarkers
+            $milestones[$i]['end'] = ($this->isEndMarkers
                 ? $milestones[$i]['date']
                 : (
                 $i < sizeof($milestones) - 1
@@ -86,7 +85,7 @@ readonly abstract class Blueprint
     public function getProjectBeginDate(): \DateTimeImmutable|null
     {
         $projectLength = $this->getProjectLength();
-        return $this->isEndMarkers()
+        return $this->isEndMarkers
             ? $this->getProjectLine()?->getDate()?->modify("-{$projectLength} day")
             : $this->getProjectLine()?->getDate();
     }
@@ -94,7 +93,7 @@ readonly abstract class Blueprint
     public function getProjectEndDate(): \DateTimeImmutable|null
     {
         $projectLength = $this->getProjectLength();
-        return $this->isEndMarkers()
+        return $this->isEndMarkers
             ? $this->getProjectLine()?->getDate()
             : $this->getProjectLine()?->getDate()?->modify("{$projectLength} day");
     }
@@ -176,16 +175,6 @@ readonly abstract class Blueprint
             $this->getTracks(),
             fn($acc, Track $track) => min($acc, strlen($track->content) - strlen(rtrim($track->content))),
             PHP_INT_MAX
-        );
-    }
-
-    protected function isEndMarkers(): bool
-    {
-        return $this->getProjectLine()?->markerOffset >= max(
-            array_map(
-                fn(TrackLine $issueLine) => $issueLine->getEndPosition(),
-                $this->getTrackLines(),
-            )
         );
     }
 

@@ -2,6 +2,7 @@
 
 namespace Watch\Blueprint\Factory;
 
+use Watch\Blueprint\Factory\Context\Context;
 use Watch\Blueprint\Line\BufferLine;
 use Watch\Blueprint\Line\ContextLine;
 use Watch\Blueprint\Line\Line;
@@ -19,10 +20,13 @@ readonly class Schedule extends Blueprint
 
     public function create(string $content): ScheduleBlueprintModel
     {
-        return new ScheduleBlueprintModel($this->getLines($content));
+        $context = new Context();
+        $lines = $this->getLines($content, $context);
+        $isEndMarkers = $context->getProjectMarkerOffset() >= $context->getIssuesEndPosition();
+        return new ScheduleBlueprintModel($lines, $isEndMarkers);
     }
 
-    protected function getLine(string $content): ?Line
+    protected function getLine(string $content, Context &$context): ?Line
     {
         $offsets = [];
         $issueLineProperties = Utils::getStringParts($content, self::PATTERN_ISSUE_LINE, $offsets, project: 'PRJ', type: 'T');
@@ -37,6 +41,8 @@ readonly class Schedule extends Blueprint
                 'attributes' => $attributes,
                 ) = $issueLineProperties;
             list('endMarker' => $endMarkerOffset) = $offsets;
+            $trackGap = strlen($track) - strlen(rtrim($track));
+            $context->setIssuesEndPosition($endMarkerOffset - $trackGap);
             return new IssueLine(
                 $key,
                 $type,
@@ -61,6 +67,7 @@ readonly class Schedule extends Blueprint
                 'attributes' => $attributes
                 ) = $milestoneLineProperties;
             list('marker' => $markerOffset) = $offsets;
+            $context->setProjectMarkerOffset($markerOffset);
             return new MilestoneLine($key, $this->getLineAttributes($attributes), $markerOffset);
         }
 
