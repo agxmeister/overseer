@@ -22,8 +22,17 @@ readonly class Schedule extends Blueprint
     {
         $context = new Context();
         $lines = $this->getLines($content, $context);
+
         $isEndMarkers = $context->getProjectMarkerOffset() >= $context->getIssuesEndPosition();
-        return new ScheduleBlueprintModel($lines, $isEndMarkers);
+
+        $projectLine = array_reduce(
+            $lines,
+            fn($acc, Line $line) => $line instanceof MilestoneLine ? $line : null,
+        );
+        $gap = $context->getContextMarkerOffset() - $context->getProjectMarkerOffset();
+        $nowDate =  $projectLine?->getDate()->modify("{$gap} day");
+
+        return new ScheduleBlueprintModel($lines, $nowDate, $isEndMarkers);
     }
 
     protected function getLine(string $content, Context &$context): ?Line
@@ -67,7 +76,7 @@ readonly class Schedule extends Blueprint
                 ) = $milestoneLineProperties;
             list('marker' => $markerOffset) = $offsets;
             $context->setProjectMarkerOffset($markerOffset);
-            return new MilestoneLine($key, $this->getLineAttributes($attributes), $markerOffset);
+            return new MilestoneLine($key, $this->getLineAttributes($attributes));
         }
 
         $offsets = [];
@@ -94,7 +103,8 @@ readonly class Schedule extends Blueprint
         $contextLineProperties = Utils::getStringParts($content, self::PATTERN_CONTEXT_LINE, $offsets);
         if (!is_null($contextLineProperties)) {
             list('marker' => $markerOffset) = $offsets;
-            return new ContextLine($markerOffset);
+            $context->setContextMarkerOffset($markerOffset);
+            return new ContextLine();
         }
 
         return null;

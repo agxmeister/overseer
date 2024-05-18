@@ -2,6 +2,7 @@
 
 namespace Watch\Blueprint;
 
+use DateTimeImmutable;
 use Watch\Blueprint\Line\Attribute;
 use Watch\Blueprint\Line\AttributeType;
 use Watch\Blueprint\Line\ContextLine;
@@ -14,7 +15,7 @@ use Watch\Schedule\Mapper;
 
 readonly abstract class Blueprint
 {
-    public function __construct(protected array $lines, public bool $isEndMarkers)
+    public function __construct(protected array $lines, public ?DateTimeImmutable $nowDate, public bool $isEndMarkers)
     {
     }
 
@@ -96,20 +97,6 @@ readonly abstract class Blueprint
         return $this->isEndMarkers
             ? $this->getProjectLine()?->getDate()
             : $this->getProjectLine()?->getDate()?->modify("{$projectLength} day");
-    }
-
-    public function getNowDate(): \DateTimeImmutable|null
-    {
-        $projectLine = $this->getProjectLine();
-        if (is_null($projectLine)) {
-            return null;
-        }
-        $contextLine = $this->getContextLine();
-        if (is_null($contextLine)) {
-            return $this->getProjectBeginDate();
-        }
-        $gap = $contextLine->markerOffset - $projectLine->markerOffset;
-        return $projectLine->getDate()->modify("{$gap} day");
     }
 
     public function getProjectLength(): int

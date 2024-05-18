@@ -20,8 +20,17 @@ readonly class Subject extends Blueprint
     {
         $context = new Context();
         $lines = $this->getLines($content, $context);
+
         $isEndMarkers = $context->getProjectMarkerOffset() >= $context->getIssuesEndPosition();
-        return new SubjectBlueprintModel($lines, $isEndMarkers);
+
+        $projectLine = array_reduce(
+            $lines,
+            fn($acc, Line $line) => $line instanceof MilestoneLine ? $line : null,
+        );
+        $gap = $context->getContextMarkerOffset() - $context->getProjectMarkerOffset();
+        $nowDate =  $projectLine?->getDate()->modify("{$gap} day");
+
+        return new SubjectBlueprintModel($lines, $nowDate, $isEndMarkers);
     }
 
     protected function getLine(string $content, Context &$context): ?Line
@@ -60,14 +69,15 @@ readonly class Subject extends Blueprint
             list('key' => $key, 'attributes' => $attributes) = $milestoneLineProperties;
             list('marker' => $markerOffset) = $offsets;
             $context->setProjectMarkerOffset($markerOffset);
-            return new MilestoneLine($key, $this->getLineAttributes($attributes), $markerOffset);
+            return new MilestoneLine($key, $this->getLineAttributes($attributes));
         }
 
         $offsets = [];
         $contextLineProperties = Utils::getStringParts($content, self::PATTERN_CONTEXT_LINE, $offsets);
         if (!is_null($contextLineProperties)) {
             list('marker' => $markerOffset) = $offsets;
-            return new ContextLine($markerOffset);
+            $context->setContextMarkerOffset($markerOffset);
+            return new ContextLine();
         }
 
         return null;

@@ -25,7 +25,7 @@ class ModifyingInitiativeDirectorTest extends AbstractDirectorTest
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
         $director = new Director(
             new Builder(
-                new Context($scheduleBlueprint->getNowDate()),
+                new Context($scheduleBlueprint->nowDate),
                 $subjectBlueprint->getIssues($mapper),
                 $subjectBlueprint->getLinks($mapper),
                 $scheduleBlueprint->getProjectName(),

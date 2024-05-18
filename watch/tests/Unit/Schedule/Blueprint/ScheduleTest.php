@@ -54,7 +54,7 @@ class ScheduleTest extends Unit
     {
         $blueprintFactory = new ScheduleBlueprintFactory;
         $blueprint = $blueprintFactory->create($description);
-        self::assertEquals(new \DateTimeImmutable($nowDate), $blueprint->getNowDate());
+        self::assertEquals(new \DateTimeImmutable($nowDate), $blueprint->nowDate);
     }
 
     /**
