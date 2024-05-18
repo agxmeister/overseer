@@ -11,9 +11,8 @@ readonly abstract class IssueLine extends TrackLine
         public string|null $milestone,
         Track $track,
         array $attributes,
-        int $endMarkerOffset,
     )
     {
-        parent::__construct($key, $type, $track, $attributes, $endMarkerOffset);
+        parent::__construct($key, $type, $track, $attributes);
     }
 }

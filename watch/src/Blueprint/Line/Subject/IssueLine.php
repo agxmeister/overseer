@@ -14,12 +14,11 @@ readonly class IssueLine extends AbstractIssueLine
         string|null $milestone,
         Track $track,
         array $attributes,
-        int $endMarkerOffset,
         public bool $started,
         public bool $completed,
         public bool $scheduled,
     )
     {
-        parent::__construct($key, $type, $project, $milestone, $track, $attributes, $endMarkerOffset);
+        parent::__construct($key, $type, $project, $milestone, $track, $attributes);
     }
 }

@@ -48,7 +48,6 @@ readonly class Subject extends Blueprint
                 $milestone,
                 $this->getTrack($track),
                 $this->getLineAttributes($attributes),
-                $endMarkerOffset,
                 $modifier === '~',
                 $modifier === '+',
                 str_contains($track, '*'),

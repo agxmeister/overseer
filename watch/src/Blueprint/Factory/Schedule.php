@@ -50,7 +50,6 @@ readonly class Schedule extends Blueprint
                 $milestone,
                 $this->getTrack($track),
                 $this->getLineAttributes($attributes),
-                $endMarkerOffset,
                 $modifier === '~',
                 $modifier === '+',
                 str_contains($track, '*') || str_contains($track, 'x'),
@@ -81,12 +80,13 @@ readonly class Schedule extends Blueprint
                 'attributes' => $attributes,
                 ) = $bufferLineProperties;
             list('endMarker' => $endMarkerOffset) = $offsets;
+            $trackGap = strlen($track) - strlen(rtrim($track));
+            $context->setIssuesEndPosition($endMarkerOffset - $trackGap);
             return new BufferLine(
                 $key,
                 $type,
                 $this->getTrack($track),
                 $this->getLineAttributes($attributes),
-                $endMarkerOffset,
             );
         }
 

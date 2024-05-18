@@ -11,10 +11,9 @@ readonly class BufferLine extends TrackLine
         string $type,
         Track $track,
         array $attributes,
-        int $endMarkerOffset,
     )
     {
-        parent::__construct($key, $type, $track, $attributes, $endMarkerOffset);
+        parent::__construct($key, $type, $track, $attributes);
         $this->consumption = substr_count(trim($track->content), '!');
     }
 }
