@@ -2,9 +2,9 @@
 
 namespace Watch\Blueprint;
 
-use Watch\Blueprint\Line\Line;
-use Watch\Blueprint\Line\Subject\IssueLine;
-use Watch\Blueprint\Line\TrackLine;
+use Watch\Blueprint\Model\Model;
+use Watch\Blueprint\Model\Subject\IssueLine;
+use Watch\Blueprint\Model\TrackLine;
 use Watch\Schedule\Mapper;
 use Watch\Subject\Model\Issue;
 use Watch\Subject\Model\Link;
@@ -23,7 +23,7 @@ readonly class Subject extends Blueprint
         $issues = array_reduce(
             array_filter(
                 $this->lines,
-                fn(Line $line) => $line instanceof IssueLine
+                fn(Model $line) => $line instanceof IssueLine
             ),
             function($acc, IssueLine $line) use ($mapper, $projectEndDate, $projectEndGap) {
                 $endGap = $line->track->gap - $projectEndGap;

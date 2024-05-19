@@ -3,11 +3,11 @@
 namespace Watch\Blueprint\Factory;
 
 use Watch\Blueprint\Factory\Context\Context;
-use Watch\Blueprint\Line\BufferLine;
-use Watch\Blueprint\Line\ContextLine;
-use Watch\Blueprint\Line\Line;
-use Watch\Blueprint\Line\MilestoneLine;
-use Watch\Blueprint\Line\Schedule\IssueLine;
+use Watch\Blueprint\Model\BufferLine;
+use Watch\Blueprint\Model\ContextLine;
+use Watch\Blueprint\Model\Model;
+use Watch\Blueprint\Model\MilestoneLine;
+use Watch\Blueprint\Model\Schedule\IssueLine;
 use Watch\Blueprint\Schedule as ScheduleBlueprintModel;
 use Watch\Blueprint\Utils;
 
@@ -27,7 +27,7 @@ readonly class Schedule extends Blueprint
 
         $projectLine = array_reduce(
             $lines,
-            fn($acc, Line $line) => $line instanceof MilestoneLine ? $line : null,
+            fn($acc, Model $line) => $line instanceof MilestoneLine ? $line : null,
         );
         $gap = $context->getContextMarkerOffset() - $context->getProjectMarkerOffset();
         $nowDate =  $projectLine?->getDate()->modify("{$gap} day");
@@ -35,7 +35,7 @@ readonly class Schedule extends Blueprint
         return new ScheduleBlueprintModel($lines, $nowDate, $isEndMarkers);
     }
 
-    protected function getLine(string $content, Context &$context): ?Line
+    protected function getLine(string $content, Context &$context): ?Model
     {
         $offsets = [];
         $issueLineProperties = Utils::getStringParts($content, self::PATTERN_ISSUE_LINE, $offsets, project: 'PRJ', type: 'T');

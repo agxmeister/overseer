@@ -1,18 +1,19 @@
 <?php
 
-namespace Watch\Blueprint\Line;
+namespace Watch\Blueprint\Model;
 
-readonly abstract class IssueLine extends TrackLine
+readonly class BufferLine extends TrackLine
 {
+    public int $consumption;
+
     public function __construct(
         string $key,
         string $type,
-        public string $project,
-        public string|null $milestone,
         Track $track,
         array $attributes,
     )
     {
         parent::__construct($key, $type, $track, $attributes);
+        $this->consumption = substr_count(trim($track->content), '!');
     }
 }

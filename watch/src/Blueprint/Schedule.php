@@ -2,10 +2,10 @@
 
 namespace Watch\Blueprint;
 
-use Watch\Blueprint\Line\BufferLine;
-use Watch\Blueprint\Line\Line;
-use Watch\Blueprint\Line\Schedule\IssueLine;
-use Watch\Blueprint\Line\TrackLine;
+use Watch\Blueprint\Model\BufferLine;
+use Watch\Blueprint\Model\Model;
+use Watch\Blueprint\Model\Schedule\IssueLine;
+use Watch\Blueprint\Model\TrackLine;
 use Watch\Schedule\Model\Buffer;
 use Watch\Schedule\Serializer\Project;
 
@@ -21,7 +21,7 @@ readonly class Schedule extends Blueprint
         $schedule = array_reduce(
             array_filter(
                 $this->lines,
-                fn(Line $line) => $line instanceof TrackLine
+                fn(Model $line) => $line instanceof TrackLine
             ),
             function ($acc, TrackLine $line) use ($projectEndDate, $projectEndGap, &$criticalChain) {
                 $endGap = $line->track->gap - $projectEndGap;

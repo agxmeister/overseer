@@ -1,17 +1,16 @@
 <?php
 
-namespace Watch\Blueprint\Line;
+namespace Watch\Blueprint\Model;
 
-readonly abstract class TrackLine extends Line
+readonly abstract class TrackLine extends Model
 {
     public function __construct(
         public string $key,
         public string $type,
         public Track $track,
-        array $attributes,
+        public array $attributes,
     )
     {
-        parent::__construct($attributes);
     }
 
     public function getLinks(): array

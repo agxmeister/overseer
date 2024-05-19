@@ -1,6 +1,6 @@
 <?php
 
-namespace Watch\Blueprint\Line;
+namespace Watch\Blueprint\Model;
 
 enum AttributeType
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace Watch\Blueprint\Line\Schedule;
+namespace Watch\Blueprint\Model\Schedule;
 
-use Watch\Blueprint\Line\IssueLine as AbstractIssueLine;
-use Watch\Blueprint\Line\Track;
+use Watch\Blueprint\Model\IssueLine as AbstractIssueLine;
+use Watch\Blueprint\Model\Track;
 
 readonly class IssueLine extends AbstractIssueLine
 {

@@ -1,14 +1,13 @@
 <?php
 
-namespace Watch\Blueprint\Line;
+namespace Watch\Blueprint\Model;
 
 use DateTimeImmutable;
 
-readonly class MilestoneLine extends Line
+readonly class MilestoneLine extends Model
 {
-    public function __construct(public string $key, array $attributes)
+    public function __construct(public string $key, public array $attributes)
     {
-        parent::__construct($attributes);
     }
 
     public function getDate(): DateTimeImmutable

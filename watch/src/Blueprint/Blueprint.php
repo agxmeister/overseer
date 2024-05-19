@@ -3,14 +3,14 @@
 namespace Watch\Blueprint;
 
 use DateTimeImmutable;
-use Watch\Blueprint\Line\Attribute;
-use Watch\Blueprint\Line\AttributeType;
-use Watch\Blueprint\Line\ContextLine;
-use Watch\Blueprint\Line\Line;
-use Watch\Blueprint\Line\MilestoneLine;
-use Watch\Blueprint\Line\Schedule\IssueLine;
-use Watch\Blueprint\Line\Track;
-use Watch\Blueprint\Line\TrackLine;
+use Watch\Blueprint\Model\Attribute;
+use Watch\Blueprint\Model\AttributeType;
+use Watch\Blueprint\Model\ContextLine;
+use Watch\Blueprint\Model\Model;
+use Watch\Blueprint\Model\MilestoneLine;
+use Watch\Blueprint\Model\Schedule\IssueLine;
+use Watch\Blueprint\Model\Track;
+use Watch\Blueprint\Model\TrackLine;
 use Watch\Schedule\Mapper;
 
 readonly abstract class Blueprint
@@ -173,7 +173,7 @@ readonly abstract class Blueprint
         return array_values(
             array_filter(
                 $this->lines,
-                fn(Line $line) => $line instanceof TrackLine,
+                fn(Model $line) => $line instanceof TrackLine,
             ),
         );
     }
@@ -197,7 +197,7 @@ readonly abstract class Blueprint
         return array_slice(array_values(
             array_filter(
                 $this->lines,
-                fn(Line $line) => get_class($line) === MilestoneLine::class,
+                fn(Model $line) => get_class($line) === MilestoneLine::class,
             )
         ), 0, -1);
     }
@@ -207,7 +207,7 @@ readonly abstract class Blueprint
         return array_reduce(
             array_filter(
                 $this->lines,
-                fn(Line $line) => $line instanceof MilestoneLine,
+                fn(Model $line) => $line instanceof MilestoneLine,
             ),
             fn($acc, $line) => $line,
         );
@@ -218,7 +218,7 @@ readonly abstract class Blueprint
         return array_reduce(
             array_filter(
                 $this->lines,
-                fn(Line $line) => $line instanceof ContextLine,
+                fn(Model $line) => $line instanceof ContextLine,
             ),
             fn($acc, $line) => $line,
         );
