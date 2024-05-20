@@ -8,12 +8,12 @@ use Watch\Blueprint\Model\Track;
 readonly class IssueLine extends AbstractIssueLine
 {
     public function __construct(
-        string $key,
-        string $type,
-        string $project,
-        string|null $milestone,
-        Track $track,
-        array $attributes,
+        public string $key,
+        public string $type,
+        public string $project,
+        public string|null $milestone,
+        public Track $track,
+        public array $attributes,
         public bool $started,
         public bool $completed,
         public bool $scheduled,
@@ -21,6 +21,5 @@ readonly class IssueLine extends AbstractIssueLine
         public bool $ignored,
     )
     {
-        parent::__construct($key, $type, $project, $milestone, $track, $attributes);
     }
 }

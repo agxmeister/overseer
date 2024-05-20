@@ -4,15 +4,6 @@ namespace Watch\Blueprint\Model;
 
 readonly abstract class TrackLine extends Model
 {
-    public function __construct(
-        public string $key,
-        public string $type,
-        public Track $track,
-        public array $attributes,
-    )
-    {
-    }
-
     public function getLinks(): array
     {
         return array_reduce(
