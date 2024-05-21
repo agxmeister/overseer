@@ -2,10 +2,10 @@
 
 namespace Watch\Blueprint\Model\Subject;
 
-use Watch\Blueprint\Model\IssueLine as AbstractIssueLine;
 use Watch\Blueprint\Model\Track;
+use Watch\Blueprint\Model\TrackLine;
 
-readonly class IssueLine extends AbstractIssueLine
+readonly class IssueLine extends TrackLine
 {
     public function __construct(
         public string $key,
