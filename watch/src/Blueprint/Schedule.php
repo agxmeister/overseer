@@ -2,8 +2,8 @@
 
 namespace Watch\Blueprint;
 
-use Watch\Blueprint\Model\BufferLine;
 use Watch\Blueprint\Model\Model;
+use Watch\Blueprint\Model\Schedule\BufferLine;
 use Watch\Blueprint\Model\Schedule\IssueLine;
 use Watch\Blueprint\Model\TrackLine;
 use Watch\Schedule\Model\Buffer;

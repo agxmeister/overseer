@@ -3,11 +3,11 @@
 namespace Watch\Blueprint\Factory;
 
 use Watch\Blueprint\Factory\Context\Context;
-use Watch\Blueprint\Model\BufferLine;
 use Watch\Blueprint\Model\ContextLine;
 use Watch\Blueprint\Model\Model;
-use Watch\Blueprint\Model\MilestoneLine;
+use Watch\Blueprint\Model\Schedule\BufferLine;
 use Watch\Blueprint\Model\Schedule\IssueLine;
+use Watch\Blueprint\Model\Schedule\MilestoneLine;
 use Watch\Blueprint\Schedule as ScheduleBlueprintModel;
 use Watch\Blueprint\Utils;
 

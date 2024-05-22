@@ -1,8 +1,11 @@
 <?php
 
-namespace Watch\Blueprint\Model;
+namespace Watch\Blueprint\Model\Schedule;
 
 use DateTimeImmutable;
+use Watch\Blueprint\Model\Attribute;
+use Watch\Blueprint\Model\AttributeType;
+use Watch\Blueprint\Model\Model;
 
 readonly class MilestoneLine extends Model
 {

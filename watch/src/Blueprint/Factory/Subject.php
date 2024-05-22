@@ -5,7 +5,7 @@ namespace Watch\Blueprint\Factory;
 use Watch\Blueprint\Factory\Context\Context;
 use Watch\Blueprint\Model\ContextLine;
 use Watch\Blueprint\Model\Model;
-use Watch\Blueprint\Model\MilestoneLine;
+use Watch\Blueprint\Model\Schedule\MilestoneLine;
 use Watch\Blueprint\Model\Subject\IssueLine;
 use Watch\Blueprint\Subject as SubjectBlueprintModel;
 use Watch\Blueprint\Utils;

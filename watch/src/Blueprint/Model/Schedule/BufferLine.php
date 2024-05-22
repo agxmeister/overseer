@@ -1,6 +1,9 @@
 <?php
 
-namespace Watch\Blueprint\Model;
+namespace Watch\Blueprint\Model\Schedule;
+
+use Watch\Blueprint\Model\Track;
+use Watch\Blueprint\Model\TrackLine;
 
 readonly class BufferLine extends TrackLine
 {
