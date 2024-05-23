@@ -13,6 +13,7 @@ readonly class BufferLine extends TrackLine
         public string $key,
         public string $type,
         public Track $track,
+        public array $links,
         public array $attributes,
     )
     {

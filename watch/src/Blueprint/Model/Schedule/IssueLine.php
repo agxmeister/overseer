@@ -13,6 +13,7 @@ readonly class IssueLine extends TrackLine
         public string $project,
         public string|null $milestone,
         public Track $track,
+        public array $links,
         public array $attributes,
         public bool $started,
         public bool $completed,

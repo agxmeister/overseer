@@ -63,7 +63,7 @@ readonly class Schedule extends Blueprint
 
                 $acc[Project::VOLUME_LINKS] = [
                     ...$acc[Project::VOLUME_LINKS],
-                    ...$line->getLinks(),
+                    ...$line->links,
                 ];
 
                 return $acc;
