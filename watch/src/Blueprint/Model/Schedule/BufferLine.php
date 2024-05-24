@@ -2,10 +2,11 @@
 
 namespace Watch\Blueprint\Model\Schedule;
 
+use Watch\Blueprint\Model\Model;
 use Watch\Blueprint\Model\Track;
-use Watch\Blueprint\Model\TrackLine;
+use Watch\Blueprint\Model\WithTrack;
 
-readonly class BufferLine extends TrackLine
+readonly class BufferLine extends Model implements WithTrack
 {
     public int $consumption;
 

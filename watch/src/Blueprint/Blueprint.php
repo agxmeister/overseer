@@ -10,7 +10,7 @@ use Watch\Blueprint\Model\Model;
 use Watch\Blueprint\Model\Schedule\IssueLine;
 use Watch\Blueprint\Model\Schedule\MilestoneLine;
 use Watch\Blueprint\Model\Track;
-use Watch\Blueprint\Model\TrackLine;
+use Watch\Blueprint\Model\WithTrack;
 use Watch\Schedule\Mapper;
 
 readonly abstract class Blueprint
@@ -173,7 +173,7 @@ readonly abstract class Blueprint
         return array_values(
             array_filter(
                 $this->lines,
-                fn(Model $line) => $line instanceof TrackLine,
+                fn(Model $line) => $line instanceof WithTrack,
             ),
         );
     }
@@ -184,7 +184,7 @@ readonly abstract class Blueprint
     protected function getTracks(): array
     {
         return array_map(
-            fn(TrackLine $line) => $line->track,
+            fn(WithTrack $line) => $line->track,
             $this->getTrackLines(),
         );
     }

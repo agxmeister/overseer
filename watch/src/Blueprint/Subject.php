@@ -4,7 +4,7 @@ namespace Watch\Blueprint;
 
 use Watch\Blueprint\Model\Model;
 use Watch\Blueprint\Model\Subject\IssueLine;
-use Watch\Blueprint\Model\TrackLine;
+use Watch\Blueprint\Model\WithTrack;
 use Watch\Schedule\Mapper;
 use Watch\Subject\Model\Issue;
 use Watch\Subject\Model\Link;
@@ -65,7 +65,7 @@ readonly class Subject extends Blueprint
             fn($link) => new Link(0, $link['from'], $link['to'], $link['type']),
             array_reduce(
                 $this->getTrackLines(),
-                fn($acc, TrackLine $line) => [
+                fn($acc, WithTrack $line) => [
                     ...$acc,
                     ...$this->getSubjectLinksByAttributes($line->key, $line->attributes, $mapper),
                 ],
