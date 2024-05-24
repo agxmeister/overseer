@@ -8,16 +8,14 @@ use Watch\Blueprint\Model\WithTrack;
 
 readonly class BufferLine extends Model implements WithTrack
 {
-    public int $consumption;
-
     public function __construct(
         public string $key,
         public string $type,
         public Track $track,
         public array $links,
         public array $attributes,
+        public int $consumption,
     )
     {
-        $this->consumption = substr_count(trim($track->content), '!');
     }
 }

@@ -96,12 +96,14 @@ readonly class Schedule extends Blueprint
             $context->setIssuesEndPosition($endMarkerOffset - $trackGap);
             $lineAttributes = $this->getLineAttributes($attributes);
             $lineLinks = $this->getLineLinks($key, $lineAttributes);
+            $consumption = substr_count(trim($track), '!');
             return new BufferLine(
                 $key,
                 $type,
                 $this->getTrack($track),
                 $lineLinks,
                 $lineAttributes,
+                $consumption,
             );
         }
 
