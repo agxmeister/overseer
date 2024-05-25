@@ -3,7 +3,6 @@
 namespace Watch\Blueprint\Factory;
 
 use Watch\Blueprint\Factory\Context\Context;
-use Watch\Blueprint\Model\ContextLine;
 use Watch\Blueprint\Model\Schedule\MilestoneLine;
 use Watch\Blueprint\Model\Subject\IssueLine;
 use Watch\Blueprint\Subject as SubjectBlueprintModel;
@@ -76,7 +75,7 @@ readonly class Subject extends Blueprint
         if (!is_null($contextLineProperties)) {
             list('marker' => $markerOffset) = $offsets;
             $context->setContextMarkerOffset($markerOffset);
-            return new ContextLine();
+            return null;
         }
 
         return null;

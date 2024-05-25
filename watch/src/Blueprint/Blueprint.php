@@ -5,7 +5,6 @@ namespace Watch\Blueprint;
 use DateTimeImmutable;
 use Watch\Blueprint\Model\Attribute;
 use Watch\Blueprint\Model\AttributeType;
-use Watch\Blueprint\Model\ContextLine;
 use Watch\Blueprint\Model\Schedule\IssueLine;
 use Watch\Blueprint\Model\Schedule\MilestoneLine;
 use Watch\Blueprint\Model\Track;
@@ -207,17 +206,6 @@ readonly abstract class Blueprint
             array_filter(
                 $this->lines,
                 fn($line) => $line instanceof MilestoneLine,
-            ),
-            fn($acc, $line) => $line,
-        );
-    }
-
-    protected function getContextLine(): ContextLine|null
-    {
-        return array_reduce(
-            array_filter(
-                $this->lines,
-                fn($line) => $line instanceof ContextLine,
             ),
             fn($acc, $line) => $line,
         );
