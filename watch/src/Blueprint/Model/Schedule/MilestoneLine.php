@@ -5,9 +5,8 @@ namespace Watch\Blueprint\Model\Schedule;
 use DateTimeImmutable;
 use Watch\Blueprint\Model\Attribute;
 use Watch\Blueprint\Model\AttributeType;
-use Watch\Blueprint\Model\Model;
 
-readonly class MilestoneLine extends Model
+readonly class MilestoneLine
 {
     public function __construct(public string $key, public array $attributes)
     {

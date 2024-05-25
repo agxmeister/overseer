@@ -2,11 +2,10 @@
 
 namespace Watch\Blueprint\Model\Schedule;
 
-use Watch\Blueprint\Model\Model;
 use Watch\Blueprint\Model\Track;
 use Watch\Blueprint\Model\WithTrack;
 
-readonly class IssueLine extends Model implements WithTrack
+readonly class IssueLine implements WithTrack
 {
     public function __construct(
         public string $key,

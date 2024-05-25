@@ -4,7 +4,6 @@ namespace Watch\Blueprint\Factory;
 
 use Watch\Blueprint\Factory\Context\Context;
 use Watch\Blueprint\Model\ContextLine;
-use Watch\Blueprint\Model\Model;
 use Watch\Blueprint\Model\Schedule\MilestoneLine;
 use Watch\Blueprint\Model\Subject\IssueLine;
 use Watch\Blueprint\Subject as SubjectBlueprintModel;
@@ -25,7 +24,7 @@ readonly class Subject extends Blueprint
 
         $projectLine = array_reduce(
             $lines,
-            fn($acc, Model $line) => $line instanceof MilestoneLine ? $line : null,
+            fn($acc, $line) => $line instanceof MilestoneLine ? $line : null,
         );
         $gap = $context->getContextMarkerOffset() - $context->getProjectMarkerOffset();
         $nowDate =  $projectLine?->getDate()->modify("{$gap} day");
@@ -33,7 +32,7 @@ readonly class Subject extends Blueprint
         return new SubjectBlueprintModel($lines, $nowDate, $isEndMarkers);
     }
 
-    protected function getLine(string $content, Context &$context): ?Model
+    protected function getLine(string $content, Context &$context): mixed
     {
         $offsets = [];
         $issueLineProperties = Utils::getStringParts($content, self::PATTERN_ISSUE_LINE, $offsets, project: 'PRJ', type: 'T');

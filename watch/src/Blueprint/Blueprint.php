@@ -6,7 +6,6 @@ use DateTimeImmutable;
 use Watch\Blueprint\Model\Attribute;
 use Watch\Blueprint\Model\AttributeType;
 use Watch\Blueprint\Model\ContextLine;
-use Watch\Blueprint\Model\Model;
 use Watch\Blueprint\Model\Schedule\IssueLine;
 use Watch\Blueprint\Model\Schedule\MilestoneLine;
 use Watch\Blueprint\Model\Track;
@@ -173,7 +172,7 @@ readonly abstract class Blueprint
         return array_values(
             array_filter(
                 $this->lines,
-                fn(Model $line) => $line instanceof WithTrack,
+                fn($line) => $line instanceof WithTrack,
             ),
         );
     }
@@ -197,7 +196,7 @@ readonly abstract class Blueprint
         return array_slice(array_values(
             array_filter(
                 $this->lines,
-                fn(Model $line) => get_class($line) === MilestoneLine::class,
+                fn($line) => get_class($line) === MilestoneLine::class,
             )
         ), 0, -1);
     }
@@ -207,7 +206,7 @@ readonly abstract class Blueprint
         return array_reduce(
             array_filter(
                 $this->lines,
-                fn(Model $line) => $line instanceof MilestoneLine,
+                fn($line) => $line instanceof MilestoneLine,
             ),
             fn($acc, $line) => $line,
         );
@@ -218,7 +217,7 @@ readonly abstract class Blueprint
         return array_reduce(
             array_filter(
                 $this->lines,
-                fn(Model $line) => $line instanceof ContextLine,
+                fn($line) => $line instanceof ContextLine,
             ),
             fn($acc, $line) => $line,
         );

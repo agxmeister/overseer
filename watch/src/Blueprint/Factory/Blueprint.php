@@ -6,18 +6,12 @@ use Watch\Blueprint\Blueprint as BlueprintModel;
 use Watch\Blueprint\Factory\Context\Context;
 use Watch\Blueprint\Model\Attribute;
 use Watch\Blueprint\Model\AttributeType;
-use Watch\Blueprint\Model\Model;
 use Watch\Blueprint\Model\Track;
 
 abstract readonly class Blueprint
 {
     abstract public function create(string $content): BlueprintModel;
 
-    /**
-     * @param string $content
-     * @param Context $context
-     * @return Model[]
-     */
     protected function getLines(string $content, Context &$context): array
     {
         $contents = array_filter(
@@ -30,7 +24,7 @@ abstract readonly class Blueprint
                     fn(string $content) => $this->getLine($content, $context),
                     $contents,
                 ),
-                fn(Model|null $line) => !is_null($line),
+                fn($line) => !is_null($line),
             )
         );
     }
@@ -87,5 +81,5 @@ abstract readonly class Blueprint
         return new Track($content);
     }
 
-    abstract protected function getLine(string $content, Context &$context): ?Model;
+    abstract protected function getLine(string $content, Context &$context): mixed;
 }
