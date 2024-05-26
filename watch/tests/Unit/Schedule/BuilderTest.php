@@ -14,14 +14,14 @@ class BuilderTest extends Unit
 {
     public function testAddCriticalChain()
     {
-        $blueprintFactory = new SubjectBlueprintFactory;
+        $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
+        $blueprintFactory = new SubjectBlueprintFactory($mapper);
         $blueprint = $blueprintFactory->create('
             K-01   |       ****|
             K-02   |   ****    | & K-01
             K-03   |*******    | @ K-01
                                ^ # 2023-09-21
         ');
-        $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
         $builder = new Builder(
             new Context(new \DateTimeImmutable('2023-01-01')),
             $blueprint->getIssues($mapper),
@@ -40,14 +40,14 @@ class BuilderTest extends Unit
 
     public function testAddFeedingBuffers()
     {
-        $blueprintFactory = new SubjectBlueprintFactory;
+        $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
+        $blueprintFactory = new SubjectBlueprintFactory($mapper);
         $blueprint = $blueprintFactory->create('
             K-01   |       ****|
             K-02   | ****      | & K-01
             K-03   |*******    | @ K-01
                                ^ # 2023-09-21
         ');
-        $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
         $builder = new Builder(
             new Context(new \DateTimeImmutable('2023-01-01')),
             $blueprint->getIssues($mapper),

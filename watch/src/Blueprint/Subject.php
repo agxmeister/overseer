@@ -54,11 +54,7 @@ readonly class Subject extends Blueprint
         return array_map(fn(array $issue) => new Issue(...$issue), array_values($issues));
     }
 
-    /**
-     * @param Mapper $mapper
-     * @return Link[]
-     */
-    public function getLinks(Mapper $mapper): array
+    public function getLinks(): array
     {
         return array_map(
             fn($link) => new Link(0, $link['from'], $link['to'], $link['type']),
@@ -66,7 +62,7 @@ readonly class Subject extends Blueprint
                 $this->getTrackLines(),
                 fn($acc, WithTrack $line) => [
                     ...$acc,
-                    ...$this->getSubjectLinksByAttributes($line->key, $line->attributes, $mapper),
+                    ...$line->links,
                 ],
                 [],
             ),

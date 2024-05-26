@@ -3,16 +3,23 @@
 namespace Watch\Blueprint\Factory;
 
 use Watch\Blueprint\Factory\Context\Context;
+use Watch\Blueprint\Model\Attribute;
+use Watch\Blueprint\Model\AttributeType;
 use Watch\Blueprint\Model\Schedule\MilestoneLine;
 use Watch\Blueprint\Model\Subject\IssueLine;
 use Watch\Blueprint\Subject as SubjectBlueprintModel;
 use Watch\Blueprint\Utils;
+use Watch\Schedule\Mapper;
 
 readonly class Subject extends Blueprint
 {
     const string PATTERN_ISSUE_LINE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+]?)(?<beginMarker>\|)(?<track>[*.\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
     const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/';
     const string PATTERN_CONTEXT_LINE = '/(?<marker>>)/';
+
+    public function __construct(private Mapper $mapper)
+    {
+    }
 
     public function create(string $content): SubjectBlueprintModel
     {
@@ -48,13 +55,16 @@ readonly class Subject extends Blueprint
             list('endMarker' => $endMarkerOffset) = $offsets;
             $trackGap = strlen($track) - strlen(rtrim($track));
             $context->setIssuesEndPosition($endMarkerOffset - $trackGap);
+            $lineAttributes = $this->getLineAttributes($attributes);
+            $lineLinks = $this->getLineLinks($key, $lineAttributes);
             return new IssueLine(
                 $key,
                 $type,
                 $project,
                 $milestone,
                 $this->getTrack($track),
-                $this->getLineAttributes($attributes),
+                $lineLinks,
+                $lineAttributes,
                 $modifier === '~',
                 $modifier === '+',
                 str_contains($track, '*'),
@@ -79,5 +89,26 @@ readonly class Subject extends Blueprint
         }
 
         return null;
+    }
+
+    protected function getLineLinks(string $key, array $attributes): array
+    {
+        return array_reduce(
+            array_filter(
+                $attributes,
+                fn(Attribute $attribute) => in_array($attribute->type, [AttributeType::Schedule, AttributeType::Sequence]),
+            ),
+            fn(array $acc, Attribute $attribute) => [
+                ...$acc,
+                [
+                    'from' => $key,
+                    'to' => $attribute->value,
+                    'type' => $attribute->type === AttributeType::Sequence
+                        ? current($this->mapper->sequenceLinkTypes)
+                        : current($this->mapper->scheduleLnkTypes),
+                ],
+            ],
+            [],
+        );
     }
 }

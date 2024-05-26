@@ -13,9 +13,9 @@ class SubjectTest extends Unit
      */
     public function testGetIssues($description, $issueKeys)
     {
-        $blueprintFactory = new SubjectBlueprintFactory;
-        $blueprint = $blueprintFactory->create($description);
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
+        $blueprintFactory = new SubjectBlueprintFactory($mapper);
+        $blueprint = $blueprintFactory->create($description);
         self::assertEquals(
             $issueKeys,
             array_map(

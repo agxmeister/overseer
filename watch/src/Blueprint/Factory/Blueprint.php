@@ -45,24 +45,7 @@ abstract readonly class Blueprint
         );
     }
 
-    protected function getLineLinks(string $key, array $attributes): array
-    {
-        return array_reduce(
-            array_filter(
-                $attributes,
-                fn(Attribute $attribute) => in_array($attribute->type, [AttributeType::Schedule, AttributeType::Sequence]),
-            ),
-            fn(array $acc, Attribute $attribute) => [
-                ...$acc,
-                [
-                    'from' => $key,
-                    'to' => $attribute->value,
-                    'type' => $attribute->type === AttributeType::Sequence ? 'sequence' : 'schedule',
-                ],
-            ],
-            [],
-        );
-    }
+    abstract protected function getLineLinks(string $key, array $attributes): array;
 
     protected function getLineAttribute(string $content): Attribute
     {

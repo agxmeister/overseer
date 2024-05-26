@@ -18,11 +18,11 @@ class ModifyingSimpleDirectorTest extends AbstractDirectorTest
      */
     public function testBuild($subjectDescription, $scheduleDescription)
     {
-        $subjectBlueprintFactory = new SubjectBlueprintFactory;
+        $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
+        $subjectBlueprintFactory = new SubjectBlueprintFactory($mapper);
         $subjectBlueprint = $subjectBlueprintFactory->create($subjectDescription);
         $scheduleBlueprintFactory = new ScheduleBlueprintFactory;
         $scheduleBlueprint = $scheduleBlueprintFactory->create($scheduleDescription);
-        $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
         $director = new Director(
             new Builder(
                 new Context($scheduleBlueprint->nowDate),

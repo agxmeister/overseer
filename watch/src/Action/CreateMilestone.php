@@ -18,7 +18,7 @@ readonly class CreateMilestone
 
     public function __invoke(Request $request, Response $response, $args): Response
     {
-        $blueprintFactory = new SubjectBlueprintFactory;
+        $blueprintFactory = new SubjectBlueprintFactory($this->mapper);
         $blueprint = $blueprintFactory->create(file_get_contents('php://input'));
 
         $issueIds = array_reduce(

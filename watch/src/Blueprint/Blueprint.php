@@ -3,13 +3,10 @@
 namespace Watch\Blueprint;
 
 use DateTimeImmutable;
-use Watch\Blueprint\Model\Attribute;
-use Watch\Blueprint\Model\AttributeType;
 use Watch\Blueprint\Model\Schedule\IssueLine;
 use Watch\Blueprint\Model\Schedule\MilestoneLine;
 use Watch\Blueprint\Model\Track;
 use Watch\Blueprint\Model\WithTrack;
-use Watch\Schedule\Mapper;
 
 readonly abstract class Blueprint
 {
@@ -116,33 +113,6 @@ readonly abstract class Blueprint
                 fn($acc, Track $track) => min($acc, strlen($track->content) - strlen(ltrim($track->content))),
                 PHP_INT_MAX
             );
-    }
-
-    /**
-     * @param string $from
-     * @param Attribute[] $attributes
-     * @param Mapper $mapper
-     * @return array
-     */
-    protected function getSubjectLinksByAttributes(string $from, array $attributes, Mapper $mapper): array
-    {
-        return array_reduce(
-            array_filter(
-                $attributes,
-                fn(Attribute $attribute) => in_array($attribute->type, [AttributeType::Schedule, AttributeType::Sequence]),
-            ),
-            fn(array $acc, Attribute $attribute) => [
-                ...$acc,
-                [
-                    'from' => $from,
-                    'to' => $attribute->value,
-                    'type' => $attribute->type === AttributeType::Sequence
-                        ? current($mapper->sequenceLinkTypes)
-                        : current($mapper->scheduleLnkTypes),
-                ],
-            ],
-            [],
-        );
     }
 
     protected function getProjectBeginGap(): int
