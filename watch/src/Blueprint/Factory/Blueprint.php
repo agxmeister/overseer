@@ -12,7 +12,7 @@ abstract readonly class Blueprint
 {
     abstract public function create(string $content): BlueprintModel;
 
-    protected function getLines(string $content, Context &$context): array
+    protected function getModels(string $content, Context &$context): array
     {
         $contents = array_filter(
             explode("\n", $content),
@@ -21,7 +21,7 @@ abstract readonly class Blueprint
         return array_values(
             array_filter(
                 array_map(
-                    fn(string $content) => $this->getLine($content, $context),
+                    fn(string $content) => $this->getModel($content, $context),
                     $contents,
                 ),
                 fn($line) => !is_null($line),
@@ -64,5 +64,5 @@ abstract readonly class Blueprint
         return new Track($content);
     }
 
-    abstract protected function getLine(string $content, Context &$context): mixed;
+    abstract protected function getModel(string $content, Context &$context): mixed;
 }

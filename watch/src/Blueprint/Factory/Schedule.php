@@ -5,9 +5,9 @@ namespace Watch\Blueprint\Factory;
 use Watch\Blueprint\Factory\Context\Context;
 use Watch\Blueprint\Model\Attribute;
 use Watch\Blueprint\Model\AttributeType;
-use Watch\Blueprint\Model\Schedule\BufferLine;
-use Watch\Blueprint\Model\Schedule\IssueLine;
-use Watch\Blueprint\Model\Schedule\MilestoneLine;
+use Watch\Blueprint\Model\Schedule\Buffer;
+use Watch\Blueprint\Model\Schedule\Issue;
+use Watch\Blueprint\Model\Schedule\Milestone;
 use Watch\Blueprint\Schedule as ScheduleBlueprintModel;
 use Watch\Blueprint\Utils;
 
@@ -21,13 +21,13 @@ readonly class Schedule extends Blueprint
     public function create(string $content): ScheduleBlueprintModel
     {
         $context = new Context();
-        $lines = $this->getLines($content, $context);
+        $lines = $this->getModels($content, $context);
 
         $isEndMarkers = $context->getProjectMarkerOffset() >= $context->getIssuesEndPosition();
 
         $projectLine = array_reduce(
             $lines,
-            fn($acc, $line) => $line instanceof MilestoneLine ? $line : null,
+            fn($acc, $line) => $line instanceof Milestone ? $line : null,
         );
         $gap = $context->getContextMarkerOffset() - $context->getProjectMarkerOffset();
         $nowDate =  $projectLine?->getDate()->modify("{$gap} day");
@@ -35,7 +35,7 @@ readonly class Schedule extends Blueprint
         return new ScheduleBlueprintModel($lines, $nowDate, $isEndMarkers);
     }
 
-    protected function getLine(string $content, Context &$context): mixed
+    protected function getModel(string $content, Context &$context): mixed
     {
         $offsets = [];
         $issueLineProperties = Utils::getStringParts($content, self::PATTERN_ISSUE_LINE, $offsets, project: 'PRJ', type: 'T');
@@ -54,7 +54,7 @@ readonly class Schedule extends Blueprint
             $context->setIssuesEndPosition($endMarkerOffset - $trackGap);
             $lineAttributes = $this->getLineAttributes($attributes);
             $lineLinks = $this->getLineLinks($key, $lineAttributes);
-            return new IssueLine(
+            return new Issue(
                 $key,
                 $type,
                 $project,
@@ -79,7 +79,7 @@ readonly class Schedule extends Blueprint
                 ) = $milestoneLineProperties;
             list('marker' => $markerOffset) = $offsets;
             $context->setProjectMarkerOffset($markerOffset);
-            return new MilestoneLine($key, $this->getLineAttributes($attributes));
+            return new Milestone($key, $this->getLineAttributes($attributes));
         }
 
         $offsets = [];
@@ -97,7 +97,7 @@ readonly class Schedule extends Blueprint
             $lineAttributes = $this->getLineAttributes($attributes);
             $lineLinks = $this->getLineLinks($key, $lineAttributes);
             $consumption = substr_count(trim($track), '!');
-            return new BufferLine(
+            return new Buffer(
                 $key,
                 $type,
                 $this->getTrack($track),

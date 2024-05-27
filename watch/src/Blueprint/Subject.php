@@ -2,10 +2,10 @@
 
 namespace Watch\Blueprint;
 
-use Watch\Blueprint\Model\Subject\IssueLine;
+use Watch\Blueprint\Model\Subject\Issue;
 use Watch\Blueprint\Model\WithTrack;
 use Watch\Schedule\Mapper;
-use Watch\Subject\Model\Issue;
+use Watch\Subject\Model\Issue as SubjectIssue;
 use Watch\Subject\Model\Link;
 
 readonly class Subject extends Blueprint
@@ -22,9 +22,9 @@ readonly class Subject extends Blueprint
         $issues = array_reduce(
             array_filter(
                 $this->lines,
-                fn($line) => $line instanceof IssueLine
+                fn($line) => $line instanceof Issue
             ),
-            function($acc, IssueLine $line) use ($mapper, $projectEndDate, $projectEndGap) {
+            function($acc, Issue $line) use ($mapper, $projectEndDate, $projectEndGap) {
                 $endGap = $line->track->gap - $projectEndGap;
                 $beginGap = $endGap + $line->track->duration;
                 return [
@@ -51,7 +51,7 @@ readonly class Subject extends Blueprint
             []
         );
 
-        return array_map(fn(array $issue) => new Issue(...$issue), array_values($issues));
+        return array_map(fn(array $issue) => new SubjectIssue(...$issue), array_values($issues));
     }
 
     public function getLinks(): array

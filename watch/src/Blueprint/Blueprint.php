@@ -3,8 +3,8 @@
 namespace Watch\Blueprint;
 
 use DateTimeImmutable;
-use Watch\Blueprint\Model\Schedule\IssueLine;
-use Watch\Blueprint\Model\Schedule\MilestoneLine;
+use Watch\Blueprint\Model\Schedule\Issue;
+use Watch\Blueprint\Model\Schedule\Milestone;
 use Watch\Blueprint\Model\Track;
 use Watch\Blueprint\Model\WithTrack;
 
@@ -20,7 +20,7 @@ readonly abstract class Blueprint
     public function getMilestones(): array
     {
         $milestones = array_map(
-            fn(MilestoneLine $line) => [
+            fn(Milestone $line) => [
                 'key' => $line->key,
                 'date' => $line->getDate(),
             ],
@@ -68,7 +68,7 @@ readonly abstract class Blueprint
     public function getMilestoneNames(): array
     {
         return array_map(
-            fn(MilestoneLine $milestone) => $milestone->key,
+            fn(Milestone $milestone) => $milestone->key,
             $this->getMilestoneLines()
         );
     }
@@ -134,7 +134,7 @@ readonly abstract class Blueprint
     }
 
     /**
-     * @return IssueLine[]
+     * @return Issue[]
      */
     protected function getTrackLines(): array
     {
@@ -158,24 +158,24 @@ readonly abstract class Blueprint
     }
 
     /**
-     * @return MilestoneLine[]
+     * @return Milestone[]
      */
     protected function getMilestoneLines(): array
     {
         return array_slice(array_values(
             array_filter(
                 $this->lines,
-                fn($line) => get_class($line) === MilestoneLine::class,
+                fn($line) => get_class($line) === Milestone::class,
             )
         ), 0, -1);
     }
 
-    protected function getProjectLine(): MilestoneLine|null
+    protected function getProjectLine(): Milestone|null
     {
         return array_reduce(
             array_filter(
                 $this->lines,
-                fn($line) => $line instanceof MilestoneLine,
+                fn($line) => $line instanceof Milestone,
             ),
             fn($acc, $line) => $line,
         );

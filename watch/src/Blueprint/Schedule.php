@@ -2,10 +2,10 @@
 
 namespace Watch\Blueprint;
 
-use Watch\Blueprint\Model\Schedule\BufferLine;
-use Watch\Blueprint\Model\Schedule\IssueLine;
+use Watch\Blueprint\Model\Schedule\Buffer;
+use Watch\Blueprint\Model\Schedule\Issue;
 use Watch\Blueprint\Model\WithTrack;
-use Watch\Schedule\Model\Buffer;
+use Watch\Schedule\Model\Buffer as ScheduleBuffer;
 use Watch\Schedule\Serializer\Project;
 
 readonly class Schedule extends Blueprint
@@ -26,7 +26,7 @@ readonly class Schedule extends Blueprint
                 $endGap = $line->track->gap - $projectEndGap;
                 $beginGap = $endGap + $line->track->duration;
 
-                if ($line instanceof IssueLine) {
+                if ($line instanceof Issue) {
                     $acc[Project::VOLUME_ISSUES][] = [
                         'key' => $line->key,
                         'length' => $line->track->duration,
@@ -44,14 +44,14 @@ readonly class Schedule extends Blueprint
                     }
                 }
 
-                if ($line instanceof BufferLine) {
+                if ($line instanceof Buffer) {
                     $acc[Project::VOLUME_BUFFERS][] = [
                         'key' => $line->key,
                         'length' => $line->track->duration,
                         'type' => match($line->type) {
-                            'PB' => Buffer::TYPE_PROJECT,
-                            'MB' => Buffer::TYPE_MILESTONE,
-                            'FB' => Buffer::TYPE_FEEDING,
+                            'PB' => ScheduleBuffer::TYPE_PROJECT,
+                            'MB' => ScheduleBuffer::TYPE_MILESTONE,
+                            'FB' => ScheduleBuffer::TYPE_FEEDING,
                             default => '',
                         },
                         'begin' => $projectEndDate->modify("-{$beginGap} day")->format('Y-m-d'),

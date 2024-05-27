@@ -5,8 +5,8 @@ namespace Watch\Blueprint\Factory;
 use Watch\Blueprint\Factory\Context\Context;
 use Watch\Blueprint\Model\Attribute;
 use Watch\Blueprint\Model\AttributeType;
-use Watch\Blueprint\Model\Schedule\MilestoneLine;
-use Watch\Blueprint\Model\Subject\IssueLine;
+use Watch\Blueprint\Model\Schedule\Milestone;
+use Watch\Blueprint\Model\Subject\Issue;
 use Watch\Blueprint\Subject as SubjectBlueprintModel;
 use Watch\Blueprint\Utils;
 use Watch\Schedule\Mapper;
@@ -24,13 +24,13 @@ readonly class Subject extends Blueprint
     public function create(string $content): SubjectBlueprintModel
     {
         $context = new Context();
-        $lines = $this->getLines($content, $context);
+        $lines = $this->getModels($content, $context);
 
         $isEndMarkers = $context->getProjectMarkerOffset() >= $context->getIssuesEndPosition();
 
         $projectLine = array_reduce(
             $lines,
-            fn($acc, $line) => $line instanceof MilestoneLine ? $line : null,
+            fn($acc, $line) => $line instanceof Milestone ? $line : null,
         );
         $gap = $context->getContextMarkerOffset() - $context->getProjectMarkerOffset();
         $nowDate =  $projectLine?->getDate()->modify("{$gap} day");
@@ -38,7 +38,7 @@ readonly class Subject extends Blueprint
         return new SubjectBlueprintModel($lines, $nowDate, $isEndMarkers);
     }
 
-    protected function getLine(string $content, Context &$context): mixed
+    protected function getModel(string $content, Context &$context): mixed
     {
         $offsets = [];
         $issueLineProperties = Utils::getStringParts($content, self::PATTERN_ISSUE_LINE, $offsets, project: 'PRJ', type: 'T');
@@ -57,7 +57,7 @@ readonly class Subject extends Blueprint
             $context->setIssuesEndPosition($endMarkerOffset - $trackGap);
             $lineAttributes = $this->getLineAttributes($attributes);
             $lineLinks = $this->getLineLinks($key, $lineAttributes);
-            return new IssueLine(
+            return new Issue(
                 $key,
                 $type,
                 $project,
@@ -77,7 +77,7 @@ readonly class Subject extends Blueprint
             list('key' => $key, 'attributes' => $attributes) = $milestoneLineProperties;
             list('marker' => $markerOffset) = $offsets;
             $context->setProjectMarkerOffset($markerOffset);
-            return new MilestoneLine($key, $this->getLineAttributes($attributes));
+            return new Milestone($key, $this->getLineAttributes($attributes));
         }
 
         $offsets = [];

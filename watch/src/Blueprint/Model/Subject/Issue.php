@@ -1,11 +1,11 @@
 <?php
 
-namespace Watch\Blueprint\Model\Schedule;
+namespace Watch\Blueprint\Model\Subject;
 
 use Watch\Blueprint\Model\Track;
 use Watch\Blueprint\Model\WithTrack;
 
-readonly class IssueLine implements WithTrack
+readonly class Issue implements WithTrack
 {
     public function __construct(
         public string $key,
@@ -18,8 +18,6 @@ readonly class IssueLine implements WithTrack
         public bool $started,
         public bool $completed,
         public bool $scheduled,
-        public bool $critical,
-        public bool $ignored,
     )
     {
     }

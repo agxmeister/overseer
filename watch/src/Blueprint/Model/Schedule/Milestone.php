@@ -6,7 +6,7 @@ use DateTimeImmutable;
 use Watch\Blueprint\Model\Attribute;
 use Watch\Blueprint\Model\AttributeType;
 
-readonly class MilestoneLine
+readonly class Milestone
 {
     public function __construct(public string $key, public array $attributes)
     {
