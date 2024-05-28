@@ -24,71 +24,93 @@ readonly class Subject extends Blueprint
     public function create(string $content): SubjectBlueprintModel
     {
         $context = new Context();
-        $lines = $this->getModels($content, $context);
+
+        $lines = $this->getLines($content);
+
+        $issueModels = array_map(
+            fn($line) => $this->getIssueModel($line, $context),
+            array_filter(
+                $lines,
+                fn($line) => preg_match(self::PATTERN_ISSUE_LINE, $line),
+            ),
+        );
+
+        $milestoneModels = array_map(
+            fn($line) => $this->getMilestoneModel($line, $context),
+            array_filter(
+                $lines,
+                fn($line) => preg_match(self::PATTERN_MILESTONE_LINE, $line),
+            ),
+        );
+
+        $contextLine = array_reduce(
+            array_filter(
+                $lines,
+                fn($line) => preg_match(self::PATTERN_CONTEXT_LINE, $line),
+            ),
+            fn($acc, $line) => $line,
+        );
+        if (!is_null($contextLine)) {
+            $offsets = [];
+            Utils::getStringParts($contextLine, self::PATTERN_CONTEXT_LINE, $offsets);
+            list('marker' => $markerOffset) = $offsets;
+            $context->setContextMarkerOffset($markerOffset);
+        }
+
+        $models = [...$issueModels, ...$milestoneModels];
 
         $isEndMarkers = $context->getProjectMarkerOffset() >= $context->getIssuesEndPosition();
 
         $projectLine = array_reduce(
-            $lines,
+            $models,
             fn($acc, $line) => $line instanceof Milestone ? $line : null,
         );
         $gap = $context->getContextMarkerOffset() - $context->getProjectMarkerOffset();
         $nowDate =  $projectLine?->getDate()->modify("{$gap} day");
 
-        return new SubjectBlueprintModel($lines, $nowDate, $isEndMarkers);
+        return new SubjectBlueprintModel($models, $nowDate, $isEndMarkers);
     }
 
-    protected function getModel(string $content, Context &$context): mixed
+    private function getIssueModel(string $content, Context &$context): Issue
     {
         $offsets = [];
         $issueLineProperties = Utils::getStringParts($content, self::PATTERN_ISSUE_LINE, $offsets, project: 'PRJ', type: 'T');
-        if (!is_null($issueLineProperties)) {
-            list(
-                'key' => $key,
-                'type' => $type,
-                'project' => $project,
-                'milestone' => $milestone,
-                'modifier' => $modifier,
-                'track' => $track,
-                'attributes' => $attributes,
-                ) = $issueLineProperties;
-            list('endMarker' => $endMarkerOffset) = $offsets;
-            $trackGap = strlen($track) - strlen(rtrim($track));
-            $context->setIssuesEndPosition($endMarkerOffset - $trackGap);
-            $lineAttributes = $this->getLineAttributes($attributes);
-            $lineLinks = $this->getLineLinks($key, $lineAttributes);
-            return new Issue(
-                $key,
-                $type,
-                $project,
-                $milestone,
-                $this->getTrack($track),
-                $lineLinks,
-                $lineAttributes,
-                $modifier === '~',
-                $modifier === '+',
-                str_contains($track, '*'),
-            );
-        }
+        list(
+            'key' => $key,
+            'type' => $type,
+            'project' => $project,
+            'milestone' => $milestone,
+            'modifier' => $modifier,
+            'track' => $track,
+            'attributes' => $attributes,
+            ) = $issueLineProperties;
+        list('endMarker' => $endMarkerOffset) = $offsets;
+        $trackGap = strlen($track) - strlen(rtrim($track));
+        $context->setIssuesEndPosition($endMarkerOffset - $trackGap);
+        $lineAttributes = $this->getLineAttributes($attributes);
+        $lineLinks = $this->getLineLinks($key, $lineAttributes);
+        return new Issue(
+            $key,
+            $type,
+            $project,
+            $milestone,
+            $this->getTrack($track),
+            $lineLinks,
+            $lineAttributes,
+            $modifier === '~',
+            $modifier === '+',
+            str_contains($track, '*'),
+        );
+    }
 
+    private function getMilestoneModel(string $content, Context &$context): Milestone
+    {
         $offsets = [];
         $milestoneLineProperties = Utils::getStringParts($content, self::PATTERN_MILESTONE_LINE, $offsets, key: 'PRJ');
-        if (!is_null($milestoneLineProperties)) {
-            list('key' => $key, 'attributes' => $attributes) = $milestoneLineProperties;
-            list('marker' => $markerOffset) = $offsets;
-            $context->setProjectMarkerOffset($markerOffset);
-            return new Milestone($key, $this->getLineAttributes($attributes));
-        }
-
-        $offsets = [];
-        $contextLineProperties = Utils::getStringParts($content, self::PATTERN_CONTEXT_LINE, $offsets);
-        if (!is_null($contextLineProperties)) {
-            list('marker' => $markerOffset) = $offsets;
-            $context->setContextMarkerOffset($markerOffset);
-            return null;
-        }
-
-        return null;
+        list('key' => $key, 'attributes' => $attributes) = $milestoneLineProperties;
+        list('marker' => $markerOffset) = $offsets;
+        $context->setProjectMarkerOffset($markerOffset);
+        return new Milestone($key, $this->getLineAttributes($attributes));
     }
 
     protected function getLineLinks(string $key, array $attributes): array
