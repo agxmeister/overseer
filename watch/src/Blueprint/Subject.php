@@ -2,6 +2,7 @@
 
 namespace Watch\Blueprint;
 
+use DateTimeImmutable;
 use Watch\Blueprint\Model\Subject\Issue;
 use Watch\Blueprint\Model\WithTrack;
 use Watch\Schedule\Mapper;
@@ -10,6 +11,10 @@ use Watch\Subject\Model\Link;
 
 readonly class Subject extends Blueprint
 {
+    public function __construct(public array $issues, public array $milestones, public ?DateTimeImmutable $nowDate, public bool $isEndMarkers)
+    {
+    }
+
     /**
      * @param Mapper $mapper
      * @return Issue[]
@@ -20,10 +25,7 @@ readonly class Subject extends Blueprint
         $projectEndGap = $this->getProjectEndGap();
 
         $issues = array_reduce(
-            array_filter(
-                $this->lines,
-                fn($line) => $line instanceof Issue
-            ),
+            $this->issues,
             function($acc, Issue $line) use ($mapper, $projectEndDate, $projectEndGap) {
                 $endGap = $line->track->gap - $projectEndGap;
                 $beginGap = $endGap + $line->track->duration;
@@ -67,5 +69,10 @@ readonly class Subject extends Blueprint
                 [],
             ),
         );
+    }
+
+    protected function getModels(): array
+    {
+        return [...$this->issues, ...$this->milestones];
     }
 }

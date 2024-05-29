@@ -62,18 +62,16 @@ readonly class Schedule extends Blueprint
             $context->setContextMarkerOffset($markerOffset);
         }
 
-        $models = [...$issueModels, ...$bufferModels, ...$milestoneModels];
-
         $isEndMarkers = $context->getProjectMarkerOffset() >= $context->getIssuesEndPosition();
 
         $projectLine = array_reduce(
-            $models,
+            $milestoneModels,
             fn($acc, $line) => $line instanceof Milestone ? $line : null,
         );
         $gap = $context->getContextMarkerOffset() - $context->getProjectMarkerOffset();
         $nowDate =  $projectLine?->getDate()->modify("{$gap} day");
 
-        return new ScheduleBlueprintModel($models, $nowDate, $isEndMarkers);
+        return new ScheduleBlueprintModel($issueModels, $bufferModels, $milestoneModels, $nowDate, $isEndMarkers);
     }
 
     private function getIssueModel($line, Context &$context): Issue

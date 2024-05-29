@@ -10,10 +10,6 @@ use Watch\Blueprint\Model\WithTrack;
 
 readonly abstract class Blueprint
 {
-    public function __construct(protected array $lines, public ?DateTimeImmutable $nowDate, public bool $isEndMarkers)
-    {
-    }
-
     /**
      * @return array[]
      */
@@ -140,7 +136,7 @@ readonly abstract class Blueprint
     {
         return array_values(
             array_filter(
-                $this->lines,
+                $this->getModels(),
                 fn($line) => $line instanceof WithTrack,
             ),
         );
@@ -164,7 +160,7 @@ readonly abstract class Blueprint
     {
         return array_slice(array_values(
             array_filter(
-                $this->lines,
+                $this->getModels(),
                 fn($line) => get_class($line) === Milestone::class,
             )
         ), 0, -1);
@@ -174,10 +170,12 @@ readonly abstract class Blueprint
     {
         return array_reduce(
             array_filter(
-                $this->lines,
+                $this->getModels(),
                 fn($line) => $line instanceof Milestone,
             ),
             fn($acc, $line) => $line,
         );
     }
+
+    abstract protected function getModels(): array;
 }

@@ -57,18 +57,16 @@ readonly class Subject extends Blueprint
             $context->setContextMarkerOffset($markerOffset);
         }
 
-        $models = [...$issueModels, ...$milestoneModels];
-
         $isEndMarkers = $context->getProjectMarkerOffset() >= $context->getIssuesEndPosition();
 
         $projectLine = array_reduce(
-            $models,
+            $milestoneModels,
             fn($acc, $line) => $line instanceof Milestone ? $line : null,
         );
         $gap = $context->getContextMarkerOffset() - $context->getProjectMarkerOffset();
         $nowDate =  $projectLine?->getDate()->modify("{$gap} day");
 
-        return new SubjectBlueprintModel($models, $nowDate, $isEndMarkers);
+        return new SubjectBlueprintModel($issueModels, $milestoneModels, $nowDate, $isEndMarkers);
     }
 
     private function getIssueModel(string $content, Context &$context): Issue
