@@ -11,6 +11,8 @@ use Watch\Schedule\Serializer\Project;
 
 readonly class Schedule extends Blueprint
 {
+    use HasMilestones;
+
     public function __construct(public array $issues, public array $buffers, public array $milestones, public ?DateTimeImmutable $nowDate, public bool $isEndMarkers)
     {
     }

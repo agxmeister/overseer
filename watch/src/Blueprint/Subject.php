@@ -11,6 +11,8 @@ use Watch\Subject\Model\Link;
 
 readonly class Subject extends Blueprint
 {
+    use HasMilestones;
+
     public function __construct(public array $issues, public array $milestones, public ?DateTimeImmutable $nowDate, public bool $isEndMarkers)
     {
     }
