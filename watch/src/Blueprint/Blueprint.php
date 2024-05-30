@@ -13,16 +13,16 @@ readonly abstract class Blueprint
     {
         $projectLength = $this->getProjectLength();
         return $this->isEndMarkers
-            ? $this->getProjectLine()?->getDate()?->modify("-{$projectLength} day")
-            : $this->getProjectLine()?->getDate();
+            ? $this->getProject()?->getDate()?->modify("-{$projectLength} day")
+            : $this->getProject()?->getDate();
     }
 
     public function getProjectEndDate(): \DateTimeImmutable|null
     {
         $projectLength = $this->getProjectLength();
         return $this->isEndMarkers
-            ? $this->getProjectLine()?->getDate()
-            : $this->getProjectLine()?->getDate()?->modify("{$projectLength} day");
+            ? $this->getProject()?->getDate()
+            : $this->getProject()?->getDate()?->modify("{$projectLength} day");
     }
 
     public function getProjectLength(): int
@@ -88,5 +88,5 @@ readonly abstract class Blueprint
         );
     }
 
-    abstract protected function getProjectLine(): Milestone|null;
+    abstract protected function getProject(): Milestone|null;
 }

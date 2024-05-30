@@ -9,14 +9,14 @@ trait HasMilestones
     /**
      * @return array[]
      */
-    public function getMilestones(): array
+    public function getMilestonesData(): array
     {
         $milestones = array_map(
             fn(Milestone $line) => [
                 'key' => $line->key,
                 'date' => $line->getDate(),
             ],
-            $this->getMilestoneLines(),
+            $this->getMilestones(),
         );
         usort($milestones, fn($a, $b) => $a['date'] < $b['date'] ? -1 : ($a['date'] > $b['date'] ? 1 : 0));
 
@@ -46,7 +46,7 @@ trait HasMilestones
             [
                 ...$milestones,
                 [
-                    'key' => $this->getProjectLine()->key,
+                    'key' => $this->getProject()->key,
                     'begin' => $this->getProjectBeginDate()->format('Y-m-d'),
                     'end' => $this->getProjectEndDate()->format('Y-m-d'),
                 ]
@@ -61,19 +61,19 @@ trait HasMilestones
     {
         return array_map(
             fn(Milestone $milestone) => $milestone->key,
-            $this->getMilestoneLines()
+            $this->getMilestones()
         );
     }
 
     public function getProjectName(): string
     {
-        return $this->getProjectLine()?->key;
+        return $this->getProject()?->key;
     }
 
     /**
      * @return Milestone[]
      */
-    protected function getMilestoneLines(): array
+    protected function getMilestones(): array
     {
         return array_slice(array_values(
             array_filter(
@@ -83,7 +83,7 @@ trait HasMilestones
         ), 0, -1);
     }
 
-    protected function getProjectLine(): Milestone|null
+    protected function getProject(): Milestone|null
     {
         return array_reduce(
             array_filter(

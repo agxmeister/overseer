@@ -24,7 +24,7 @@ class ScheduleTest extends Unit
     {
         $blueprintFactory = new ScheduleBlueprintFactory;
         $blueprint = $blueprintFactory->create($description);
-        self::assertEquals($milestones, $blueprint->getMilestones());
+        self::assertEquals($milestones, $blueprint->getMilestonesData());
     }
 
     /**

@@ -78,8 +78,8 @@ readonly class Schedule extends Blueprint
             ]
         );
 
-        $schedule[Project::VOLUME_PROJECT] = current(array_slice($this->getMilestones(), -1));
-        $schedule[Project::VOLUME_MILESTONES] = array_slice($this->getMilestones(), 0, -1);
+        $schedule[Project::VOLUME_PROJECT] = current(array_slice($this->getMilestonesData(), -1));
+        $schedule[Project::VOLUME_MILESTONES] = array_slice($this->getMilestonesData(), 0, -1);
 
         krsort($criticalChain);
         $schedule[Project::VOLUME_CRITICAL_CHAIN] = array_values($criticalChain);
