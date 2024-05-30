@@ -65,11 +65,6 @@ trait HasMilestones
         );
     }
 
-    public function getProjectName(): string
-    {
-        return $this->getProject()?->key;
-    }
-
     /**
      * @return Milestone[]
      */
@@ -81,16 +76,5 @@ trait HasMilestones
                 fn($line) => get_class($line) === Milestone::class,
             )
         ), 0, -1);
-    }
-
-    protected function getProject(): Milestone|null
-    {
-        return array_reduce(
-            array_filter(
-                $this->milestones,
-                fn($line) => $line instanceof Milestone,
-            ),
-            fn($acc, $line) => $line,
-        );
     }
 }
