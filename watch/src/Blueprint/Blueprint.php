@@ -65,26 +65,18 @@ readonly abstract class Blueprint
     }
 
     /**
-     * @return Issue[]
-     */
-    protected function getTrackLines(): array
-    {
-        return array_values(
-            array_filter(
-                $this->getModels(),
-                fn($line) => $line instanceof WithTrack,
-            ),
-        );
-    }
-
-    /**
      * @return Track[]
      */
     protected function getTracks(): array
     {
         return array_map(
             fn(WithTrack $line) => $line->track,
-            $this->getTrackLines(),
+            array_values(
+                array_filter(
+                    $this->getModels(),
+                    fn($line) => $line instanceof WithTrack,
+                ),
+            ),
         );
     }
 

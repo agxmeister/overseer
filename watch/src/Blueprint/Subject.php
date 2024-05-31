@@ -63,7 +63,7 @@ readonly class Subject extends Blueprint
         return array_map(
             fn($link) => new Link(0, $link['from'], $link['to'], $link['type']),
             array_reduce(
-                $this->getTrackLines(),
+                $this->issues,
                 fn($acc, WithTrack $line) => [
                     ...$acc,
                     ...$line->links,
