@@ -3,7 +3,6 @@
 namespace Watch\Blueprint\Factory;
 
 use Watch\Blueprint\Blueprint as BlueprintModel;
-use Watch\Blueprint\Factory\Context\Context;
 use Watch\Blueprint\Model\Attribute;
 use Watch\Blueprint\Model\AttributeType;
 use Watch\Blueprint\Model\Track;

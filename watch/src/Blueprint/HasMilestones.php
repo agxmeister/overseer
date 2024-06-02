@@ -7,54 +7,6 @@ use Watch\Blueprint\Model\Schedule\Milestone;
 trait HasMilestones
 {
     /**
-     * @return array[]
-     */
-    public function getMilestonesData(): array
-    {
-        $milestones = array_map(
-            fn(Milestone $line) => [
-                'key' => $line->key,
-                'date' => $line->getDate(),
-            ],
-            $this->getMilestones(),
-        );
-        usort($milestones, fn($a, $b) => $a['date'] < $b['date'] ? -1 : ($a['date'] > $b['date'] ? 1 : 0));
-
-        for ($i = 0; $i < sizeof($milestones); $i++) {
-            $milestones[$i]['begin'] = ($this->isEndMarkers
-                ? (
-                $i > 0
-                    ? $milestones[$i - 1]['date']
-                    : $this->getProjectBeginDate()
-                )
-                : $milestones[$i]['date'])->format('Y-m-d');
-            $milestones[$i]['end'] = ($this->isEndMarkers
-                ? $milestones[$i]['date']
-                : (
-                $i < sizeof($milestones) - 1
-                    ? $milestones[$i + 1]['date']
-                    : $this->getProjectEndDate()
-                ))->format('Y-m-d');
-        }
-
-        return array_map(
-            fn($milestone) => array_filter(
-                (array)$milestone,
-                fn($key) => in_array($key, ['key', 'begin', 'end']),
-                ARRAY_FILTER_USE_KEY,
-            ),
-            [
-                ...$milestones,
-                [
-                    'key' => $this->getProject()->key,
-                    'begin' => $this->getProjectBeginDate()->format('Y-m-d'),
-                    'end' => $this->getProjectEndDate()->format('Y-m-d'),
-                ]
-            ],
-        );
-    }
-
-    /**
      * @return string[]
      */
     public function getMilestoneNames(): array
