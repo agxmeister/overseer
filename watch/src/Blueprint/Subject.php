@@ -9,7 +9,7 @@ use Watch\Schedule\Mapper;
 use Watch\Subject\Model\Issue as SubjectIssue;
 use Watch\Subject\Model\Link;
 
-readonly class Subject extends Blueprint
+readonly class Subject
 {
     use HasProject;
 

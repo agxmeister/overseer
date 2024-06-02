@@ -7,12 +7,15 @@ use Watch\Blueprint\Model\Attribute;
 use Watch\Blueprint\Model\AttributeType;
 use Watch\Blueprint\Model\Schedule\Milestone;
 use Watch\Blueprint\Model\Subject\Issue;
+use Watch\Blueprint\Model\Track;
 use Watch\Blueprint\Subject as SubjectBlueprintModel;
 use Watch\Blueprint\Utils;
 use Watch\Schedule\Mapper;
 
-readonly class Subject extends Blueprint
+readonly class Subject
 {
+    use HasLines;
+
     const string PATTERN_ISSUE_LINE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+]?)(?<beginMarker>\|)(?<track>[*.\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
     const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/';
     const string PATTERN_CONTEXT_LINE = '/(?<marker>>)/';
@@ -92,7 +95,7 @@ readonly class Subject extends Blueprint
             $type,
             $project,
             $milestone,
-            $this->getTrack($track),
+            new Track($track),
             $lineLinks,
             $lineAttributes,
             $modifier === '~',

@@ -8,11 +8,14 @@ use Watch\Blueprint\Model\AttributeType;
 use Watch\Blueprint\Model\Schedule\Buffer;
 use Watch\Blueprint\Model\Schedule\Issue;
 use Watch\Blueprint\Model\Schedule\Milestone;
+use Watch\Blueprint\Model\Track;
 use Watch\Blueprint\Schedule as ScheduleBlueprintModel;
 use Watch\Blueprint\Utils;
 
-readonly class Schedule extends Blueprint
+readonly class Schedule
 {
+    use HasLines;
+
     const string PATTERN_ISSUE_LINE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+\-]?)(?<beginMarker>\|)(?<track>[x*.\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
     const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/';
     const string PATTERN_BUFFER_LINE = '/\s*(((?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<beginMarker>\|)(?<track>[_!\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
@@ -97,7 +100,7 @@ readonly class Schedule extends Blueprint
             $type,
             $project,
             $milestone,
-            $this->getTrack($track),
+            new Track($track),
             $lineLinks,
             $lineAttributes,
             $modifier === '~',
@@ -127,7 +130,7 @@ readonly class Schedule extends Blueprint
         return new Buffer(
             $key,
             $type,
-            $this->getTrack($track),
+            new Track($track),
             $lineLinks,
             $lineAttributes,
             $consumption,

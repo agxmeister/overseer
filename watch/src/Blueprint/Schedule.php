@@ -9,7 +9,7 @@ use Watch\Blueprint\Model\WithTrack;
 use Watch\Schedule\Model\Buffer as ScheduleBuffer;
 use Watch\Schedule\Serializer\Project;
 
-readonly class Schedule extends Blueprint
+readonly class Schedule
 {
     use HasProject;
 
