@@ -103,7 +103,7 @@ trait HasProject
     {
         return array_reduce(
             $this->getTracks(),
-            fn($acc, $track) => min($acc, strlen($track) - strlen(ltrim($track))),
+            fn($acc, Track $track) => min($acc, strlen($track->content) - strlen(ltrim($track->content))),
             PHP_INT_MAX
         );
     }
