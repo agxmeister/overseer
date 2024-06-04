@@ -4,7 +4,6 @@ namespace Watch\Blueprint;
 
 use DateTimeImmutable;
 use Watch\Blueprint\Model\Subject\Issue;
-use Watch\Blueprint\Model\WithTrack;
 use Watch\Schedule\Mapper;
 use Watch\Subject\Model\Issue as SubjectIssue;
 use Watch\Subject\Model\Link;
@@ -64,7 +63,7 @@ readonly class Subject
             fn($link) => new Link(0, $link['from'], $link['to'], $link['type']),
             array_reduce(
                 $this->issues,
-                fn($acc, WithTrack $line) => [
+                fn($acc, $line) => [
                     ...$acc,
                     ...$line->links,
                 ],
@@ -76,5 +75,10 @@ readonly class Subject
     protected function getModels(): array
     {
         return [...$this->issues, ...$this->milestones];
+    }
+
+    protected function getModelsWithTracks(): array
+    {
+        return [...$this->issues];
     }
 }

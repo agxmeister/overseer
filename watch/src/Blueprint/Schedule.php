@@ -5,7 +5,6 @@ namespace Watch\Blueprint;
 use DateTimeImmutable;
 use Watch\Blueprint\Model\Schedule\Buffer;
 use Watch\Blueprint\Model\Schedule\Issue;
-use Watch\Blueprint\Model\WithTrack;
 use Watch\Schedule\Model\Buffer as ScheduleBuffer;
 use Watch\Schedule\Serializer\Project;
 
@@ -26,7 +25,7 @@ readonly class Schedule
 
         $schedule = array_reduce(
             [...$this->issues, ...$this->buffers],
-            function ($acc, WithTrack $line) use ($projectEndDate, $projectEndGap, &$criticalChain) {
+            function ($acc, $line) use ($projectEndDate, $projectEndGap, &$criticalChain) {
                 $endGap = $line->track->gap - $projectEndGap;
                 $beginGap = $endGap + $line->track->duration;
 
@@ -90,5 +89,10 @@ readonly class Schedule
     protected function getModels(): array
     {
         return [...$this->issues, ...$this->buffers, ...$this->milestones];
+    }
+
+    protected function getModelsWithTracks(): array
+    {
+        return [...$this->issues, ...$this->buffers];
     }
 }

@@ -3,7 +3,6 @@
 namespace Watch\Blueprint;
 
 use Watch\Blueprint\Model\Track;
-use Watch\Blueprint\Model\WithTrack;
 
 trait HasTracks
 {
@@ -13,13 +12,10 @@ trait HasTracks
     protected function getTracks(): array
     {
         return array_map(
-            fn(WithTrack $line) => $line->track,
-            array_values(
-                array_filter(
-                    $this->getModels(),
-                    fn($line) => $line instanceof WithTrack,
-                ),
-            ),
+            fn($line) => $line->track,
+            $this->getModelsWithTracks(),
         );
     }
+
+    abstract protected function getModelsWithTracks();
 }

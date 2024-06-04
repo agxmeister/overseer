@@ -3,9 +3,8 @@
 namespace Watch\Blueprint\Model\Schedule;
 
 use Watch\Blueprint\Model\Track;
-use Watch\Blueprint\Model\WithTrack;
 
-readonly class Issue implements WithTrack
+readonly class Issue
 {
     public function __construct(
         public string $key,
