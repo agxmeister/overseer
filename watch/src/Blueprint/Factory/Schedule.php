@@ -10,7 +10,6 @@ use Watch\Blueprint\Model\Schedule\Issue;
 use Watch\Blueprint\Model\Schedule\Milestone;
 use Watch\Blueprint\Model\Track;
 use Watch\Blueprint\Schedule as ScheduleBlueprintModel;
-use Watch\Blueprint\Utils;
 
 readonly class Schedule
 {

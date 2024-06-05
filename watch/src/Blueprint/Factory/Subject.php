@@ -9,7 +9,6 @@ use Watch\Blueprint\Model\Schedule\Milestone;
 use Watch\Blueprint\Model\Subject\Issue;
 use Watch\Blueprint\Model\Track;
 use Watch\Blueprint\Subject as SubjectBlueprintModel;
-use Watch\Blueprint\Utils;
 use Watch\Schedule\Mapper;
 
 readonly class Subject

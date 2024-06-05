@@ -1,6 +1,6 @@
 <?php
 
-namespace Watch\Blueprint;
+namespace Watch\Blueprint\Factory;
 
 class Utils
 {
