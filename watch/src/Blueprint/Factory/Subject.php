@@ -13,7 +13,7 @@ use Watch\Schedule\Mapper;
 
 readonly class Subject
 {
-    use HasLines;
+    use HasContext;
 
     const string PATTERN_ISSUE_LINE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+]?)(?<beginMarker>\|)(?<track>[*.\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
     const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/';
@@ -25,8 +25,7 @@ readonly class Subject
 
     public function create(string $content): SubjectBlueprintModel
     {
-        $context = new Context();
-
+        $context = $this->getContext($content, self::PATTERN_CONTEXT_LINE);
         $lines = $this->getLines($content);
 
         $issueModels = array_map(
@@ -44,20 +43,6 @@ readonly class Subject
                 fn($line) => preg_match(self::PATTERN_MILESTONE_LINE, $line),
             ),
         );
-
-        $contextLine = array_reduce(
-            array_filter(
-                $lines,
-                fn($line) => preg_match(self::PATTERN_CONTEXT_LINE, $line),
-            ),
-            fn($acc, $line) => $line,
-        );
-        if (!is_null($contextLine)) {
-            $offsets = [];
-            Utils::getStringParts($contextLine, self::PATTERN_CONTEXT_LINE, $offsets);
-            list('marker' => $markerOffset) = $offsets;
-            $context->setContextMarkerOffset($markerOffset);
-        }
 
         $isEndMarkers = $context->getProjectMarkerOffset() >= $context->getIssuesEndPosition();
 
