@@ -8,6 +8,10 @@ class Context
     private int $contextMarkerOffset = 0;
     private int $issuesEndPosition = 0;
 
+    public function __construct(public readonly array $lines)
+    {
+    }
+
     public function setProjectMarkerOffset($projectMarkerOffset): void
     {
         $this->projectMarkerOffset = $projectMarkerOffset;

@@ -26,12 +26,11 @@ readonly class Subject
     public function create(string $content): SubjectBlueprintModel
     {
         $context = $this->getContext($content, self::PATTERN_CONTEXT_LINE);
-        $lines = $this->getLines($content);
 
         $issueModels = array_map(
             fn($line) => $this->getIssueModel($line, $context),
             array_filter(
-                $lines,
+                $context->lines,
                 fn($line) => preg_match(self::PATTERN_ISSUE_LINE, $line),
             ),
         );
@@ -39,7 +38,7 @@ readonly class Subject
         $milestoneModels = array_map(
             fn($line) => $this->getMilestoneModel($line, $context),
             array_filter(
-                $lines,
+                $context->lines,
                 fn($line) => preg_match(self::PATTERN_MILESTONE_LINE, $line),
             ),
         );

@@ -10,11 +10,12 @@ trait HasContext
 
     private function getContext($content, $pattern): Context
     {
-        $context = new Context();
+        $lines = $this->getLines($content);
+        $context = new Context($lines);
 
         $contextLine = array_reduce(
             array_filter(
-                $this->getLines($content),
+                $lines,
                 fn($line) => preg_match($pattern, $line),
             ),
             fn($acc, $line) => $line,

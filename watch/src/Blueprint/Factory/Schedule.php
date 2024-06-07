@@ -23,12 +23,11 @@ readonly class Schedule
     public function create(string $content): ScheduleBlueprintModel
     {
         $context = $this->getContext($content, self::PATTERN_CONTEXT_LINE);
-        $lines = $this->getLines($content);
 
         $issueModels = array_map(
             fn($line) => $this->getIssueModel($line, $context),
             array_filter(
-                $lines,
+                $context->lines,
                 fn($line) => preg_match(self::PATTERN_ISSUE_LINE, $line),
             ),
         );
@@ -36,7 +35,7 @@ readonly class Schedule
         $bufferModels = array_map(
             fn($line) => $this->getBufferModel($line, $context),
             array_filter(
-                $lines,
+                $context->lines,
                 fn($line) => preg_match(self::PATTERN_BUFFER_LINE, $line),
             ),
         );
@@ -44,7 +43,7 @@ readonly class Schedule
         $milestoneModels = array_map(
             fn($line) => $this->getMilestoneModel($line, $context),
             array_filter(
-                $lines,
+                $context->lines,
                 fn($line) => preg_match(self::PATTERN_MILESTONE_LINE, $line),
             ),
         );
