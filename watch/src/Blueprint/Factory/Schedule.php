@@ -25,7 +25,10 @@ readonly class Schedule
         $context = $this->getContext($content, self::PATTERN_CONTEXT_LINE);
 
         $issueModels = array_map(
-            fn($line) => $this->getIssueModel($line, $context),
+            fn($line) => $this->getIssueModel(
+                new Line($line, self::PATTERN_ISSUE_LINE, project: 'PRJ', type: 'T'),
+                $context,
+            ),
             array_filter(
                 $context->lines,
                 fn($line) => preg_match(self::PATTERN_ISSUE_LINE, $line),
@@ -33,7 +36,10 @@ readonly class Schedule
         );
 
         $bufferModels = array_map(
-            fn($line) => $this->getBufferModel($line, $context),
+            fn($line) => $this->getBufferModel(
+                new Line($line, self::PATTERN_BUFFER_LINE, type: 'T'),
+                $context,
+            ),
             array_filter(
                 $context->lines,
                 fn($line) => preg_match(self::PATTERN_BUFFER_LINE, $line),
@@ -41,7 +47,10 @@ readonly class Schedule
         );
 
         $milestoneModels = array_map(
-            fn($line) => $this->getMilestoneModel($line, $context),
+            fn($line) => $this->getMilestoneModel(
+                new Line($line, self::PATTERN_MILESTONE_LINE, key: 'PRJ'),
+                $context,
+            ),
             array_filter(
                 $context->lines,
                 fn($line) => preg_match(self::PATTERN_MILESTONE_LINE, $line),
@@ -60,10 +69,8 @@ readonly class Schedule
         return new ScheduleBlueprintModel($issueModels, $bufferModels, $milestoneModels, $nowDate, $isEndMarkers);
     }
 
-    private function getIssueModel($line, Context &$context): Issue
+    private function getIssueModel(Line $line, Context &$context): Issue
     {
-        $offsets = [];
-        $issueLineProperties = Utils::getStringParts($line, self::PATTERN_ISSUE_LINE, $offsets, project: 'PRJ', type: 'T');
         list(
             'key' => $key,
             'type' => $type,
@@ -72,8 +79,8 @@ readonly class Schedule
             'modifier' => $modifier,
             'track' => $track,
             'attributes' => $attributes,
-            ) = $issueLineProperties;
-        list('endMarker' => $endMarkerOffset) = $offsets;
+            ) = $line->parts;
+        list('endMarker' => $endMarkerOffset) = $line->offsets;
         $trackGap = strlen($track) - strlen(rtrim($track));
         $context->setIssuesEndPosition($endMarkerOffset - $trackGap);
         $lineAttributes = $this->getLineAttributes($attributes);
@@ -94,17 +101,15 @@ readonly class Schedule
         );
     }
 
-    private function getBufferModel($line, Context &$context): Buffer
+    private function getBufferModel(Line $line, Context &$context): Buffer
     {
-        $offsets = [];
-        $bufferLineProperties = Utils::getStringParts($line, self::PATTERN_BUFFER_LINE, $offsets, type: 'T');
         list(
             'key' => $key,
             'type' => $type,
             'track' => $track,
             'attributes' => $attributes,
-            ) = $bufferLineProperties;
-        list('endMarker' => $endMarkerOffset) = $offsets;
+            ) = $line->parts;
+        list('endMarker' => $endMarkerOffset) = $line->offsets;
         $trackGap = strlen($track) - strlen(rtrim($track));
         $context->setIssuesEndPosition($endMarkerOffset - $trackGap);
         $lineAttributes = $this->getLineAttributes($attributes);
@@ -120,15 +125,13 @@ readonly class Schedule
         );
     }
 
-    private function getMilestoneModel($line, Context &$context): Milestone
+    private function getMilestoneModel(Line $line, Context &$context): Milestone
     {
-        $offsets = [];
-        $milestoneLineProperties = Utils::getStringParts($line, self::PATTERN_MILESTONE_LINE, $offsets, key: 'PRJ');
         list(
             'key' => $key,
             'attributes' => $attributes
-            ) = $milestoneLineProperties;
-        list('marker' => $markerOffset) = $offsets;
+            ) = $line->parts;
+        list('marker' => $markerOffset) = $line->offsets;
         $context->setProjectMarkerOffset($markerOffset);
         return new Milestone($key, $this->getLineAttributes($attributes));
     }
