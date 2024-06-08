@@ -69,7 +69,7 @@ readonly class Schedule
         return new ScheduleBlueprintModel($issueModels, $bufferModels, $milestoneModels, $nowDate, $isEndMarkers);
     }
 
-    private function getIssueModel(Line $line, Context &$context): Issue
+    private function getIssueModel(Line $line, Context $context): Issue
     {
         list(
             'key' => $key,
@@ -101,7 +101,7 @@ readonly class Schedule
         );
     }
 
-    private function getBufferModel(Line $line, Context &$context): Buffer
+    private function getBufferModel(Line $line, Context $context): Buffer
     {
         list(
             'key' => $key,
@@ -125,7 +125,7 @@ readonly class Schedule
         );
     }
 
-    private function getMilestoneModel(Line $line, Context &$context): Milestone
+    private function getMilestoneModel(Line $line, Context $context): Milestone
     {
         list(
             'key' => $key,

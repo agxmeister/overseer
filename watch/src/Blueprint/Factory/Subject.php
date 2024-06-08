@@ -61,7 +61,7 @@ readonly class Subject
         return new SubjectBlueprintModel($issueModels, $milestoneModels, $nowDate, $isEndMarkers);
     }
 
-    private function getIssueModel(Line $line, Context &$context): Issue
+    private function getIssueModel(Line $line, Context $context): Issue
     {
         list(
             'key' => $key,
@@ -91,7 +91,7 @@ readonly class Subject
         );
     }
 
-    private function getMilestoneModel(Line $line, Context &$context): Milestone
+    private function getMilestoneModel(Line $line, Context $context): Milestone
     {
         list('key' => $key, 'attributes' => $attributes) = $line->parts;
         list('marker' => $markerOffset) = $line->offsets;
