@@ -29,7 +29,7 @@ readonly class Subject
 
         $issueModels = array_map(
             fn($line) => $this->getIssueModel(
-                new Line($line, self::PATTERN_ISSUE_LINE, project: 'PRJ', type: 'T'),
+                new Line($line, self::PATTERN_ISSUE_LINE, project: 'PRJ', milestone: null, type: 'T'),
                 $context,
             ),
             array_filter(
