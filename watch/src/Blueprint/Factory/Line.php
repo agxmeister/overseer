@@ -2,10 +2,10 @@
 
 namespace Watch\Blueprint\Factory;
 
-class Line
+readonly class Line
 {
-    public readonly array $parts;
-    public readonly array $offsets;
+    public array $parts;
+    public array $offsets;
 
     public function __construct(string $content, string $pattern, ...$defaults)
     {

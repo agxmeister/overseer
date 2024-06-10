@@ -11,20 +11,19 @@ trait HasContext
     private function getContext($content, $pattern): Context
     {
         $lines = $this->getLines($content);
-        $context = new Context($lines);
 
         $contextLine = array_reduce(
             array_filter(
                 $lines,
                 fn($line) => preg_match($pattern, $line),
             ),
-            fn($acc, $line) => $line,
+            fn($acc, $line) => new Line($line, $pattern),
         );
 
+        $context = new Context($lines);
+
         if (!is_null($contextLine)) {
-            $offsets = [];
-            Utils::getStringParts($contextLine, $pattern, $offsets);
-            list('marker' => $markerOffset) = $offsets;
+            list('marker' => $markerOffset) = $contextLine->offsets;
             $context->setContextMarkerOffset($markerOffset);
         }
 
