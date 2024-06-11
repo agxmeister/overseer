@@ -72,11 +72,6 @@ readonly class Subject
         );
     }
 
-    protected function getModels(): array
-    {
-        return [...$this->issues, ...$this->milestones];
-    }
-
     protected function getModelsWithTracks(): array
     {
         return [...$this->issues];

@@ -86,11 +86,6 @@ readonly class Schedule
         return $schedule;
     }
 
-    protected function getModels(): array
-    {
-        return [...$this->issues, ...$this->buffers, ...$this->milestones];
-    }
-
     protected function getModelsWithTracks(): array
     {
         return [...$this->issues, ...$this->buffers];
