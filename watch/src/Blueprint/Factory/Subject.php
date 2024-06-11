@@ -27,26 +27,9 @@ readonly class Subject
     {
         $context = $this->getContext($content, self::PATTERN_CONTEXT_LINE);
 
-        $issueModels = array_map(
-            fn($line) => $this->getIssueModel(
-                new Line($line, self::PATTERN_ISSUE_LINE, project: 'PRJ', milestone: null, type: 'T'),
-                $context,
-            ),
-            array_filter(
-                $context->lines,
-                fn($line) => preg_match(self::PATTERN_ISSUE_LINE, $line),
-            ),
-        );
-
-        $milestoneModels = array_map(
-            fn($line) => $this->getMilestoneModel(
-                new Line($line, self::PATTERN_MILESTONE_LINE, key: 'PRJ'),
-                $context,
-            ),
-            array_filter(
-                $context->lines,
-                fn($line) => preg_match(self::PATTERN_MILESTONE_LINE, $line),
-            ),
+        list($issueModels, $milestoneModels) = array_map(
+            fn(Parser $parser) => $parser->getModels($context),
+            $this->getParsers(),
         );
 
         $isEndMarkers = $context->getProjectMarkerOffset() >= $context->getIssuesEndPosition();
@@ -118,5 +101,27 @@ readonly class Subject
             ],
             [],
         );
+    }
+
+    private function getParsers(): array
+    {
+        return [
+            new Parser(
+                fn(Line $line, Context $context) => $this->getIssueModel($line, $context),
+                self::PATTERN_ISSUE_LINE,
+                [
+                    'project' => 'PRJ',
+                    'milestone' => null,
+                    'type' => 'T',
+                ]
+            ),
+            new Parser(
+                fn(Line $line, Context $context) => $this->getMilestoneModel($line, $context),
+                self::PATTERN_MILESTONE_LINE,
+                [
+                    'key' => 'PRJ',
+                ]
+            ),
+        ];
     }
 }
