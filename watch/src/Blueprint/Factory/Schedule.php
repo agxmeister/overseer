@@ -2,13 +2,11 @@
 
 namespace Watch\Blueprint\Factory;
 
-use Watch\Blueprint\Factory\Context\Context;
-use Watch\Blueprint\Model\Attribute;
-use Watch\Blueprint\Model\AttributeType;
-use Watch\Blueprint\Model\Schedule\Buffer;
-use Watch\Blueprint\Model\Schedule\Issue;
+use Watch\Blueprint\Factory\Model\Director;
+use Watch\Blueprint\Factory\Model\Schedule\Issue as IssueBuilder;
+use Watch\Blueprint\Factory\Model\Schedule\Buffer as BufferBuilder;
+use Watch\Blueprint\Factory\Model\Schedule\Milestone as MilestoneBuilder;
 use Watch\Blueprint\Model\Schedule\Milestone;
-use Watch\Blueprint\Model\Track;
 use Watch\Blueprint\Schedule as ScheduleBlueprintModel;
 
 readonly class Schedule
@@ -25,8 +23,8 @@ readonly class Schedule
         $context = $this->getContext($content, self::PATTERN_CONTEXT_LINE);
 
         list($issueModels, $bufferModels, $milestoneModels) = array_map(
-            fn(Parser $parser) => $parser->getModels($context),
-            $this->getParsers(),
+            fn(Director $director) => $director->run($context)->get(),
+            $this->getDirectors(),
         );
 
         $isEndMarkers = $context->getProjectMarkerOffset() >= $context->getIssuesEndPosition();
@@ -41,97 +39,11 @@ readonly class Schedule
         return new ScheduleBlueprintModel($issueModels, $bufferModels, $milestoneModels, $nowDate, $isEndMarkers);
     }
 
-    private function getIssueModel(Line $line, Context $context): Issue
-    {
-        list(
-            'key' => $key,
-            'type' => $type,
-            'project' => $project,
-            'milestone' => $milestone,
-            'modifier' => $modifier,
-            'track' => $track,
-            'attributes' => $attributes,
-            ) = $line->parts;
-        list('endMarker' => $endMarkerOffset) = $line->offsets;
-        $trackGap = strlen($track) - strlen(rtrim($track));
-        $context->setIssuesEndPosition($endMarkerOffset - $trackGap);
-        $lineAttributes = $this->getLineAttributes($attributes);
-        $lineLinks = $this->getLineLinks($key, $lineAttributes);
-        return new Issue(
-            $key,
-            $type,
-            $project,
-            $milestone,
-            new Track($track),
-            $lineLinks,
-            $lineAttributes,
-            $modifier === '~',
-            $modifier === '+',
-            str_contains($track, '*') || str_contains($track, 'x'),
-            str_contains($track, 'x'),
-            $modifier === '-',
-        );
-    }
-
-    private function getBufferModel(Line $line, Context $context): Buffer
-    {
-        list(
-            'key' => $key,
-            'type' => $type,
-            'track' => $track,
-            'attributes' => $attributes,
-            ) = $line->parts;
-        list('endMarker' => $endMarkerOffset) = $line->offsets;
-        $trackGap = strlen($track) - strlen(rtrim($track));
-        $context->setIssuesEndPosition($endMarkerOffset - $trackGap);
-        $lineAttributes = $this->getLineAttributes($attributes);
-        $lineLinks = $this->getLineLinks($key, $lineAttributes);
-        $consumption = substr_count(trim($track), '!');
-        return new Buffer(
-            $key,
-            $type,
-            new Track($track),
-            $lineLinks,
-            $lineAttributes,
-            $consumption,
-        );
-    }
-
-    private function getMilestoneModel(Line $line, Context $context): Milestone
-    {
-        list(
-            'key' => $key,
-            'attributes' => $attributes
-            ) = $line->parts;
-        list('marker' => $markerOffset) = $line->offsets;
-        $context->setProjectMarkerOffset($markerOffset);
-        return new Milestone($key, $this->getLineAttributes($attributes));
-    }
-
-    protected function getLineLinks(string $key, array $attributes): array
-    {
-        return array_reduce(
-            array_filter(
-                $attributes,
-                fn(Attribute $attribute) => in_array($attribute->type, [AttributeType::Schedule, AttributeType::Sequence]),
-            ),
-            fn(array $acc, Attribute $attribute) => [
-                ...$acc,
-                [
-                    'from' => $key,
-                    'to' => $attribute->value,
-                    'type' => $attribute->type === AttributeType::Sequence ? 'sequence' : 'schedule',
-                ],
-            ],
-            [],
-        );
-    }
-
-    private function getParsers(): array
+    private function getDirectors(): array
     {
         return [
-            new Parser(
-                fn(Line $line, Context $context) => $this->getIssueModel($line, $context),
+            new Director(
+                new IssueBuilder,
                 self::PATTERN_ISSUE_LINE,
                 [
                     'project' => 'PRJ',
@@ -139,15 +51,15 @@ readonly class Schedule
                     'type' => 'T',
                 ]
             ),
-            new Parser(
-                fn(Line $line, Context $context) => $this->getBufferModel($line, $context),
+            new Director(
+                new BufferBuilder,
                 self::PATTERN_BUFFER_LINE,
                 [
                     'type' => 'T',
                 ]
             ),
-            new Parser(
-                fn(Line $line, Context $context) => $this->getMilestoneModel($line, $context),
+            new Director(
+                new MilestoneBuilder,
                 self::PATTERN_MILESTONE_LINE,
                 [
                     'key' => 'PRJ',
