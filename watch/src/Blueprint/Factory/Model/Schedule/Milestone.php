@@ -20,6 +20,14 @@ class Milestone implements Builder
         $this->model = null;
         return $this;
     }
+
+    public function release(): Builder
+    {
+        $this->models[] = $this->model;
+        $this->model = null;
+        return $this;
+    }
+
     public function setModel(Line $line, Context $context): Builder
     {
         list(
@@ -32,17 +40,13 @@ class Milestone implements Builder
         return $this;
     }
 
-    public function release(): Builder
-    {
-        $this->models[] = $this->model;
-        return $this;
-    }
-
     /**
      * @return MilestoneModel[]
      */
-    public function get(): array
+    public function flush(): array
     {
-        return $this->models;
+        $models = $this->models;
+        $this->models = [];
+        return $models;
     }
 }

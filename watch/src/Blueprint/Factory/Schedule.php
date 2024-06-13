@@ -22,10 +22,22 @@ readonly class Schedule
     {
         $context = $this->getContext($content, self::PATTERN_CONTEXT_LINE);
 
-        list($issueModels, $bufferModels, $milestoneModels) = array_map(
-            fn(Director $director) => $director->run($context)->get(),
-            $this->getDirectors(),
+        $issueBuilder = new IssueBuilder();
+        $issueDirector = new Director(
+            self::PATTERN_ISSUE_LINE, ['project' => 'PRJ', 'milestone' => null, 'type' => 'T'],
         );
+        $issueDirector->run($issueBuilder, $context);
+        $issueModels = $issueBuilder->flush();
+
+        $bufferBuilder = new BufferBuilder();
+        $bufferDirector = new Director(self::PATTERN_BUFFER_LINE, ['type' => 'T']);
+        $bufferDirector->run($bufferBuilder, $context);
+        $bufferModels = $bufferBuilder->flush();
+
+        $milestoneBuilder = new MilestoneBuilder();
+        $milestoneDirector = new Director(self::PATTERN_MILESTONE_LINE, ['key' => 'PRJ']);
+        $milestoneDirector->run($milestoneBuilder, $context);
+        $milestoneModels = $milestoneBuilder->flush();
 
         $isEndMarkers = $context->getProjectMarkerOffset() >= $context->getIssuesEndPosition();
 
@@ -37,34 +49,5 @@ readonly class Schedule
         $nowDate =  $projectLine?->getDate()->modify("{$gap} day");
 
         return new ScheduleBlueprintModel($issueModels, $bufferModels, $milestoneModels, $nowDate, $isEndMarkers);
-    }
-
-    private function getDirectors(): array
-    {
-        return [
-            new Director(
-                new IssueBuilder,
-                self::PATTERN_ISSUE_LINE,
-                [
-                    'project' => 'PRJ',
-                    'milestone' => null,
-                    'type' => 'T',
-                ]
-            ),
-            new Director(
-                new BufferBuilder,
-                self::PATTERN_BUFFER_LINE,
-                [
-                    'type' => 'T',
-                ]
-            ),
-            new Director(
-                new MilestoneBuilder,
-                self::PATTERN_MILESTONE_LINE,
-                [
-                    'key' => 'PRJ',
-                ]
-            ),
-        ];
     }
 }
