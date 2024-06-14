@@ -22,21 +22,25 @@ readonly class Schedule
     {
         $context = $this->getContext($content, self::PATTERN_CONTEXT_LINE);
 
+        $director = new Director();
+
         $issueBuilder = new IssueBuilder();
-        $issueDirector = new Director(
-            self::PATTERN_ISSUE_LINE, ['project' => 'PRJ', 'milestone' => null, 'type' => 'T'],
+        $director->run(
+            $issueBuilder,
+            $context,
+            self::PATTERN_ISSUE_LINE,
+            project: 'PRJ',
+            milestone: null,
+            type: 'T',
         );
-        $issueDirector->run($issueBuilder, $context);
         $issueModels = $issueBuilder->flush();
 
         $bufferBuilder = new BufferBuilder();
-        $bufferDirector = new Director(self::PATTERN_BUFFER_LINE, ['type' => 'T']);
-        $bufferDirector->run($bufferBuilder, $context);
+        $director->run($bufferBuilder, $context, self::PATTERN_BUFFER_LINE, type: 'T');
         $bufferModels = $bufferBuilder->flush();
 
         $milestoneBuilder = new MilestoneBuilder();
-        $milestoneDirector = new Director(self::PATTERN_MILESTONE_LINE, ['key' => 'PRJ']);
-        $milestoneDirector->run($milestoneBuilder, $context);
+        $director->run($milestoneBuilder, $context, self::PATTERN_MILESTONE_LINE, key: 'PRJ');
         $milestoneModels = $milestoneBuilder->flush();
 
         $isEndMarkers = $context->getProjectMarkerOffset() >= $context->getIssuesEndPosition();

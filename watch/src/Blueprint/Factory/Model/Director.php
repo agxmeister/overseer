@@ -7,25 +7,20 @@ use Watch\Blueprint\Factory\Line;
 
 readonly class Director
 {
-    public function __construct(private string $pattern, private array $defaults)
+    public function run(Builder $builder, Context $context, string $pattern, ...$defaults): void
     {
-    }
-
-    public function run(Builder $builder, Context $context): void
-    {
-        array_reduce(
+        foreach (
             array_filter(
                 $context->lines,
-                fn($line) => preg_match($this->pattern, $line),
-            ),
-            fn($acc, $line) => $builder
-                ->reset()
+                fn($line) => preg_match($pattern, $line),
+            ) as $line
+        ) {
+            $builder
                 ->setModel(
-                    new Line($line, $this->pattern, ...$this->defaults),
+                    new Line($line, $pattern, ...$defaults),
                     $context,
                 )
-                ->release(),
-            $builder,
-        );
+                ->release();
+        }
     }
 }
