@@ -1,13 +1,14 @@
 <?php
 
-namespace Watch\Blueprint\Factory\Model\Schedule;
+namespace Watch\Blueprint\Factory\Model\Subject;
 
 use Watch\Blueprint\Factory\Context\Context;
 use Watch\Blueprint\Factory\Line;
 use Watch\Blueprint\Factory\Model\Builder;
 use Watch\Blueprint\Factory\Model\HasAttributes;
-use Watch\Blueprint\Model\Schedule\Issue as IssueModel;
+use Watch\Blueprint\Model\Subject\Issue as IssueModel;
 use Watch\Blueprint\Model\Track;
+use Watch\Schedule\Mapper;
 
 class Issue implements Builder
 {
@@ -16,6 +17,10 @@ class Issue implements Builder
     private array $models = [];
 
     private ?IssueModel $model;
+
+    public function __construct(private readonly Mapper $mapper)
+    {
+    }
 
     public function reset(): Builder
     {
@@ -56,9 +61,7 @@ class Issue implements Builder
             $lineAttributes,
             $modifier === '~',
             $modifier === '+',
-            str_contains($track, '*') || str_contains($track, 'x'),
-            str_contains($track, 'x'),
-            $modifier === '-',
+            str_contains($track, '*'),
         );
         return $this;
     }

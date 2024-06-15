@@ -5,6 +5,7 @@ namespace Watch\Blueprint\Factory\Model\Schedule;
 use Watch\Blueprint\Factory\Context\Context;
 use Watch\Blueprint\Factory\Line;
 use Watch\Blueprint\Factory\Model\Builder;
+use Watch\Blueprint\Factory\Model\HasAttributes;
 use Watch\Blueprint\Model\Schedule\Buffer as BufferModel;
 use Watch\Blueprint\Model\Track;
 

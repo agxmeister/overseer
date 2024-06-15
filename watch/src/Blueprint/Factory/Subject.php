@@ -2,12 +2,10 @@
 
 namespace Watch\Blueprint\Factory;
 
-use Watch\Blueprint\Factory\Context\Context;
-use Watch\Blueprint\Model\Attribute;
-use Watch\Blueprint\Model\AttributeType;
+use Watch\Blueprint\Factory\Model\Director;
+use Watch\Blueprint\Factory\Model\Subject\Issue as IssueBuilder;
+use Watch\Blueprint\Factory\Model\Subject\Milestone as MilestoneBuilder;
 use Watch\Blueprint\Model\Schedule\Milestone;
-use Watch\Blueprint\Model\Subject\Issue;
-use Watch\Blueprint\Model\Track;
 use Watch\Blueprint\Subject as SubjectBlueprintModel;
 use Watch\Schedule\Mapper;
 
@@ -27,10 +25,22 @@ readonly class Subject
     {
         $context = $this->getContext($content, self::PATTERN_CONTEXT_LINE);
 
-        list($issueModels, $milestoneModels) = array_map(
-            fn(Parser $parser) => $parser->getModels($context),
-            $this->getParsers(),
+        $director = new Director();
+
+        $issueBuilder = new IssueBuilder($this->mapper);
+        $director->run(
+            $issueBuilder,
+            $context,
+            self::PATTERN_ISSUE_LINE,
+            project: 'PRJ',
+            milestone: null,
+            type: 'T',
         );
+        $issueModels = $issueBuilder->flush();
+
+        $milestoneBuilder = new MilestoneBuilder();
+        $director->run($milestoneBuilder, $context, self::PATTERN_MILESTONE_LINE, key: 'PRJ');
+        $milestoneModels = $milestoneBuilder->flush();
 
         $isEndMarkers = $context->getProjectMarkerOffset() >= $context->getIssuesEndPosition();
 
@@ -42,86 +52,5 @@ readonly class Subject
         $nowDate =  $projectLine?->getDate()->modify("{$gap} day");
 
         return new SubjectBlueprintModel($issueModels, $milestoneModels, $nowDate, $isEndMarkers);
-    }
-
-    private function getIssueModel(Line $line, Context $context): Issue
-    {
-        list(
-            'key' => $key,
-            'type' => $type,
-            'project' => $project,
-            'milestone' => $milestone,
-            'modifier' => $modifier,
-            'track' => $track,
-            'attributes' => $attributes,
-            ) = $line->parts;
-        list('endMarker' => $endMarkerOffset) = $line->offsets;
-        $trackGap = strlen($track) - strlen(rtrim($track));
-        $context->setIssuesEndPosition($endMarkerOffset - $trackGap);
-        $lineAttributes = $this->getLineAttributes($attributes);
-        $lineLinks = $this->getLineLinks($key, $lineAttributes);
-        return new Issue(
-            $key,
-            $type,
-            $project,
-            $milestone,
-            new Track($track),
-            $lineLinks,
-            $lineAttributes,
-            $modifier === '~',
-            $modifier === '+',
-            str_contains($track, '*'),
-        );
-    }
-
-    private function getMilestoneModel(Line $line, Context $context): Milestone
-    {
-        list('key' => $key, 'attributes' => $attributes) = $line->parts;
-        list('marker' => $markerOffset) = $line->offsets;
-        $context->setProjectMarkerOffset($markerOffset);
-        return new Milestone($key, $this->getLineAttributes($attributes));
-    }
-
-    protected function getLineLinks(string $key, array $attributes): array
-    {
-        return array_reduce(
-            array_filter(
-                $attributes,
-                fn(Attribute $attribute) => in_array($attribute->type, [AttributeType::Schedule, AttributeType::Sequence]),
-            ),
-            fn(array $acc, Attribute $attribute) => [
-                ...$acc,
-                [
-                    'from' => $key,
-                    'to' => $attribute->value,
-                    'type' => $attribute->type === AttributeType::Sequence
-                        ? current($this->mapper->sequenceLinkTypes)
-                        : current($this->mapper->scheduleLnkTypes),
-                ],
-            ],
-            [],
-        );
-    }
-
-    private function getParsers(): array
-    {
-        return [
-            new Parser(
-                fn(Line $line, Context $context) => $this->getIssueModel($line, $context),
-                self::PATTERN_ISSUE_LINE,
-                [
-                    'project' => 'PRJ',
-                    'milestone' => null,
-                    'type' => 'T',
-                ]
-            ),
-            new Parser(
-                fn(Line $line, Context $context) => $this->getMilestoneModel($line, $context),
-                self::PATTERN_MILESTONE_LINE,
-                [
-                    'key' => 'PRJ',
-                ]
-            ),
-        ];
     }
 }
