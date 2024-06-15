@@ -64,7 +64,7 @@ class ScheduleTest extends Unit
     {
         $blueprintFactory = new ScheduleBlueprintFactory;
         $blueprint = $blueprintFactory->create($description);
-        self::assertEquals($length, $blueprint->getProjectLength());
+        self::assertEquals($length, $blueprint->getLength());
     }
 
     /**

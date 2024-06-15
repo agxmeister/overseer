@@ -59,7 +59,7 @@ trait HasProject
 
     public function getProjectBeginDate(): \DateTimeImmutable|null
     {
-        $projectLength = $this->getProjectLength();
+        $projectLength = $this->getLength();
         return $this->isEndMarkers
             ? $this->getProject()?->getDate()?->modify("-{$projectLength} day")
             : $this->getProject()?->getDate();
@@ -67,31 +67,10 @@ trait HasProject
 
     public function getProjectEndDate(): \DateTimeImmutable|null
     {
-        $projectLength = $this->getProjectLength();
+        $projectLength = $this->getLength();
         return $this->isEndMarkers
             ? $this->getProject()?->getDate()
             : $this->getProject()?->getDate()?->modify("{$projectLength} day");
-    }
-
-    public function getProjectLength(): int
-    {
-        $tracks = $this->getTracks();
-        return
-            array_reduce(
-                $tracks,
-                fn($acc, Track $track) => max($acc, strlen($track->content)),
-                0
-            ) -
-            array_reduce(
-                $tracks,
-                fn($acc, Track $track) => min($acc, strlen($track->content) - strlen(rtrim($track->content))),
-                PHP_INT_MAX
-            ) -
-            array_reduce(
-                $tracks,
-                fn($acc, Track $track) => min($acc, strlen($track->content) - strlen(ltrim($track->content))),
-                PHP_INT_MAX
-            );
     }
 
     public function getProjectName(): string
