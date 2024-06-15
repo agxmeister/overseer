@@ -6,7 +6,7 @@ use Watch\Blueprint\Factory\Model\Director;
 use Watch\Blueprint\Factory\Model\Subject\Issue as IssueBuilder;
 use Watch\Blueprint\Factory\Model\Subject\Milestone as MilestoneBuilder;
 use Watch\Blueprint\Model\Schedule\Milestone;
-use Watch\Blueprint\Subject as SubjectBlueprintModel;
+use Watch\Blueprint\Subject as SubjectBlueprint;
 use Watch\Schedule\Mapper;
 
 readonly class Subject
@@ -21,7 +21,7 @@ readonly class Subject
     {
     }
 
-    public function create(string $content): SubjectBlueprintModel
+    public function create(string $content): SubjectBlueprint
     {
         $context = $this->getContext($content, self::PATTERN_CONTEXT_LINE);
 
@@ -51,6 +51,6 @@ readonly class Subject
         $gap = $context->getContextMarkerOffset() - $context->getProjectMarkerOffset();
         $nowDate =  $projectLine?->getDate()->modify("{$gap} day");
 
-        return new SubjectBlueprintModel($issueModels, $milestoneModels, $nowDate, $isEndMarkers);
+        return new SubjectBlueprint($issueModels, $milestoneModels, $nowDate, $isEndMarkers);
     }
 }

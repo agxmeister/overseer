@@ -7,7 +7,7 @@ use Watch\Blueprint\Factory\Model\Schedule\Issue as IssueBuilder;
 use Watch\Blueprint\Factory\Model\Schedule\Buffer as BufferBuilder;
 use Watch\Blueprint\Factory\Model\Schedule\Milestone as MilestoneBuilder;
 use Watch\Blueprint\Model\Schedule\Milestone;
-use Watch\Blueprint\Schedule as ScheduleBlueprintModel;
+use Watch\Blueprint\Schedule as ScheduleBlueprint;
 
 readonly class Schedule
 {
@@ -18,7 +18,7 @@ readonly class Schedule
     const string PATTERN_BUFFER_LINE = '/\s*(((?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<beginMarker>\|)(?<track>[_!\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
     const string PATTERN_CONTEXT_LINE = '/(?<marker>>)/';
 
-    public function create(string $content): ScheduleBlueprintModel
+    public function create(string $content): ScheduleBlueprint
     {
         $context = $this->getContext($content, self::PATTERN_CONTEXT_LINE);
 
@@ -52,6 +52,6 @@ readonly class Schedule
         $gap = $context->getContextMarkerOffset() - $context->getProjectMarkerOffset();
         $nowDate =  $projectLine?->getDate()->modify("{$gap} day");
 
-        return new ScheduleBlueprintModel($issueModels, $bufferModels, $milestoneModels, $nowDate, $isEndMarkers);
+        return new ScheduleBlueprint($issueModels, $bufferModels, $milestoneModels, $nowDate, $isEndMarkers);
     }
 }
