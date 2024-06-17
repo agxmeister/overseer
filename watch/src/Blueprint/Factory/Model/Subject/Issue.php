@@ -2,7 +2,7 @@
 
 namespace Watch\Blueprint\Factory\Model\Subject;
 
-use Watch\Blueprint\Factory\Context\Context;
+use Watch\Blueprint\Factory\Context;
 use Watch\Blueprint\Factory\Line;
 use Watch\Blueprint\Factory\Model\Builder;
 use Watch\Blueprint\Factory\Model\HasAttributes;

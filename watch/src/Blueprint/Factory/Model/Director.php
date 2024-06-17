@@ -2,7 +2,7 @@
 
 namespace Watch\Blueprint\Factory\Model;
 
-use Watch\Blueprint\Factory\Context\Context;
+use Watch\Blueprint\Factory\Context;
 use Watch\Blueprint\Factory\Line;
 
 readonly class Director

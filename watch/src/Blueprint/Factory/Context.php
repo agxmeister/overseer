@@ -1,6 +1,8 @@
 <?php
 
-namespace Watch\Blueprint\Factory\Context;
+namespace Watch\Blueprint\Factory;
+
+use DateTimeImmutable;
 
 class Context
 {
@@ -8,7 +10,7 @@ class Context
     private int $contextMarkerOffset = 0;
     private int $issuesEndPosition = 0;
 
-    public function __construct(public readonly array $lines)
+    public function __construct(public readonly array $lines, public readonly ?DateTimeImmutable $date)
     {
     }
 

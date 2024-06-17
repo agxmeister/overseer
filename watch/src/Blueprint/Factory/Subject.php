@@ -15,7 +15,7 @@ readonly class Subject
 
     const string PATTERN_ISSUE_LINE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+]?)(?<beginMarker>\|)(?<track>[*.\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
     const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/';
-    const string PATTERN_CONTEXT_LINE = '/(?<marker>>)/';
+    const string PATTERN_CONTEXT_LINE = '/(?<marker>>)\s*(?<attributes>.*)/';
 
     public function __construct(private Mapper $mapper)
     {

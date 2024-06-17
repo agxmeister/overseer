@@ -28,7 +28,7 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
             new Builder(
                 new Context($scheduleBlueprint->nowDate),
                 $subjectBlueprint->getIssues($mapper),
-                $subjectBlueprint->getLinks($mapper),
+                $subjectBlueprint->getLinks(),
                 $scheduleBlueprint->getProjectName(),
                 $scheduleBlueprint->getMilestoneNames(),
                 $mapper,

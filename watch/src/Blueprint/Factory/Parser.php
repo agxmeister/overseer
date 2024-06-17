@@ -2,8 +2,6 @@
 
 namespace Watch\Blueprint\Factory;
 
-use Watch\Blueprint\Factory\Context\Context;
-
 readonly class Parser
 {
     public function __construct(private mixed $handler, private string $pattern, private array $defaults)

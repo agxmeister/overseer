@@ -18,7 +18,7 @@ readonly class Subject
 
     /**
      * @param Mapper $mapper
-     * @return Issue[]
+     * @return SubjectIssue[]
      */
     public function getIssues(Mapper $mapper): array
     {

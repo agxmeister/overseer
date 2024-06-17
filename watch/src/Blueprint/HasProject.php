@@ -73,7 +73,7 @@ trait HasProject
             : $this->getProject()?->getDate()?->modify("{$projectLength} day");
     }
 
-    public function getProjectName(): string
+    public function getProjectName(): string|null
     {
         return $this->getProject()?->key;
     }
