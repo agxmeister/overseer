@@ -1,11 +1,11 @@
 <?php
 
-namespace Watch\Blueprint\Factory\Model\Subject;
+namespace Watch\Blueprint\Factory\Builder\Subject;
 
 use Watch\Blueprint\Factory\Context;
 use Watch\Blueprint\Factory\Line;
-use Watch\Blueprint\Factory\Model\Builder;
-use Watch\Blueprint\Factory\Model\HasAttributes;
+use Watch\Blueprint\Factory\Builder\Builder;
+use Watch\Blueprint\Factory\Builder\HasAttributes;
 use Watch\Blueprint\Model\Subject\Issue as IssueModel;
 use Watch\Blueprint\Model\Track;
 use Watch\Schedule\Mapper;

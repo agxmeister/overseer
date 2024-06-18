@@ -2,9 +2,9 @@
 
 namespace Watch\Blueprint\Factory;
 
-use Watch\Blueprint\Factory\Model\Director;
-use Watch\Blueprint\Factory\Model\Subject\Issue as IssueBuilder;
-use Watch\Blueprint\Factory\Model\Subject\Milestone as MilestoneBuilder;
+use Watch\Blueprint\Factory\Builder\Director;
+use Watch\Blueprint\Factory\Builder\Subject\Issue as IssueBuilder;
+use Watch\Blueprint\Factory\Builder\Subject\Milestone as MilestoneBuilder;
 use Watch\Blueprint\Model\Schedule\Milestone;
 use Watch\Blueprint\Subject as SubjectBlueprint;
 use Watch\Schedule\Mapper;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Watch\Blueprint\Factory\Model;
+namespace Watch\Blueprint\Factory\Builder;
 
 use Watch\Blueprint\Factory\Context;
 use Watch\Blueprint\Factory\Line;

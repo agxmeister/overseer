@@ -1,11 +1,11 @@
 <?php
 
-namespace Watch\Blueprint\Factory\Model\Schedule;
+namespace Watch\Blueprint\Factory\Builder\Subject;
 
 use Watch\Blueprint\Factory\Context;
 use Watch\Blueprint\Factory\Line;
-use Watch\Blueprint\Factory\Model\Builder;
-use Watch\Blueprint\Factory\Model\HasAttributes;
+use Watch\Blueprint\Factory\Builder\Builder;
+use Watch\Blueprint\Factory\Builder\HasAttributes;
 use Watch\Blueprint\Model\Schedule\Milestone as MilestoneModel;
 
 class Milestone implements Builder

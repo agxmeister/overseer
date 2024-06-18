@@ -2,10 +2,10 @@
 
 namespace Watch\Blueprint\Factory;
 
-use Watch\Blueprint\Factory\Model\Director;
-use Watch\Blueprint\Factory\Model\Schedule\Issue as IssueBuilder;
-use Watch\Blueprint\Factory\Model\Schedule\Buffer as BufferBuilder;
-use Watch\Blueprint\Factory\Model\Schedule\Milestone as MilestoneBuilder;
+use Watch\Blueprint\Factory\Builder\Director;
+use Watch\Blueprint\Factory\Builder\Schedule\Issue as IssueBuilder;
+use Watch\Blueprint\Factory\Builder\Schedule\Buffer as BufferBuilder;
+use Watch\Blueprint\Factory\Builder\Schedule\Milestone as MilestoneBuilder;
 use Watch\Blueprint\Model\Schedule\Milestone;
 use Watch\Blueprint\Schedule as ScheduleBlueprint;
 

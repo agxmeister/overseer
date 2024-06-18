@@ -1,21 +1,21 @@
 <?php
 
-namespace Watch\Blueprint\Factory\Model\Schedule;
+namespace Watch\Blueprint\Factory\Builder\Schedule;
 
 use Watch\Blueprint\Factory\Context;
 use Watch\Blueprint\Factory\Line;
-use Watch\Blueprint\Factory\Model\Builder;
-use Watch\Blueprint\Factory\Model\HasAttributes;
-use Watch\Blueprint\Model\Schedule\Buffer as BufferModel;
+use Watch\Blueprint\Factory\Builder\Builder;
+use Watch\Blueprint\Factory\Builder\HasAttributes;
+use Watch\Blueprint\Model\Schedule\Issue as IssueModel;
 use Watch\Blueprint\Model\Track;
 
-class Buffer implements Builder
+class Issue implements Builder
 {
     use HasAttributes, HasLinks;
 
     private array $models = [];
 
-    private ?BufferModel $model;
+    private ?IssueModel $model;
 
     public function reset(): Builder
     {
@@ -35,6 +35,9 @@ class Buffer implements Builder
         list(
             'key' => $key,
             'type' => $type,
+            'project' => $project,
+            'milestone' => $milestone,
+            'modifier' => $modifier,
             'track' => $track,
             'attributes' => $attributes,
             ) = $line->parts;
@@ -43,20 +46,25 @@ class Buffer implements Builder
         $context->setIssuesEndPosition($endMarkerOffset - $trackGap);
         $lineAttributes = $this->getLineAttributes($attributes);
         $lineLinks = $this->getLineLinks($key, $lineAttributes);
-        $consumption = substr_count(trim($track), '!');
-        $this->model = new BufferModel(
+        $this->model = new IssueModel(
             $key,
             $type,
+            $project,
+            $milestone,
             new Track($track),
             $lineLinks,
             $lineAttributes,
-            $consumption,
+            $modifier === '~',
+            $modifier === '+',
+            str_contains($track, '*') || str_contains($track, 'x'),
+            str_contains($track, 'x'),
+            $modifier === '-',
         );
         return $this;
     }
 
     /**
-     * @return BufferModel[]
+     * @return IssueModel[]
      */
     public function flush(): array
     {
