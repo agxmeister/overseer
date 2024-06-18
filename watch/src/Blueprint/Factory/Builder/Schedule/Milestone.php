@@ -2,6 +2,7 @@
 
 namespace Watch\Blueprint\Factory\Builder\Schedule;
 
+use Watch\Blueprint\Factory\Builder\HasContext;
 use Watch\Blueprint\Factory\Context;
 use Watch\Blueprint\Factory\Line;
 use Watch\Blueprint\Factory\Builder\Builder;
@@ -10,7 +11,7 @@ use Watch\Blueprint\Model\Schedule\Milestone as MilestoneModel;
 
 class Milestone implements Builder
 {
-    use HasAttributes, HasLinks;
+    use HasContext, HasAttributes, HasLinks;
 
     private array $models = [];
 
@@ -29,14 +30,14 @@ class Milestone implements Builder
         return $this;
     }
 
-    public function setModel(Line $line, Context $context): Builder
+    public function setModel(Line $line): Builder
     {
         list(
             'key' => $key,
             'attributes' => $attributes
             ) = $line->parts;
         list('marker' => $markerOffset) = $line->offsets;
-        $context->setProjectMarkerOffset($markerOffset);
+        $this->context->setProjectMarkerOffset($markerOffset);
         $this->model = new MilestoneModel($key, $this->getLineAttributes($attributes));
         return $this;
     }

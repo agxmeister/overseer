@@ -2,6 +2,7 @@
 
 namespace Watch\Blueprint\Factory\Builder\Schedule;
 
+use Watch\Blueprint\Factory\Builder\HasContext;
 use Watch\Blueprint\Factory\Context;
 use Watch\Blueprint\Factory\Line;
 use Watch\Blueprint\Factory\Builder\Builder;
@@ -11,7 +12,7 @@ use Watch\Blueprint\Model\Track;
 
 class Buffer implements Builder
 {
-    use HasAttributes, HasLinks;
+    use HasContext, HasAttributes, HasLinks;
 
     private array $models = [];
 
@@ -30,7 +31,7 @@ class Buffer implements Builder
         return $this;
     }
 
-    public function setModel(Line $line, Context $context): Builder
+    public function setModel(Line $line): Builder
     {
         list(
             'key' => $key,
@@ -40,7 +41,7 @@ class Buffer implements Builder
             ) = $line->parts;
         list('endMarker' => $endMarkerOffset) = $line->offsets;
         $trackGap = strlen($track) - strlen(rtrim($track));
-        $context->setIssuesEndPosition($endMarkerOffset - $trackGap);
+        $this->context->setIssuesEndPosition($endMarkerOffset - $trackGap);
         $lineAttributes = $this->getLineAttributes($attributes);
         $lineLinks = $this->getLineLinks($key, $lineAttributes);
         $consumption = substr_count(trim($track), '!');

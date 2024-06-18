@@ -16,10 +16,8 @@ readonly class Director
             ) as $line
         ) {
             $builder
-                ->setModel(
-                    new Line($line, $pattern, ...$defaults),
-                    $context,
-                )
+                ->setContext($context)
+                ->setModel(new Line($line, $pattern, ...$defaults))
                 ->release();
         }
     }
