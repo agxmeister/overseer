@@ -10,5 +10,5 @@ interface Builder
     public function reset(): Builder;
     public function release(): Builder;
     public function setContext(Context $context): Builder;
-    public function setModel(Line $line): Builder;
+    public function setModel(string $content, string $pattern, ...$defaults): Builder;
 }

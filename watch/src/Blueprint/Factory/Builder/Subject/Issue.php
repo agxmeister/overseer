@@ -35,8 +35,9 @@ class Issue implements Builder
         return $this->reset();
     }
 
-    public function setModel(Line $line): Builder
+    public function setModel(string $content, string $pattern, ...$defaults): Builder
     {
+        $line = new Line($content, $pattern, ...$defaults);
         list(
             'key' => $key,
             'type' => $type,

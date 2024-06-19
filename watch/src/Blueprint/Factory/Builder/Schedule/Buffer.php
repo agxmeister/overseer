@@ -3,7 +3,6 @@
 namespace Watch\Blueprint\Factory\Builder\Schedule;
 
 use Watch\Blueprint\Factory\Builder\HasContext;
-use Watch\Blueprint\Factory\Context;
 use Watch\Blueprint\Factory\Line;
 use Watch\Blueprint\Factory\Builder\Builder;
 use Watch\Blueprint\Factory\Builder\HasAttributes;
@@ -31,8 +30,9 @@ class Buffer implements Builder
         return $this;
     }
 
-    public function setModel(Line $line): Builder
+    public function setModel(string $content, string $pattern, ...$defaults): Builder
     {
+        $line = new Line($content, $pattern, ...$defaults);
         list(
             'key' => $key,
             'type' => $type,
