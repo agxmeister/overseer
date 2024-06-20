@@ -2,10 +2,10 @@
 
 namespace Watch\Blueprint\Factory\Builder\Subject;
 
-use Watch\Blueprint\Factory\Builder\HasContext;
-use Watch\Blueprint\Factory\Line;
 use Watch\Blueprint\Factory\Builder\Builder;
 use Watch\Blueprint\Factory\Builder\HasAttributes;
+use Watch\Blueprint\Factory\Builder\HasContext;
+use Watch\Blueprint\Factory\Line\Subject\Milestone as MilestoneLine;
 use Watch\Blueprint\Model\Schedule\Milestone as MilestoneModel;
 
 class Milestone implements Builder
@@ -31,7 +31,7 @@ class Milestone implements Builder
 
     public function setModel(string $content, string $pattern, ...$defaults): Builder
     {
-        $line = new Line($content, $pattern, ...$defaults);
+        $line = new MilestoneLine($content, $pattern, ...$defaults);
         list(
             'key' => $key,
             'attributes' => $attributes

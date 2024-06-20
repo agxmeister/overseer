@@ -2,10 +2,10 @@
 
 namespace Watch\Blueprint\Factory\Builder\Schedule;
 
-use Watch\Blueprint\Factory\Builder\HasContext;
-use Watch\Blueprint\Factory\Line;
 use Watch\Blueprint\Factory\Builder\Builder;
 use Watch\Blueprint\Factory\Builder\HasAttributes;
+use Watch\Blueprint\Factory\Builder\HasContext;
+use Watch\Blueprint\Factory\Line\Schedule\Buffer as BufferLine;
 use Watch\Blueprint\Model\Schedule\Buffer as BufferModel;
 use Watch\Blueprint\Model\Track;
 
@@ -32,7 +32,7 @@ class Buffer implements Builder
 
     public function setModel(string $content, string $pattern, ...$defaults): Builder
     {
-        $line = new Line($content, $pattern, ...$defaults);
+        $line = new BufferLine($content, $pattern, ...$defaults);
         list(
             'key' => $key,
             'type' => $type,

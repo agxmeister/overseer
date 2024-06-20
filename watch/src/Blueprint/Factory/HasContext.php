@@ -3,6 +3,7 @@
 namespace Watch\Blueprint\Factory;
 
 use DateTimeImmutable;
+use Watch\Blueprint\Factory\Line\Line;
 use Watch\Blueprint\Model\Attribute;
 use Watch\Blueprint\Model\AttributeType;
 

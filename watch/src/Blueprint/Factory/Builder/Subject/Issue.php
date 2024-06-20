@@ -2,10 +2,10 @@
 
 namespace Watch\Blueprint\Factory\Builder\Subject;
 
-use Watch\Blueprint\Factory\Builder\HasContext;
-use Watch\Blueprint\Factory\Line;
 use Watch\Blueprint\Factory\Builder\Builder;
 use Watch\Blueprint\Factory\Builder\HasAttributes;
+use Watch\Blueprint\Factory\Builder\HasContext;
+use Watch\Blueprint\Factory\Line\Subject\Issue as IssueLine;
 use Watch\Blueprint\Model\Subject\Issue as IssueModel;
 use Watch\Blueprint\Model\Track;
 use Watch\Schedule\Mapper;
@@ -37,7 +37,7 @@ class Issue implements Builder
 
     public function setModel(string $content, string $pattern, ...$defaults): Builder
     {
-        $line = new Line($content, $pattern, ...$defaults);
+        $line = new IssueLine($content, $pattern, ...$defaults);
         list(
             'key' => $key,
             'type' => $type,
