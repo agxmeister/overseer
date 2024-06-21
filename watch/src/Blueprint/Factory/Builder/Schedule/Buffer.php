@@ -3,7 +3,6 @@
 namespace Watch\Blueprint\Factory\Builder\Schedule;
 
 use Watch\Blueprint\Factory\Builder\Builder;
-use Watch\Blueprint\Factory\Builder\HasAttributes;
 use Watch\Blueprint\Factory\Builder\HasContext;
 use Watch\Blueprint\Factory\Line\Schedule\Buffer as BufferLine;
 use Watch\Blueprint\Model\Schedule\Buffer as BufferModel;
@@ -11,7 +10,7 @@ use Watch\Blueprint\Model\Track;
 
 class Buffer implements Builder
 {
-    use HasContext, HasAttributes, HasLinks;
+    use HasContext, HasLinks;
 
     private array $models = [];
 
@@ -42,7 +41,7 @@ class Buffer implements Builder
         list('endMarker' => $endMarkerOffset) = $line->offsets;
         $trackGap = strlen($track) - strlen(rtrim($track));
         $this->context->setIssuesEndPosition($endMarkerOffset - $trackGap);
-        $lineAttributes = $this->getLineAttributes($attributes);
+        $lineAttributes = $line->getAttributes($attributes);
         $lineLinks = $this->getLineLinks($key, $lineAttributes);
         $consumption = substr_count(trim($track), '!');
         $this->model = new BufferModel(

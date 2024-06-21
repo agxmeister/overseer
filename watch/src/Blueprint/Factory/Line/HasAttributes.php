@@ -1,16 +1,16 @@
 <?php
 
-namespace Watch\Blueprint\Factory\Builder;
+namespace Watch\Blueprint\Factory\Line;
 
 use Watch\Blueprint\Model\Attribute;
 use Watch\Blueprint\Model\AttributeType;
 
 trait HasAttributes
 {
-    private function getLineAttributes(string $content): array
+    public function getAttributes(string $content): array
     {
         return array_map(
-            fn(string $attribute) => $this->getLineAttribute($attribute),
+            fn(string $attribute) => $this->getAttribute($attribute),
             array_values(
                 array_filter(
                     array_map(
@@ -23,7 +23,7 @@ trait HasAttributes
         );
     }
 
-    private function getLineAttribute(string $content): Attribute
+    public function getAttribute(string $content): Attribute
     {
         list($code, $value) = explode(' ', $content);
         $type = match ($code) {

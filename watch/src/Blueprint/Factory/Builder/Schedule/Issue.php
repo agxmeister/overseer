@@ -3,7 +3,6 @@
 namespace Watch\Blueprint\Factory\Builder\Schedule;
 
 use Watch\Blueprint\Factory\Builder\Builder;
-use Watch\Blueprint\Factory\Builder\HasAttributes;
 use Watch\Blueprint\Factory\Builder\HasContext;
 use Watch\Blueprint\Factory\Line\Schedule\Issue as IssueLine;
 use Watch\Blueprint\Model\Schedule\Issue as IssueModel;
@@ -11,7 +10,7 @@ use Watch\Blueprint\Model\Track;
 
 class Issue implements Builder
 {
-    use HasContext, HasAttributes, HasLinks;
+    use HasContext, HasLinks;
 
     private array $models = [];
 
@@ -45,7 +44,7 @@ class Issue implements Builder
         list('endMarker' => $endMarkerOffset) = $line->offsets;
         $trackGap = strlen($track) - strlen(rtrim($track));
         $this->context->setIssuesEndPosition($endMarkerOffset - $trackGap);
-        $lineAttributes = $this->getLineAttributes($attributes);
+        $lineAttributes = $line->getAttributes($attributes);
         $lineLinks = $this->getLineLinks($key, $lineAttributes);
         $this->model = new IssueModel(
             $key,
