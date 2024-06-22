@@ -15,12 +15,11 @@ trait HasContext
     {
         $lines = $this->getLines($content);
 
+        $parser = new Parser();
+
         $contextLine = array_reduce(
-            array_filter(
-                $lines,
-                fn($line) => preg_match($pattern, $line),
-            ),
-            fn($acc, $line) => new Line($line, $pattern),
+            $parser->getMatches($pattern, $lines),
+            fn($acc, $match) => new Line($match[0], $match[1]),
         );
 
         $context = new Context($lines, $this->getContextDate($contextLine));

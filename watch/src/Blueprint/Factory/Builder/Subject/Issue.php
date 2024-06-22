@@ -34,9 +34,9 @@ class Issue implements Builder
         return $this->reset();
     }
 
-    public function setModel(string $content, string $pattern, ...$defaults): Builder
+    public function setModel(array $values, array $offsets, ...$defaults): Builder
     {
-        $line = new IssueLine($content, $pattern, ...$defaults);
+        $line = new IssueLine($values, $offsets, ...$defaults);
         list(
             'key' => $key,
             'type' => $type,

@@ -9,5 +9,5 @@ interface Builder
     public function reset(): Builder;
     public function release(): Builder;
     public function setContext(Context $context): Builder;
-    public function setModel(string $content, string $pattern, ...$defaults): Builder;
+    public function setModel(array $values, array $offsets, ...$defaults): Builder;
 }

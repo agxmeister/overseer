@@ -29,9 +29,9 @@ class Buffer implements Builder
         return $this;
     }
 
-    public function setModel(string $content, string $pattern, ...$defaults): Builder
+    public function setModel(array $values, array $offsets, ...$defaults): Builder
     {
-        $line = new BufferLine($content, $pattern, ...$defaults);
+        $line = new BufferLine($values, $offsets, ...$defaults);
         list(
             'key' => $key,
             'type' => $type,

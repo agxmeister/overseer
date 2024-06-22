@@ -28,9 +28,9 @@ class Milestone implements Builder
         return $this;
     }
 
-    public function setModel(string $content, string $pattern, ...$defaults): Builder
+    public function setModel(array $values, array $offsets, ...$defaults): Builder
     {
-        $line = new MilestoneLine($content, $pattern, ...$defaults);
+        $line = new MilestoneLine($values, $offsets, ...$defaults);
         list(
             'key' => $key,
             'attributes' => $attributes
