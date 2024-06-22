@@ -9,7 +9,7 @@ use Watch\Blueprint\Model\Schedule\Milestone as MilestoneModel;
 
 class Milestone implements Builder
 {
-    use HasContext, HasLinks;
+    use HasContext;
 
     private array $models = [];
 

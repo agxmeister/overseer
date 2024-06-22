@@ -10,7 +10,7 @@ use Watch\Blueprint\Model\Track;
 
 class Buffer implements Builder
 {
-    use HasContext, HasLinks;
+    use HasContext;
 
     private array $models = [];
 
@@ -42,7 +42,7 @@ class Buffer implements Builder
         $trackGap = strlen($track) - strlen(rtrim($track));
         $this->context->setIssuesEndPosition($endMarkerOffset - $trackGap);
         $lineAttributes = $line->getAttributes($attributes);
-        $lineLinks = $this->getLineLinks($key, $lineAttributes);
+        $lineLinks = $line->getLinks($key, $lineAttributes);
         $consumption = substr_count(trim($track), '!');
         $this->model = new BufferModel(
             $key,

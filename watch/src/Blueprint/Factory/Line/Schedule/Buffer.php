@@ -7,5 +7,5 @@ use Watch\Blueprint\Factory\Line\Line;
 
 readonly class Buffer extends Line
 {
-    use HasAttributes;
+    use HasAttributes, HasLinks;
 }

@@ -1,13 +1,14 @@
 <?php
 
-namespace Watch\Blueprint\Factory\Builder\Schedule;
+namespace Watch\Blueprint\Factory\Line\Subject;
 
 use Watch\Blueprint\Model\Attribute;
 use Watch\Blueprint\Model\AttributeType;
+use Watch\Schedule\Mapper;
 
 trait HasLinks
 {
-    private function getLineLinks(string $key, array $attributes): array
+    public function getLinks(string $key, array $attributes, Mapper $mapper): array
     {
         return array_reduce(
             array_filter(
@@ -19,7 +20,9 @@ trait HasLinks
                 [
                     'from' => $key,
                     'to' => $attribute->value,
-                    'type' => $attribute->type === AttributeType::Sequence ? 'sequence' : 'schedule',
+                    'type' => $attribute->type === AttributeType::Sequence
+                        ? current($mapper->sequenceLinkTypes)
+                        : current($mapper->scheduleLnkTypes),
                 ],
             ],
             [],
