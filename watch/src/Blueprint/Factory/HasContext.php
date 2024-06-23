@@ -15,10 +15,10 @@ trait HasContext
     {
         $lines = $this->getLines($content);
 
-        $parser = new Parser();
+        $parser = new Parser($pattern);
 
         $contextLine = array_reduce(
-            $parser->getMatches($pattern, $lines),
+            $parser->getMatches($lines),
             fn($acc, $match) => new Line($match[0], $match[1]),
         );
 

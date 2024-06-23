@@ -2,14 +2,22 @@
 
 namespace Watch\Blueprint\Factory;
 
-class Parser
+readonly class Parser
 {
-    public function getMatches($pattern, $lines): array
+    public function __construct(private string $pattern)
+    {
+    }
+
+    /**
+     * @param string[] $lines
+     * @return string[]
+     */
+    public function getMatches(array $lines): array
     {
         return array_values(
             array_filter(
                 array_map(
-                    fn(string $line) => $this->getMatch($pattern, $line),
+                    fn(string $line) => $this->getMatch($line),
                     $lines,
                 ),
                 fn($match) => !is_null($match),
@@ -17,9 +25,9 @@ class Parser
         );
     }
 
-    private function getMatch(string $pattern, string $line): ?array
+    private function getMatch(string $line): ?array
     {
-        $result = preg_match($pattern, $line, $matches, PREG_OFFSET_CAPTURE | PREG_UNMATCHED_AS_NULL);
+        $result = preg_match($this->pattern, $line, $matches, PREG_OFFSET_CAPTURE | PREG_UNMATCHED_AS_NULL);
         if (!$result) {
             return null;
         }

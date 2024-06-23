@@ -9,8 +9,8 @@ readonly class Director
 {
     public function run(Builder $builder, Context $context, string $pattern, ...$defaults): void
     {
-        $parser = new Parser();
-        foreach ($parser->getMatches($pattern, $context->lines) as $match) {
+        $parser = new Parser($pattern);
+        foreach ($parser->getMatches($context->lines) as $match) {
             list($values, $offsets) = $match;
             $builder
                 ->setContext($context)
