@@ -28,10 +28,11 @@ readonly class Subject
         $director = new Director();
 
         $issueBuilder = new IssueBuilder($this->mapper);
+        $issueParser = new Parser(self::PATTERN_ISSUE_LINE);
         $director->run(
             $issueBuilder,
+            $issueParser,
             $context,
-            self::PATTERN_ISSUE_LINE,
             project: 'PRJ',
             milestone: null,
             type: 'T',
@@ -39,7 +40,8 @@ readonly class Subject
         $issueModels = $issueBuilder->flush();
 
         $milestoneBuilder = new MilestoneBuilder();
-        $director->run($milestoneBuilder, $context, self::PATTERN_MILESTONE_LINE, key: 'PRJ');
+        $milestoneParser = new Parser(self::PATTERN_MILESTONE_LINE);
+        $director->run($milestoneBuilder, $milestoneParser, $context, key: 'PRJ');
         $milestoneModels = $milestoneBuilder->flush();
 
         $isEndMarkers = $context->getProjectMarkerOffset() >= $context->getIssuesEndPosition();

@@ -25,10 +25,11 @@ readonly class Schedule
         $director = new Director();
 
         $issueBuilder = new IssueBuilder();
+        $issueParser = new Parser(self::PATTERN_ISSUE_LINE);
         $director->run(
             $issueBuilder,
+            $issueParser,
             $context,
-            self::PATTERN_ISSUE_LINE,
             project: 'PRJ',
             milestone: null,
             type: 'T',
@@ -36,11 +37,13 @@ readonly class Schedule
         $issueModels = $issueBuilder->flush();
 
         $bufferBuilder = new BufferBuilder();
-        $director->run($bufferBuilder, $context, self::PATTERN_BUFFER_LINE, type: 'T');
+        $bufferParser = new Parser(self::PATTERN_BUFFER_LINE);
+        $director->run($bufferBuilder, $bufferParser, $context, type: 'T');
         $bufferModels = $bufferBuilder->flush();
 
         $milestoneBuilder = new MilestoneBuilder();
-        $director->run($milestoneBuilder, $context, self::PATTERN_MILESTONE_LINE, key: 'PRJ');
+        $milestoneParser = new Parser(self::PATTERN_MILESTONE_LINE);
+        $director->run($milestoneBuilder, $milestoneParser, $context, key: 'PRJ');
         $milestoneModels = $milestoneBuilder->flush();
 
         $isEndMarkers = $context->getProjectMarkerOffset() >= $context->getIssuesEndPosition();
