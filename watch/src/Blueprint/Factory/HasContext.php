@@ -3,9 +3,9 @@
 namespace Watch\Blueprint\Factory;
 
 use DateTimeImmutable;
-use Watch\Blueprint\Factory\Line\Line;
 use Watch\Blueprint\Model\Attribute;
 use Watch\Blueprint\Model\AttributeType;
+use Watch\Blueprint\Factory\Line\Context as ContextLine;
 
 trait HasContext
 {
@@ -19,7 +19,7 @@ trait HasContext
 
         $contextLine = array_reduce(
             $parser->getMatches($lines),
-            fn($acc, $match) => new Line($match[0], $match[1]),
+            fn($acc, $match) => new ContextLine($match[0], $match[1]),
         );
 
         $context = new Context($lines, $this->getContextDate($contextLine));
@@ -32,7 +32,7 @@ trait HasContext
         return $context;
     }
 
-    private function getContextDate($contextLine): ?DateTimeImmutable
+    private function getContextDate(?ContextLine $contextLine): ?DateTimeImmutable
     {
         if (is_null($contextLine)) {
             return null;
@@ -45,7 +45,7 @@ trait HasContext
         return new DateTimeImmutable(
             array_reduce(
                 array_filter(
-                    $this->getLineAttributes($attributes),
+                    $contextLine->getAttributes($attributes),
                     fn(Attribute $attribute) => $attribute->type === AttributeType::Date
                 ),
                 fn(Attribute|null $acc, Attribute $attribute) => $attribute,

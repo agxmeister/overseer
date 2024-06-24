@@ -2,7 +2,7 @@
 
 namespace Watch\Blueprint\Factory\Line;
 
-readonly class Line
+abstract readonly class Line
 {
     public array $parts;
     public array $offsets;
