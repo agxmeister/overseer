@@ -11,7 +11,7 @@ use Watch\Blueprint\Schedule as ScheduleBlueprint;
 
 readonly class Schedule
 {
-    use HasContext;
+    use HasLines, HasContext;
 
     const string PATTERN_ISSUE_LINE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+\-]?)(?<beginMarker>\|)(?<track>[x*.\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
     const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/';
@@ -20,7 +20,7 @@ readonly class Schedule
 
     public function create(string $content): ScheduleBlueprint
     {
-        $context = $this->getContext($content, self::PATTERN_CONTEXT_LINE);
+        $context = $this->getContext($this->getLines($content), self::PATTERN_CONTEXT_LINE);
 
         $director = new Director();
 

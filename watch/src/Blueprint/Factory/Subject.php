@@ -11,7 +11,7 @@ use Watch\Schedule\Mapper;
 
 readonly class Subject
 {
-    use HasContext;
+    use HasLines, HasContext;
 
     const string PATTERN_ISSUE_LINE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+]?)(?<beginMarker>\|)(?<track>[*.\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
     const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/';
@@ -23,7 +23,7 @@ readonly class Subject
 
     public function create(string $content): SubjectBlueprint
     {
-        $context = $this->getContext($content, self::PATTERN_CONTEXT_LINE);
+        $context = $this->getContext($this->getLines($content), self::PATTERN_CONTEXT_LINE);
 
         $director = new Director();
 
