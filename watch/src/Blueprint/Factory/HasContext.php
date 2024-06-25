@@ -5,35 +5,34 @@ namespace Watch\Blueprint\Factory;
 use DateTimeImmutable;
 use Watch\Blueprint\Model\Attribute;
 use Watch\Blueprint\Model\AttributeType;
-use Watch\Blueprint\Factory\Line\Context as ContextLine;
+use Watch\Blueprint\Factory\Line\Reference as ReferenceLine;
 
 trait HasContext
 {
     /**
      * @param string[] $lines
-     * @param string $pattern
+     * @param string $referenceLinePattern
      * @return Context
      */
-    private function getContext(array $lines, string $pattern): Context
+    private function getContext(array $lines, string $referenceLinePattern): Context
     {
-        $parser = new Parser($pattern);
+        $context = new Context();
 
+        $parser = new Parser($referenceLinePattern);
         $referenceLine = array_reduce(
             $parser->getMatches($lines),
-            fn($acc, $match) => new ContextLine($match[0], $match[1]),
+            fn($acc, $match) => new ReferenceLine($match[0], $match[1]),
         );
 
-        $context = new Context($lines, $this->getReferenceDate($referenceLine));
-
-        if (!is_null($referenceLine)) {
-            list('marker' => $markerOffset) = $referenceLine->offsets;
-            $context->setContextMarkerOffset($markerOffset);
-        }
+        $context
+            ->setLines($lines)
+            ->setReferenceDate($this->getReferenceDate($referenceLine))
+            ->setReferenceMarkerOffset($this->getReferenceMarkerOffset($referenceLine));
 
         return $context;
     }
 
-    private function getReferenceDate(?ContextLine $contextLine): ?DateTimeImmutable
+    private function getReferenceDate(?ReferenceLine $contextLine): ?DateTimeImmutable
     {
         if (is_null($contextLine)) {
             return null;
@@ -52,5 +51,14 @@ trait HasContext
                 fn(Attribute|null $acc, Attribute $attribute) => $attribute,
             )?->value,
         );
+    }
+
+    private function getReferenceMarkerOffset(?ReferenceLine $referenceLine): int
+    {
+        if (is_null($referenceLine)) {
+            return 0;
+        }
+        ['marker' => $markerOffset] = $referenceLine->offsets;
+        return $markerOffset;
     }
 }

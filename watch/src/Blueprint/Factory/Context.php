@@ -6,12 +6,33 @@ use DateTimeImmutable;
 
 class Context
 {
+    /** @var string[] */
+    public array $lines = [];
+    public ?DateTimeImmutable $referenceDate = null;
+    private int $referenceMarkerOffset = 0;
     private int $projectMarkerOffset = 0;
-    private int $contextMarkerOffset = 0;
     private int $issuesEndPosition = 0;
 
-    public function __construct(public readonly array $lines, public readonly ?DateTimeImmutable $date)
+    /**
+     * @param string[] $lines
+     * @return $this
+     */
+    public function setLines(array $lines): self
     {
+        $this->lines = $lines;
+        return $this;
+    }
+
+    public function setReferenceDate(?DateTimeImmutable $referenceDate): self
+    {
+        $this->referenceDate = $referenceDate;
+        return $this;
+    }
+
+    public function setReferenceMarkerOffset(int $referenceMarkerOffset): self
+    {
+        $this->referenceMarkerOffset = $referenceMarkerOffset;
+        return $this;
     }
 
     public function setProjectMarkerOffset($projectMarkerOffset): void
@@ -24,14 +45,9 @@ class Context
         return $this->projectMarkerOffset;
     }
 
-    public function setContextMarkerOffset($contextMarkerOffset): void
+    public function getReferenceMarkerOffset(): int
     {
-        $this->contextMarkerOffset = $contextMarkerOffset;
-    }
-
-    public function getContextMarkerOffset(): int
-    {
-        return $this->contextMarkerOffset;
+        return $this->referenceMarkerOffset;
     }
 
     public function setIssuesEndPosition($issuesEndPosition): void

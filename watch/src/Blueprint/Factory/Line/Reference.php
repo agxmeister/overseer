@@ -2,7 +2,7 @@
 
 namespace Watch\Blueprint\Factory\Line;
 
-readonly class Context extends Line
+readonly class Reference extends Line
 {
     use HasAttributes;
 }

@@ -15,7 +15,7 @@ readonly class Subject
 
     const string PATTERN_ISSUE_LINE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+]?)(?<beginMarker>\|)(?<track>[*.\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
     const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/';
-    const string PATTERN_CONTEXT_LINE = '/(?<marker>>)\s*(?<attributes>.*)/';
+    const string PATTERN_REFERENCE_LINE = '/(?<marker>>)\s*(?<attributes>.*)/';
 
     public function __construct(private Mapper $mapper)
     {
@@ -23,7 +23,7 @@ readonly class Subject
 
     public function create(string $content): SubjectBlueprint
     {
-        $context = $this->getContext($this->getLines($content), self::PATTERN_CONTEXT_LINE);
+        $context = $this->getContext($this->getLines($content), self::PATTERN_REFERENCE_LINE);
 
         $director = new Director();
 
@@ -50,7 +50,7 @@ readonly class Subject
             $milestoneModels,
             fn($acc, $line) => $line instanceof Milestone ? $line : null,
         );
-        $gap = $context->getContextMarkerOffset() - $context->getProjectMarkerOffset();
+        $gap = $context->getReferenceMarkerOffset() - $context->getProjectMarkerOffset();
         $nowDate =  $projectLine?->getDate()->modify("{$gap} day");
 
         return new SubjectBlueprint($issueModels, $milestoneModels, $nowDate, $isEndMarkers);
