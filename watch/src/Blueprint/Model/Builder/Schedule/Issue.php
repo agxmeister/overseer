@@ -1,20 +1,20 @@
 <?php
 
-namespace Watch\Blueprint\Factory\Builder\Schedule;
+namespace Watch\Blueprint\Model\Builder\Schedule;
 
-use Watch\Blueprint\Factory\Builder\Builder;
-use Watch\Blueprint\Factory\Builder\HasContext;
-use Watch\Blueprint\Factory\Line\Schedule\Buffer as BufferLine;
-use Watch\Blueprint\Model\Schedule\Buffer as BufferModel;
+use Watch\Blueprint\Model\Builder\Builder;
+use Watch\Blueprint\Model\Builder\HasContext;
+use Watch\Blueprint\Model\Builder\Line\Schedule\Issue as IssueLine;
+use Watch\Blueprint\Model\Schedule\Issue as IssueModel;
 use Watch\Blueprint\Model\Track;
 
-class Buffer implements Builder
+class Issue implements Builder
 {
     use HasContext;
 
     private array $models = [];
 
-    private ?BufferModel $model;
+    private ?IssueModel $model;
 
     public function reset(): Builder
     {
@@ -31,10 +31,13 @@ class Buffer implements Builder
 
     public function setModel(array $values, array $offsets, ...$defaults): Builder
     {
-        $line = new BufferLine($values, $offsets, ...$defaults);
+        $line = new IssueLine($values, $offsets, ...$defaults);
         list(
             'key' => $key,
             'type' => $type,
+            'project' => $project,
+            'milestone' => $milestone,
+            'modifier' => $modifier,
             'track' => $track,
             'attributes' => $attributes,
             ) = $line->parts;
@@ -43,20 +46,25 @@ class Buffer implements Builder
         $this->context->setIssuesEndPosition($endMarkerOffset - $trackGap);
         $lineAttributes = $line->getAttributes($attributes);
         $lineLinks = $line->getLinks($key, $lineAttributes);
-        $consumption = substr_count(trim($track), '!');
-        $this->model = new BufferModel(
+        $this->model = new IssueModel(
             $key,
             $type,
+            $project,
+            $milestone,
             new Track($track),
             $lineLinks,
             $lineAttributes,
-            $consumption,
+            $modifier === '~',
+            $modifier === '+',
+            str_contains($track, '*') || str_contains($track, 'x'),
+            str_contains($track, 'x'),
+            $modifier === '-',
         );
         return $this;
     }
 
     /**
-     * @return BufferModel[]
+     * @return IssueModel[]
      */
     public function flush(): array
     {

@@ -1,12 +1,13 @@
 <?php
 
-namespace Watch\Blueprint\Factory\Builder\Schedule;
+namespace Watch\Blueprint\Model\Builder\Subject;
 
-use Watch\Blueprint\Factory\Builder\Builder;
-use Watch\Blueprint\Factory\Builder\HasContext;
-use Watch\Blueprint\Factory\Line\Schedule\Issue as IssueLine;
-use Watch\Blueprint\Model\Schedule\Issue as IssueModel;
+use Watch\Blueprint\Model\Builder\Builder;
+use Watch\Blueprint\Model\Builder\HasContext;
+use Watch\Blueprint\Model\Builder\Line\Subject\Issue as IssueLine;
+use Watch\Blueprint\Model\Subject\Issue as IssueModel;
 use Watch\Blueprint\Model\Track;
+use Watch\Schedule\Mapper;
 
 class Issue implements Builder
 {
@@ -16,8 +17,13 @@ class Issue implements Builder
 
     private ?IssueModel $model;
 
+    public function __construct(private readonly Mapper $mapper)
+    {
+    }
+
     public function reset(): Builder
     {
+        $this->context = null;
         $this->model = null;
         return $this;
     }
@@ -25,8 +31,7 @@ class Issue implements Builder
     public function release(): Builder
     {
         $this->models[] = $this->model;
-        $this->model = null;
-        return $this;
+        return $this->reset();
     }
 
     public function setModel(array $values, array $offsets, ...$defaults): Builder
@@ -45,7 +50,7 @@ class Issue implements Builder
         $trackGap = strlen($track) - strlen(rtrim($track));
         $this->context->setIssuesEndPosition($endMarkerOffset - $trackGap);
         $lineAttributes = $line->getAttributes($attributes);
-        $lineLinks = $line->getLinks($key, $lineAttributes);
+        $lineLinks = $line->getLinks($key, $lineAttributes, $this->mapper);
         $this->model = new IssueModel(
             $key,
             $type,
@@ -56,9 +61,7 @@ class Issue implements Builder
             $lineAttributes,
             $modifier === '~',
             $modifier === '+',
-            str_contains($track, '*') || str_contains($track, 'x'),
-            str_contains($track, 'x'),
-            $modifier === '-',
+            str_contains($track, '*'),
         );
         return $this;
     }

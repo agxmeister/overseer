@@ -1,11 +1,11 @@
 <?php
 
-namespace Watch\Blueprint\Factory;
+namespace Watch\Blueprint\Builder;
 
 use DateTimeImmutable;
 use Watch\Blueprint\Model\Attribute;
 use Watch\Blueprint\Model\AttributeType;
-use Watch\Blueprint\Factory\Line\Reference as ReferenceLine;
+use Watch\Blueprint\Model\Builder\Line\Reference as ReferenceLine;
 
 trait HasContext
 {

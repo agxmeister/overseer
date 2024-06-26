@@ -1,29 +1,23 @@
 <?php
 
-namespace Watch\Blueprint\Factory\Builder\Subject;
+namespace Watch\Blueprint\Model\Builder\Schedule;
 
-use Watch\Blueprint\Factory\Builder\Builder;
-use Watch\Blueprint\Factory\Builder\HasContext;
-use Watch\Blueprint\Factory\Line\Subject\Issue as IssueLine;
-use Watch\Blueprint\Model\Subject\Issue as IssueModel;
+use Watch\Blueprint\Model\Builder\Builder;
+use Watch\Blueprint\Model\Builder\HasContext;
+use Watch\Blueprint\Model\Builder\Line\Schedule\Buffer as BufferLine;
+use Watch\Blueprint\Model\Schedule\Buffer as BufferModel;
 use Watch\Blueprint\Model\Track;
-use Watch\Schedule\Mapper;
 
-class Issue implements Builder
+class Buffer implements Builder
 {
     use HasContext;
 
     private array $models = [];
 
-    private ?IssueModel $model;
-
-    public function __construct(private readonly Mapper $mapper)
-    {
-    }
+    private ?BufferModel $model;
 
     public function reset(): Builder
     {
-        $this->context = null;
         $this->model = null;
         return $this;
     }
@@ -31,18 +25,16 @@ class Issue implements Builder
     public function release(): Builder
     {
         $this->models[] = $this->model;
-        return $this->reset();
+        $this->model = null;
+        return $this;
     }
 
     public function setModel(array $values, array $offsets, ...$defaults): Builder
     {
-        $line = new IssueLine($values, $offsets, ...$defaults);
+        $line = new BufferLine($values, $offsets, ...$defaults);
         list(
             'key' => $key,
             'type' => $type,
-            'project' => $project,
-            'milestone' => $milestone,
-            'modifier' => $modifier,
             'track' => $track,
             'attributes' => $attributes,
             ) = $line->parts;
@@ -50,24 +42,21 @@ class Issue implements Builder
         $trackGap = strlen($track) - strlen(rtrim($track));
         $this->context->setIssuesEndPosition($endMarkerOffset - $trackGap);
         $lineAttributes = $line->getAttributes($attributes);
-        $lineLinks = $line->getLinks($key, $lineAttributes, $this->mapper);
-        $this->model = new IssueModel(
+        $lineLinks = $line->getLinks($key, $lineAttributes);
+        $consumption = substr_count(trim($track), '!');
+        $this->model = new BufferModel(
             $key,
             $type,
-            $project,
-            $milestone,
             new Track($track),
             $lineLinks,
             $lineAttributes,
-            $modifier === '~',
-            $modifier === '+',
-            str_contains($track, '*'),
+            $consumption,
         );
         return $this;
     }
 
     /**
-     * @return IssueModel[]
+     * @return BufferModel[]
      */
     public function flush(): array
     {

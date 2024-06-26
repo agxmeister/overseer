@@ -2,7 +2,7 @@
 namespace Tests\Unit\Schedule;
 
 use Codeception\Test\Unit;
-use Watch\Blueprint\Factory\Subject as SubjectBlueprintFactory;
+use Watch\Blueprint\Builder\Subject as SubjectBlueprintBuilder;
 use Watch\Config;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
@@ -15,8 +15,8 @@ class BuilderTest extends Unit
     public function testAddCriticalChain()
     {
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
-        $blueprintFactory = new SubjectBlueprintFactory($mapper);
-        $blueprint = $blueprintFactory->create('
+        $blueprintBuilder = new SubjectBlueprintBuilder($mapper);
+        $blueprint = $blueprintBuilder->create('
             K-01   |       ****|
             K-02   |   ****    | & K-01
             K-03   |*******    | @ K-01
@@ -41,8 +41,8 @@ class BuilderTest extends Unit
     public function testAddFeedingBuffers()
     {
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
-        $blueprintFactory = new SubjectBlueprintFactory($mapper);
-        $blueprint = $blueprintFactory->create('
+        $blueprintBuilder = new SubjectBlueprintBuilder($mapper);
+        $blueprint = $blueprintBuilder->create('
             K-01   |       ****|
             K-02   | ****      | & K-01
             K-03   |*******    | @ K-01

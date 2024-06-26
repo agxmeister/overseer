@@ -1,9 +1,9 @@
 <?php
 
-namespace Watch\Blueprint\Factory\Builder;
+namespace Watch\Blueprint\Model\Builder;
 
-use Watch\Blueprint\Factory\Context;
-use Watch\Blueprint\Factory\Parser;
+use Watch\Blueprint\Builder\Context;
+use Watch\Blueprint\Builder\Parser;
 
 readonly class Director
 {

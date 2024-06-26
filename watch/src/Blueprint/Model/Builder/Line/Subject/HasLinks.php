@@ -1,6 +1,6 @@
 <?php
 
-namespace Watch\Blueprint\Factory\Line\Subject;
+namespace Watch\Blueprint\Model\Builder\Line\Subject;
 
 use Watch\Blueprint\Model\Attribute;
 use Watch\Blueprint\Model\AttributeType;

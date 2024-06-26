@@ -1,6 +1,6 @@
 <?php
 
-namespace Watch\Blueprint\Factory\Line;
+namespace Watch\Blueprint\Model\Builder\Line;
 
 readonly class Reference extends Line
 {

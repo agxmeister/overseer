@@ -4,7 +4,7 @@ namespace Watch\Action;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Watch\Blueprint\Factory\Subject as SubjectBlueprintFactory;
+use Watch\Blueprint\Builder\Subject as SubjectBlueprintBuilder;
 use Watch\Jira;
 use Watch\Schedule\Mapper;
 use Watch\Subject\Model\Issue;
@@ -18,8 +18,8 @@ readonly class CreateMilestone
 
     public function __invoke(Request $request, Response $response, $args): Response
     {
-        $blueprintFactory = new SubjectBlueprintFactory($this->mapper);
-        $blueprint = $blueprintFactory->create(file_get_contents('php://input'));
+        $blueprintBuilder = new SubjectBlueprintBuilder($this->mapper);
+        $blueprint = $blueprintBuilder->create(file_get_contents('php://input'));
 
         $issueIds = array_reduce(
             $blueprint->getIssues($this->mapper),
@@ -30,7 +30,7 @@ readonly class CreateMilestone
             [],
         );
         array_reduce(
-            $blueprint->getLinks($this->mapper),
+            $blueprint->getLinks(),
             fn($acc, Link $link) => $this->jira->addLink(
                 $issueIds[$link->from],
                 $issueIds[$link->to],

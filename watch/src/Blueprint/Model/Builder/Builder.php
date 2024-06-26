@@ -1,8 +1,8 @@
 <?php
 
-namespace Watch\Blueprint\Factory\Builder;
+namespace Watch\Blueprint\Model\Builder;
 
-use Watch\Blueprint\Factory\Context;
+use Watch\Blueprint\Builder\Context;
 
 interface Builder
 {

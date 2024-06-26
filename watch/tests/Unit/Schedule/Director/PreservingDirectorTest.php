@@ -1,8 +1,8 @@
 <?php
 namespace Tests\Unit\Schedule\Director;
 
-use Watch\Blueprint\Factory\Schedule as ScheduleBlueprintFactory;
-use Watch\Blueprint\Factory\Subject as SubjectBlueprintFactory;
+use Watch\Blueprint\Builder\Schedule as ScheduleBlueprintBuilder;
+use Watch\Blueprint\Builder\Subject as SubjectBlueprintBuilder;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Director;
@@ -17,10 +17,10 @@ class PreservingDirectorTest extends AbstractDirectorTest
     public function testBuild($subjectDescription, $scheduleDescription)
     {
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
-        $subjectBlueprintFactory = new SubjectBlueprintFactory($mapper);
-        $subjectBlueprint = $subjectBlueprintFactory->create($subjectDescription);
-        $scheduleBlueprintFactory = new ScheduleBlueprintFactory;
-        $scheduleBlueprint = $scheduleBlueprintFactory->create($scheduleDescription);
+        $subjectBlueprintBuilder = new SubjectBlueprintBuilder($mapper);
+        $subjectBlueprint = $subjectBlueprintBuilder->create($subjectDescription);
+        $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder;
+        $scheduleBlueprint = $scheduleBlueprintBuilder->create($scheduleDescription);
         $director = new Director(
             new Builder(
                 new Context($scheduleBlueprint->nowDate),

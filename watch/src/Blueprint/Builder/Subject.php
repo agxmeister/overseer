@@ -1,10 +1,10 @@
 <?php
 
-namespace Watch\Blueprint\Factory;
+namespace Watch\Blueprint\Builder;
 
-use Watch\Blueprint\Factory\Builder\Director;
-use Watch\Blueprint\Factory\Builder\Subject\Issue as IssueBuilder;
-use Watch\Blueprint\Factory\Builder\Subject\Milestone as MilestoneBuilder;
+use Watch\Blueprint\Model\Builder\Director;
+use Watch\Blueprint\Model\Builder\Subject\Issue as IssueBuilder;
+use Watch\Blueprint\Model\Builder\Subject\Milestone as MilestoneBuilder;
 use Watch\Blueprint\Model\Schedule\Milestone;
 use Watch\Blueprint\Subject as SubjectBlueprint;
 use Watch\Schedule\Mapper;

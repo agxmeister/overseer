@@ -1,6 +1,6 @@
 <?php
 
-namespace Watch\Blueprint\Factory\Line;
+namespace Watch\Blueprint\Model\Builder\Line;
 
 use Watch\Blueprint\Model\Attribute;
 use Watch\Blueprint\Model\AttributeType;

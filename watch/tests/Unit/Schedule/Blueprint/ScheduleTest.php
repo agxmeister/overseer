@@ -2,7 +2,7 @@
 namespace Tests\Unit\Schedule\Blueprint;
 
 use Codeception\Test\Unit;
-use Watch\Blueprint\Factory\Schedule as ScheduleBlueprintFactory;
+use Watch\Blueprint\Builder\Schedule as ScheduleBlueprintBuilder;
 use Watch\Schedule\Serializer\Project;
 
 class ScheduleTest extends Unit
@@ -12,8 +12,8 @@ class ScheduleTest extends Unit
      */
     public function testGetMilestoneNames($description, $milestoneNames)
     {
-        $blueprintFactory = new ScheduleBlueprintFactory;
-        $blueprint = $blueprintFactory->create($description);
+        $blueprintBuilder = new ScheduleBlueprintBuilder;
+        $blueprint = $blueprintBuilder->create($description);
         self::assertEquals($milestoneNames, $blueprint->getMilestoneNames());
     }
 
@@ -22,8 +22,8 @@ class ScheduleTest extends Unit
      */
     public function testGetMilestones($description, $milestones)
     {
-        $blueprintFactory = new ScheduleBlueprintFactory;
-        $blueprint = $blueprintFactory->create($description);
+        $blueprintBuilder = new ScheduleBlueprintBuilder;
+        $blueprint = $blueprintBuilder->create($description);
         self::assertEquals($milestones, $blueprint->getMilestonesData());
     }
 
@@ -32,8 +32,8 @@ class ScheduleTest extends Unit
      */
     public function testGetProjectBeginDate($description, $beginDate)
     {
-        $blueprintFactory = new ScheduleBlueprintFactory;
-        $blueprint = $blueprintFactory->create($description);
+        $blueprintBuilder = new ScheduleBlueprintBuilder;
+        $blueprint = $blueprintBuilder->create($description);
         self::assertEquals(new \DateTimeImmutable($beginDate), $blueprint->getProjectBeginDate());
     }
 
@@ -42,8 +42,8 @@ class ScheduleTest extends Unit
      */
     public function testGetProjectEndDate($description, $endDate)
     {
-        $blueprintFactory = new ScheduleBlueprintFactory;
-        $blueprint = $blueprintFactory->create($description);
+        $blueprintBuilder = new ScheduleBlueprintBuilder;
+        $blueprint = $blueprintBuilder->create($description);
         self::assertEquals(new \DateTimeImmutable($endDate), $blueprint->getProjectEndDate());
     }
 
@@ -52,8 +52,8 @@ class ScheduleTest extends Unit
      */
     public function testGetNowDate($description, $nowDate)
     {
-        $blueprintFactory = new ScheduleBlueprintFactory;
-        $blueprint = $blueprintFactory->create($description);
+        $blueprintBuilder = new ScheduleBlueprintBuilder;
+        $blueprint = $blueprintBuilder->create($description);
         self::assertEquals(new \DateTimeImmutable($nowDate), $blueprint->nowDate);
     }
 
@@ -62,8 +62,8 @@ class ScheduleTest extends Unit
      */
     public function testGetProjectLength($description, $length)
     {
-        $blueprintFactory = new ScheduleBlueprintFactory;
-        $blueprint = $blueprintFactory->create($description);
+        $blueprintBuilder = new ScheduleBlueprintBuilder;
+        $blueprint = $blueprintBuilder->create($description);
         self::assertEquals($length, $blueprint->getLength());
     }
 
@@ -72,8 +72,8 @@ class ScheduleTest extends Unit
      */
     public function testGetScheduleCriticalChain($description, $criticalChain)
     {
-        $blueprintFactory = new ScheduleBlueprintFactory;
-        $blueprint = $blueprintFactory->create($description);
+        $blueprintBuilder = new ScheduleBlueprintBuilder;
+        $blueprint = $blueprintBuilder->create($description);
         self::assertEquals($criticalChain, $blueprint->getSchedule()[Project::VOLUME_CRITICAL_CHAIN]);
     }
 
@@ -82,8 +82,8 @@ class ScheduleTest extends Unit
      */
     public function testGetBufferConsumption($blueprintContent, $bufferConsumption)
     {
-        $blueprintFactory = new ScheduleBlueprintFactory;
-        $blueprint = $blueprintFactory->create($blueprintContent);
+        $blueprintBuilder = new ScheduleBlueprintBuilder;
+        $blueprint = $blueprintBuilder->create($blueprintContent);
         foreach ($blueprint->getSchedule()[Project::VOLUME_BUFFERS] as $buffer) {
             self::assertEquals($bufferConsumption[$buffer['key']], $buffer['consumption']);
         }

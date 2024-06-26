@@ -1,10 +1,10 @@
 <?php
 
-namespace Watch\Blueprint\Factory\Builder\Subject;
+namespace Watch\Blueprint\Model\Builder\Schedule;
 
-use Watch\Blueprint\Factory\Builder\Builder;
-use Watch\Blueprint\Factory\Builder\HasContext;
-use Watch\Blueprint\Factory\Line\Subject\Milestone as MilestoneLine;
+use Watch\Blueprint\Model\Builder\Builder;
+use Watch\Blueprint\Model\Builder\HasContext;
+use Watch\Blueprint\Model\Builder\Line\Schedule\Milestone as MilestoneLine;
 use Watch\Blueprint\Model\Schedule\Milestone as MilestoneModel;
 
 class Milestone implements Builder

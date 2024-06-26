@@ -2,7 +2,7 @@
 namespace Tests\Unit\Schedule;
 
 use Codeception\Test\Unit;
-use Watch\Blueprint\Factory\Schedule as ScheduleBlueprintFactory;
+use Watch\Blueprint\Builder\Schedule as ScheduleBlueprintBuilder;
 use Watch\Schedule\Model\FeedingBuffer;
 use Watch\Schedule\Model\Issue;
 use Watch\Schedule\Model\Link;
@@ -19,8 +19,8 @@ class UtilsTest extends Unit
      */
     public function testGetDuplicate($scheduleDescription)
     {
-        $blueprintFactory = new ScheduleBlueprintFactory;
-        $blueprint = $blueprintFactory->create($scheduleDescription);
+        $blueprintBuilder = new ScheduleBlueprintBuilder;
+        $blueprint = $blueprintBuilder->create($scheduleDescription);
         $serializer = new ProjectSerializer();
         $origin = $serializer->deserialize($blueprint->getSchedule());
 
@@ -71,8 +71,8 @@ class UtilsTest extends Unit
      */
      public function testGetMilestoneChain($scheduleDescription, $expectedMilestoneChain)
      {
-         $blueprintFactory = new ScheduleBlueprintFactory;
-         $blueprint = $blueprintFactory->create($scheduleDescription);
+         $blueprintBuilder = new ScheduleBlueprintBuilder;
+         $blueprint = $blueprintBuilder->create($scheduleDescription);
          $serializer = new ProjectSerializer();
          $origin = $serializer->deserialize($blueprint->getSchedule());
          $originNodes = $origin->getLinkedNodes();
@@ -91,8 +91,8 @@ class UtilsTest extends Unit
      */
     public function testGetFeedingChains($scheduleDescription, $expectedFeedingChains)
     {
-        $blueprintFactory = new ScheduleBlueprintFactory;
-        $blueprint = $blueprintFactory->create($scheduleDescription);
+        $blueprintBuilder = new ScheduleBlueprintBuilder;
+        $blueprint = $blueprintBuilder->create($scheduleDescription);
         $serializer = new ProjectSerializer();
         $origin = $serializer->deserialize($blueprint->getSchedule());
         $actualFeedingChains = ScheduleUtils::getFeedingChains($origin);
@@ -114,8 +114,8 @@ class UtilsTest extends Unit
      */
     public function testGetLongestChainNodes($scheduleDescription, $expectedChainNodeNames)
     {
-        $blueprintFactory = new ScheduleBlueprintFactory;
-        $blueprint = $blueprintFactory->create($scheduleDescription);
+        $blueprintBuilder = new ScheduleBlueprintBuilder;
+        $blueprint = $blueprintBuilder->create($scheduleDescription);
         $serializer = new ProjectSerializer();
         $project = $serializer->deserialize($blueprint->getSchedule());
         $this->assertEquals($expectedChainNodeNames, array_map(

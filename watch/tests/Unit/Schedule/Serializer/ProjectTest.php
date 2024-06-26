@@ -2,15 +2,15 @@
 namespace Tests\Unit\Schedule\Serializer;
 
 use Codeception\Test\Unit;
-use Watch\Blueprint\Factory\Schedule as ScheduleBlueprintFactory;
+use Watch\Blueprint\Builder\Schedule as ScheduleBlueprintBuilder;
 use Watch\Schedule\Serializer\Project;
 
 class ProjectTest extends Unit
 {
     public function testDeserializeSerialize()
     {
-        $scheduleBlueprintFactory = new ScheduleBlueprintFactory;
-        $blueprint = $scheduleBlueprintFactory->create('
+        $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder;
+        $blueprint = $scheduleBlueprintBuilder->create('
             PB/finish-buf |            ______| @ finish
             K-01          |        xxxx      | @ finish-buf
             K-02          |    xxxx          | @ K-01
