@@ -20,9 +20,15 @@ class ModifyingSimpleDirectorTest extends AbstractDirectorTest
     {
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
         $subjectBlueprintBuilder = new SubjectBlueprintBuilder($mapper);
-        $subjectBlueprint = $subjectBlueprintBuilder->create($subjectDescription);
+        $subjectBlueprint = $subjectBlueprintBuilder
+            ->clean()
+            ->setContent($subjectDescription)
+            ->flush();
         $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder;
-        $scheduleBlueprint = $scheduleBlueprintBuilder->create($scheduleDescription);
+        $scheduleBlueprint = $scheduleBlueprintBuilder
+            ->clean()
+            ->setContent($scheduleDescription)
+            ->flush();
         $director = new Director(
             new Builder(
                 new Context($scheduleBlueprint->nowDate),

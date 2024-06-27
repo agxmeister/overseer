@@ -9,9 +9,11 @@ use Watch\Blueprint\Model\Schedule\Milestone;
 use Watch\Blueprint\Subject as SubjectBlueprint;
 use Watch\Schedule\Mapper;
 
-readonly class Subject
+class Subject implements Builder
 {
     use HasLines, HasContext;
+
+    private ?SubjectBlueprint $blueprint = null;
 
     const string PATTERN_ISSUE_LINE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+]?)(?<beginMarker>\|)(?<track>[*.\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
     const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/';
@@ -21,7 +23,13 @@ readonly class Subject
     {
     }
 
-    public function create(string $content): SubjectBlueprint
+    public function clean(): self
+    {
+        $this->blueprint = null;
+        return $this;
+    }
+
+    public function setContent(string $content): self
     {
         $context = $this->getContext($this->getLines($content), self::PATTERN_REFERENCE_LINE);
 
@@ -53,6 +61,13 @@ readonly class Subject
         $gap = $context->getReferenceMarkerOffset() - $context->getProjectMarkerOffset();
         $nowDate =  $projectLine?->getDate()->modify("{$gap} day");
 
-        return new SubjectBlueprint($issueModels, $milestoneModels, $nowDate, $isEndMarkers);
+        $this->blueprint = new SubjectBlueprint($issueModels, $milestoneModels, $nowDate, $isEndMarkers);
+
+        return $this;
+    }
+
+    public function flush(): SubjectBlueprint
+    {
+        return $this->blueprint;
     }
 }

@@ -19,7 +19,10 @@ readonly class CreateMilestone
     public function __invoke(Request $request, Response $response, $args): Response
     {
         $blueprintBuilder = new SubjectBlueprintBuilder($this->mapper);
-        $blueprint = $blueprintBuilder->create(file_get_contents('php://input'));
+        $blueprint = $blueprintBuilder
+            ->clean()
+            ->setContent(file_get_contents('php://input'))
+            ->flush();
 
         $issueIds = array_reduce(
             $blueprint->getIssues($this->mapper),

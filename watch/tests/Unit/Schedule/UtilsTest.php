@@ -20,7 +20,10 @@ class UtilsTest extends Unit
     public function testGetDuplicate($scheduleDescription)
     {
         $blueprintBuilder = new ScheduleBlueprintBuilder;
-        $blueprint = $blueprintBuilder->create($scheduleDescription);
+        $blueprint = $blueprintBuilder
+            ->clean()
+            ->setContent($scheduleDescription)
+            ->flush();
         $serializer = new ProjectSerializer();
         $origin = $serializer->deserialize($blueprint->getSchedule());
 
@@ -72,7 +75,10 @@ class UtilsTest extends Unit
      public function testGetMilestoneChain($scheduleDescription, $expectedMilestoneChain)
      {
          $blueprintBuilder = new ScheduleBlueprintBuilder;
-         $blueprint = $blueprintBuilder->create($scheduleDescription);
+         $blueprint = $blueprintBuilder
+             ->clean()
+             ->setContent($scheduleDescription)
+             ->flush();
          $serializer = new ProjectSerializer();
          $origin = $serializer->deserialize($blueprint->getSchedule());
          $originNodes = $origin->getLinkedNodes();
@@ -92,7 +98,10 @@ class UtilsTest extends Unit
     public function testGetFeedingChains($scheduleDescription, $expectedFeedingChains)
     {
         $blueprintBuilder = new ScheduleBlueprintBuilder;
-        $blueprint = $blueprintBuilder->create($scheduleDescription);
+        $blueprint = $blueprintBuilder
+            ->clean()
+            ->setContent($scheduleDescription)
+            ->flush();
         $serializer = new ProjectSerializer();
         $origin = $serializer->deserialize($blueprint->getSchedule());
         $actualFeedingChains = ScheduleUtils::getFeedingChains($origin);
@@ -115,7 +124,10 @@ class UtilsTest extends Unit
     public function testGetLongestChainNodes($scheduleDescription, $expectedChainNodeNames)
     {
         $blueprintBuilder = new ScheduleBlueprintBuilder;
-        $blueprint = $blueprintBuilder->create($scheduleDescription);
+        $blueprint = $blueprintBuilder
+            ->clean()
+            ->setContent($scheduleDescription)
+            ->flush();
         $serializer = new ProjectSerializer();
         $project = $serializer->deserialize($blueprint->getSchedule());
         $this->assertEquals($expectedChainNodeNames, array_map(

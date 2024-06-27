@@ -16,12 +16,14 @@ class BuilderTest extends Unit
     {
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
         $blueprintBuilder = new SubjectBlueprintBuilder($mapper);
-        $blueprint = $blueprintBuilder->create('
-            K-01   |       ****|
-            K-02   |   ****    | & K-01
-            K-03   |*******    | @ K-01
-                               ^ # 2023-09-21
-        ');
+        $blueprint = $blueprintBuilder
+            ->clean()
+            ->setContent('
+                K-01   |       ****|
+                K-02   |   ****    | & K-01
+                K-03   |*******    | @ K-01
+                                   ^ # 2023-09-21
+            ')->flush();
         $builder = new Builder(
             new Context(new \DateTimeImmutable('2023-01-01')),
             $blueprint->getIssues($mapper),
@@ -42,12 +44,14 @@ class BuilderTest extends Unit
     {
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
         $blueprintBuilder = new SubjectBlueprintBuilder($mapper);
-        $blueprint = $blueprintBuilder->create('
-            K-01   |       ****|
-            K-02   | ****      | & K-01
-            K-03   |*******    | @ K-01
-                               ^ # 2023-09-21
-        ');
+        $blueprint = $blueprintBuilder
+            ->clean()
+            ->setContent('
+                K-01   |       ****|
+                K-02   | ****      | & K-01
+                K-03   |*******    | @ K-01
+                                   ^ # 2023-09-21
+            ')->flush();
         $builder = new Builder(
             new Context(new \DateTimeImmutable('2023-01-01')),
             $blueprint->getIssues($mapper),

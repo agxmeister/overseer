@@ -15,7 +15,10 @@ class SubjectTest extends Unit
     {
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
         $blueprintBuilder = new SubjectBlueprintBuilder($mapper);
-        $blueprint = $blueprintBuilder->create($description);
+        $blueprint = $blueprintBuilder
+            ->clean()
+            ->setContent($description)
+            ->flush();
         self::assertEquals(
             $issueKeys,
             array_map(
