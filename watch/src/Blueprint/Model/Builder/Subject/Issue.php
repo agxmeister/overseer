@@ -3,16 +3,13 @@
 namespace Watch\Blueprint\Model\Builder\Subject;
 
 use Watch\Blueprint\Model\Builder\Builder;
-use Watch\Blueprint\Model\Builder\HasContext;
 use Watch\Blueprint\Model\Builder\Line\Subject\Issue as IssueLine;
 use Watch\Blueprint\Model\Subject\Issue as IssueModel;
 use Watch\Blueprint\Model\Track;
 use Watch\Schedule\Mapper;
 
-class Issue implements Builder
+class Issue extends Builder
 {
-    use HasContext;
-
     private array $models = [];
 
     private ?IssueModel $model;
@@ -21,20 +18,20 @@ class Issue implements Builder
     {
     }
 
-    public function reset(): Builder
+    public function reset(): self
     {
         $this->context = null;
         $this->model = null;
         return $this;
     }
 
-    public function release(): Builder
+    public function release(): self
     {
         $this->models[] = $this->model;
         return $this->reset();
     }
 
-    public function setModel(array $values, array $offsets, ...$defaults): Builder
+    public function setModel(array $values, array $offsets, ...$defaults): self
     {
         $line = new IssueLine($values, $offsets, ...$defaults);
         list(

@@ -3,33 +3,30 @@
 namespace Watch\Blueprint\Model\Builder\Schedule;
 
 use Watch\Blueprint\Model\Builder\Builder;
-use Watch\Blueprint\Model\Builder\HasContext;
 use Watch\Blueprint\Model\Builder\Line\Schedule\Buffer as BufferLine;
 use Watch\Blueprint\Model\Schedule\Buffer as BufferModel;
 use Watch\Blueprint\Model\Track;
 
-class Buffer implements Builder
+class Buffer extends Builder
 {
-    use HasContext;
-
     private array $models = [];
 
     private ?BufferModel $model;
 
-    public function reset(): Builder
+    public function reset(): self
     {
         $this->model = null;
         return $this;
     }
 
-    public function release(): Builder
+    public function release(): self
     {
         $this->models[] = $this->model;
         $this->model = null;
         return $this;
     }
 
-    public function setModel(array $values, array $offsets, ...$defaults): Builder
+    public function setModel(array $values, array $offsets, ...$defaults): self
     {
         $line = new BufferLine($values, $offsets, ...$defaults);
         list(

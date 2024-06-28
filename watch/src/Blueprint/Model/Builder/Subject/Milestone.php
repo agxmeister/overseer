@@ -3,32 +3,29 @@
 namespace Watch\Blueprint\Model\Builder\Subject;
 
 use Watch\Blueprint\Model\Builder\Builder;
-use Watch\Blueprint\Model\Builder\HasContext;
 use Watch\Blueprint\Model\Builder\Line\Subject\Milestone as MilestoneLine;
 use Watch\Blueprint\Model\Schedule\Milestone as MilestoneModel;
 
-class Milestone implements Builder
+class Milestone extends Builder
 {
-    use HasContext;
-
     private array $models = [];
 
     private ?MilestoneModel $model;
 
-    public function reset(): Builder
+    public function reset(): self
     {
         $this->model = null;
         return $this;
     }
 
-    public function release(): Builder
+    public function release(): self
     {
         $this->models[] = $this->model;
         $this->model = null;
         return $this;
     }
 
-    public function setModel(array $values, array $offsets, ...$defaults): Builder
+    public function setModel(array $values, array $offsets, ...$defaults): self
     {
         $line = new MilestoneLine($values, $offsets, ...$defaults);
         list(

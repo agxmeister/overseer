@@ -4,10 +4,17 @@ namespace Watch\Blueprint\Model\Builder;
 
 use Watch\Blueprint\Builder\Context;
 
-interface Builder
+abstract class Builder
 {
-    public function reset(): Builder;
-    public function release(): Builder;
-    public function setContext(Context $context): Builder;
-    public function setModel(array $values, array $offsets, ...$defaults): Builder;
+    protected ?Context $context;
+
+    public function setContext(Context $context): self
+    {
+        $this->context = $context;
+        return $this;
+    }
+
+    abstract public function reset(): self;
+    abstract public function release(): self;
+    abstract public function setModel(array $values, array $offsets, ...$defaults): self;
 }

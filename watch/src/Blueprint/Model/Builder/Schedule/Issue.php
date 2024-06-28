@@ -3,33 +3,30 @@
 namespace Watch\Blueprint\Model\Builder\Schedule;
 
 use Watch\Blueprint\Model\Builder\Builder;
-use Watch\Blueprint\Model\Builder\HasContext;
 use Watch\Blueprint\Model\Builder\Line\Schedule\Issue as IssueLine;
 use Watch\Blueprint\Model\Schedule\Issue as IssueModel;
 use Watch\Blueprint\Model\Track;
 
-class Issue implements Builder
+class Issue extends Builder
 {
-    use HasContext;
-
     private array $models = [];
 
     private ?IssueModel $model;
 
-    public function reset(): Builder
+    public function reset(): self
     {
         $this->model = null;
         return $this;
     }
 
-    public function release(): Builder
+    public function release(): self
     {
         $this->models[] = $this->model;
         $this->model = null;
         return $this;
     }
 
-    public function setModel(array $values, array $offsets, ...$defaults): Builder
+    public function setModel(array $values, array $offsets, ...$defaults): self
     {
         $line = new IssueLine($values, $offsets, ...$defaults);
         list(
