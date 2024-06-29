@@ -9,10 +9,8 @@ use Watch\Blueprint\Model\Schedule\Milestone;
 use Watch\Blueprint\Subject as SubjectBlueprint;
 use Watch\Schedule\Mapper;
 
-class Subject implements Builder
+class Subject extends Builder
 {
-    use HasLines, HasContext;
-
     private ?SubjectBlueprint $blueprint = null;
 
     const string PATTERN_ISSUE_LINE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+]?)(?<beginMarker>\|)(?<track>[*.\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
