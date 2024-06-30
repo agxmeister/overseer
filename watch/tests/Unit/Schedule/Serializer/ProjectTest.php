@@ -12,13 +12,15 @@ class ProjectTest extends Unit
         $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder;
         $blueprint = $scheduleBlueprintBuilder
             ->clean()
-            ->setContent('
+            ->setDrawing('
                 PB/finish-buf |            ______| @ finish
                 K-01          |        xxxx      | @ finish-buf
                 K-02          |    xxxx          | @ K-01
                 K-03          |xxxx              | @ K-02
                 finish                           ^ # 2023-09-21
-            ')->flush();
+            ')
+            ->setContent()
+            ->flush();
         $initialSerializedSchedule = $blueprint->getSchedule();
         $serializer = new Project();
         $schedule = $serializer->deserialize($initialSerializedSchedule);

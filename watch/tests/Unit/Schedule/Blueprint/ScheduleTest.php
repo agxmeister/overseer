@@ -15,7 +15,8 @@ class ScheduleTest extends Unit
         $blueprintBuilder = new ScheduleBlueprintBuilder;
         $blueprint = $blueprintBuilder
             ->clean()
-            ->setContent($description)
+            ->setDrawing($description)
+            ->setContent()
             ->flush();
         self::assertEquals($milestoneNames, $blueprint->getMilestoneNames());
     }
@@ -28,7 +29,8 @@ class ScheduleTest extends Unit
         $blueprintBuilder = new ScheduleBlueprintBuilder;
         $blueprint = $blueprintBuilder
             ->clean()
-            ->setContent($description)
+            ->setDrawing($description)
+            ->setContent()
             ->flush();
         self::assertEquals($milestones, $blueprint->getMilestonesData());
     }
@@ -41,7 +43,8 @@ class ScheduleTest extends Unit
         $blueprintBuilder = new ScheduleBlueprintBuilder;
         $blueprint = $blueprintBuilder
             ->clean()
-            ->setContent($description)
+            ->setDrawing($description)
+            ->setContent()
             ->flush();
         self::assertEquals(new \DateTimeImmutable($beginDate), $blueprint->getProjectBeginDate());
     }
@@ -54,7 +57,8 @@ class ScheduleTest extends Unit
         $blueprintBuilder = new ScheduleBlueprintBuilder;
         $blueprint = $blueprintBuilder
             ->clean()
-            ->setContent($description)
+            ->setDrawing($description)
+            ->setContent()
             ->flush();
         self::assertEquals(new \DateTimeImmutable($endDate), $blueprint->getProjectEndDate());
     }
@@ -67,7 +71,8 @@ class ScheduleTest extends Unit
         $blueprintBuilder = new ScheduleBlueprintBuilder;
         $blueprint = $blueprintBuilder
             ->clean()
-            ->setContent($description)
+            ->setDrawing($description)
+            ->setContent()
             ->flush();
         self::assertEquals(new \DateTimeImmutable($nowDate), $blueprint->nowDate);
     }
@@ -80,7 +85,8 @@ class ScheduleTest extends Unit
         $blueprintBuilder = new ScheduleBlueprintBuilder;
         $blueprint = $blueprintBuilder
             ->clean()
-            ->setContent($description)
+            ->setDrawing($description)
+            ->setContent()
             ->flush();
         self::assertEquals($length, $blueprint->getLength());
     }
@@ -93,7 +99,8 @@ class ScheduleTest extends Unit
         $blueprintBuilder = new ScheduleBlueprintBuilder;
         $blueprint = $blueprintBuilder
             ->clean()
-            ->setContent($description)
+            ->setDrawing($description)
+            ->setContent()
             ->flush();
         self::assertEquals($criticalChain, $blueprint->getSchedule()[Project::VOLUME_CRITICAL_CHAIN]);
     }
@@ -106,7 +113,8 @@ class ScheduleTest extends Unit
         $blueprintBuilder = new ScheduleBlueprintBuilder;
         $blueprint = $blueprintBuilder
             ->clean()
-            ->setContent($blueprintContent)
+            ->setDrawing($blueprintContent)
+            ->setContent()
             ->flush();
         foreach ($blueprint->getSchedule()[Project::VOLUME_BUFFERS] as $buffer) {
             self::assertEquals($bufferConsumption[$buffer['key']], $buffer['consumption']);

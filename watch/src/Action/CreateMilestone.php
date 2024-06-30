@@ -21,7 +21,8 @@ readonly class CreateMilestone
         $blueprintBuilder = new SubjectBlueprintBuilder($this->mapper);
         $blueprint = $blueprintBuilder
             ->clean()
-            ->setContent(file_get_contents('php://input'))
+            ->setDrawing(file_get_contents('php://input'))
+            ->setContent()
             ->flush();
 
         $issueIds = array_reduce(

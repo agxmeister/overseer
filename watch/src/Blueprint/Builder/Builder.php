@@ -9,6 +9,8 @@ use Watch\Blueprint\Model\Builder\Line\Reference as ReferenceLine;
 
 abstract class Builder
 {
+    protected ?string $drawing = null;
+
     protected function getLines(string $content): array
     {
         return array_filter(
@@ -65,6 +67,17 @@ abstract class Builder
         return $markerOffset;
     }
 
-    abstract public function clean(): self;
-    abstract public function setContent(string $content): self;
+    public function setDrawing(string $drawing): self
+    {
+        $this->drawing = $drawing;
+        return $this;
+    }
+
+    public function clean(): self
+    {
+        $this->drawing = null;
+        return $this;
+    }
+
+    abstract public function setContent(): self;
 }

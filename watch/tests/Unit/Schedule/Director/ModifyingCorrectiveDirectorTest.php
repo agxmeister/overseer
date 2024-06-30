@@ -23,12 +23,14 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
         $subjectBlueprintBuilder = new SubjectBlueprintBuilder($mapper);
         $subjectBlueprint = $subjectBlueprintBuilder
             ->clean()
-            ->setContent($subjectDescription)
+            ->setDrawing($subjectDescription)
+            ->setContent()
             ->flush();
         $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder;
         $scheduleBlueprint = $scheduleBlueprintBuilder
             ->clean()
-            ->setContent($scheduleDescription)
+            ->setDrawing($scheduleDescription)
+            ->setContent()
             ->flush();
         $director = new Director(
             new Builder(
@@ -58,12 +60,14 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
         $subjectBlueprintBuilder = new SubjectBlueprintBuilder($mapper);
         $subjectBlueprint = $subjectBlueprintBuilder
             ->clean()
-            ->setContent($subjectDescription)
+            ->setDrawing($subjectDescription)
+            ->setContent()
             ->flush();
         $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder;
         $scheduleBlueprint = $scheduleBlueprintBuilder
             ->clean()
-            ->setContent($scheduleDescription)
+            ->setDrawing($scheduleDescription)
+            ->setContent()
             ->flush();
         $director = new Director(
             new Builder(

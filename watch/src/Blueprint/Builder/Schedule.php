@@ -21,12 +21,12 @@ class Schedule extends Builder
     public function clean(): self
     {
         $this->blueprint = null;
-        return $this;
+        return parent::clean();
     }
 
-    public function setContent(string $content): self
+    public function setContent(): self
     {
-        $context = $this->getContext($this->getLines($content), self::PATTERN_REFERENCE_LINE);
+        $context = $this->getContext($this->getLines($this->drawing), self::PATTERN_REFERENCE_LINE);
 
         $director = new Director();
 

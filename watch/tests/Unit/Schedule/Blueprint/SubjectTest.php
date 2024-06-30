@@ -17,7 +17,8 @@ class SubjectTest extends Unit
         $blueprintBuilder = new SubjectBlueprintBuilder($mapper);
         $blueprint = $blueprintBuilder
             ->clean()
-            ->setContent($description)
+            ->setDrawing($description)
+            ->setContent()
             ->flush();
         self::assertEquals(
             $issueKeys,

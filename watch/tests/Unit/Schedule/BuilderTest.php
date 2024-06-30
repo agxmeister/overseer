@@ -18,12 +18,14 @@ class BuilderTest extends Unit
         $blueprintBuilder = new SubjectBlueprintBuilder($mapper);
         $blueprint = $blueprintBuilder
             ->clean()
-            ->setContent('
+            ->setDrawing('
                 K-01   |       ****|
                 K-02   |   ****    | & K-01
                 K-03   |*******    | @ K-01
                                    ^ # 2023-09-21
-            ')->flush();
+            ')
+            ->setContent()
+            ->flush();
         $builder = new Builder(
             new Context(new \DateTimeImmutable('2023-01-01')),
             $blueprint->getIssues($mapper),
@@ -46,12 +48,14 @@ class BuilderTest extends Unit
         $blueprintBuilder = new SubjectBlueprintBuilder($mapper);
         $blueprint = $blueprintBuilder
             ->clean()
-            ->setContent('
+            ->setDrawing('
                 K-01   |       ****|
                 K-02   | ****      | & K-01
                 K-03   |*******    | @ K-01
                                    ^ # 2023-09-21
-            ')->flush();
+            ')
+            ->setContent()
+            ->flush();
         $builder = new Builder(
             new Context(new \DateTimeImmutable('2023-01-01')),
             $blueprint->getIssues($mapper),
