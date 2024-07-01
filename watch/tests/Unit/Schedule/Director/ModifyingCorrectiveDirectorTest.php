@@ -17,15 +17,15 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
     /**
      * @dataProvider dataBuildFromDate
      */
-    public function testBuildFromDate($subjectDescription, $scheduleDescription)
+    public function testBuildFromDate($subjectDrawing, $scheduleDrawing)
     {
         $blueprintDirector = new \Watch\Blueprint\Builder\Director();
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
         $subjectBlueprintBuilder = new SubjectBlueprintBuilder($mapper);
-        $blueprintDirector->build($subjectBlueprintBuilder, $subjectDescription);
+        $blueprintDirector->build($subjectBlueprintBuilder, $subjectDrawing);
         $subjectBlueprint = $subjectBlueprintBuilder->flush();
         $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder;
-        $blueprintDirector->build($scheduleBlueprintBuilder, $scheduleDescription);
+        $blueprintDirector->build($scheduleBlueprintBuilder, $scheduleDrawing);
         $scheduleBlueprint = $scheduleBlueprintBuilder->flush();
         $director = new Director(
             new Builder(
@@ -49,15 +49,15 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
     /**
      * @dataProvider dataBuildToDate
      */
-    public function testBuildToDate($subjectDescription, $scheduleDescription)
+    public function testBuildToDate($subjectDrawing, $scheduleDrawing)
     {
         $blueprintDirector = new \Watch\Blueprint\Builder\Director();
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
         $subjectBlueprintBuilder = new SubjectBlueprintBuilder($mapper);
-        $blueprintDirector->build($subjectBlueprintBuilder, $subjectDescription);
+        $blueprintDirector->build($subjectBlueprintBuilder, $subjectDrawing);
         $subjectBlueprint = $subjectBlueprintBuilder->flush();
         $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder;
-        $blueprintDirector->build($scheduleBlueprintBuilder, $scheduleDescription);
+        $blueprintDirector->build($scheduleBlueprintBuilder, $scheduleDrawing);
         $scheduleBlueprint = $scheduleBlueprintBuilder->flush();
         $director = new Director(
             new Builder(

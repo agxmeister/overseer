@@ -14,15 +14,15 @@ class PreservingDirectorTest extends AbstractDirectorTest
     /**
      * @dataProvider dataBuild
      */
-    public function testBuild($subjectDescription, $scheduleDescription)
+    public function testBuild($subjectDrawing, $scheduleDrawing)
     {
         $blueprintDirector = new \Watch\Blueprint\Builder\Director();
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
         $subjectBlueprintBuilder = new SubjectBlueprintBuilder($mapper);
-        $blueprintDirector->build($subjectBlueprintBuilder, $subjectDescription);
+        $blueprintDirector->build($subjectBlueprintBuilder, $subjectDrawing);
         $subjectBlueprint = $subjectBlueprintBuilder->flush();
         $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder;
-        $blueprintDirector->build($scheduleBlueprintBuilder, $scheduleDescription);
+        $blueprintDirector->build($scheduleBlueprintBuilder, $scheduleDrawing);
         $scheduleBlueprint = $scheduleBlueprintBuilder->flush();
         $director = new Director(
             new Builder(
