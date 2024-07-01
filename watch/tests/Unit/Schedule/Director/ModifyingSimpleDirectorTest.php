@@ -18,19 +18,14 @@ class ModifyingSimpleDirectorTest extends AbstractDirectorTest
      */
     public function testBuild($subjectDescription, $scheduleDescription)
     {
+        $blueprintDirector = new \Watch\Blueprint\Builder\Director();
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
         $subjectBlueprintBuilder = new SubjectBlueprintBuilder($mapper);
-        $subjectBlueprint = $subjectBlueprintBuilder
-            ->clean()
-            ->setDrawing($subjectDescription)
-            ->setContent()
-            ->flush();
+        $blueprintDirector->build($subjectBlueprintBuilder, $subjectDescription);
+        $subjectBlueprint = $subjectBlueprintBuilder->flush();
         $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder;
-        $scheduleBlueprint = $scheduleBlueprintBuilder
-            ->clean()
-            ->setDrawing($scheduleDescription)
-            ->setContent()
-            ->flush();
+        $blueprintDirector->build($scheduleBlueprintBuilder, $scheduleDescription);
+        $scheduleBlueprint = $scheduleBlueprintBuilder->flush();
         $director = new Director(
             new Builder(
                 new Context($scheduleBlueprint->nowDate),

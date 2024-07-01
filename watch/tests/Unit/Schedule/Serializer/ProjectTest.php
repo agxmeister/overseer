@@ -2,6 +2,7 @@
 namespace Tests\Unit\Schedule\Serializer;
 
 use Codeception\Test\Unit;
+use Watch\Blueprint\Builder\Director;
 use Watch\Blueprint\Builder\Schedule as ScheduleBlueprintBuilder;
 use Watch\Schedule\Serializer\Project;
 
@@ -10,17 +11,18 @@ class ProjectTest extends Unit
     public function testDeserializeSerialize()
     {
         $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder;
-        $blueprint = $scheduleBlueprintBuilder
-            ->clean()
-            ->setDrawing('
+        $blueprintDirector = new Director();
+        $blueprintDirector->build(
+            $scheduleBlueprintBuilder,
+            '
                 PB/finish-buf |            ______| @ finish
                 K-01          |        xxxx      | @ finish-buf
                 K-02          |    xxxx          | @ K-01
                 K-03          |xxxx              | @ K-02
                 finish                           ^ # 2023-09-21
-            ')
-            ->setContent()
-            ->flush();
+            '
+        );
+        $blueprint = $scheduleBlueprintBuilder->flush();
         $initialSerializedSchedule = $blueprint->getSchedule();
         $serializer = new Project();
         $schedule = $serializer->deserialize($initialSerializedSchedule);

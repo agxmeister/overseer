@@ -2,6 +2,7 @@
 namespace Tests\Unit\Schedule;
 
 use Codeception\Test\Unit;
+use Watch\Blueprint\Builder\Director;
 use Watch\Blueprint\Builder\Subject as SubjectBlueprintBuilder;
 use Watch\Config;
 use Watch\Schedule\Builder;
@@ -16,20 +17,21 @@ class BuilderTest extends Unit
     {
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
         $blueprintBuilder = new SubjectBlueprintBuilder($mapper);
-        $blueprint = $blueprintBuilder
-            ->clean()
-            ->setDrawing('
+        $blueprintDirector = new Director();
+        $blueprintDirector->build(
+            $blueprintBuilder,
+            '
                 K-01   |       ****|
                 K-02   |   ****    | & K-01
                 K-03   |*******    | @ K-01
                                    ^ # 2023-09-21
-            ')
-            ->setContent()
-            ->flush();
+            '
+        );
+        $blueprint = $blueprintBuilder->flush();
         $builder = new Builder(
             new Context(new \DateTimeImmutable('2023-01-01')),
             $blueprint->getIssues($mapper),
-            $blueprint->getLinks($mapper),
+            $blueprint->getLinks(),
             'finish',
             [],
             $mapper,
@@ -46,16 +48,17 @@ class BuilderTest extends Unit
     {
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
         $blueprintBuilder = new SubjectBlueprintBuilder($mapper);
-        $blueprint = $blueprintBuilder
-            ->clean()
-            ->setDrawing('
+        $blueprintDirector = new Director();
+        $blueprintDirector->build(
+            $blueprintBuilder,
+            '
                 K-01   |       ****|
                 K-02   | ****      | & K-01
                 K-03   |*******    | @ K-01
                                    ^ # 2023-09-21
-            ')
-            ->setContent()
-            ->flush();
+            '
+        );
+        $blueprint = $blueprintBuilder->flush();
         $builder = new Builder(
             new Context(new \DateTimeImmutable('2023-01-01')),
             $blueprint->getIssues($mapper),

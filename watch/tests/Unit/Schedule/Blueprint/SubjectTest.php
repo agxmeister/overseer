@@ -2,6 +2,7 @@
 namespace Tests\Unit\Schedule\Blueprint;
 
 use Codeception\Test\Unit;
+use Watch\Blueprint\Builder\Director;
 use Watch\Blueprint\Builder\Subject as SubjectBlueprintBuilder;
 use Watch\Schedule\Mapper;
 use Watch\Subject\Model\Issue;
@@ -15,11 +16,9 @@ class SubjectTest extends Unit
     {
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
         $blueprintBuilder = new SubjectBlueprintBuilder($mapper);
-        $blueprint = $blueprintBuilder
-            ->clean()
-            ->setDrawing($description)
-            ->setContent()
-            ->flush();
+        $blueprintDirector = new Director();
+        $blueprintDirector->build($blueprintBuilder, $description);
+        $blueprint = $blueprintBuilder->flush();
         self::assertEquals(
             $issueKeys,
             array_map(
