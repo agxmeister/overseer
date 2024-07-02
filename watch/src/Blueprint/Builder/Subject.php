@@ -29,7 +29,7 @@ class Subject extends Builder
 
     public function setContent(): self
     {
-        $context = $this->getContext($this->getLines($this->drawing), self::PATTERN_REFERENCE_LINE);
+        $context = $this->getContext($this->lines, self::PATTERN_REFERENCE_LINE);
 
         $director = new Director();
 

@@ -10,14 +10,7 @@ use Watch\Blueprint\Model\Builder\Line\Reference as ReferenceLine;
 abstract class Builder
 {
     protected ?string $drawing = null;
-
-    protected function getLines(string $content): array
-    {
-        return array_filter(
-            explode("\n", $content),
-            fn($line) => !empty(trim($line)),
-        );
-    }
+    protected ?array $lines = null;
 
     protected function getContext(array $lines, string $referenceLinePattern): Context
     {
@@ -73,9 +66,19 @@ abstract class Builder
         return $this;
     }
 
+    public function setLines(): self
+    {
+        $this->lines = array_filter(
+            explode("\n", $this->drawing),
+            fn($line) => !empty(trim($line)),
+        );
+        return $this;
+    }
+
     public function clean(): self
     {
         $this->drawing = null;
+        $this->lines = null;
         return $this;
     }
 

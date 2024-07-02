@@ -9,6 +9,7 @@ readonly class Director
         $builder
             ->clean()
             ->setDrawing($drawing)
+            ->setLines()
             ->setContent();
     }
 }
