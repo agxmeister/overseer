@@ -6,22 +6,10 @@ use DateTimeImmutable;
 
 class Context
 {
-    /** @var string[] */
-    public array $lines = [];
     public ?DateTimeImmutable $referenceDate = null;
     private int $referenceMarkerOffset = 0;
     private int $projectMarkerOffset = 0;
     private int $issuesEndPosition = 0;
-
-    /**
-     * @param string[] $lines
-     * @return $this
-     */
-    public function setLines(array $lines): self
-    {
-        $this->lines = $lines;
-        return $this;
-    }
 
     public function setReferenceDate(?DateTimeImmutable $referenceDate): self
     {

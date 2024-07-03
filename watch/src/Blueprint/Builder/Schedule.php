@@ -26,7 +26,7 @@ class Schedule extends Builder
 
     public function setContent(): self
     {
-        $context = $this->getContext($this->lines, self::PATTERN_REFERENCE_LINE);
+        $context = $this->getContext(self::PATTERN_REFERENCE_LINE);
 
         $director = new Director();
 
@@ -35,6 +35,7 @@ class Schedule extends Builder
         $director->run(
             $issueBuilder,
             $issueParser,
+            $this->lines,
             $context,
             project: 'PRJ',
             milestone: null,
@@ -44,12 +45,12 @@ class Schedule extends Builder
 
         $bufferBuilder = new BufferBuilder();
         $bufferParser = new Parser(self::PATTERN_BUFFER_LINE);
-        $director->run($bufferBuilder, $bufferParser, $context, type: 'T');
+        $director->run($bufferBuilder, $bufferParser, $this->lines, $context, type: 'T');
         $bufferModels = $bufferBuilder->flush();
 
         $milestoneBuilder = new MilestoneBuilder();
         $milestoneParser = new Parser(self::PATTERN_MILESTONE_LINE);
-        $director->run($milestoneBuilder, $milestoneParser, $context, key: 'PRJ');
+        $director->run($milestoneBuilder, $milestoneParser, $this->lines, $context, key: 'PRJ');
         $milestoneModels = $milestoneBuilder->flush();
 
         $isEndMarkers = $context->getProjectMarkerOffset() >= $context->getIssuesEndPosition();

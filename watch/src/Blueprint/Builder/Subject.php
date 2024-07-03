@@ -29,7 +29,7 @@ class Subject extends Builder
 
     public function setContent(): self
     {
-        $context = $this->getContext($this->lines, self::PATTERN_REFERENCE_LINE);
+        $context = $this->getContext(self::PATTERN_REFERENCE_LINE);
 
         $director = new Director();
 
@@ -38,6 +38,7 @@ class Subject extends Builder
         $director->run(
             $issueBuilder,
             $issueParser,
+            $this->lines,
             $context,
             project: 'PRJ',
             milestone: null,
@@ -47,7 +48,7 @@ class Subject extends Builder
 
         $milestoneBuilder = new MilestoneBuilder();
         $milestoneParser = new Parser(self::PATTERN_MILESTONE_LINE);
-        $director->run($milestoneBuilder, $milestoneParser, $context, key: 'PRJ');
+        $director->run($milestoneBuilder, $milestoneParser, $this->lines, $context, key: 'PRJ');
         $milestoneModels = $milestoneBuilder->flush();
 
         $isEndMarkers = $context->getProjectMarkerOffset() >= $context->getIssuesEndPosition();

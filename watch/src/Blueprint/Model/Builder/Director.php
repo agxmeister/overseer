@@ -7,9 +7,9 @@ use Watch\Blueprint\Builder\Parser;
 
 readonly class Director
 {
-    public function run(Builder $builder, Parser $parser, Context $context, ...$defaults): void
+    public function run(Builder $builder, Parser $parser, array $lines, Context $context, ...$defaults): void
     {
-        foreach ($parser->getMatches($context->lines) as $match) {
+        foreach ($parser->getMatches($lines) as $match) {
             list($values, $offsets) = $match;
             $builder
                 ->setContext($context)

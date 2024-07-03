@@ -12,18 +12,17 @@ abstract class Builder
     protected ?string $drawing = null;
     protected ?array $lines = null;
 
-    protected function getContext(array $lines, string $referenceLinePattern): Context
+    protected function getContext(string $referenceLinePattern): Context
     {
         $context = new Context();
 
         $parser = new Parser($referenceLinePattern);
         $referenceLine = array_reduce(
-            $parser->getMatches($lines),
+            $parser->getMatches($this->lines),
             fn($acc, $match) => new ReferenceLine($match[0], $match[1]),
         );
 
         $context
-            ->setLines($lines)
             ->setReferenceDate($this->getReferenceDate($referenceLine))
             ->setReferenceMarkerOffset($this->getReferenceMarkerOffset($referenceLine));
 
