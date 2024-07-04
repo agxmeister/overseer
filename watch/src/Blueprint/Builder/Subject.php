@@ -29,8 +29,6 @@ class Subject extends Builder
 
     public function setContent(): self
     {
-        $context = $this->getContext(self::PATTERN_REFERENCE_LINE);
-
         $director = new Director();
 
         $issueBuilder = new IssueBuilder($this->mapper);
@@ -39,7 +37,7 @@ class Subject extends Builder
             $issueBuilder,
             $issueParser,
             $this->lines,
-            $context,
+            $this->context,
             project: 'PRJ',
             milestone: null,
             type: 'T',
@@ -48,16 +46,16 @@ class Subject extends Builder
 
         $milestoneBuilder = new MilestoneBuilder();
         $milestoneParser = new Parser(self::PATTERN_MILESTONE_LINE);
-        $director->run($milestoneBuilder, $milestoneParser, $this->lines, $context, key: 'PRJ');
+        $director->run($milestoneBuilder, $milestoneParser, $this->lines, $this->context, key: 'PRJ');
         $milestoneModels = $milestoneBuilder->flush();
 
-        $isEndMarkers = $context->getProjectMarkerOffset() >= $context->getIssuesEndPosition();
+        $isEndMarkers = $this->context->getProjectMarkerOffset() >= $this->context->getIssuesEndPosition();
 
         $projectLine = array_reduce(
             $milestoneModels,
             fn($acc, $line) => $line instanceof Milestone ? $line : null,
         );
-        $gap = $context->getReferenceMarkerOffset() - $context->getProjectMarkerOffset();
+        $gap = $this->context->getReferenceMarkerOffset() - $this->context->getProjectMarkerOffset();
         $nowDate =  $projectLine?->getDate()->modify("{$gap} day");
 
         $this->blueprint = new SubjectBlueprint($issueModels, $milestoneModels, $nowDate, $isEndMarkers);

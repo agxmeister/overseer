@@ -26,8 +26,6 @@ class Schedule extends Builder
 
     public function setContent(): self
     {
-        $context = $this->getContext(self::PATTERN_REFERENCE_LINE);
-
         $director = new Director();
 
         $issueBuilder = new IssueBuilder();
@@ -36,7 +34,7 @@ class Schedule extends Builder
             $issueBuilder,
             $issueParser,
             $this->lines,
-            $context,
+            $this->context,
             project: 'PRJ',
             milestone: null,
             type: 'T',
@@ -45,21 +43,21 @@ class Schedule extends Builder
 
         $bufferBuilder = new BufferBuilder();
         $bufferParser = new Parser(self::PATTERN_BUFFER_LINE);
-        $director->run($bufferBuilder, $bufferParser, $this->lines, $context, type: 'T');
+        $director->run($bufferBuilder, $bufferParser, $this->lines, $this->context, type: 'T');
         $bufferModels = $bufferBuilder->flush();
 
         $milestoneBuilder = new MilestoneBuilder();
         $milestoneParser = new Parser(self::PATTERN_MILESTONE_LINE);
-        $director->run($milestoneBuilder, $milestoneParser, $this->lines, $context, key: 'PRJ');
+        $director->run($milestoneBuilder, $milestoneParser, $this->lines, $this->context, key: 'PRJ');
         $milestoneModels = $milestoneBuilder->flush();
 
-        $isEndMarkers = $context->getProjectMarkerOffset() >= $context->getIssuesEndPosition();
+        $isEndMarkers = $this->context->getProjectMarkerOffset() >= $this->context->getIssuesEndPosition();
 
         $projectLine = array_reduce(
             $milestoneModels,
             fn($acc, $line) => $line instanceof Milestone ? $line : null,
         );
-        $gap = $context->getReferenceMarkerOffset() - $context->getProjectMarkerOffset();
+        $gap = $this->context->getReferenceMarkerOffset() - $this->context->getProjectMarkerOffset();
         $nowDate =  $projectLine?->getDate()->modify("{$gap} day");
 
         $this->blueprint = new ScheduleBlueprint($issueModels, $bufferModels, $milestoneModels, $nowDate, $isEndMarkers);

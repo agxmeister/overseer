@@ -11,23 +11,7 @@ abstract class Builder
 {
     protected ?string $drawing = null;
     protected ?array $lines = null;
-
-    protected function getContext(string $referenceLinePattern): Context
-    {
-        $context = new Context();
-
-        $parser = new Parser($referenceLinePattern);
-        $referenceLine = array_reduce(
-            $parser->getMatches($this->lines),
-            fn($acc, $match) => new ReferenceLine($match[0], $match[1]),
-        );
-
-        $context
-            ->setReferenceDate($this->getReferenceDate($referenceLine))
-            ->setReferenceMarkerOffset($this->getReferenceMarkerOffset($referenceLine));
-
-        return $context;
-    }
+    protected ?Context $context = null;
 
     private function getReferenceDate(?ReferenceLine $contextLine): ?DateTimeImmutable
     {
@@ -74,10 +58,29 @@ abstract class Builder
         return $this;
     }
 
+    public function setContext(): self
+    {
+        $context = new Context();
+
+        $parser = new Parser(static::PATTERN_REFERENCE_LINE);
+        $referenceLine = array_reduce(
+            $parser->getMatches($this->lines),
+            fn($acc, $match) => new ReferenceLine($match[0], $match[1]),
+        );
+
+        $context
+            ->setReferenceDate($this->getReferenceDate($referenceLine))
+            ->setReferenceMarkerOffset($this->getReferenceMarkerOffset($referenceLine));
+
+        $this->context = $context;
+        return $this;
+    }
+
     public function clean(): self
     {
         $this->drawing = null;
         $this->lines = null;
+        $this->context = null;
         return $this;
     }
 
