@@ -50,19 +50,22 @@ abstract class Builder
 
     public function setContext(): self
     {
-        $context = new Context();
+        $this->context = new Context();
+        return $this;
+    }
 
+    public function parseReferenceData(): self
+    {
         $parser = new Parser(static::PATTERN_REFERENCE_LINE);
         $referenceLine = array_reduce(
             $parser->getMatches($this->drawing->strokes),
             fn($acc, $match) => new ReferenceLine($match[0], $match[1]),
         );
 
-        $context
+        $this->context
             ->setReferenceDate($this->getReferenceDate($referenceLine))
             ->setReferenceMarkerOffset($this->getReferenceMarkerOffset($referenceLine));
 
-        $this->context = $context;
         return $this;
     }
 

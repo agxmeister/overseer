@@ -10,6 +10,7 @@ readonly class Director
             ->clean()
             ->setDrawing($drawing)
             ->setContext()
+            ->parseReferenceData()
             ->setContent();
     }
 }
