@@ -33,7 +33,7 @@ class Schedule extends Builder
         $director->run(
             $issueBuilder,
             $issueParser,
-            $this->lines,
+            $this->drawing->strokes,
             $this->context,
             project: 'PRJ',
             milestone: null,
@@ -43,12 +43,12 @@ class Schedule extends Builder
 
         $bufferBuilder = new BufferBuilder();
         $bufferParser = new Parser(self::PATTERN_BUFFER_LINE);
-        $director->run($bufferBuilder, $bufferParser, $this->lines, $this->context, type: 'T');
+        $director->run($bufferBuilder, $bufferParser, $this->drawing->strokes, $this->context, type: 'T');
         $bufferModels = $bufferBuilder->flush();
 
         $milestoneBuilder = new MilestoneBuilder();
         $milestoneParser = new Parser(self::PATTERN_MILESTONE_LINE);
-        $director->run($milestoneBuilder, $milestoneParser, $this->lines, $this->context, key: 'PRJ');
+        $director->run($milestoneBuilder, $milestoneParser, $this->drawing->strokes, $this->context, key: 'PRJ');
         $milestoneModels = $milestoneBuilder->flush();
 
         $isEndMarkers = $this->context->getProjectMarkerOffset() >= $this->context->getIssuesEndPosition();
