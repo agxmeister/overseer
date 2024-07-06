@@ -76,5 +76,7 @@ abstract class Builder
         return $this;
     }
 
-    abstract public function setContent(): self;
+    abstract public function setModels(): self;
+
+    abstract public function setNowDate(): self;
 }

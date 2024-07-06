@@ -2,16 +2,28 @@
 
 namespace Watch\Blueprint\Builder;
 
+use DateTimeImmutable;
 use Watch\Blueprint\Model\Builder\Director;
 use Watch\Blueprint\Model\Builder\Schedule\Buffer as BufferBuilder;
 use Watch\Blueprint\Model\Builder\Schedule\Issue as IssueBuilder;
 use Watch\Blueprint\Model\Builder\Schedule\Milestone as MilestoneBuilder;
+use Watch\Blueprint\Model\Schedule\Buffer;
+use Watch\Blueprint\Model\Schedule\Issue;
 use Watch\Blueprint\Model\Schedule\Milestone;
 use Watch\Blueprint\Schedule as ScheduleBlueprint;
 
 class Schedule extends Builder
 {
-    private ?ScheduleBlueprint $blueprint = null;
+    /** @var Issue[] */
+    private ?array $issueModels = null;
+
+    /** @var Buffer[] */
+    private ?array $bufferModels = null;
+
+    /** @var Milestone[] */
+    private ?array $milestoneModels = null;
+
+    private ?DateTimeImmutable $nowDate = null;
 
     const string PATTERN_ISSUE_LINE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+\-]?)(?<beginMarker>\|)(?<track>[x*.\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
     const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/';
@@ -20,11 +32,14 @@ class Schedule extends Builder
 
     public function clean(): self
     {
-        $this->blueprint = null;
+        $this->issueModels = null;
+        $this->bufferModels = null;
+        $this->milestoneModels = null;
+        $this->nowDate = null;
         return parent::clean();
     }
 
-    public function setContent(): self
+    public function setModels(): self
     {
         $director = new Director();
 
@@ -39,34 +54,40 @@ class Schedule extends Builder
             milestone: null,
             type: 'T',
         );
-        $issueModels = $issueBuilder->flush();
+        $this->issueModels = $issueBuilder->flush();
 
         $bufferBuilder = new BufferBuilder();
         $bufferParser = new Parser(self::PATTERN_BUFFER_LINE);
         $director->run($bufferBuilder, $bufferParser, $this->drawing->strokes, $this->context, type: 'T');
-        $bufferModels = $bufferBuilder->flush();
+        $this->bufferModels = $bufferBuilder->flush();
 
         $milestoneBuilder = new MilestoneBuilder();
         $milestoneParser = new Parser(self::PATTERN_MILESTONE_LINE);
         $director->run($milestoneBuilder, $milestoneParser, $this->drawing->strokes, $this->context, key: 'PRJ');
-        $milestoneModels = $milestoneBuilder->flush();
+        $this->milestoneModels = $milestoneBuilder->flush();
 
-        $isEndMarkers = $this->context->getProjectMarkerOffset() >= $this->context->getIssuesEndPosition();
+        return $this;
+    }
 
+    public function setNowDate(): self
+    {
         $projectLine = array_reduce(
-            $milestoneModels,
+            $this->milestoneModels,
             fn($acc, $line) => $line instanceof Milestone ? $line : null,
         );
         $gap = $this->context->getReferenceMarkerOffset() - $this->context->getProjectMarkerOffset();
-        $nowDate =  $projectLine?->getDate()->modify("{$gap} day");
-
-        $this->blueprint = new ScheduleBlueprint($issueModels, $bufferModels, $milestoneModels, $nowDate, $isEndMarkers);
-
+        $this->nowDate =  $projectLine?->getDate()->modify("{$gap} day");
         return $this;
     }
 
     public function flush(): ScheduleBlueprint
     {
-        return $this->blueprint;
+        return new ScheduleBlueprint(
+            $this->issueModels,
+            $this->bufferModels,
+            $this->milestoneModels,
+            $this->nowDate,
+            $this->context->getProjectMarkerOffset() >= $this->context->getIssuesEndPosition(),
+        );
     }
 }

@@ -11,6 +11,7 @@ readonly class Director
             ->setDrawing($drawing)
             ->setContext()
             ->parseReferenceData()
-            ->setContent();
+            ->setModels()
+            ->setNowDate();
     }
 }
