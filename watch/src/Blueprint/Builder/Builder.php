@@ -9,8 +9,9 @@ use Watch\Blueprint\Model\Builder\Line\Reference as ReferenceLine;
 
 abstract class Builder
 {
-    protected ?Drawing $drawing = null;
-    protected ?Context $context = null;
+    public function __construct(readonly protected Drawing $drawing, readonly protected Context $context)
+    {
+    }
 
     private function getReferenceDate(?ReferenceLine $contextLine): ?DateTimeImmutable
     {
@@ -42,18 +43,6 @@ abstract class Builder
         return $markerOffset;
     }
 
-    public function setDrawing(string $drawing): self
-    {
-        $this->drawing = new Drawing($drawing);
-        return $this;
-    }
-
-    public function setContext(): self
-    {
-        $this->context = new Context();
-        return $this;
-    }
-
     public function parseReferenceData(): self
     {
         $parser = new Parser(static::PATTERN_REFERENCE_LINE);
@@ -71,8 +60,7 @@ abstract class Builder
 
     public function clean(): self
     {
-        $this->drawing = null;
-        $this->context = null;
+        $this->context->clean();
         return $this;
     }
 

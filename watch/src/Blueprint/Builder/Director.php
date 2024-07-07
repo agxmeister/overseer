@@ -4,12 +4,10 @@ namespace Watch\Blueprint\Builder;
 
 readonly class Director
 {
-    public function build(Builder $builder, string $drawing): void
+    public function build(Builder $builder): void
     {
         $builder
             ->clean()
-            ->setDrawing($drawing)
-            ->setContext()
             ->parseReferenceData()
             ->setModels()
             ->setNowDate();

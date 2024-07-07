@@ -11,6 +11,14 @@ class Context
     private int $projectMarkerOffset = 0;
     private int $issuesEndPosition = 0;
 
+    public function clean()
+    {
+        $this->referenceDate = null;
+        $this->referenceMarkerOffset = 0;
+        $this->projectMarkerOffset = 0;
+        $this->issuesEndPosition = 0;
+    }
+
     public function setReferenceDate(?DateTimeImmutable $referenceDate): self
     {
         $this->referenceDate = $referenceDate;

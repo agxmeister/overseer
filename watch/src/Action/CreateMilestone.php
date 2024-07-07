@@ -4,7 +4,9 @@ namespace Watch\Action;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Watch\Blueprint\Builder\Context;
 use Watch\Blueprint\Builder\Director;
+use Watch\Blueprint\Builder\Drawing;
 use Watch\Blueprint\Builder\Subject as SubjectBlueprintBuilder;
 use Watch\Jira;
 use Watch\Schedule\Mapper;
@@ -19,9 +21,13 @@ readonly class CreateMilestone
 
     public function __invoke(Request $request, Response $response, $args): Response
     {
-        $blueprintBuilder = new SubjectBlueprintBuilder($this->mapper);
+        $blueprintBuilder = new SubjectBlueprintBuilder(
+            new Drawing(file_get_contents('php://input')),
+            new Context(),
+            $this->mapper,
+        );
         $blueprintDirector = new Director();
-        $blueprintDirector->build($blueprintBuilder, file_get_contents('php://input'));
+        $blueprintDirector->build($blueprintBuilder);
         $blueprint = $blueprintBuilder->flush();
 
         $issueIds = array_reduce(

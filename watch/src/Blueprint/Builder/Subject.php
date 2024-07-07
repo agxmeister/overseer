@@ -25,8 +25,9 @@ class Subject extends Builder
     const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/';
     const string PATTERN_REFERENCE_LINE = '/(?<marker>>)\s*(?<attributes>.*)/';
 
-    public function __construct(private Mapper $mapper)
+    public function __construct(Drawing $drawing, Context $context, readonly private Mapper $mapper)
     {
+        parent::__construct($drawing, $context);
     }
 
     public function clean(): self

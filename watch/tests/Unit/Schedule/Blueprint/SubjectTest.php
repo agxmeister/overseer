@@ -2,7 +2,9 @@
 namespace Tests\Unit\Schedule\Blueprint;
 
 use Codeception\Test\Unit;
+use Watch\Blueprint\Builder\Context;
 use Watch\Blueprint\Builder\Director;
+use Watch\Blueprint\Builder\Drawing;
 use Watch\Blueprint\Builder\Subject as SubjectBlueprintBuilder;
 use Watch\Schedule\Mapper;
 use Watch\Subject\Model\Issue;
@@ -15,9 +17,9 @@ class SubjectTest extends Unit
     public function testGetIssues($drawing, $issueKeys)
     {
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
-        $blueprintBuilder = new SubjectBlueprintBuilder($mapper);
+        $blueprintBuilder = new SubjectBlueprintBuilder(new Drawing($drawing), new Context(), $mapper);
         $blueprintDirector = new Director();
-        $blueprintDirector->build($blueprintBuilder, $drawing);
+        $blueprintDirector->build($blueprintBuilder);
         $blueprint = $blueprintBuilder->flush();
         self::assertEquals(
             $issueKeys,

@@ -2,7 +2,9 @@
 namespace Tests\Unit\Schedule;
 
 use Codeception\Test\Unit;
+use Watch\Blueprint\Builder\Context;
 use Watch\Blueprint\Builder\Director;
+use Watch\Blueprint\Builder\Drawing;
 use Watch\Blueprint\Builder\Schedule as ScheduleBlueprintBuilder;
 use Watch\Schedule\Model\FeedingBuffer;
 use Watch\Schedule\Model\Issue;
@@ -20,9 +22,9 @@ class UtilsTest extends Unit
      */
     public function testGetDuplicate($scheduleDrawing)
     {
-        $blueprintBuilder = new ScheduleBlueprintBuilder;
+        $blueprintBuilder = new ScheduleBlueprintBuilder(new Drawing($scheduleDrawing), new Context());
         $blueprintDirector = new Director();
-        $blueprintDirector->build($blueprintBuilder, $scheduleDrawing);
+        $blueprintDirector->build($blueprintBuilder);
         $blueprint = $blueprintBuilder->flush();
         $serializer = new ProjectSerializer();
         $origin = $serializer->deserialize($blueprint->getSchedule());
@@ -74,9 +76,9 @@ class UtilsTest extends Unit
      */
      public function testGetMilestoneChain($scheduleDrawing, $expectedMilestoneChain)
      {
-         $blueprintBuilder = new ScheduleBlueprintBuilder;
+         $blueprintBuilder = new ScheduleBlueprintBuilder(new Drawing($scheduleDrawing), new Context());
          $blueprintDirector = new Director();
-         $blueprintDirector->build($blueprintBuilder, $scheduleDrawing);
+         $blueprintDirector->build($blueprintBuilder);
          $blueprint = $blueprintBuilder->flush();
          $serializer = new ProjectSerializer();
          $origin = $serializer->deserialize($blueprint->getSchedule());
@@ -96,9 +98,9 @@ class UtilsTest extends Unit
      */
     public function testGetFeedingChains($scheduleDrawing, $expectedFeedingChains)
     {
-        $blueprintBuilder = new ScheduleBlueprintBuilder;
+        $blueprintBuilder = new ScheduleBlueprintBuilder(new Drawing($scheduleDrawing), new Context());
         $blueprintDirector = new Director();
-        $blueprintDirector->build($blueprintBuilder, $scheduleDrawing);
+        $blueprintDirector->build($blueprintBuilder);
         $blueprint = $blueprintBuilder->flush();
         $serializer = new ProjectSerializer();
         $origin = $serializer->deserialize($blueprint->getSchedule());
@@ -121,9 +123,9 @@ class UtilsTest extends Unit
      */
     public function testGetLongestChainNodes($scheduleDrawing, $expectedChainNodeNames)
     {
-        $blueprintBuilder = new ScheduleBlueprintBuilder;
+        $blueprintBuilder = new ScheduleBlueprintBuilder(new Drawing($scheduleDrawing), new Context());
         $blueprintDirector = new Director();
-        $blueprintDirector->build($blueprintBuilder, $scheduleDrawing);
+        $blueprintDirector->build($blueprintBuilder);
         $blueprint = $blueprintBuilder->flush();
         $serializer = new ProjectSerializer();
         $project = $serializer->deserialize($blueprint->getSchedule());

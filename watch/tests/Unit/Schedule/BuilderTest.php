@@ -3,6 +3,8 @@ namespace Tests\Unit\Schedule;
 
 use Codeception\Test\Unit;
 use Watch\Blueprint\Builder\Director;
+use Watch\Blueprint\Builder\Drawing;
+use Watch\Blueprint\Builder\Context as BuilderContext;
 use Watch\Blueprint\Builder\Subject as SubjectBlueprintBuilder;
 use Watch\Config;
 use Watch\Schedule\Builder;
@@ -16,17 +18,18 @@ class BuilderTest extends Unit
     public function testAddCriticalChain()
     {
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
-        $blueprintBuilder = new SubjectBlueprintBuilder($mapper);
-        $blueprintDirector = new Director();
-        $blueprintDirector->build(
-            $blueprintBuilder,
-            '
+        $blueprintBuilder = new SubjectBlueprintBuilder(
+            new Drawing('
                 K-01   |       ****|
                 K-02   |   ****    | & K-01
                 K-03   |*******    | @ K-01
                                    ^ # 2023-09-21
-            '
+            '),
+            new BuilderContext(),
+            $mapper,
         );
+        $blueprintDirector = new Director();
+        $blueprintDirector->build($blueprintBuilder);
         $blueprint = $blueprintBuilder->flush();
         $builder = new Builder(
             new Context(new \DateTimeImmutable('2023-01-01')),
@@ -47,17 +50,18 @@ class BuilderTest extends Unit
     public function testAddFeedingBuffers()
     {
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
-        $blueprintBuilder = new SubjectBlueprintBuilder($mapper);
-        $blueprintDirector = new Director();
-        $blueprintDirector->build(
-            $blueprintBuilder,
-            '
+        $blueprintBuilder = new SubjectBlueprintBuilder(
+            new Drawing('
                 K-01   |       ****|
                 K-02   | ****      | & K-01
                 K-03   |*******    | @ K-01
                                    ^ # 2023-09-21
-            '
+            '),
+            new BuilderContext(),
+            $mapper,
         );
+        $blueprintDirector = new Director();
+        $blueprintDirector->build($blueprintBuilder);
         $blueprint = $blueprintBuilder->flush();
         $builder = new Builder(
             new Context(new \DateTimeImmutable('2023-01-01')),
