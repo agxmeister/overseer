@@ -10,6 +10,8 @@ class Milestone extends Builder
 {
     private array $models = [];
 
+    private int $markerOffset = 0;
+
     private ?MilestoneModel $model;
 
     public function reset(): self
@@ -32,8 +34,7 @@ class Milestone extends Builder
             'key' => $key,
             'attributes' => $attributes
             ) = $line->parts;
-        list('marker' => $markerOffset) = $line->offsets;
-        $this->context->setProjectMarkerOffset($markerOffset);
+        list('marker' => $this->markerOffset) = $line->offsets;
         $this->model = new MilestoneModel($key, $line->getAttributes($attributes));
         return $this;
     }
@@ -46,5 +47,10 @@ class Milestone extends Builder
         $models = $this->models;
         $this->models = [];
         return $models;
+    }
+
+    public function getMarkerOffset(): int
+    {
+        return $this->markerOffset;
     }
 }

@@ -47,7 +47,6 @@ class Subject extends Builder
             $issueBuilder,
             $issueParser,
             $this->drawing->strokes,
-            $this->context,
             project: 'PRJ',
             milestone: null,
             type: 'T',
@@ -56,8 +55,11 @@ class Subject extends Builder
 
         $milestoneBuilder = new MilestoneBuilder();
         $milestoneParser = new Parser(self::PATTERN_MILESTONE_LINE);
-        $director->run($milestoneBuilder, $milestoneParser, $this->drawing->strokes, $this->context, key: 'PRJ');
+        $director->run($milestoneBuilder, $milestoneParser, $this->drawing->strokes, key: 'PRJ');
         $this->milestoneModels = $milestoneBuilder->flush();
+
+        $this->context->setIssuesEndPosition($issueBuilder->getEndPosition());
+        $this->context->setProjectMarkerOffset($milestoneBuilder->getMarkerOffset());
 
         return $this;
     }

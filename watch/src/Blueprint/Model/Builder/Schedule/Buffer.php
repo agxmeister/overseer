@@ -11,6 +11,8 @@ class Buffer extends Builder
 {
     private array $models = [];
 
+    private int $endPosition = 0;
+
     private ?BufferModel $model;
 
     public function reset(): self
@@ -37,7 +39,7 @@ class Buffer extends Builder
             ) = $line->parts;
         list('endMarker' => $endMarkerOffset) = $line->offsets;
         $trackGap = strlen($track) - strlen(rtrim($track));
-        $this->context->setIssuesEndPosition($endMarkerOffset - $trackGap);
+        $this->endPosition = $endMarkerOffset - $trackGap;
         $lineAttributes = $line->getAttributes($attributes);
         $lineLinks = $line->getLinks($key, $lineAttributes);
         $consumption = substr_count(trim($track), '!');
@@ -60,5 +62,10 @@ class Buffer extends Builder
         $models = $this->models;
         $this->models = [];
         return $models;
+    }
+
+    public function getEndPosition(): int
+    {
+        return $this->endPosition;
     }
 }

@@ -12,6 +12,8 @@ class Issue extends Builder
 {
     private array $models = [];
 
+    private int $endPosition = 0;
+
     private ?IssueModel $model;
 
     public function __construct(private readonly Mapper $mapper)
@@ -20,7 +22,6 @@ class Issue extends Builder
 
     public function reset(): self
     {
-        $this->context = null;
         $this->model = null;
         return $this;
     }
@@ -45,7 +46,7 @@ class Issue extends Builder
             ) = $line->parts;
         list('endMarker' => $endMarkerOffset) = $line->offsets;
         $trackGap = strlen($track) - strlen(rtrim($track));
-        $this->context->setIssuesEndPosition($endMarkerOffset - $trackGap);
+        $this->endPosition = $endMarkerOffset - $trackGap;
         $lineAttributes = $line->getAttributes($attributes);
         $lineLinks = $line->getLinks($key, $lineAttributes, $this->mapper);
         $this->model = new IssueModel(
@@ -71,5 +72,10 @@ class Issue extends Builder
         $models = $this->models;
         $this->models = [];
         return $models;
+    }
+
+    public function getEndPosition(): int
+    {
+        return $this->endPosition;
     }
 }
