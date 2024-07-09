@@ -14,6 +14,9 @@ use Watch\Blueprint\Schedule as ScheduleBlueprint;
 
 class Schedule extends Builder
 {
+    private ?int $trackMarkerOffset = null;
+    private ?int $projectMarkerOffset = null;
+
     /** @var Issue[] */
     private ?array $issueModels = null;
 
@@ -32,6 +35,8 @@ class Schedule extends Builder
 
     public function clean(): self
     {
+        $this->trackMarkerOffset = null;
+        $this->projectMarkerOffset = null;
         $this->issueModels = null;
         $this->bufferModels = null;
         $this->milestoneModels = null;
@@ -65,8 +70,8 @@ class Schedule extends Builder
         $director->run($milestoneBuilder, $milestoneParser, $this->drawing->strokes, key: 'PRJ');
         $this->milestoneModels = $milestoneBuilder->flush();
 
-        $this->context->setIssuesEndPosition(max($issueBuilder->getEndPosition(), $bufferBuilder->getEndPosition()));
-        $this->context->setProjectMarkerOffset($milestoneBuilder->getMarkerOffset());
+        $this->trackMarkerOffset = max($issueBuilder->getEndPosition(), $bufferBuilder->getEndPosition());
+        $this->projectMarkerOffset = $milestoneBuilder->getMarkerOffset();
 
         return $this;
     }
@@ -77,7 +82,7 @@ class Schedule extends Builder
             $this->milestoneModels,
             fn($acc, $line) => $line instanceof Milestone ? $line : null,
         );
-        $gap = $this->context->getReferenceMarkerOffset() - $this->context->getProjectMarkerOffset();
+        $gap = $this->referenceMarkerOffset - $this->projectMarkerOffset;
         $this->nowDate =  $projectLine?->getDate()->modify("{$gap} day");
         return $this;
     }
@@ -89,7 +94,7 @@ class Schedule extends Builder
             $this->bufferModels,
             $this->milestoneModels,
             $this->nowDate,
-            $this->context->getProjectMarkerOffset() >= $this->context->getIssuesEndPosition(),
+            $this->projectMarkerOffset >= $this->trackMarkerOffset,
         );
     }
 }

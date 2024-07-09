@@ -2,7 +2,6 @@
 namespace Tests\Unit\Schedule\Director;
 
 use Watch\Blueprint\Builder\Drawing;
-use Watch\Blueprint\Builder\Context as BuilderContext;
 use Watch\Blueprint\Builder\Schedule as ScheduleBlueprintBuilder;
 use Watch\Blueprint\Builder\Subject as SubjectBlueprintBuilder;
 use Watch\Schedule\Builder;
@@ -22,12 +21,11 @@ class PreservingDirectorTest extends AbstractDirectorTest
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
         $subjectBlueprintBuilder = new SubjectBlueprintBuilder(
             new Drawing($subjectDrawing),
-            new BuilderContext(),
             $mapper,
         );
         $blueprintDirector->build($subjectBlueprintBuilder);
         $subjectBlueprint = $subjectBlueprintBuilder->flush();
-        $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder(new Drawing($scheduleDrawing), new BuilderContext());
+        $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder(new Drawing($scheduleDrawing));
         $blueprintDirector->build($scheduleBlueprintBuilder);
         $scheduleBlueprint = $scheduleBlueprintBuilder->flush();
         $director = new Director(

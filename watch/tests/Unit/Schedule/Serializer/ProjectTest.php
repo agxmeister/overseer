@@ -2,7 +2,6 @@
 namespace Tests\Unit\Schedule\Serializer;
 
 use Codeception\Test\Unit;
-use Watch\Blueprint\Builder\Context;
 use Watch\Blueprint\Builder\Director;
 use Watch\Blueprint\Builder\Drawing;
 use Watch\Blueprint\Builder\Schedule as ScheduleBlueprintBuilder;
@@ -20,7 +19,6 @@ class ProjectTest extends Unit
                 K-03          |xxxx              | @ K-02
                 finish                           ^ # 2023-09-21
             '),
-            new Context(),
         );
         $blueprintDirector = new Director();
         $blueprintDirector->build($scheduleBlueprintBuilder);

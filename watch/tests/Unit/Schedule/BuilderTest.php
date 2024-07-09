@@ -4,7 +4,6 @@ namespace Tests\Unit\Schedule;
 use Codeception\Test\Unit;
 use Watch\Blueprint\Builder\Director;
 use Watch\Blueprint\Builder\Drawing;
-use Watch\Blueprint\Builder\Context as BuilderContext;
 use Watch\Blueprint\Builder\Subject as SubjectBlueprintBuilder;
 use Watch\Config;
 use Watch\Schedule\Builder;
@@ -25,7 +24,6 @@ class BuilderTest extends Unit
                 K-03   |*******    | @ K-01
                                    ^ # 2023-09-21
             '),
-            new BuilderContext(),
             $mapper,
         );
         $blueprintDirector = new Director();
@@ -57,7 +55,6 @@ class BuilderTest extends Unit
                 K-03   |*******    | @ K-01
                                    ^ # 2023-09-21
             '),
-            new BuilderContext(),
             $mapper,
         );
         $blueprintDirector = new Director();

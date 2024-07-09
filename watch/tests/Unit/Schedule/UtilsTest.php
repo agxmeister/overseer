@@ -2,7 +2,6 @@
 namespace Tests\Unit\Schedule;
 
 use Codeception\Test\Unit;
-use Watch\Blueprint\Builder\Context;
 use Watch\Blueprint\Builder\Director;
 use Watch\Blueprint\Builder\Drawing;
 use Watch\Blueprint\Builder\Schedule as ScheduleBlueprintBuilder;
@@ -22,7 +21,7 @@ class UtilsTest extends Unit
      */
     public function testGetDuplicate($scheduleDrawing)
     {
-        $blueprintBuilder = new ScheduleBlueprintBuilder(new Drawing($scheduleDrawing), new Context());
+        $blueprintBuilder = new ScheduleBlueprintBuilder(new Drawing($scheduleDrawing));
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder);
         $blueprint = $blueprintBuilder->flush();
@@ -76,7 +75,7 @@ class UtilsTest extends Unit
      */
      public function testGetMilestoneChain($scheduleDrawing, $expectedMilestoneChain)
      {
-         $blueprintBuilder = new ScheduleBlueprintBuilder(new Drawing($scheduleDrawing), new Context());
+         $blueprintBuilder = new ScheduleBlueprintBuilder(new Drawing($scheduleDrawing));
          $blueprintDirector = new Director();
          $blueprintDirector->build($blueprintBuilder);
          $blueprint = $blueprintBuilder->flush();
@@ -98,7 +97,7 @@ class UtilsTest extends Unit
      */
     public function testGetFeedingChains($scheduleDrawing, $expectedFeedingChains)
     {
-        $blueprintBuilder = new ScheduleBlueprintBuilder(new Drawing($scheduleDrawing), new Context());
+        $blueprintBuilder = new ScheduleBlueprintBuilder(new Drawing($scheduleDrawing));
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder);
         $blueprint = $blueprintBuilder->flush();
@@ -123,7 +122,7 @@ class UtilsTest extends Unit
      */
     public function testGetLongestChainNodes($scheduleDrawing, $expectedChainNodeNames)
     {
-        $blueprintBuilder = new ScheduleBlueprintBuilder(new Drawing($scheduleDrawing), new Context());
+        $blueprintBuilder = new ScheduleBlueprintBuilder(new Drawing($scheduleDrawing));
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder);
         $blueprint = $blueprintBuilder->flush();

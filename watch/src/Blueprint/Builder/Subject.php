@@ -13,6 +13,9 @@ use Watch\Schedule\Mapper;
 
 class Subject extends Builder
 {
+    private ?int $trackMarkerOffset = null;
+    private ?int $projectMarkerOffset = null;
+
     /** @var Issue[] */
     private ?array $issueModels = null;
 
@@ -25,13 +28,15 @@ class Subject extends Builder
     const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/';
     const string PATTERN_REFERENCE_LINE = '/(?<marker>>)\s*(?<attributes>.*)/';
 
-    public function __construct(Drawing $drawing, Context $context, readonly private Mapper $mapper)
+    public function __construct(Drawing $drawing, readonly private Mapper $mapper)
     {
-        parent::__construct($drawing, $context);
+        parent::__construct($drawing);
     }
 
     public function clean(): self
     {
+        $this->trackMarkerOffset = null;
+        $this->projectMarkerOffset = null;
         $this->issueModels = null;
         $this->milestoneModels = null;
         return parent::clean();
@@ -58,8 +63,8 @@ class Subject extends Builder
         $director->run($milestoneBuilder, $milestoneParser, $this->drawing->strokes, key: 'PRJ');
         $this->milestoneModels = $milestoneBuilder->flush();
 
-        $this->context->setIssuesEndPosition($issueBuilder->getEndPosition());
-        $this->context->setProjectMarkerOffset($milestoneBuilder->getMarkerOffset());
+        $this->trackMarkerOffset = $issueBuilder->getEndPosition();
+        $this->projectMarkerOffset = $milestoneBuilder->getMarkerOffset();
 
         return $this;
     }
@@ -70,7 +75,7 @@ class Subject extends Builder
             $this->milestoneModels,
             fn($acc, $line) => $line instanceof Milestone ? $line : null,
         );
-        $gap = $this->context->getReferenceMarkerOffset() - $this->context->getProjectMarkerOffset();
+        $gap = $this->referenceMarkerOffset - $this->projectMarkerOffset;
         $this->nowDate =  $projectLine?->getDate()->modify("{$gap} day");
         return $this;
     }
@@ -81,7 +86,7 @@ class Subject extends Builder
             $this->issueModels,
             $this->milestoneModels,
             $this->nowDate,
-            $this->context->getProjectMarkerOffset() >= $this->context->getIssuesEndPosition(),
+            $this->projectMarkerOffset >= $this->trackMarkerOffset,
         );
     }
 }

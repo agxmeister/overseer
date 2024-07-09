@@ -2,8 +2,6 @@
 
 namespace Watch\Blueprint\Model\Builder;
 
-use Watch\Blueprint\Builder\Context;
-
 abstract class Builder
 {
     abstract public function reset(): self;
