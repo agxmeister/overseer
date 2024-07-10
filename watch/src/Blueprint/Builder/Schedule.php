@@ -82,7 +82,7 @@ class Schedule extends Builder
             $this->milestoneModels,
             fn($acc, $line) => $line instanceof Milestone ? $line : null,
         );
-        $gap = $this->referenceMarkerOffset - $this->projectMarkerOffset;
+        $gap = $this->reference->offset - $this->projectMarkerOffset;
         $this->nowDate =  $projectLine?->getDate()->modify("{$gap} day");
         return $this;
     }

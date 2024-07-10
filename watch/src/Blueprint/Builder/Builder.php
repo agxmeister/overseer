@@ -9,19 +9,35 @@ use Watch\Blueprint\Model\Builder\Line\Reference as ReferenceLine;
 
 abstract class Builder
 {
-    protected ?int $referenceMarkerOffset = null;
-    protected ?DateTimeImmutable $referenceDate = null;
+    protected ?Reference $reference = null;
 
     public function __construct(readonly protected Drawing $drawing)
     {
     }
 
-    private function getReferenceDate(?ReferenceLine $contextLine): ?DateTimeImmutable
+    public function setReference(): self
     {
-        if (is_null($contextLine)) {
+        $parser = new Parser(static::PATTERN_REFERENCE_LINE);
+
+        $referenceStroke = array_reduce(
+            $parser->getMatches($this->drawing->strokes),
+            fn($acc, $match) => new ReferenceLine($match[0], $match[1]),
+        );
+
+        $this->reference = new Reference(
+            $this->getReferenceMarkerOffset($referenceStroke),
+            $this->getReferenceDate($referenceStroke),
+        );
+
+        return $this;
+    }
+
+    private function getReferenceDate(?ReferenceLine $referenceStroke): ?DateTimeImmutable
+    {
+        if (is_null($referenceStroke)) {
             return null;
         }
-        list('attributes' => $attributes) = $contextLine->parts;
+        list('attributes' => $attributes) = $referenceStroke->parts;
         if (empty($attributes)) {
             return null;
         }
@@ -29,7 +45,7 @@ abstract class Builder
         return new DateTimeImmutable(
             array_reduce(
                 array_filter(
-                    $contextLine->getAttributes($attributes),
+                    $referenceStroke->getAttributes($attributes),
                     fn(Attribute $attribute) => $attribute->type === AttributeType::Date
                 ),
                 fn(Attribute|null $acc, Attribute $attribute) => $attribute,
@@ -37,33 +53,18 @@ abstract class Builder
         );
     }
 
-    private function getReferenceMarkerOffset(?ReferenceLine $referenceLine): int
+    private function getReferenceMarkerOffset(?ReferenceLine $referenceStroke): int
     {
-        if (is_null($referenceLine)) {
+        if (is_null($referenceStroke)) {
             return 0;
         }
-        ['marker' => $markerOffset] = $referenceLine->offsets;
+        ['marker' => $markerOffset] = $referenceStroke->offsets;
         return $markerOffset;
-    }
-
-    public function parseReferenceData(): self
-    {
-        $parser = new Parser(static::PATTERN_REFERENCE_LINE);
-        $referenceLine = array_reduce(
-            $parser->getMatches($this->drawing->strokes),
-            fn($acc, $match) => new ReferenceLine($match[0], $match[1]),
-        );
-
-        $this->referenceMarkerOffset = $this->getReferenceMarkerOffset($referenceLine);
-        $this->referenceDate = $this->getReferenceDate($referenceLine);
-
-        return $this;
     }
 
     public function clean(): self
     {
-        $this->referenceMarkerOffset = null;
-        $this->referenceDate = null;
+        $this->reference = null;
         return $this;
     }
 

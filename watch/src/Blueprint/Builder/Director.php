@@ -8,7 +8,7 @@ readonly class Director
     {
         $builder
             ->clean()
-            ->parseReferenceData()
+            ->setReference()
             ->setModels()
             ->setNowDate();
     }
