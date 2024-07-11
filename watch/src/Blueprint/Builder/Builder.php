@@ -32,11 +32,12 @@ abstract class Builder
         return $this;
     }
 
-    private function getReferenceDate(?ReferenceLine $referenceStroke): ?DateTimeImmutable
+    protected function getReferenceDate(?ReferenceLine $referenceStroke): ?DateTimeImmutable
     {
         if (is_null($referenceStroke)) {
             return null;
         }
+
         list('attributes' => $attributes) = $referenceStroke->parts;
         if (empty($attributes)) {
             return null;
@@ -53,7 +54,7 @@ abstract class Builder
         );
     }
 
-    private function getReferenceMarkerOffset(?ReferenceLine $referenceStroke): int
+    protected function getReferenceMarkerOffset(?ReferenceLine $referenceStroke): int
     {
         if (is_null($referenceStroke)) {
             return 0;
@@ -69,6 +70,4 @@ abstract class Builder
     }
 
     abstract public function setModels(): self;
-
-    abstract public function setNowDate(): self;
 }

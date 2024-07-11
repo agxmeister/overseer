@@ -4,6 +4,7 @@ namespace Watch\Blueprint\Builder;
 
 use DateTimeImmutable;
 use Watch\Blueprint\Model\Builder\Director;
+use Watch\Blueprint\Model\Builder\Line\Reference as ReferenceLine;
 use Watch\Blueprint\Model\Builder\Subject\Issue as IssueBuilder;
 use Watch\Blueprint\Model\Builder\Subject\Milestone as MilestoneBuilder;
 use Watch\Blueprint\Model\Schedule\Milestone;
@@ -21,8 +22,6 @@ class Subject extends Builder
 
     /** @var Milestone[] */
     private ?array $milestoneModels = null;
-
-    private ?DateTimeImmutable $nowDate;
 
     const string PATTERN_ISSUE_LINE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+]?)(?<beginMarker>\|)(?<track>[*.\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
     const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/';
@@ -69,15 +68,19 @@ class Subject extends Builder
         return $this;
     }
 
-    public function setNowDate(): self
+    protected function getReferenceDate(?ReferenceLine $referenceStroke): ?DateTimeImmutable
     {
-        $projectLine = array_reduce(
+        $referenceDate = parent::getReferenceDate($referenceStroke);
+        if (!is_null($referenceDate)) {
+            return $referenceDate;
+        }
+
+        $projectStroke = array_reduce(
             $this->milestoneModels,
             fn($acc, $line) => $line instanceof Milestone ? $line : null,
         );
-        $gap = $this->reference->offset - $this->projectMarkerOffset;
-        $this->nowDate =  $projectLine?->getDate()->modify("{$gap} day");
-        return $this;
+        $gap = $this->getReferenceMarkerOffset($referenceStroke) - $this->projectMarkerOffset;
+        return $projectStroke?->getDate()->modify("{$gap} day");
     }
 
     public function flush(): SubjectBlueprint
@@ -85,7 +88,7 @@ class Subject extends Builder
         return new SubjectBlueprint(
             $this->issueModels,
             $this->milestoneModels,
-            $this->nowDate,
+            $this->reference->date,
             $this->projectMarkerOffset >= $this->trackMarkerOffset,
         );
     }

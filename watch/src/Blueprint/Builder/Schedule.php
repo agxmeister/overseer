@@ -4,6 +4,7 @@ namespace Watch\Blueprint\Builder;
 
 use DateTimeImmutable;
 use Watch\Blueprint\Model\Builder\Director;
+use Watch\Blueprint\Model\Builder\Line\Reference as ReferenceLine;
 use Watch\Blueprint\Model\Builder\Schedule\Buffer as BufferBuilder;
 use Watch\Blueprint\Model\Builder\Schedule\Issue as IssueBuilder;
 use Watch\Blueprint\Model\Builder\Schedule\Milestone as MilestoneBuilder;
@@ -26,8 +27,6 @@ class Schedule extends Builder
     /** @var Milestone[] */
     private ?array $milestoneModels = null;
 
-    private ?DateTimeImmutable $nowDate = null;
-
     const string PATTERN_ISSUE_LINE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+\-]?)(?<beginMarker>\|)(?<track>[x*.\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
     const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/';
     const string PATTERN_BUFFER_LINE = '/\s*(((?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<beginMarker>\|)(?<track>[_!\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
@@ -40,7 +39,6 @@ class Schedule extends Builder
         $this->issueModels = null;
         $this->bufferModels = null;
         $this->milestoneModels = null;
-        $this->nowDate = null;
         return parent::clean();
     }
 
@@ -76,15 +74,19 @@ class Schedule extends Builder
         return $this;
     }
 
-    public function setNowDate(): self
+    protected function getReferenceDate(?ReferenceLine $referenceStroke): ?DateTimeImmutable
     {
-        $projectLine = array_reduce(
+        $referenceDate = parent::getReferenceDate($referenceStroke);
+        if (!is_null($referenceDate)) {
+            return $referenceDate;
+        }
+
+        $projectStroke = array_reduce(
             $this->milestoneModels,
             fn($acc, $line) => $line instanceof Milestone ? $line : null,
         );
-        $gap = $this->reference->offset - $this->projectMarkerOffset;
-        $this->nowDate =  $projectLine?->getDate()->modify("{$gap} day");
-        return $this;
+        $gap = $this->getReferenceMarkerOffset($referenceStroke) - $this->projectMarkerOffset;
+        return $projectStroke?->getDate()->modify("{$gap} day");
     }
 
     public function flush(): ScheduleBlueprint
@@ -93,7 +95,7 @@ class Schedule extends Builder
             $this->issueModels,
             $this->bufferModels,
             $this->milestoneModels,
-            $this->nowDate,
+            $this->reference->date,
             $this->projectMarkerOffset >= $this->trackMarkerOffset,
         );
     }
