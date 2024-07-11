@@ -27,10 +27,10 @@ class Schedule extends Builder
     /** @var Milestone[] */
     private ?array $milestoneModels = null;
 
-    const string PATTERN_ISSUE_LINE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+\-]?)(?<beginMarker>\|)(?<track>[x*.\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
-    const string PATTERN_MILESTONE_LINE = '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/';
-    const string PATTERN_BUFFER_LINE = '/\s*(((?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<beginMarker>\|)(?<track>[_!\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
-    const string PATTERN_REFERENCE_LINE = '/(?<marker>>)\s*(?<attributes>.*)/';
+    const string PATTERN_ISSUE_STROKE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+\-]?)(?<beginMarker>\|)(?<track>[x*.\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
+    const string PATTERN_MILESTONE_STROKE = '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/';
+    const string PATTERN_BUFFER_STROKE = '/\s*(((?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<beginMarker>\|)(?<track>[_!\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
+    const string PATTERN_REFERENCE_STROKE = '/(?<marker>>)\s*(?<attributes>.*)/';
 
     public function clean(): self
     {
@@ -47,7 +47,7 @@ class Schedule extends Builder
         $director = new Director();
 
         $issueBuilder = new IssueBuilder();
-        $issueParser = new Parser(self::PATTERN_ISSUE_LINE);
+        $issueParser = new Parser(self::PATTERN_ISSUE_STROKE);
         $director->run(
             $issueBuilder,
             $issueParser,
@@ -59,12 +59,12 @@ class Schedule extends Builder
         $this->issueModels = $issueBuilder->flush();
 
         $bufferBuilder = new BufferBuilder();
-        $bufferParser = new Parser(self::PATTERN_BUFFER_LINE);
+        $bufferParser = new Parser(self::PATTERN_BUFFER_STROKE);
         $director->run($bufferBuilder, $bufferParser, $this->drawing->strokes, type: 'T');
         $this->bufferModels = $bufferBuilder->flush();
 
         $milestoneBuilder = new MilestoneBuilder();
-        $milestoneParser = new Parser(self::PATTERN_MILESTONE_LINE);
+        $milestoneParser = new Parser(self::PATTERN_MILESTONE_STROKE);
         $director->run($milestoneBuilder, $milestoneParser, $this->drawing->strokes, key: 'PRJ');
         $this->milestoneModels = $milestoneBuilder->flush();
 

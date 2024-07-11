@@ -17,7 +17,7 @@ abstract class Builder
 
     public function setReference(): self
     {
-        $parser = new Parser(static::PATTERN_REFERENCE_LINE);
+        $parser = new Parser(static::PATTERN_REFERENCE_STROKE);
 
         $referenceStroke = array_reduce(
             $parser->getMatches($this->drawing->strokes),
