@@ -3,7 +3,7 @@
 namespace Watch\Blueprint\Model\Builder\Schedule;
 
 use Watch\Blueprint\Model\Builder\Builder;
-use Watch\Blueprint\Model\Builder\Line\Schedule\Milestone as MilestoneLine;
+use Watch\Blueprint\Model\Builder\Stroke\Schedule\Milestone as MilestoneLine;
 use Watch\Blueprint\Model\Schedule\Milestone as MilestoneModel;
 
 class Milestone extends Builder

@@ -3,7 +3,7 @@
 namespace Watch\Blueprint\Model\Builder\Schedule;
 
 use Watch\Blueprint\Model\Builder\Builder;
-use Watch\Blueprint\Model\Builder\Line\Schedule\Issue as IssueLine;
+use Watch\Blueprint\Model\Builder\Stroke\Schedule\Issue as IssueLine;
 use Watch\Blueprint\Model\Schedule\Issue as IssueModel;
 use Watch\Blueprint\Model\Track;
 

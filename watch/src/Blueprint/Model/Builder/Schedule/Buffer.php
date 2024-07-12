@@ -3,7 +3,7 @@
 namespace Watch\Blueprint\Model\Builder\Schedule;
 
 use Watch\Blueprint\Model\Builder\Builder;
-use Watch\Blueprint\Model\Builder\Line\Schedule\Buffer as BufferLine;
+use Watch\Blueprint\Model\Builder\Stroke\Schedule\Buffer as BufferLine;
 use Watch\Blueprint\Model\Schedule\Buffer as BufferModel;
 use Watch\Blueprint\Model\Track;
 

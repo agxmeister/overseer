@@ -1,8 +1,8 @@
 <?php
 
-namespace Watch\Blueprint\Model\Builder\Line;
+namespace Watch\Blueprint\Model\Builder\Stroke;
 
-abstract readonly class Line
+abstract readonly class Stroke
 {
     public array $parts;
     public array $offsets;
