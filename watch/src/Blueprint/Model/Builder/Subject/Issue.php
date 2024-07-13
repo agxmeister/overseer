@@ -2,8 +2,8 @@
 
 namespace Watch\Blueprint\Model\Builder\Subject;
 
+use Watch\Blueprint\Builder\Stroke\Subject\Issue as IssueLine;
 use Watch\Blueprint\Model\Builder\Builder;
-use Watch\Blueprint\Model\Builder\Stroke\Subject\Issue as IssueLine;
 use Watch\Blueprint\Model\Subject\Issue as IssueModel;
 use Watch\Blueprint\Model\Track;
 use Watch\Schedule\Mapper;

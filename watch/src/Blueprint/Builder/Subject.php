@@ -3,8 +3,9 @@
 namespace Watch\Blueprint\Builder;
 
 use DateTimeImmutable;
+use Watch\Blueprint\Builder\Stroke\Parser;
+use Watch\Blueprint\Builder\Stroke\Reference as ReferenceLine;
 use Watch\Blueprint\Model\Builder\Director;
-use Watch\Blueprint\Model\Builder\Stroke\Reference as ReferenceLine;
 use Watch\Blueprint\Model\Builder\Subject\Issue as IssueBuilder;
 use Watch\Blueprint\Model\Builder\Subject\Milestone as MilestoneBuilder;
 use Watch\Blueprint\Model\Schedule\Milestone;

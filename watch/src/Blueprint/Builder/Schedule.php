@@ -3,8 +3,9 @@
 namespace Watch\Blueprint\Builder;
 
 use DateTimeImmutable;
+use Watch\Blueprint\Builder\Stroke\Parser;
+use Watch\Blueprint\Builder\Stroke\Reference as ReferenceLine;
 use Watch\Blueprint\Model\Builder\Director;
-use Watch\Blueprint\Model\Builder\Stroke\Reference as ReferenceLine;
 use Watch\Blueprint\Model\Builder\Schedule\Buffer as BufferBuilder;
 use Watch\Blueprint\Model\Builder\Schedule\Issue as IssueBuilder;
 use Watch\Blueprint\Model\Builder\Schedule\Milestone as MilestoneBuilder;
@@ -72,6 +73,11 @@ class Schedule extends Builder
         $this->projectMarkerOffset = $milestoneBuilder->getMarkerOffset();
 
         return $this;
+    }
+
+    private function setIssueModels(): void
+    {
+
     }
 
     protected function getReferenceDate(?ReferenceLine $referenceStroke): ?DateTimeImmutable

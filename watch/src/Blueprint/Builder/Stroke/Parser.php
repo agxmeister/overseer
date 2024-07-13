@@ -1,6 +1,6 @@
 <?php
 
-namespace Watch\Blueprint\Builder;
+namespace Watch\Blueprint\Builder\Stroke;
 
 readonly class Parser
 {
@@ -9,25 +9,25 @@ readonly class Parser
     }
 
     /**
-     * @param string[] $lines
+     * @param string[] $strokes
      * @return string[]
      */
-    public function getMatches(array $lines): array
+    public function getMatches(array $strokes): array
     {
         return array_values(
             array_filter(
                 array_map(
                     fn(string $line) => $this->getMatch($line),
-                    $lines,
+                    $strokes,
                 ),
                 fn($match) => !is_null($match),
             )
         );
     }
 
-    private function getMatch(string $line): ?array
+    private function getMatch(string $stroke): ?array
     {
-        $result = preg_match($this->pattern, $line, $matches, PREG_OFFSET_CAPTURE | PREG_UNMATCHED_AS_NULL);
+        $result = preg_match($this->pattern, $stroke, $matches, PREG_OFFSET_CAPTURE | PREG_UNMATCHED_AS_NULL);
         if (!$result) {
             return null;
         }

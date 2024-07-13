@@ -1,6 +1,6 @@
 <?php
 
-namespace Watch\Blueprint\Model\Builder\Stroke\Subject;
+namespace Watch\Blueprint\Builder\Stroke\Subject;
 
 use Watch\Blueprint\Model\Attribute;
 use Watch\Blueprint\Model\AttributeType;
