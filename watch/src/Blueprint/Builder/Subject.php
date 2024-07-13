@@ -3,6 +3,7 @@
 namespace Watch\Blueprint\Builder;
 
 use DateTimeImmutable;
+use Watch\Blueprint\Builder\Asset\Drawing;
 use Watch\Blueprint\Builder\Stroke\Parser;
 use Watch\Blueprint\Builder\Stroke\Reference as ReferenceLine;
 use Watch\Blueprint\Model\Builder\Director;

@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Unit\Schedule\Director;
 
-use Watch\Blueprint\Builder\Drawing;
+use Watch\Blueprint\Builder\Asset\Drawing;
 use Watch\Blueprint\Builder\Schedule as ScheduleBlueprintBuilder;
 use Watch\Blueprint\Builder\Subject as SubjectBlueprintBuilder;
 use Watch\Schedule\Builder;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Watch\Blueprint\Builder;
+namespace Watch\Blueprint\Builder\Asset;
 
 use DateTimeImmutable;
 

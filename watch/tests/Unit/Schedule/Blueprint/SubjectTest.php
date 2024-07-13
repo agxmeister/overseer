@@ -2,8 +2,8 @@
 namespace Tests\Unit\Schedule\Blueprint;
 
 use Codeception\Test\Unit;
+use Watch\Blueprint\Builder\Asset\Drawing;
 use Watch\Blueprint\Builder\Director;
-use Watch\Blueprint\Builder\Drawing;
 use Watch\Blueprint\Builder\Subject as SubjectBlueprintBuilder;
 use Watch\Schedule\Mapper;
 use Watch\Subject\Model\Issue;

@@ -2,8 +2,8 @@
 namespace Tests\Unit\Schedule\Serializer;
 
 use Codeception\Test\Unit;
+use Watch\Blueprint\Builder\Asset\Drawing;
 use Watch\Blueprint\Builder\Director;
-use Watch\Blueprint\Builder\Drawing;
 use Watch\Blueprint\Builder\Schedule as ScheduleBlueprintBuilder;
 use Watch\Schedule\Serializer\Project;
 
