@@ -5,7 +5,7 @@ namespace Watch\Blueprint\Builder;
 use DateTimeImmutable;
 use Watch\Blueprint\Builder\Asset\Drawing;
 use Watch\Blueprint\Builder\Stroke\Parser;
-use Watch\Blueprint\Builder\Stroke\Reference as ReferenceLine;
+use Watch\Blueprint\Builder\Stroke\Stroke;
 use Watch\Blueprint\Model\Builder\Director;
 use Watch\Blueprint\Model\Builder\Subject\Issue as IssueBuilder;
 use Watch\Blueprint\Model\Builder\Subject\Milestone as MilestoneBuilder;
@@ -70,7 +70,7 @@ class Subject extends Builder
         return $this;
     }
 
-    protected function getReferenceDate(?ReferenceLine $referenceStroke): ?DateTimeImmutable
+    protected function getReferenceDate(?Stroke $referenceStroke): ?DateTimeImmutable
     {
         $referenceDate = parent::getReferenceDate($referenceStroke);
         if (!is_null($referenceDate)) {

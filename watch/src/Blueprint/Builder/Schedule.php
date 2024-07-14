@@ -4,7 +4,7 @@ namespace Watch\Blueprint\Builder;
 
 use DateTimeImmutable;
 use Watch\Blueprint\Builder\Stroke\Parser;
-use Watch\Blueprint\Builder\Stroke\Reference as ReferenceLine;
+use Watch\Blueprint\Builder\Stroke\Stroke;
 use Watch\Blueprint\Model\Builder\Director;
 use Watch\Blueprint\Model\Builder\Schedule\Buffer as BufferBuilder;
 use Watch\Blueprint\Model\Builder\Schedule\Issue as IssueBuilder;
@@ -75,12 +75,7 @@ class Schedule extends Builder
         return $this;
     }
 
-    private function setIssueModels(): void
-    {
-
-    }
-
-    protected function getReferenceDate(?ReferenceLine $referenceStroke): ?DateTimeImmutable
+    protected function getReferenceDate(?Stroke $referenceStroke): ?DateTimeImmutable
     {
         $referenceDate = parent::getReferenceDate($referenceStroke);
         if (!is_null($referenceDate)) {

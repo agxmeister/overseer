@@ -6,7 +6,7 @@ use DateTimeImmutable;
 use Watch\Blueprint\Builder\Asset\Drawing;
 use Watch\Blueprint\Builder\Asset\Reference;
 use Watch\Blueprint\Builder\Stroke\Parser;
-use Watch\Blueprint\Builder\Stroke\Reference as ReferenceStroke;
+use Watch\Blueprint\Builder\Stroke\Stroke;
 use Watch\Blueprint\Model\Attribute;
 use Watch\Blueprint\Model\AttributeType;
 
@@ -21,11 +21,7 @@ abstract class Builder
     public function setReference(): self
     {
         $parser = new Parser(static::PATTERN_REFERENCE_STROKE);
-
-        $referenceStroke = array_reduce(
-            $parser->getMatches($this->drawing->strokes),
-            fn($acc, $match) => new ReferenceStroke($match[0], $match[1]),
-        );
+        $referenceStroke = $this->drawing->getStroke($parser);
 
         $this->reference = new Reference(
             $this->getReferenceMarkerOffset($referenceStroke),
@@ -35,7 +31,7 @@ abstract class Builder
         return $this;
     }
 
-    protected function getReferenceDate(?ReferenceStroke $referenceStroke): ?DateTimeImmutable
+    protected function getReferenceDate(?Stroke $referenceStroke): ?DateTimeImmutable
     {
         if (is_null($referenceStroke)) {
             return null;
@@ -57,7 +53,7 @@ abstract class Builder
         );
     }
 
-    protected function getReferenceMarkerOffset(?ReferenceStroke $referenceStroke): int
+    protected function getReferenceMarkerOffset(?Stroke $referenceStroke): int
     {
         if (is_null($referenceStroke)) {
             return 0;

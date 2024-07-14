@@ -2,8 +2,10 @@
 
 namespace Watch\Blueprint\Builder\Stroke;
 
-abstract readonly class Stroke
+readonly class Stroke
 {
+    use HasAttributes;
+
     public array $parts;
     public array $offsets;
 
