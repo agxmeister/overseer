@@ -17,11 +17,19 @@ readonly class Drawing
         );
     }
 
-    public function getStroke(Parser $parser): ?Stroke
+    public function getStroke(Parser $parser, string $attributesPartName): ?Stroke
     {
-        return array_reduce(
-            $parser->getMatches($this->strokes),
-            fn($acc, $match) => new Stroke($match[0], $match[1]),
+        $match = current($parser->getMatches($this->strokes));
+        if ($match === false) {
+            return null;
+        }
+        [$parts, $offsets] = $match;
+        $attributes = $parts[$attributesPartName] ?? '';
+        $filteredParts = array_filter(
+            $parts,
+            fn(string $key) => $key !== $attributesPartName,
+            ARRAY_FILTER_USE_KEY
         );
+        return new Stroke($filteredParts, $attributes, $offsets);
     }
 }

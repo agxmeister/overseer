@@ -21,7 +21,7 @@ abstract class Builder
     public function setReference(): self
     {
         $parser = new Parser(static::PATTERN_REFERENCE_STROKE);
-        $referenceStroke = $this->drawing->getStroke($parser);
+        $referenceStroke = $this->drawing->getStroke($parser, 'attributes');
 
         $this->reference = new Reference(
             $this->getReferenceMarkerOffset($referenceStroke),
@@ -37,15 +37,14 @@ abstract class Builder
             return null;
         }
 
-        list('attributes' => $attributes) = $referenceStroke->parts;
-        if (empty($attributes)) {
+        if (empty($referenceStroke->attributes)) {
             return null;
         }
 
         return new DateTimeImmutable(
             array_reduce(
                 array_filter(
-                    $referenceStroke->getAttributes($attributes),
+                    $referenceStroke->getAttributes($referenceStroke->attributes),
                     fn(Attribute $attribute) => $attribute->type === AttributeType::Date
                 ),
                 fn(Attribute|null $acc, Attribute $attribute) => $attribute,

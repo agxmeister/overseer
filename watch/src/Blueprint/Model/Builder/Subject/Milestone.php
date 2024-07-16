@@ -29,7 +29,7 @@ class Milestone extends Builder
 
     public function setModel(array $values, array $offsets, ...$defaults): self
     {
-        $line = new MilestoneLine($values, $offsets, ...$defaults);
+        $line = new MilestoneLine($values, '', $offsets, ...$defaults);
         list(
             'key' => $key,
             'attributes' => $attributes

@@ -30,7 +30,7 @@ class Buffer extends Builder
 
     public function setModel(array $values, array $offsets, ...$defaults): self
     {
-        $line = new BufferLine($values, $offsets, ...$defaults);
+        $line = new BufferLine($values, '', $offsets, ...$defaults);
         list(
             'key' => $key,
             'type' => $type,

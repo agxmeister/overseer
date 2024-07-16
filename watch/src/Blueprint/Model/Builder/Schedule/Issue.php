@@ -30,7 +30,7 @@ class Issue extends Builder
 
     public function setModel(array $values, array $offsets, ...$defaults): self
     {
-        $line = new IssueLine($values, $offsets, ...$defaults);
+        $line = new IssueLine($values, '', $offsets, ...$defaults);
         list(
             'key' => $key,
             'type' => $type,

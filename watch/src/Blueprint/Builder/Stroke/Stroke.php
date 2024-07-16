@@ -8,9 +8,8 @@ use Watch\Blueprint\Model\AttributeType;
 readonly class Stroke
 {
     public array $parts;
-    public array $offsets;
 
-    public function __construct(array $values, array $offsets, ...$defaults)
+    public function __construct(array $values, public string $attributes, public array $offsets, ...$defaults)
     {
         $this->parts = array_merge(
             $defaults,
@@ -19,7 +18,6 @@ readonly class Stroke
                 fn($value) => !is_null($value),
             ),
         );
-        $this->offsets = $offsets;
     }
 
     public function getAttributes(string $content): array
