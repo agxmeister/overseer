@@ -17,12 +17,25 @@ readonly class Drawing
         );
     }
 
-    public function getStroke(Parser $parser, string $attributesPartName): ?Stroke
+    public function getStroke(Parser $parser, string $attributesPartName, ...$defaults): ?Stroke
     {
         $match = current($parser->getMatches($this->strokes));
         if ($match === false) {
             return null;
         }
+        return $this->createStroke($match, $attributesPartName, ...$defaults);
+    }
+
+    public function getStrokes(Parser $parser, string $attributesPartName, ...$defaults): ?array
+    {
+        return array_map(
+            fn(array $match) => $this->createStroke($match, $attributesPartName, ...$defaults),
+            $parser->getMatches($this->strokes),
+        );
+    }
+
+    private function createStroke($match, $attributesPartName, ...$defaults): Stroke
+    {
         [$parts, $offsets] = $match;
         $attributes = $parts[$attributesPartName] ?? '';
         $filteredParts = array_filter(
@@ -30,6 +43,6 @@ readonly class Drawing
             fn(string $key) => $key !== $attributesPartName,
             ARRAY_FILTER_USE_KEY
         );
-        return new Stroke($filteredParts, $attributes, $offsets);
+        return new Stroke($filteredParts, $attributes, $offsets, ...$defaults);
     }
 }
