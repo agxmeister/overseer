@@ -49,19 +49,24 @@ class Subject extends Builder
 
         $issueBuilder = new IssueBuilder($this->mapper);
         $issueParser = new Parser(self::PATTERN_ISSUE_STROKE);
-        $director->run(
-            $issueBuilder,
+        $issueStrokes = $this->drawing->getStrokes(
             $issueParser,
-            $this->drawing->strokes,
+            'attributes',
             project: 'PRJ',
             milestone: null,
             type: 'T',
         );
+        $director->run($issueBuilder, $issueStrokes);
         $this->issueModels = $issueBuilder->flush();
 
         $milestoneBuilder = new MilestoneBuilder();
         $milestoneParser = new Parser(self::PATTERN_MILESTONE_STROKE);
-        $director->run($milestoneBuilder, $milestoneParser, $this->drawing->strokes, key: 'PRJ');
+        $milestoneStrokes = $this->drawing->getStrokes(
+            $milestoneParser,
+            'attributes',
+            key: 'PRJ',
+        );
+        $director->run($milestoneBuilder, $milestoneStrokes);
         $this->milestoneModels = $milestoneBuilder->flush();
 
         $this->trackMarkerOffset = $issueBuilder->getEndPosition();

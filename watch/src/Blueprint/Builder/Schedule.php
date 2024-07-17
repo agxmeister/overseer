@@ -49,24 +49,37 @@ class Schedule extends Builder
 
         $issueBuilder = new IssueBuilder();
         $issueParser = new Parser(self::PATTERN_ISSUE_STROKE);
-        $director->run(
-            $issueBuilder,
+        $issueStrokes = $this->drawing->getStrokes(
             $issueParser,
-            $this->drawing->strokes,
+            'attributes',
             project: 'PRJ',
             milestone: null,
             type: 'T',
+        );
+        $director->run(
+            $issueBuilder,
+            $issueStrokes,
         );
         $this->issueModels = $issueBuilder->flush();
 
         $bufferBuilder = new BufferBuilder();
         $bufferParser = new Parser(self::PATTERN_BUFFER_STROKE);
-        $director->run($bufferBuilder, $bufferParser, $this->drawing->strokes, type: 'T');
+        $bufferStrokes = $this->drawing->getStrokes(
+            $bufferParser,
+            'attributes',
+            type: 'T',
+        );
+        $director->run($bufferBuilder, $bufferStrokes);
         $this->bufferModels = $bufferBuilder->flush();
 
         $milestoneBuilder = new MilestoneBuilder();
         $milestoneParser = new Parser(self::PATTERN_MILESTONE_STROKE);
-        $director->run($milestoneBuilder, $milestoneParser, $this->drawing->strokes, key: 'PRJ');
+        $milestoneStrokes = $this->drawing->getStrokes(
+            $milestoneParser,
+            'attributes',
+            key: 'PRJ',
+        );
+        $director->run($milestoneBuilder, $milestoneStrokes);
         $this->milestoneModels = $milestoneBuilder->flush();
 
         $this->trackMarkerOffset = max($issueBuilder->getEndPosition(), $bufferBuilder->getEndPosition());

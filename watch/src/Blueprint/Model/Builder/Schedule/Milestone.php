@@ -2,7 +2,7 @@
 
 namespace Watch\Blueprint\Model\Builder\Schedule;
 
-use Watch\Blueprint\Builder\Stroke\Schedule\Milestone as MilestoneLine;
+use Watch\Blueprint\Builder\Stroke\Stroke;
 use Watch\Blueprint\Model\Builder\Builder;
 use Watch\Blueprint\Model\Schedule\Milestone as MilestoneModel;
 
@@ -27,15 +27,11 @@ class Milestone extends Builder
         return $this;
     }
 
-    public function setModel(array $values, array $offsets, ...$defaults): self
+    public function setModel(Stroke $stroke): self
     {
-        $line = new MilestoneLine($values, '', $offsets, ...$defaults);
-        list(
-            'key' => $key,
-            'attributes' => $attributes
-            ) = $line->parts;
-        list('marker' => $this->markerOffset) = $line->offsets;
-        $this->model = new MilestoneModel($key, $line->getAttributes($attributes));
+        ['key' => $key] = $stroke->parts;
+        ['marker' => $this->markerOffset] = $stroke->offsets;
+        $this->model = new MilestoneModel($key, $stroke->getAttributes($stroke->attributes));
         return $this;
     }
 

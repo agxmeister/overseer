@@ -2,7 +2,9 @@
 
 namespace Watch\Blueprint\Model\Builder\Schedule;
 
-use Watch\Blueprint\Builder\Stroke\Schedule\Issue as IssueLine;
+use Watch\Blueprint\Builder\Stroke\Stroke;
+use Watch\Blueprint\Model\Attribute;
+use Watch\Blueprint\Model\AttributeType;
 use Watch\Blueprint\Model\Builder\Builder;
 use Watch\Blueprint\Model\Schedule\Issue as IssueModel;
 use Watch\Blueprint\Model\Track;
@@ -28,9 +30,8 @@ class Issue extends Builder
         return $this;
     }
 
-    public function setModel(array $values, array $offsets, ...$defaults): self
+    public function setModel(Stroke $stroke): self
     {
-        $line = new IssueLine($values, '', $offsets, ...$defaults);
         list(
             'key' => $key,
             'type' => $type,
@@ -38,21 +39,19 @@ class Issue extends Builder
             'milestone' => $milestone,
             'modifier' => $modifier,
             'track' => $track,
-            'attributes' => $attributes,
-            ) = $line->parts;
-        list('endMarker' => $endMarkerOffset) = $line->offsets;
+            ) = $stroke->parts;
+        list('endMarker' => $endMarkerOffset) = $stroke->offsets;
         $trackGap = strlen($track) - strlen(rtrim($track));
         $this->endPosition = $endMarkerOffset - $trackGap;
-        $lineAttributes = $line->getAttributes($attributes);
-        $lineLinks = $line->getLinks($key, $lineAttributes);
+        $strokeAttributes = $stroke->getAttributes($stroke->attributes);
         $this->model = new IssueModel(
             $key,
             $type,
             $project,
             $milestone,
             new Track($track),
-            $lineLinks,
-            $lineAttributes,
+            $this->getLinks($key, $strokeAttributes),
+            $strokeAttributes,
             $modifier === '~',
             $modifier === '+',
             str_contains($track, '*') || str_contains($track, 'x'),
@@ -75,5 +74,24 @@ class Issue extends Builder
     public function getEndPosition(): int
     {
         return $this->endPosition;
+    }
+
+    private function getLinks(string $key, array $attributes): array
+    {
+        return array_reduce(
+            array_filter(
+                $attributes,
+                fn(Attribute $attribute) => in_array($attribute->type, [AttributeType::Schedule, AttributeType::Sequence]),
+            ),
+            fn(array $acc, Attribute $attribute) => [
+                ...$acc,
+                [
+                    'from' => $key,
+                    'to' => $attribute->value,
+                    'type' => $attribute->type === AttributeType::Sequence ? 'sequence' : 'schedule',
+                ],
+            ],
+            [],
+        );
     }
 }
