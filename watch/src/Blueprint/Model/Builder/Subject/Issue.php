@@ -3,7 +3,6 @@
 namespace Watch\Blueprint\Model\Builder\Subject;
 
 use Watch\Blueprint\Builder\Stroke\Stroke;
-use Watch\Blueprint\Builder\Stroke\Subject\Issue as IssueLine;
 use Watch\Blueprint\Model\Attribute;
 use Watch\Blueprint\Model\AttributeType;
 use Watch\Blueprint\Model\Builder\Builder;
