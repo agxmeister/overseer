@@ -3,14 +3,14 @@
 namespace Watch\Blueprint\Model\Builder\Schedule;
 
 use Watch\Blueprint\Builder\Stroke\Stroke;
-use Watch\Blueprint\Model\Attribute;
-use Watch\Blueprint\Model\AttributeType;
 use Watch\Blueprint\Model\Builder\Builder;
 use Watch\Blueprint\Model\Schedule\Buffer as BufferModel;
 use Watch\Blueprint\Model\Track;
 
 class Buffer extends Builder
 {
+    use HasLinks;
+
     private array $models = [];
 
     private int $endPosition = 0;
@@ -66,24 +66,5 @@ class Buffer extends Builder
     public function getEndPosition(): int
     {
         return $this->endPosition;
-    }
-
-    private function getLinks(string $key, array $attributes): array
-    {
-        return array_reduce(
-            array_filter(
-                $attributes,
-                fn(Attribute $attribute) => in_array($attribute->type, [AttributeType::Schedule, AttributeType::Sequence]),
-            ),
-            fn(array $acc, Attribute $attribute) => [
-                ...$acc,
-                [
-                    'from' => $key,
-                    'to' => $attribute->value,
-                    'type' => $attribute->type === AttributeType::Sequence ? 'sequence' : 'schedule',
-                ],
-            ],
-            [],
-        );
     }
 }
