@@ -20,7 +20,7 @@ readonly class Stroke
         );
     }
 
-    public function getAttributes(string $content): array
+    public function getAttributes(): array
     {
         return array_map(
             fn(string $attribute) => $this->getAttribute($attribute),
@@ -28,7 +28,7 @@ readonly class Stroke
                 array_filter(
                     array_map(
                         fn($attribute) => trim($attribute),
-                        explode(',', $content)
+                        explode(',', $this->attributes)
                     ),
                     fn(string $attribute) => !empty($attribute),
                 )
@@ -36,7 +36,7 @@ readonly class Stroke
         );
     }
 
-    public function getAttribute(string $content): Attribute
+    private function getAttribute(string $content): Attribute
     {
         list($code, $value) = explode(' ', $content);
         $type = match ($code) {
