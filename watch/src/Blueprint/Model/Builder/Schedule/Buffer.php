@@ -41,7 +41,7 @@ class Buffer extends Builder
         $trackGap = strlen($track) - strlen(rtrim($track));
         $this->endPosition = $endMarkerOffset - $trackGap;
         $consumption = substr_count(trim($track), '!');
-        $strokeAttributes = $stroke->getAttributes();
+        $strokeAttributes = $stroke->attributes;
         $this->model = new BufferModel(
             $key,
             $type,

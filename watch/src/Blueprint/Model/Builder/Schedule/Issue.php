@@ -43,7 +43,7 @@ class Issue extends Builder
         list('endMarker' => $endMarkerOffset) = $stroke->offsets;
         $trackGap = strlen($track) - strlen(rtrim($track));
         $this->endPosition = $endMarkerOffset - $trackGap;
-        $strokeAttributes = $stroke->getAttributes();
+        $strokeAttributes = $stroke->attributes;
         $this->model = new IssueModel(
             $key,
             $type,

@@ -44,7 +44,7 @@ abstract class Builder
         return new DateTimeImmutable(
             array_reduce(
                 array_filter(
-                    $referenceStroke->getAttributes(),
+                    $referenceStroke->attributes,
                     fn(Attribute $attribute) => $attribute->type === AttributeType::Date
                 ),
                 fn(Attribute|null $acc, Attribute $attribute) => $attribute,

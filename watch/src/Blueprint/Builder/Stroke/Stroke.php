@@ -9,18 +9,21 @@ readonly class Stroke
 {
     public array $parts;
 
-    public function __construct(array $values, public string $attributes, public array $offsets, ...$defaults)
+    public array $attributes;
+
+    public function __construct(array $parts, public array $offsets, string $attributesContent, ...$defaults)
     {
         $this->parts = array_merge(
             $defaults,
             array_filter(
-                $values,
+                $parts,
                 fn($value) => !is_null($value),
             ),
         );
+        $this->attributes = $this->getAttributes($attributesContent);
     }
 
-    public function getAttributes(): array
+    private function getAttributes(string $content): array
     {
         return array_map(
             fn(string $attribute) => $this->getAttribute($attribute),
@@ -28,7 +31,7 @@ readonly class Stroke
                 array_filter(
                     array_map(
                         fn($attribute) => trim($attribute),
-                        explode(',', $this->attributes)
+                        explode(',', $content)
                     ),
                     fn(string $attribute) => !empty($attribute),
                 )
@@ -38,7 +41,7 @@ readonly class Stroke
 
     private function getAttribute(string $content): Attribute
     {
-        list($code, $value) = explode(' ', $content);
+        [$code, $value] = explode(' ', $content);
         $type = match ($code) {
             '@' => AttributeType::Schedule,
             '&' => AttributeType::Sequence,

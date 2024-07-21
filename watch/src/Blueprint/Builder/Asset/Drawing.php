@@ -34,15 +34,22 @@ readonly class Drawing
         );
     }
 
-    private function createStroke($match, $attributesPartName, ...$defaults): Stroke
+    private function createStroke($match, $attributesKey, ...$defaults): Stroke
     {
         [$parts, $offsets] = $match;
-        $attributes = $parts[$attributesPartName] ?? '';
-        $filteredParts = array_filter(
-            $parts,
-            fn(string $key) => $key !== $attributesPartName,
-            ARRAY_FILTER_USE_KEY
+        return new Stroke(
+            array_filter(
+                $parts,
+                fn(string $key) => $key !== $attributesKey,
+                ARRAY_FILTER_USE_KEY
+            ),
+            array_filter(
+                $offsets,
+                fn(string $key) => $key !== $attributesKey,
+                ARRAY_FILTER_USE_KEY
+            ),
+            $parts[$attributesKey] ?? '',
+            ...$defaults
         );
-        return new Stroke($filteredParts, $attributes, $offsets, ...$defaults);
     }
 }
