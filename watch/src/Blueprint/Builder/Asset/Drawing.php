@@ -2,9 +2,6 @@
 
 namespace Watch\Blueprint\Builder\Asset;
 
-use Watch\Blueprint\Builder\Stroke\Parser;
-use Watch\Blueprint\Builder\Stroke\Stroke;
-
 readonly class Drawing
 {
     public array $strokes;

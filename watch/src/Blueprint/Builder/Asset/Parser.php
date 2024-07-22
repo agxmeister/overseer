@@ -1,6 +1,6 @@
 <?php
 
-namespace Watch\Blueprint\Builder\Stroke;
+namespace Watch\Blueprint\Builder\Asset;
 
 readonly class Parser
 {

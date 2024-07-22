@@ -2,7 +2,7 @@
 
 namespace Watch\Blueprint\Model\Builder\Schedule;
 
-use Watch\Blueprint\Builder\Stroke\Stroke;
+use Watch\Blueprint\Builder\Asset\Stroke;
 use Watch\Blueprint\Model\Builder\Builder;
 use Watch\Blueprint\Model\Schedule\Issue as IssueModel;
 use Watch\Blueprint\Model\Track;

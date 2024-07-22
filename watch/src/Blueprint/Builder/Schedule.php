@@ -3,8 +3,8 @@
 namespace Watch\Blueprint\Builder;
 
 use DateTimeImmutable;
-use Watch\Blueprint\Builder\Stroke\Parser;
-use Watch\Blueprint\Builder\Stroke\Stroke;
+use Watch\Blueprint\Builder\Asset\Parser;
+use Watch\Blueprint\Builder\Asset\Stroke;
 use Watch\Blueprint\Model\Builder\Director;
 use Watch\Blueprint\Model\Builder\Schedule\Buffer as BufferBuilder;
 use Watch\Blueprint\Model\Builder\Schedule\Issue as IssueBuilder;

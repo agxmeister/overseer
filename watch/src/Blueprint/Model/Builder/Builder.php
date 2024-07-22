@@ -2,7 +2,7 @@
 
 namespace Watch\Blueprint\Model\Builder;
 
-use Watch\Blueprint\Builder\Stroke\Stroke;
+use Watch\Blueprint\Builder\Asset\Stroke;
 
 abstract class Builder
 {
