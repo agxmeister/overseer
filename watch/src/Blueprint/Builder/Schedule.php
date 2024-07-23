@@ -4,6 +4,7 @@ namespace Watch\Blueprint\Builder;
 
 use DateTimeImmutable;
 use Watch\Blueprint\Builder\Asset\Parser;
+use Watch\Blueprint\Builder\Asset\Reference;
 use Watch\Blueprint\Builder\Asset\Stroke;
 use Watch\Blueprint\Model\Builder\Director;
 use Watch\Blueprint\Model\Builder\Schedule\Buffer as BufferBuilder;
@@ -88,6 +89,19 @@ class Schedule extends Builder
         return $this;
     }
 
+    public function setReference(): self
+    {
+        $parser = new Parser(static::PATTERN_REFERENCE_STROKE);
+        $referenceStroke = $this->drawing->getStroke($parser, 'attributes');
+
+        $this->reference = new Reference(
+            is_null($referenceStroke) ? 0 : $this->getReferenceMarkerOffset($referenceStroke),
+            $this->getReferenceDate($referenceStroke),
+        );
+
+        return $this;
+    }
+
     protected function getReferenceDate(?Stroke $referenceStroke): ?DateTimeImmutable
     {
         $referenceDate = parent::getReferenceDate($referenceStroke);
@@ -99,7 +113,10 @@ class Schedule extends Builder
             $this->milestoneModels,
             fn($acc, $line) => $line instanceof Milestone ? $line : null,
         );
-        $gap = $this->getReferenceMarkerOffset($referenceStroke) - $this->projectMarkerOffset;
+
+        $gap = is_null($referenceStroke)
+            ? 0 - $this->projectMarkerOffset
+            : $this->getReferenceMarkerOffset($referenceStroke) - $this->projectMarkerOffset;
         return $projectStroke?->getDate()->modify("{$gap} day");
     }
 
@@ -109,7 +126,7 @@ class Schedule extends Builder
             $this->issueModels,
             $this->bufferModels,
             $this->milestoneModels,
-            $this->reference->date,
+            $this?->reference?->date,
             $this->projectMarkerOffset >= $this->trackMarkerOffset,
         );
     }

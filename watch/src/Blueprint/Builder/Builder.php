@@ -23,6 +23,11 @@ abstract class Builder
         $parser = new Parser(static::PATTERN_REFERENCE_STROKE);
         $referenceStroke = $this->drawing->getStroke($parser, 'attributes');
 
+        if (is_null($referenceStroke)) {
+            $this->reference = null;
+            return $this;
+        }
+
         $this->reference = new Reference(
             $this->getReferenceMarkerOffset($referenceStroke),
             $this->getReferenceDate($referenceStroke),
@@ -31,12 +36,14 @@ abstract class Builder
         return $this;
     }
 
+    protected function getReferenceMarkerOffset(Stroke $referenceStroke): int
+    {
+        ['marker' => $markerOffset] = $referenceStroke->offsets;
+        return $markerOffset;
+    }
+
     protected function getReferenceDate(?Stroke $referenceStroke): ?DateTimeImmutable
     {
-        if (is_null($referenceStroke)) {
-            return null;
-        }
-
         if (empty($referenceStroke->attributes)) {
             return null;
         }
@@ -50,15 +57,6 @@ abstract class Builder
                 fn(Attribute|null $acc, Attribute $attribute) => $attribute,
             )?->value,
         );
-    }
-
-    protected function getReferenceMarkerOffset(?Stroke $referenceStroke): int
-    {
-        if (is_null($referenceStroke)) {
-            return 0;
-        }
-        ['marker' => $markerOffset] = $referenceStroke->offsets;
-        return $markerOffset;
     }
 
     public function clean(): self
