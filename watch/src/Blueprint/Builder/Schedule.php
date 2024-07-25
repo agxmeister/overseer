@@ -21,10 +21,8 @@ class Schedule extends Builder
 
     /** @var Issue[] */
     private ?array $issueModels = null;
-
     /** @var Buffer[] */
     private ?array $bufferModels = null;
-
     /** @var Milestone[] */
     private ?array $milestoneModels = null;
 
@@ -46,46 +44,69 @@ class Schedule extends Builder
     public function setModels(): self
     {
         $director = new Director();
+        $this->issueModels = $this->setIssueModels($director);
+        $this->bufferModels = $this->setBufferModels($director);
+        $this->milestoneModels = $this->setMilestoneModels($director);
+        return $this;
+    }
 
-        $issueBuilder = new IssueBuilder();
-        $issueParser = new Parser(self::PATTERN_ISSUE_STROKE);
-        $issueStrokes = $this->drawing->getStrokes(
-            $issueParser,
+    /**
+     * @param Director $director
+     * @return Issue[]
+     */
+    private function setIssueModels(Director $director): array
+    {
+        $builder = new IssueBuilder();
+        $parser = new Parser(self::PATTERN_ISSUE_STROKE);
+        $strokes = $this->drawing->getStrokes(
+            $parser,
             'attributes',
             project: 'PRJ',
             milestone: null,
             type: 'T',
         );
         $director->run(
-            $issueBuilder,
-            $issueStrokes,
+            $builder,
+            $strokes,
         );
-        $this->issueModels = $issueBuilder->flush();
+        $this->trackMarkerOffset = max($builder->getEndPosition(), $this->trackMarkerOffset);
+        return $builder->flush();
+    }
 
-        $bufferBuilder = new BufferBuilder();
-        $bufferParser = new Parser(self::PATTERN_BUFFER_STROKE);
-        $bufferStrokes = $this->drawing->getStrokes(
-            $bufferParser,
+    /**
+     * @param Director $director
+     * @return Buffer[]
+     */
+    private function setBufferModels(Director $director): array
+    {
+        $builder = new BufferBuilder();
+        $parser = new Parser(self::PATTERN_BUFFER_STROKE);
+        $strokes = $this->drawing->getStrokes(
+            $parser,
             'attributes',
             type: 'T',
         );
-        $director->run($bufferBuilder, $bufferStrokes);
-        $this->bufferModels = $bufferBuilder->flush();
+        $director->run($builder, $strokes);
+        $this->trackMarkerOffset = max($builder->getEndPosition(), $this->trackMarkerOffset);
+        return $builder->flush();
+    }
 
-        $milestoneBuilder = new MilestoneBuilder();
-        $milestoneParser = new Parser(self::PATTERN_MILESTONE_STROKE);
-        $milestoneStrokes = $this->drawing->getStrokes(
-            $milestoneParser,
+    /**
+     * @param Director $director
+     * @return Milestone[]
+     */
+    private function setMilestoneModels(Director $director): array
+    {
+        $builder = new MilestoneBuilder();
+        $parser = new Parser(self::PATTERN_MILESTONE_STROKE);
+        $strokes = $this->drawing->getStrokes(
+            $parser,
             'attributes',
             key: 'PRJ',
         );
-        $director->run($milestoneBuilder, $milestoneStrokes);
-        $this->milestoneModels = $milestoneBuilder->flush();
-
-        $this->trackMarkerOffset = max($issueBuilder->getEndPosition(), $bufferBuilder->getEndPosition());
-        $this->projectMarkerOffset = $milestoneBuilder->getMarkerOffset();
-
-        return $this;
+        $director->run($builder, $strokes);
+        $this->projectMarkerOffset = $builder->getMarkerOffset();
+        return $builder->flush();
     }
 
     public function flush(): ScheduleBlueprint

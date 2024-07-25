@@ -4,7 +4,6 @@ namespace Watch\Blueprint\Builder;
 
 use Watch\Blueprint\Builder\Asset\Drawing;
 use Watch\Blueprint\Builder\Asset\Parser;
-use Watch\Blueprint\Builder\Asset\Reference;
 use Watch\Blueprint\Model\Builder\Director;
 use Watch\Blueprint\Model\Builder\Subject\Issue as IssueBuilder;
 use Watch\Blueprint\Model\Builder\Subject\Milestone as MilestoneBuilder;
@@ -22,7 +21,6 @@ class Subject extends Builder
 
     /** @var Issue[] */
     private ?array $issueModels = null;
-
     /** @var Milestone[] */
     private ?array $milestoneModels = null;
 
@@ -47,33 +45,47 @@ class Subject extends Builder
     public function setModels(): self
     {
         $director = new Director();
+        $this->issueModels = $this->setIssueModels($director);
+        $this->milestoneModels = $this->setMilestoneModels($director);
+        return $this;
+    }
 
-        $issueBuilder = new IssueBuilder($this->mapper);
-        $issueParser = new Parser(self::PATTERN_ISSUE_STROKE);
-        $issueStrokes = $this->drawing->getStrokes(
-            $issueParser,
+    /**
+     * @param Director $director
+     * @return Issue[]
+     */
+    private function setIssueModels(Director $director): array
+    {
+        $builder = new IssueBuilder($this->mapper);
+        $parser = new Parser(self::PATTERN_ISSUE_STROKE);
+        $strokes = $this->drawing->getStrokes(
+            $parser,
             'attributes',
             project: 'PRJ',
             milestone: null,
             type: 'T',
         );
-        $director->run($issueBuilder, $issueStrokes);
-        $this->issueModels = $issueBuilder->flush();
+        $director->run($builder, $strokes);
+        $this->trackMarkerOffset = $builder->getEndPosition();
+        return $builder->flush();
+    }
 
-        $milestoneBuilder = new MilestoneBuilder();
-        $milestoneParser = new Parser(self::PATTERN_MILESTONE_STROKE);
-        $milestoneStrokes = $this->drawing->getStrokes(
-            $milestoneParser,
+    /**
+     * @param Director $director
+     * @return Milestone[]
+     */
+    private function setMilestoneModels(Director $director): array
+    {
+        $builder = new MilestoneBuilder();
+        $parser = new Parser(self::PATTERN_MILESTONE_STROKE);
+        $strokes = $this->drawing->getStrokes(
+            $parser,
             'attributes',
             key: 'PRJ',
         );
-        $director->run($milestoneBuilder, $milestoneStrokes);
-        $this->milestoneModels = $milestoneBuilder->flush();
-
-        $this->trackMarkerOffset = $issueBuilder->getEndPosition();
-        $this->projectMarkerOffset = $milestoneBuilder->getMarkerOffset();
-
-        return $this;
+        $director->run($builder, $strokes);
+        $this->projectMarkerOffset = $builder->getMarkerOffset();
+        return $builder->flush();
     }
 
     public function flush(): SubjectBlueprint
