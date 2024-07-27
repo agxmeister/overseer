@@ -3,7 +3,6 @@
 namespace Watch\Blueprint\Builder;
 
 use Watch\Blueprint\Builder\Asset\Parser;
-use Watch\Blueprint\Builder\Asset\Reference;
 use Watch\Blueprint\Model\Schedule\Milestone;
 
 trait HasProjectAsReference

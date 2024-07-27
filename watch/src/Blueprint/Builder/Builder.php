@@ -5,7 +5,6 @@ namespace Watch\Blueprint\Builder;
 use DateTimeImmutable;
 use Watch\Blueprint\Builder\Asset\Drawing;
 use Watch\Blueprint\Builder\Asset\Parser;
-use Watch\Blueprint\Builder\Asset\Reference;
 use Watch\Blueprint\Builder\Asset\Stroke;
 use Watch\Blueprint\Model\Attribute;
 use Watch\Blueprint\Model\AttributeType;
