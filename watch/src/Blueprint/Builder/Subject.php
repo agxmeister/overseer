@@ -60,7 +60,6 @@ class Subject extends Builder
         $parser = new Parser(self::PATTERN_ISSUE_STROKE);
         $strokes = $this->drawing->getStrokes(
             $parser,
-            'attributes',
             project: 'PRJ',
             milestone: null,
             type: 'T',
@@ -78,11 +77,7 @@ class Subject extends Builder
     {
         $builder = new MilestoneBuilder();
         $parser = new Parser(self::PATTERN_MILESTONE_STROKE);
-        $strokes = $this->drawing->getStrokes(
-            $parser,
-            'attributes',
-            key: 'PRJ',
-        );
+        $strokes = $this->drawing->getStrokes($parser, key: 'PRJ');
         $director->run($builder, $strokes);
         $this->projectMarkerOffset = $builder->getMarkerOffset();
         return $builder->flush();

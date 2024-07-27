@@ -20,7 +20,7 @@ abstract class Builder
     public function setReference(): self
     {
         $parser = new Parser(static::PATTERN_REFERENCE_STROKE);
-        $referenceStroke = $this->drawing->getStroke($parser, 'attributes');
+        $referenceStroke = $this->drawing->getStroke($parser);
 
         if (is_null($referenceStroke)) {
             $this->reference = null;
