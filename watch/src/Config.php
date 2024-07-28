@@ -19,6 +19,10 @@ readonly class Config
 
     public function get(string $name, mixed $default = null): mixed
     {
-        return $this->data->$name ?? $default;
+        return array_reduce(
+            explode('.', $name),
+            fn($acc, string $part) => $acc?->$part ?? null,
+            $this->data,
+        ) ?? $default;
     }
 }
