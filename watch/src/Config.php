@@ -8,7 +8,7 @@ namespace Watch;
  */
 readonly class Config
 {
-    public function __construct(private object $data)
+    public function __construct(private object $data, private array $defaults = [])
     {
     }
 
@@ -19,6 +19,9 @@ readonly class Config
 
     public function get(string $name, mixed $default = null): mixed
     {
+        if (isset($this->defaults[$name])) {
+            return $this->defaults[$name];
+        }
         return array_reduce(
             explode('.', $name),
             fn($acc, string $part) => $acc?->$part ?? null,

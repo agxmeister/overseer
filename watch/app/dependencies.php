@@ -6,15 +6,18 @@ use Watch\Config;
 use Watch\Schedule\Mapper;
 
 $config = json_decode(file_get_contents(__DIR__ . '/../config.json'));
+$configDefaults = [
+    'blueprint.drawing.stroke.attributesKey' => 'attributes',
+];
 
-return function (ContainerBuilder $containerBuilder) use ($config) {
+return function (ContainerBuilder $containerBuilder) use ($config, $configDefaults) {
     $containerBuilder->addDefinitions([
         JiraClient::class => DI\autowire()->constructor(
             $_ENV['JIRA_API_URL'],
             $_ENV['JIRA_API_USERNAME'],
             $_ENV['JIRA_API_TOKEN']
         ),
-        Config::class => DI\autowire()->constructor($config),
+        Config::class => DI\autowire()->constructor($config, $configDefaults),
         Mapper::class => DI\autowire()->constructor(
             $config->schedule->task->state->queued,
             $config->schedule->task->state->started,

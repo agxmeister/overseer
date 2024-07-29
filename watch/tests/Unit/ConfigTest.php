@@ -15,6 +15,15 @@ class ConfigTest extends Unit
         self::assertEquals($expected, $config->get($param, $default));
     }
 
+    /**
+     * @dataProvider dataGetDefault
+     */
+    public function testGetDefault($config, $defaults, $param, $expected)
+    {
+        $config = new Config(json_decode($config), $defaults);
+        self::assertEquals($expected, $config->get($param));
+    }
+
     public static function dataGet(): array
     {
         return [
@@ -36,6 +45,13 @@ class ConfigTest extends Unit
                 'default',
                 'default',
             ],
+        ];
+    }
+
+    public static function dataGetDefault(): array
+    {
+        return [
+            ['{}', ['param' => 'value'], 'param', 'value']
         ];
     }
 }
