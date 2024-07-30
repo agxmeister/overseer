@@ -28,9 +28,8 @@ class Subject extends Builder
     const string PATTERN_MILESTONE_STROKE = '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/';
     const string PATTERN_REFERENCE_STROKE = '/(?<marker>>)\s*(?<attributes>.*)/';
 
-    public function __construct(Drawing $drawing, readonly private Mapper $mapper)
+    public function __construct(readonly private Mapper $mapper)
     {
-        parent::__construct($drawing);
     }
 
     public function clean(): self
@@ -42,11 +41,11 @@ class Subject extends Builder
         return parent::clean();
     }
 
-    public function setModels(): self
+    public function setModels(Drawing $drawing): self
     {
         $director = new Director();
-        $this->issueModels = $this->setIssueModels($director);
-        $this->milestoneModels = $this->setMilestoneModels($director);
+        $this->issueModels = $this->setIssueModels($drawing, $director);
+        $this->milestoneModels = $this->setMilestoneModels($drawing, $director);
         return $this;
     }
 
@@ -54,11 +53,11 @@ class Subject extends Builder
      * @param Director $director
      * @return Issue[]
      */
-    private function setIssueModels(Director $director): array
+    private function setIssueModels(Drawing $drawing, Director $director): array
     {
         $builder = new IssueBuilder($this->mapper);
         $parser = new Parser(self::PATTERN_ISSUE_STROKE);
-        $strokes = $this->drawing->getStrokes(
+        $strokes = $drawing->getStrokes(
             $parser,
             project: 'PRJ',
             milestone: null,
@@ -73,11 +72,11 @@ class Subject extends Builder
      * @param Director $director
      * @return Milestone[]
      */
-    private function setMilestoneModels(Director $director): array
+    private function setMilestoneModels(Drawing $drawing, Director $director): array
     {
         $builder = new MilestoneBuilder();
         $parser = new Parser(self::PATTERN_MILESTONE_STROKE);
-        $strokes = $this->drawing->getStrokes($parser, key: 'PRJ');
+        $strokes = $drawing->getStrokes($parser, key: 'PRJ');
         $director->run($builder, $strokes);
         $this->projectMarkerOffset = $builder->getMarkerOffset();
         return $builder->flush();

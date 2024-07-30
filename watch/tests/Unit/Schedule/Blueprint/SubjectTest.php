@@ -13,12 +13,13 @@ class SubjectTest extends Unit
     /**
      * @dataProvider dataGetIssues
      */
-    public function testGetIssues($drawing, $issueKeys)
+    public function testGetIssues($drawingContent, $issueKeys)
     {
+        $drawing = new Drawing($drawingContent);
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
-        $blueprintBuilder = new SubjectBlueprintBuilder(new Drawing($drawing), $mapper);
+        $blueprintBuilder = new SubjectBlueprintBuilder($mapper);
         $blueprintDirector = new Director();
-        $blueprintDirector->build($blueprintBuilder);
+        $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
         self::assertEquals(
             $issueKeys,

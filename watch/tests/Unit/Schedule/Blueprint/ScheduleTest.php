@@ -12,11 +12,12 @@ class ScheduleTest extends Unit
     /**
      * @dataProvider dataGetMilestoneNames
      */
-    public function testGetMilestoneNames($drawing, $milestoneNames)
+    public function testGetMilestoneNames($drawingContent, $milestoneNames)
     {
-        $blueprintBuilder = new ScheduleBlueprintBuilder(new Drawing($drawing));
+        $drawing = new Drawing($drawingContent);
+        $blueprintBuilder = new ScheduleBlueprintBuilder();
         $blueprintDirector = new Director();
-        $blueprintDirector->build($blueprintBuilder);
+        $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
         self::assertEquals($milestoneNames, $blueprint->getMilestoneNames());
     }
@@ -24,11 +25,12 @@ class ScheduleTest extends Unit
     /**
      * @dataProvider dataGetMilestones
      */
-    public function testGetMilestones($drawing, $milestones)
+    public function testGetMilestones($drawingContent, $milestones)
     {
-        $blueprintBuilder = new ScheduleBlueprintBuilder(new Drawing($drawing));
+        $drawing = new Drawing($drawingContent);
+        $blueprintBuilder = new ScheduleBlueprintBuilder();
         $blueprintDirector = new Director();
-        $blueprintDirector->build($blueprintBuilder);
+        $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
         self::assertEquals($milestones, $blueprint->getMilestonesData());
     }
@@ -36,11 +38,12 @@ class ScheduleTest extends Unit
     /**
      * @dataProvider dataGetProjectBeginDate
      */
-    public function testGetProjectBeginDate($drawing, $beginDate)
+    public function testGetProjectBeginDate($drawingContent, $beginDate)
     {
-        $blueprintBuilder = new ScheduleBlueprintBuilder(new Drawing($drawing));
+        $drawing = new Drawing($drawingContent);
+        $blueprintBuilder = new ScheduleBlueprintBuilder();
         $blueprintDirector = new Director();
-        $blueprintDirector->build($blueprintBuilder);
+        $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
         self::assertEquals(new \DateTimeImmutable($beginDate), $blueprint->getProjectBeginDate());
     }
@@ -48,11 +51,12 @@ class ScheduleTest extends Unit
     /**
      * @dataProvider dataGetProjectEndDate
      */
-    public function testGetProjectEndDate($drawing, $endDate)
+    public function testGetProjectEndDate($drawingContent, $endDate)
     {
-        $blueprintBuilder = new ScheduleBlueprintBuilder(new Drawing($drawing));
+        $drawing = new Drawing($drawingContent);
+        $blueprintBuilder = new ScheduleBlueprintBuilder();
         $blueprintDirector = new Director();
-        $blueprintDirector->build($blueprintBuilder);
+        $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
         self::assertEquals(new \DateTimeImmutable($endDate), $blueprint->getProjectEndDate());
     }
@@ -60,11 +64,12 @@ class ScheduleTest extends Unit
     /**
      * @dataProvider dataGetNowDate
      */
-    public function testGetNowDate($drawing, $nowDate)
+    public function testGetNowDate($drawingContent, $nowDate)
     {
-        $blueprintBuilder = new ScheduleBlueprintBuilder(new Drawing($drawing));
+        $drawing = new Drawing($drawingContent);
+        $blueprintBuilder = new ScheduleBlueprintBuilder();
         $blueprintDirector = new Director();
-        $blueprintDirector->build($blueprintBuilder);
+        $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
         self::assertEquals(new \DateTimeImmutable($nowDate), $blueprint->nowDate);
     }
@@ -72,11 +77,12 @@ class ScheduleTest extends Unit
     /**
      * @dataProvider dataGetProjectLength
      */
-    public function testGetProjectLength($drawing, $length)
+    public function testGetProjectLength($drawingContent, $length)
     {
-        $blueprintBuilder = new ScheduleBlueprintBuilder(new Drawing($drawing));
+        $drawing = new Drawing($drawingContent);
+        $blueprintBuilder = new ScheduleBlueprintBuilder();
         $blueprintDirector = new Director();
-        $blueprintDirector->build($blueprintBuilder);
+        $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
         self::assertEquals($length, $blueprint->getLength());
     }
@@ -84,11 +90,12 @@ class ScheduleTest extends Unit
     /**
      * @dataProvider dataGetScheduleCriticalChain
      */
-    public function testGetScheduleCriticalChain($drawing, $criticalChain)
+    public function testGetScheduleCriticalChain($drawingContent, $criticalChain)
     {
-        $blueprintBuilder = new ScheduleBlueprintBuilder(new Drawing($drawing));
+        $drawing = new Drawing($drawingContent);
+        $blueprintBuilder = new ScheduleBlueprintBuilder();
         $blueprintDirector = new Director();
-        $blueprintDirector->build($blueprintBuilder);
+        $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
         self::assertEquals($criticalChain, $blueprint->getSchedule()[Project::VOLUME_CRITICAL_CHAIN]);
     }
@@ -96,11 +103,12 @@ class ScheduleTest extends Unit
     /**
      * @dataProvider dataGetBufferConsumption
      */
-    public function testGetBufferConsumption($drawing, $bufferConsumption)
+    public function testGetBufferConsumption($drawingContent, $bufferConsumption)
     {
-        $blueprintBuilder = new ScheduleBlueprintBuilder(new Drawing($drawing));
+        $drawing = new Drawing($drawingContent);
+        $blueprintBuilder = new ScheduleBlueprintBuilder();
         $blueprintDirector = new Director();
-        $blueprintDirector->build($blueprintBuilder);
+        $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
         foreach ($blueprint->getSchedule()[Project::VOLUME_BUFFERS] as $buffer) {
             self::assertEquals($bufferConsumption[$buffer['key']], $buffer['consumption']);

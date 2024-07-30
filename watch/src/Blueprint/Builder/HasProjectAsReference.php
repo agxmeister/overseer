@@ -2,14 +2,15 @@
 
 namespace Watch\Blueprint\Builder;
 
+use Watch\Blueprint\Builder\Asset\Drawing;
 use Watch\Blueprint\Builder\Asset\Parser;
 use Watch\Blueprint\Model\Schedule\Milestone;
 
 trait HasProjectAsReference
 {
-    public function setReference(): self
+    public function setReference(Drawing $drawing): self
     {
-        parent::setReference();
+        parent::setReference($drawing);
 
         if (!is_null($this->reference?->date)) {
             return $this;
@@ -24,7 +25,7 @@ trait HasProjectAsReference
         }
 
         $parser = new Parser(static::PATTERN_REFERENCE_STROKE);
-        $referenceStroke = $this->drawing->getStroke($parser);
+        $referenceStroke = $drawing->getStroke($parser);
         if (is_null($referenceStroke)) {
             $this->reference = new Reference(
                 0,

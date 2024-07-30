@@ -2,6 +2,7 @@
 
 namespace Watch\Blueprint\Builder;
 
+use Watch\Blueprint\Builder\Asset\Drawing;
 use Watch\Blueprint\Builder\Asset\Parser;
 use Watch\Blueprint\Model\Builder\Director;
 use Watch\Blueprint\Model\Builder\Schedule\Buffer as BufferBuilder;
@@ -41,24 +42,25 @@ class Schedule extends Builder
         return parent::clean();
     }
 
-    public function setModels(): self
+    public function setModels(Drawing $drawing): self
     {
         $director = new Director();
-        $this->issueModels = $this->setIssueModels($director);
-        $this->bufferModels = $this->setBufferModels($director);
-        $this->milestoneModels = $this->setMilestoneModels($director);
+        $this->issueModels = $this->setIssueModels($drawing, $director);
+        $this->bufferModels = $this->setBufferModels($drawing, $director);
+        $this->milestoneModels = $this->setMilestoneModels($drawing, $director);
         return $this;
     }
 
     /**
+     * @param Drawing $drawing
      * @param Director $director
      * @return Issue[]
      */
-    private function setIssueModels(Director $director): array
+    private function setIssueModels(Drawing $drawing, Director $director): array
     {
         $builder = new IssueBuilder();
         $parser = new Parser(self::PATTERN_ISSUE_STROKE);
-        $strokes = $this->drawing->getStrokes(
+        $strokes = $drawing->getStrokes(
             $parser,
             project: 'PRJ',
             milestone: null,
@@ -73,28 +75,30 @@ class Schedule extends Builder
     }
 
     /**
+     * @param Drawing $drawing
      * @param Director $director
      * @return Buffer[]
      */
-    private function setBufferModels(Director $director): array
+    private function setBufferModels(Drawing $drawing, Director $director): array
     {
         $builder = new BufferBuilder();
         $parser = new Parser(self::PATTERN_BUFFER_STROKE);
-        $strokes = $this->drawing->getStrokes($parser, type: 'T');
+        $strokes = $drawing->getStrokes($parser, type: 'T');
         $director->run($builder, $strokes);
         $this->trackMarkerOffset = max($builder->getEndPosition(), $this->trackMarkerOffset);
         return $builder->flush();
     }
 
     /**
+     * @param Drawing $drawing
      * @param Director $director
      * @return Milestone[]
      */
-    private function setMilestoneModels(Director $director): array
+    private function setMilestoneModels(Drawing $drawing, Director $director): array
     {
         $builder = new MilestoneBuilder();
         $parser = new Parser(self::PATTERN_MILESTONE_STROKE);
-        $strokes = $this->drawing->getStrokes($parser, key: 'PRJ');
+        $strokes = $drawing->getStrokes($parser, key: 'PRJ');
         $director->run($builder, $strokes);
         $this->projectMarkerOffset = $builder->getMarkerOffset();
         return $builder->flush();

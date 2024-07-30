@@ -13,14 +13,10 @@ abstract class Builder
 {
     protected ?Reference $reference = null;
 
-    public function __construct(readonly protected Drawing $drawing)
-    {
-    }
-
-    public function setReference(): self
+    public function setReference(Drawing $drawing): self
     {
         $parser = new Parser(static::PATTERN_REFERENCE_STROKE);
-        $referenceStroke = $this->drawing->getStroke($parser);
+        $referenceStroke = $drawing->getStroke($parser);
 
         if (is_null($referenceStroke)) {
             $this->reference = null;
@@ -64,5 +60,5 @@ abstract class Builder
         return $this;
     }
 
-    abstract public function setModels(): self;
+    abstract public function setModels(Drawing $drawing): self;
 }

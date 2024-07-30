@@ -16,18 +16,16 @@ class BuilderTest extends Unit
 {
     public function testAddCriticalChain()
     {
+        $drawing = new Drawing('
+            K-01   |       ****|
+            K-02   |   ****    | & K-01
+            K-03   |*******    | @ K-01
+                               ^ # 2023-09-21
+        ');
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
-        $blueprintBuilder = new SubjectBlueprintBuilder(
-            new Drawing('
-                K-01   |       ****|
-                K-02   |   ****    | & K-01
-                K-03   |*******    | @ K-01
-                                   ^ # 2023-09-21
-            '),
-            $mapper,
-        );
+        $blueprintBuilder = new SubjectBlueprintBuilder($mapper);
         $blueprintDirector = new Director();
-        $blueprintDirector->build($blueprintBuilder);
+        $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
         $builder = new Builder(
             new Context(new \DateTimeImmutable('2023-01-01')),
@@ -47,23 +45,21 @@ class BuilderTest extends Unit
 
     public function testAddFeedingBuffers()
     {
+        $drawing = new Drawing('
+            K-01   |       ****|
+            K-02   | ****      | & K-01
+            K-03   |*******    | @ K-01
+                               ^ # 2023-09-21
+        ');
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
-        $blueprintBuilder = new SubjectBlueprintBuilder(
-            new Drawing('
-                K-01   |       ****|
-                K-02   | ****      | & K-01
-                K-03   |*******    | @ K-01
-                                   ^ # 2023-09-21
-            '),
-            $mapper,
-        );
+        $blueprintBuilder = new SubjectBlueprintBuilder($mapper);
         $blueprintDirector = new Director();
-        $blueprintDirector->build($blueprintBuilder);
+        $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
         $builder = new Builder(
             new Context(new \DateTimeImmutable('2023-01-01')),
             $blueprint->getIssues($mapper),
-            $blueprint->getLinks($mapper),
+            $blueprint->getLinks(),
             'finish',
             [],
             $mapper,

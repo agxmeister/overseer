@@ -15,24 +15,25 @@ class PreservingDirectorTest extends AbstractDirectorTest
     /**
      * @dataProvider dataBuild
      */
-    public function testBuild($subjectDrawing, $scheduleDrawing)
+    public function testBuild($subjectDrawingContent, $scheduleDrawingContent)
     {
         $blueprintDirector = new \Watch\Blueprint\Builder\Director();
+
+        $subjectDrawing = new Drawing($subjectDrawingContent);
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
-        $subjectBlueprintBuilder = new SubjectBlueprintBuilder(
-            new Drawing($subjectDrawing),
-            $mapper,
-        );
-        $blueprintDirector->build($subjectBlueprintBuilder);
+        $subjectBlueprintBuilder = new SubjectBlueprintBuilder($mapper);
+        $blueprintDirector->build($subjectBlueprintBuilder, $subjectDrawing);
         $subjectBlueprint = $subjectBlueprintBuilder->flush();
-        $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder(new Drawing($scheduleDrawing));
-        $blueprintDirector->build($scheduleBlueprintBuilder);
+
+        $scheduleDrawing = new Drawing($scheduleDrawingContent);
+        $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder();
+        $blueprintDirector->build($scheduleBlueprintBuilder, $scheduleDrawing);
         $scheduleBlueprint = $scheduleBlueprintBuilder->flush();
         $director = new Director(
             new Builder(
                 new Context($scheduleBlueprint->nowDate),
                 $subjectBlueprint->getIssues($mapper),
-                $subjectBlueprint->getLinks($mapper),
+                $subjectBlueprint->getLinks(),
                 $scheduleBlueprint->getProjectName(),
                 $scheduleBlueprint->getMilestoneNames(),
                 $mapper,

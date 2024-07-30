@@ -18,18 +18,19 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
     /**
      * @dataProvider dataBuildFromDate
      */
-    public function testBuildFromDate($subjectDrawing, $scheduleDrawing)
+    public function testBuildFromDate($subjectDrawingContent, $scheduleDrawingContent)
     {
         $blueprintDirector = new \Watch\Blueprint\Builder\Director();
+
+        $subjectDrawing = new Drawing($subjectDrawingContent);
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
-        $subjectBlueprintBuilder = new SubjectBlueprintBuilder(
-            new Drawing($subjectDrawing),
-            $mapper,
-        );
-        $blueprintDirector->build($subjectBlueprintBuilder);
+        $subjectBlueprintBuilder = new SubjectBlueprintBuilder($mapper);
+        $blueprintDirector->build($subjectBlueprintBuilder, $subjectDrawing);
         $subjectBlueprint = $subjectBlueprintBuilder->flush();
-        $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder(new Drawing($scheduleDrawing));
-        $blueprintDirector->build($scheduleBlueprintBuilder);
+
+        $scheduleDrawing = new Drawing($scheduleDrawingContent);
+        $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder();
+        $blueprintDirector->build($scheduleBlueprintBuilder, $scheduleDrawing);
         $scheduleBlueprint = $scheduleBlueprintBuilder->flush();
         $director = new Director(
             new Builder(
@@ -53,18 +54,19 @@ class ModifyingCorrectiveDirectorTest extends AbstractDirectorTest
     /**
      * @dataProvider dataBuildToDate
      */
-    public function testBuildToDate($subjectDrawing, $scheduleDrawing)
+    public function testBuildToDate($subjectDrawingContent, $scheduleDrawingContent)
     {
         $blueprintDirector = new \Watch\Blueprint\Builder\Director();
+
+        $subjectDrawing = new Drawing($subjectDrawingContent);
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
-        $subjectBlueprintBuilder = new SubjectBlueprintBuilder(
-            new Drawing($subjectDrawing),
-            $mapper,
-        );
-        $blueprintDirector->build($subjectBlueprintBuilder);
+        $subjectBlueprintBuilder = new SubjectBlueprintBuilder($mapper);
+        $blueprintDirector->build($subjectBlueprintBuilder, $subjectDrawing);
         $subjectBlueprint = $subjectBlueprintBuilder->flush();
-        $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder(new Drawing($scheduleDrawing));
-        $blueprintDirector->build($scheduleBlueprintBuilder);
+
+        $scheduleDrawing = new Drawing($scheduleDrawingContent);
+        $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder();
+        $blueprintDirector->build($scheduleBlueprintBuilder, $scheduleDrawing);
         $scheduleBlueprint = $scheduleBlueprintBuilder->flush();
         $director = new Director(
             new Builder(
