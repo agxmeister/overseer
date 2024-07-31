@@ -14,17 +14,16 @@ use Watch\Subject\Model\Link;
 
 readonly class CreateMilestone
 {
-    public function __construct(private Jira $jira, private Mapper $mapper)
+    public function __construct(private Jira $jira, private SubjectBlueprintBuilder $blueprintBuilder, private Mapper $mapper)
     {
     }
 
     public function __invoke(Request $request, Response $response, $args): Response
     {
         $drawing = new Drawing(file_get_contents('php://input'));
-        $blueprintBuilder = new SubjectBlueprintBuilder($this->mapper);
         $blueprintDirector = new Director();
-        $blueprintDirector->build($blueprintBuilder, $drawing);
-        $blueprint = $blueprintBuilder->flush();
+        $blueprintDirector->build($this->blueprintBuilder, $drawing);
+        $blueprint = $this->blueprintBuilder->flush();
 
         $issueIds = array_reduce(
             $blueprint->getIssues($this->mapper),
