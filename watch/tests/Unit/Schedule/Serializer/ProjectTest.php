@@ -5,6 +5,7 @@ use Codeception\Test\Unit;
 use Watch\Blueprint\Builder\Asset\Drawing;
 use Watch\Blueprint\Builder\Director;
 use Watch\Blueprint\Builder\Schedule as ScheduleBlueprintBuilder;
+use Watch\Config;
 use Watch\Schedule\Serializer\Project;
 
 class ProjectTest extends Unit
@@ -18,7 +19,7 @@ class ProjectTest extends Unit
             K-03          |xxxx              | @ K-02
             finish                           ^ # 2023-09-21
         ');
-        $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder();
+        $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder(new Config());
         $blueprintDirector = new Director();
         $blueprintDirector->build($scheduleBlueprintBuilder, $drawing);
         $blueprint = $scheduleBlueprintBuilder->flush();

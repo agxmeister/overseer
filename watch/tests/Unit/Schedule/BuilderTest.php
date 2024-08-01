@@ -23,7 +23,7 @@ class BuilderTest extends Unit
                                ^ # 2023-09-21
         ');
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
-        $blueprintBuilder = new SubjectBlueprintBuilder($mapper);
+        $blueprintBuilder = new SubjectBlueprintBuilder(new Config(), $mapper);
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
@@ -52,7 +52,7 @@ class BuilderTest extends Unit
                                ^ # 2023-09-21
         ');
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
-        $blueprintBuilder = new SubjectBlueprintBuilder($mapper);
+        $blueprintBuilder = new SubjectBlueprintBuilder(new Config(), $mapper);
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();

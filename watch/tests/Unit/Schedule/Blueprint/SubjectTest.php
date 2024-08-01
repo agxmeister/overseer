@@ -5,6 +5,7 @@ use Codeception\Test\Unit;
 use Watch\Blueprint\Builder\Asset\Drawing;
 use Watch\Blueprint\Builder\Director;
 use Watch\Blueprint\Builder\Subject as SubjectBlueprintBuilder;
+use Watch\Config;
 use Watch\Schedule\Mapper;
 use Watch\Subject\Model\Issue;
 
@@ -17,7 +18,7 @@ class SubjectTest extends Unit
     {
         $drawing = new Drawing($drawingContent);
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
-        $blueprintBuilder = new SubjectBlueprintBuilder($mapper);
+        $blueprintBuilder = new SubjectBlueprintBuilder(new Config(), $mapper);
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();

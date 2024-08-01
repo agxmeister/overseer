@@ -8,10 +8,15 @@ use Watch\Blueprint\Builder\Asset\Parser;
 use Watch\Blueprint\Builder\Asset\Stroke;
 use Watch\Blueprint\Model\Attribute;
 use Watch\Blueprint\Model\AttributeType;
+use Watch\Config;
 
 abstract class Builder
 {
     protected ?Reference $reference = null;
+
+    public function __construct(protected Config $config)
+    {
+    }
 
     public function setReference(Drawing $drawing): self
     {

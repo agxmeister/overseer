@@ -5,6 +5,7 @@ use Codeception\Test\Unit;
 use Watch\Blueprint\Builder\Asset\Drawing;
 use Watch\Blueprint\Builder\Director;
 use Watch\Blueprint\Builder\Schedule as ScheduleBlueprintBuilder;
+use Watch\Config;
 use Watch\Schedule\Model\FeedingBuffer;
 use Watch\Schedule\Model\Issue;
 use Watch\Schedule\Model\Link;
@@ -22,7 +23,7 @@ class UtilsTest extends Unit
     public function testGetDuplicate($drawingContent)
     {
         $drawing = new Drawing($drawingContent);
-        $blueprintBuilder = new ScheduleBlueprintBuilder();
+        $blueprintBuilder = new ScheduleBlueprintBuilder(new Config());
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
@@ -77,7 +78,7 @@ class UtilsTest extends Unit
      public function testGetMilestoneChain($drawingContent, $expectedMilestoneChain)
      {
          $drawing = new Drawing($drawingContent);
-         $blueprintBuilder = new ScheduleBlueprintBuilder();
+         $blueprintBuilder = new ScheduleBlueprintBuilder(new Config());
          $blueprintDirector = new Director();
          $blueprintDirector->build($blueprintBuilder, $drawing);
          $blueprint = $blueprintBuilder->flush();
@@ -100,7 +101,7 @@ class UtilsTest extends Unit
     public function testGetFeedingChains($drawingContent, $expectedFeedingChains)
     {
         $drawing = new Drawing($drawingContent);
-        $blueprintBuilder = new ScheduleBlueprintBuilder();
+        $blueprintBuilder = new ScheduleBlueprintBuilder(new Config());
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
@@ -126,7 +127,7 @@ class UtilsTest extends Unit
     public function testGetLongestChainNodes($drawingContent, $expectedChainNodeNames)
     {
         $drawing = new Drawing($drawingContent);
-        $blueprintBuilder = new ScheduleBlueprintBuilder();
+        $blueprintBuilder = new ScheduleBlueprintBuilder(new Config());
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();

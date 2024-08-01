@@ -5,6 +5,7 @@ use Codeception\Test\Unit;
 use Watch\Blueprint\Builder\Asset\Drawing;
 use Watch\Blueprint\Builder\Director;
 use Watch\Blueprint\Builder\Schedule as ScheduleBlueprintBuilder;
+use Watch\Config;
 use Watch\Schedule\Serializer\Project;
 
 class ScheduleTest extends Unit
@@ -15,7 +16,7 @@ class ScheduleTest extends Unit
     public function testGetMilestoneNames($drawingContent, $milestoneNames)
     {
         $drawing = new Drawing($drawingContent);
-        $blueprintBuilder = new ScheduleBlueprintBuilder();
+        $blueprintBuilder = new ScheduleBlueprintBuilder(new Config());
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
@@ -28,7 +29,7 @@ class ScheduleTest extends Unit
     public function testGetMilestones($drawingContent, $milestones)
     {
         $drawing = new Drawing($drawingContent);
-        $blueprintBuilder = new ScheduleBlueprintBuilder();
+        $blueprintBuilder = new ScheduleBlueprintBuilder(new Config());
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
@@ -41,7 +42,7 @@ class ScheduleTest extends Unit
     public function testGetProjectBeginDate($drawingContent, $beginDate)
     {
         $drawing = new Drawing($drawingContent);
-        $blueprintBuilder = new ScheduleBlueprintBuilder();
+        $blueprintBuilder = new ScheduleBlueprintBuilder(new Config());
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
@@ -54,7 +55,7 @@ class ScheduleTest extends Unit
     public function testGetProjectEndDate($drawingContent, $endDate)
     {
         $drawing = new Drawing($drawingContent);
-        $blueprintBuilder = new ScheduleBlueprintBuilder();
+        $blueprintBuilder = new ScheduleBlueprintBuilder(new Config());
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
@@ -67,7 +68,7 @@ class ScheduleTest extends Unit
     public function testGetNowDate($drawingContent, $nowDate)
     {
         $drawing = new Drawing($drawingContent);
-        $blueprintBuilder = new ScheduleBlueprintBuilder();
+        $blueprintBuilder = new ScheduleBlueprintBuilder(new Config());
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
@@ -80,7 +81,7 @@ class ScheduleTest extends Unit
     public function testGetProjectLength($drawingContent, $length)
     {
         $drawing = new Drawing($drawingContent);
-        $blueprintBuilder = new ScheduleBlueprintBuilder();
+        $blueprintBuilder = new ScheduleBlueprintBuilder(new Config());
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
@@ -93,7 +94,7 @@ class ScheduleTest extends Unit
     public function testGetScheduleCriticalChain($drawingContent, $criticalChain)
     {
         $drawing = new Drawing($drawingContent);
-        $blueprintBuilder = new ScheduleBlueprintBuilder();
+        $blueprintBuilder = new ScheduleBlueprintBuilder(new Config());
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
@@ -106,7 +107,7 @@ class ScheduleTest extends Unit
     public function testGetBufferConsumption($drawingContent, $bufferConsumption)
     {
         $drawing = new Drawing($drawingContent);
-        $blueprintBuilder = new ScheduleBlueprintBuilder();
+        $blueprintBuilder = new ScheduleBlueprintBuilder(new Config());
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();

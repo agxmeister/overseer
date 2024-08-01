@@ -10,6 +10,7 @@ use Watch\Blueprint\Model\Builder\Subject\Milestone as MilestoneBuilder;
 use Watch\Blueprint\Model\Schedule\Milestone;
 use Watch\Blueprint\Model\Subject\Issue;
 use Watch\Blueprint\Subject as SubjectBlueprint;
+use Watch\Config;
 use Watch\Schedule\Mapper;
 
 class Subject extends Builder
@@ -28,8 +29,9 @@ class Subject extends Builder
     const string PATTERN_MILESTONE_STROKE = '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/';
     const string PATTERN_REFERENCE_STROKE = '/(?<marker>>)\s*(?<attributes>.*)/';
 
-    public function __construct(readonly private Mapper $mapper)
+    public function __construct(Config $config, readonly private Mapper $mapper)
     {
+        parent::__construct($config);
     }
 
     public function clean(): self
