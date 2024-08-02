@@ -19,7 +19,9 @@ class ProjectTest extends Unit
             K-03          |xxxx              | @ K-02
             finish                           ^ # 2023-09-21
         ');
-        $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder(new Config());
+        $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder(
+            new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']),
+        );
         $blueprintDirector = new Director();
         $blueprintDirector->build($scheduleBlueprintBuilder, $drawing);
         $blueprint = $scheduleBlueprintBuilder->flush();

@@ -21,7 +21,8 @@ abstract class Builder
     public function setReference(Drawing $drawing): self
     {
         $parser = new Parser(static::PATTERN_REFERENCE_STROKE);
-        $referenceStroke = $drawing->getStroke($parser);
+        $attributesMatchKey = $this->config->get('blueprint.drawing.stroke.pattern.key.attributes');
+        $referenceStroke = $drawing->getStroke($parser, $attributesMatchKey);
 
         if (is_null($referenceStroke)) {
             $this->reference = null;

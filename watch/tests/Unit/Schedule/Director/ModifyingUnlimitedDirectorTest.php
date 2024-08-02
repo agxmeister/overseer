@@ -24,12 +24,17 @@ class ModifyingUnlimitedDirectorTest extends AbstractDirectorTest
 
         $subjectDrawing = new Drawing($subjectDrawingContent);
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
-        $subjectBlueprintBuilder = new SubjectBlueprintBuilder(new Config(), $mapper);
+        $subjectBlueprintBuilder = new SubjectBlueprintBuilder(
+            new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']),
+            $mapper,
+        );
         $blueprintDirector->build($subjectBlueprintBuilder, $subjectDrawing);
         $subjectBlueprint = $subjectBlueprintBuilder->flush();
 
         $scheduleDrawing = new Drawing($scheduleDrawingContent);
-        $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder(new Config());
+        $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder(
+            new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']),
+        );
         $blueprintDirector->build($scheduleBlueprintBuilder, $scheduleDrawing);
         $scheduleBlueprint = $scheduleBlueprintBuilder->flush();
         $director = new Director(

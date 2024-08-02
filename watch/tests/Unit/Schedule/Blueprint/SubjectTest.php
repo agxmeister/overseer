@@ -18,7 +18,10 @@ class SubjectTest extends Unit
     {
         $drawing = new Drawing($drawingContent);
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
-        $blueprintBuilder = new SubjectBlueprintBuilder(new Config(), $mapper);
+        $blueprintBuilder = new SubjectBlueprintBuilder(
+            new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']),
+            $mapper,
+        );
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();

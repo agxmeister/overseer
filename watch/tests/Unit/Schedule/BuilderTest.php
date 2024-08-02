@@ -23,7 +23,10 @@ class BuilderTest extends Unit
                                ^ # 2023-09-21
         ');
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
-        $blueprintBuilder = new SubjectBlueprintBuilder(new Config(), $mapper);
+        $blueprintBuilder = new SubjectBlueprintBuilder(
+            new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']),
+            $mapper,
+        );
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
@@ -52,7 +55,10 @@ class BuilderTest extends Unit
                                ^ # 2023-09-21
         ');
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
-        $blueprintBuilder = new SubjectBlueprintBuilder(new Config(), $mapper);
+        $blueprintBuilder = new SubjectBlueprintBuilder(
+            new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']),
+            $mapper,
+        );
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
@@ -91,12 +97,15 @@ class BuilderTest extends Unit
 
     private function getConfig(): Config
     {
-        return new Config(json_decode('
-            {
-                "jira": {
-                    "statuses": []
+        return new Config(
+            json_decode('
+                {
+                    "jira": {
+                        "statuses": []
+                    }
                 }
-            }
-        '));
+            '),
+            ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes'],
+        );
     }
 }

@@ -17,21 +17,21 @@ readonly class Drawing
         );
     }
 
-    public function getStrokes(Parser $parser, ...$defaults): ?array
+    public function getStrokes(Parser $parser, $attributesMatchKey, ...$defaults): ?array
     {
         return array_map(
-            fn(array $match) => $this->createStroke($match, ...$defaults),
+            fn(array $match) => $this->createStroke($match, $attributesMatchKey, ...$defaults),
             $parser->getMatches($this->strokes),
         );
     }
 
-    public function getStroke(Parser $parser, ...$defaults): ?Stroke
+    public function getStroke(Parser $parser, $attributesMatchKey, ...$defaults): ?Stroke
     {
         $match = current($parser->getMatches($this->strokes));
         if ($match === false) {
             return null;
         }
-        return $this->createStroke($match, ...$defaults);
+        return $this->createStroke($match, $attributesMatchKey, ...$defaults);
     }
 
     private function getStrokeAttributes(string $attributes): array
@@ -62,21 +62,21 @@ readonly class Drawing
         return new Attribute($type, $value);
     }
 
-    private function createStroke($match, ...$defaults): Stroke
+    private function createStroke($match, $attributesMatchKey, ...$defaults): Stroke
     {
         [$parts, $offsets] = $match;
         return new Stroke(
             array_filter(
                 $parts,
-                fn(string $key) => $key !== 'attributes',
+                fn(string $key) => $key !== $attributesMatchKey,
                 ARRAY_FILTER_USE_KEY
             ),
             array_filter(
                 $offsets,
-                fn(string $key) => $key !== 'attributes',
+                fn(string $key) => $key !== $attributesMatchKey,
                 ARRAY_FILTER_USE_KEY
             ),
-            $this->getStrokeAttributes($parts['attributes'] ?? ''),
+            $this->getStrokeAttributes($parts[$attributesMatchKey] ?? ''),
             ...$defaults
         );
     }

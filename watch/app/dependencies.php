@@ -7,7 +7,7 @@ use Watch\Schedule\Mapper;
 
 $config = json_decode(file_get_contents(__DIR__ . '/../config.json'));
 $configDefaults = [
-    'blueprint.drawing.stroke.attributesKey' => 'attributes',
+    'blueprint.drawing.stroke.pattern.key.attributes' => 'attributes',
 ];
 
 return function (ContainerBuilder $containerBuilder) use ($config, $configDefaults) {
@@ -15,7 +15,7 @@ return function (ContainerBuilder $containerBuilder) use ($config, $configDefaul
         JiraClient::class => DI\autowire()->constructor(
             $_ENV['JIRA_API_URL'],
             $_ENV['JIRA_API_USERNAME'],
-            $_ENV['JIRA_API_TOKEN']
+            $_ENV['JIRA_API_TOKEN'],
         ),
         Config::class => DI\autowire()->constructor($config, $configDefaults),
         Mapper::class => DI\autowire()->constructor(

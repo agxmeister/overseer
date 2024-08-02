@@ -27,6 +27,9 @@ abstract class AbstractDirectorTest extends Unit
 
     protected function getConfig(): Config
     {
-        return new Config(json_decode('{}'));
+        return new Config(
+            null,
+            ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes'],
+        );
     }
 }

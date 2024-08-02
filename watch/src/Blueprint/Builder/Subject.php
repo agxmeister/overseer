@@ -59,8 +59,10 @@ class Subject extends Builder
     {
         $builder = new IssueBuilder($this->mapper);
         $parser = new Parser(self::PATTERN_ISSUE_STROKE);
+        $attributesMatchKey = $this->config->get('blueprint.drawing.stroke.pattern.key.attributes');
         $strokes = $drawing->getStrokes(
             $parser,
+            $attributesMatchKey,
             project: 'PRJ',
             milestone: null,
             type: 'T',
@@ -78,7 +80,8 @@ class Subject extends Builder
     {
         $builder = new MilestoneBuilder();
         $parser = new Parser(self::PATTERN_MILESTONE_STROKE);
-        $strokes = $drawing->getStrokes($parser, key: 'PRJ');
+        $attributesMatchKey = $this->config->get('blueprint.drawing.stroke.pattern.key.attributes');
+        $strokes = $drawing->getStrokes($parser, $attributesMatchKey, key: 'PRJ');
         $director->run($builder, $strokes);
         $this->projectMarkerOffset = $builder->getMarkerOffset();
         return $builder->flush();
