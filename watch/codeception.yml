@@ -17,7 +17,8 @@ suites:
         path: ./Unit
         bootstrap: bootstrap.php
         modules:
-            enabled: []
+            enabled:
+                - Tests\Support\Helper\Blueprint
 
 paths:
     tests: tests
