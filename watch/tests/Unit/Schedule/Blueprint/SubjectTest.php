@@ -18,10 +18,7 @@ class SubjectTest extends Unit
     {
         $drawing = new Drawing($drawingContent);
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
-        $blueprintBuilder = new SubjectBlueprintBuilder(
-            new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']),
-            $mapper,
-        );
+        $blueprintBuilder = new SubjectBlueprintBuilder($this->getConfig(), $mapper);
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
@@ -47,5 +44,10 @@ class SubjectTest extends Unit
                 ['I01', 'I02'],
             ],
         ];
+    }
+
+    private function getConfig(): Config
+    {
+        return new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']);
     }
 }

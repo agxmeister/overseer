@@ -23,9 +23,7 @@ class UtilsTest extends Unit
     public function testGetDuplicate($drawingContent)
     {
         $drawing = new Drawing($drawingContent);
-        $blueprintBuilder = new ScheduleBlueprintBuilder(
-            new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']),
-        );
+        $blueprintBuilder = new ScheduleBlueprintBuilder($this->getConfig());
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
@@ -80,9 +78,7 @@ class UtilsTest extends Unit
      public function testGetMilestoneChain($drawingContent, $expectedMilestoneChain)
      {
          $drawing = new Drawing($drawingContent);
-         $blueprintBuilder = new ScheduleBlueprintBuilder(
-             new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']),
-         );
+         $blueprintBuilder = new ScheduleBlueprintBuilder($this->getConfig());
          $blueprintDirector = new Director();
          $blueprintDirector->build($blueprintBuilder, $drawing);
          $blueprint = $blueprintBuilder->flush();
@@ -105,9 +101,7 @@ class UtilsTest extends Unit
     public function testGetFeedingChains($drawingContent, $expectedFeedingChains)
     {
         $drawing = new Drawing($drawingContent);
-        $blueprintBuilder = new ScheduleBlueprintBuilder(
-            new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']),
-        );
+        $blueprintBuilder = new ScheduleBlueprintBuilder($this->getConfig());
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
@@ -133,9 +127,7 @@ class UtilsTest extends Unit
     public function testGetLongestChainNodes($drawingContent, $expectedChainNodeNames)
     {
         $drawing = new Drawing($drawingContent);
-        $blueprintBuilder = new ScheduleBlueprintBuilder(
-            new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']),
-        );
+        $blueprintBuilder = new ScheduleBlueprintBuilder($this->getConfig());
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
@@ -323,5 +315,10 @@ class UtilsTest extends Unit
                 ['PRJ', 'K01', 'K06'],
             ],
         ];
+    }
+
+    private function getConfig(): Config
+    {
+        return new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']);
     }
 }

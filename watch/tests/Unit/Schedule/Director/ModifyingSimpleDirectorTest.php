@@ -24,17 +24,12 @@ class ModifyingSimpleDirectorTest extends AbstractDirectorTest
 
         $subjectDrawing = new Drawing($subjectDrawingContent);
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
-        $subjectBlueprintBuilder = new SubjectBlueprintBuilder(
-            new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']),
-            $mapper,
-        );
+        $subjectBlueprintBuilder = new SubjectBlueprintBuilder($this->getConfig(), $mapper);
         $blueprintDirector->build($subjectBlueprintBuilder, $subjectDrawing);
         $subjectBlueprint = $subjectBlueprintBuilder->flush();
 
         $scheduleDrawing = new Drawing($scheduleDrawingContent);
-        $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder(
-            new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']),
-        );
+        $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder($this->getConfig());
         $blueprintDirector->build($scheduleBlueprintBuilder, $scheduleDrawing);
         $scheduleBlueprint = $scheduleBlueprintBuilder->flush();
         $director = new Director(

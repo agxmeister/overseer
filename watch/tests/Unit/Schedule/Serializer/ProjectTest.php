@@ -19,9 +19,7 @@ class ProjectTest extends Unit
             K-03          |xxxx              | @ K-02
             finish                           ^ # 2023-09-21
         ');
-        $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder(
-            new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']),
-        );
+        $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder($this->getConfig());
         $blueprintDirector = new Director();
         $blueprintDirector->build($scheduleBlueprintBuilder, $drawing);
         $blueprint = $scheduleBlueprintBuilder->flush();
@@ -39,5 +37,10 @@ class ProjectTest extends Unit
         ) {
             $this->assertSameSize($initialSerializedSchedule[$volume], $restoredSerializedSchedule[$volume]);
         }
+    }
+
+    private function getConfig(): Config
+    {
+        return new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']);
     }
 }

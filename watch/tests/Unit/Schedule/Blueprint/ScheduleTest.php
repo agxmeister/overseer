@@ -16,9 +16,7 @@ class ScheduleTest extends Unit
     public function testGetMilestoneNames($drawingContent, $milestoneNames)
     {
         $drawing = new Drawing($drawingContent);
-        $blueprintBuilder = new ScheduleBlueprintBuilder(
-            new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']),
-        );
+        $blueprintBuilder = new ScheduleBlueprintBuilder($this->getConfig());
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
@@ -31,9 +29,7 @@ class ScheduleTest extends Unit
     public function testGetMilestones($drawingContent, $milestones)
     {
         $drawing = new Drawing($drawingContent);
-        $blueprintBuilder = new ScheduleBlueprintBuilder(
-            new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']),
-        );
+        $blueprintBuilder = new ScheduleBlueprintBuilder($this->getConfig());
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
@@ -46,9 +42,7 @@ class ScheduleTest extends Unit
     public function testGetProjectBeginDate($drawingContent, $beginDate)
     {
         $drawing = new Drawing($drawingContent);
-        $blueprintBuilder = new ScheduleBlueprintBuilder(
-            new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']),
-        );
+        $blueprintBuilder = new ScheduleBlueprintBuilder($this->getConfig());
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
@@ -61,9 +55,7 @@ class ScheduleTest extends Unit
     public function testGetProjectEndDate($drawingContent, $endDate)
     {
         $drawing = new Drawing($drawingContent);
-        $blueprintBuilder = new ScheduleBlueprintBuilder(
-            new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']),
-        );
+        $blueprintBuilder = new ScheduleBlueprintBuilder($this->getConfig());
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
@@ -76,9 +68,7 @@ class ScheduleTest extends Unit
     public function testGetNowDate($drawingContent, $nowDate)
     {
         $drawing = new Drawing($drawingContent);
-        $blueprintBuilder = new ScheduleBlueprintBuilder(
-            new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']),
-        );
+        $blueprintBuilder = new ScheduleBlueprintBuilder($this->getConfig());
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
@@ -91,9 +81,7 @@ class ScheduleTest extends Unit
     public function testGetProjectLength($drawingContent, $length)
     {
         $drawing = new Drawing($drawingContent);
-        $blueprintBuilder = new ScheduleBlueprintBuilder(
-            new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']),
-        );
+        $blueprintBuilder = new ScheduleBlueprintBuilder($this->getConfig());
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
@@ -106,9 +94,7 @@ class ScheduleTest extends Unit
     public function testGetScheduleCriticalChain($drawingContent, $criticalChain)
     {
         $drawing = new Drawing($drawingContent);
-        $blueprintBuilder = new ScheduleBlueprintBuilder(
-            new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']),
-        );
+        $blueprintBuilder = new ScheduleBlueprintBuilder($this->getConfig());
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
@@ -121,9 +107,7 @@ class ScheduleTest extends Unit
     public function testGetBufferConsumption($drawingContent, $bufferConsumption)
     {
         $drawing = new Drawing($drawingContent);
-        $blueprintBuilder = new ScheduleBlueprintBuilder(
-            new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']),
-        );
+        $blueprintBuilder = new ScheduleBlueprintBuilder($this->getConfig());
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
@@ -460,5 +444,10 @@ class ScheduleTest extends Unit
                 ['PB' => 1],
             ]
         ];
+    }
+
+    private function getConfig(): Config
+    {
+        return new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']);
     }
 }
