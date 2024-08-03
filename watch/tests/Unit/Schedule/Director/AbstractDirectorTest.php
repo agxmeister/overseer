@@ -2,10 +2,12 @@
 namespace Tests\Unit\Schedule\Director;
 
 use Codeception\Test\Unit;
-use Watch\Config;
+use Tests\Support\UnitTester;
 
 abstract class AbstractDirectorTest extends Unit
 {
+    protected UnitTester $tester;
+
     protected function assertSchedule($expected, $actual): void
     {
         $this->assertSameSize($expected, $actual, 'Number of volumes in the schedule is differ from expected.');
@@ -23,10 +25,5 @@ abstract class AbstractDirectorTest extends Unit
         for ($i = 0; $i < sizeof($actual); $i++) {
             $this->assertEquals($expected[$i], $actual[$i], "Items in volume '{$volume}' are mismatched.");
         }
-    }
-
-    protected function getConfig(): Config
-    {
-        return new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']);
     }
 }

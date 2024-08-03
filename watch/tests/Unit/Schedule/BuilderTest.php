@@ -2,10 +2,10 @@
 namespace Tests\Unit\Schedule;
 
 use Codeception\Test\Unit;
+use Tests\Support\UnitTester;
 use Watch\Blueprint\Builder\Asset\Drawing;
 use Watch\Blueprint\Builder\Director;
 use Watch\Blueprint\Builder\Subject as SubjectBlueprintBuilder;
-use Watch\Config;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Mapper;
@@ -14,6 +14,8 @@ use Watch\Schedule\Serializer\Project as ProjectSerializer;
 
 class BuilderTest extends Unit
 {
+    protected UnitTester $tester;
+
     public function testAddCriticalChain()
     {
         $drawing = new Drawing('
@@ -23,7 +25,7 @@ class BuilderTest extends Unit
                                ^ # 2023-09-21
         ');
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
-        $blueprintBuilder = new SubjectBlueprintBuilder($this->getConfig(), $mapper);
+        $blueprintBuilder = new SubjectBlueprintBuilder($this->tester->getConfig(), $mapper);
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
@@ -52,7 +54,7 @@ class BuilderTest extends Unit
                                ^ # 2023-09-21
         ');
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
-        $blueprintBuilder = new SubjectBlueprintBuilder($this->getConfig(), $mapper);
+        $blueprintBuilder = new SubjectBlueprintBuilder($this->tester->getConfig(), $mapper);
         $blueprintDirector = new Director();
         $blueprintDirector->build($blueprintBuilder, $drawing);
         $blueprint = $blueprintBuilder->flush();
@@ -87,10 +89,5 @@ class BuilderTest extends Unit
                 fn($data) => $data['type'] === Buffer::TYPE_FEEDING,
             )),
         );
-    }
-
-    private function getConfig(): Config
-    {
-        return new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']);
     }
 }

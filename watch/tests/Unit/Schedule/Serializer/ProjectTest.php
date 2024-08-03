@@ -2,14 +2,16 @@
 namespace Tests\Unit\Schedule\Serializer;
 
 use Codeception\Test\Unit;
+use Tests\Support\UnitTester;
 use Watch\Blueprint\Builder\Asset\Drawing;
 use Watch\Blueprint\Builder\Director;
 use Watch\Blueprint\Builder\Schedule as ScheduleBlueprintBuilder;
-use Watch\Config;
 use Watch\Schedule\Serializer\Project;
 
 class ProjectTest extends Unit
 {
+    protected UnitTester $tester;
+
     public function testDeserializeSerialize()
     {
         $drawing = new Drawing('
@@ -19,7 +21,7 @@ class ProjectTest extends Unit
             K-03          |xxxx              | @ K-02
             finish                           ^ # 2023-09-21
         ');
-        $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder($this->getConfig());
+        $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder($this->tester->getConfig());
         $blueprintDirector = new Director();
         $blueprintDirector->build($scheduleBlueprintBuilder, $drawing);
         $blueprint = $scheduleBlueprintBuilder->flush();
@@ -37,10 +39,5 @@ class ProjectTest extends Unit
         ) {
             $this->assertSameSize($initialSerializedSchedule[$volume], $restoredSerializedSchedule[$volume]);
         }
-    }
-
-    private function getConfig(): Config
-    {
-        return new Config(null, ['blueprint.drawing.stroke.pattern.key.attributes' => 'attributes']);
     }
 }

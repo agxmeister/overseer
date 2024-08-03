@@ -4,7 +4,6 @@ namespace Tests\Unit\Schedule\Director;
 use Watch\Blueprint\Builder\Asset\Drawing;
 use Watch\Blueprint\Builder\Schedule as ScheduleBlueprintBuilder;
 use Watch\Blueprint\Builder\Subject as SubjectBlueprintBuilder;
-use Watch\Config;
 use Watch\Schedule\Builder;
 use Watch\Schedule\Builder\Context;
 use Watch\Schedule\Builder\Strategy\Limit\Simple as SimpleLimitStrategy;
@@ -24,12 +23,12 @@ class ModifyingSimpleDirectorTest extends AbstractDirectorTest
 
         $subjectDrawing = new Drawing($subjectDrawingContent);
         $mapper = new Mapper(['To Do'], ['In Progress'], ['Done'], ["Depends"], ["Follows"]);
-        $subjectBlueprintBuilder = new SubjectBlueprintBuilder($this->getConfig(), $mapper);
+        $subjectBlueprintBuilder = new SubjectBlueprintBuilder($this->tester->getConfig(), $mapper);
         $blueprintDirector->build($subjectBlueprintBuilder, $subjectDrawing);
         $subjectBlueprint = $subjectBlueprintBuilder->flush();
 
         $scheduleDrawing = new Drawing($scheduleDrawingContent);
-        $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder($this->getConfig());
+        $scheduleBlueprintBuilder = new ScheduleBlueprintBuilder($this->tester->getConfig());
         $blueprintDirector->build($scheduleBlueprintBuilder, $scheduleDrawing);
         $scheduleBlueprint = $scheduleBlueprintBuilder->flush();
         $director = new Director(
