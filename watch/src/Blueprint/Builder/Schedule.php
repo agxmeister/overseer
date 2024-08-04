@@ -27,11 +27,6 @@ class Schedule extends Builder
     /** @var Milestone[] */
     private ?array $milestoneModels = null;
 
-    const string PATTERN_ISSUE_STROKE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+\-]?)(?<beginMarker>\|)(?<track>[x*.\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
-    const string PATTERN_MILESTONE_STROKE = '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/';
-    const string PATTERN_BUFFER_STROKE = '/\s*(((?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<beginMarker>\|)(?<track>[_!\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
-    const string PATTERN_REFERENCE_STROKE = '/(?<marker>>)\s*(?<attributes>.*)/';
-
     public function clean(): self
     {
         $this->trackMarkerOffset = null;
@@ -59,7 +54,7 @@ class Schedule extends Builder
     private function setIssueModels(Drawing $drawing, Director $director): array
     {
         $builder = new IssueBuilder();
-        $parser = new Parser(self::PATTERN_ISSUE_STROKE);
+        $parser = new Parser($this->config->get('blueprint.drawing.stroke.pattern.issue.schedule'));
         $attributesMatchKey = $this->config->get('blueprint.drawing.stroke.pattern.key.attributes');
         $strokes = $drawing->getStrokes(
             $parser,
@@ -84,7 +79,7 @@ class Schedule extends Builder
     private function setBufferModels(Drawing $drawing, Director $director): array
     {
         $builder = new BufferBuilder();
-        $parser = new Parser(self::PATTERN_BUFFER_STROKE);
+        $parser = new Parser($this->config->get('blueprint.drawing.stroke.pattern.buffer.schedule'));
         $attributesMatchKey = $this->config->get('blueprint.drawing.stroke.pattern.key.attributes');
         $strokes = $drawing->getStrokes($parser, $attributesMatchKey, type: 'T');
         $director->run($builder, $strokes);
@@ -100,7 +95,7 @@ class Schedule extends Builder
     private function setMilestoneModels(Drawing $drawing, Director $director): array
     {
         $builder = new MilestoneBuilder();
-        $parser = new Parser(self::PATTERN_MILESTONE_STROKE);
+        $parser = new Parser($this->config->get('blueprint.drawing.stroke.pattern.milestone.schedule'));
         $attributesMatchKey = $this->config->get('blueprint.drawing.stroke.pattern.key.attributes');
         $strokes = $drawing->getStrokes($parser, $attributesMatchKey, key: 'PRJ');
         $director->run($builder, $strokes);

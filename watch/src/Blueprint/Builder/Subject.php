@@ -25,10 +25,6 @@ class Subject extends Builder
     /** @var Milestone[] */
     private ?array $milestoneModels = null;
 
-    const string PATTERN_ISSUE_STROKE = '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+]?)(?<beginMarker>\|)(?<track>[*.\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/';
-    const string PATTERN_MILESTONE_STROKE = '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/';
-    const string PATTERN_REFERENCE_STROKE = '/(?<marker>>)\s*(?<attributes>.*)/';
-
     public function __construct(Config $config, readonly private Mapper $mapper)
     {
         parent::__construct($config);
@@ -58,7 +54,7 @@ class Subject extends Builder
     private function setIssueModels(Drawing $drawing, Director $director): array
     {
         $builder = new IssueBuilder($this->mapper);
-        $parser = new Parser(self::PATTERN_ISSUE_STROKE);
+        $parser = new Parser($this->config->get('blueprint.drawing.stroke.pattern.issue.subject'));
         $attributesMatchKey = $this->config->get('blueprint.drawing.stroke.pattern.key.attributes');
         $strokes = $drawing->getStrokes(
             $parser,
@@ -79,7 +75,7 @@ class Subject extends Builder
     private function setMilestoneModels(Drawing $drawing, Director $director): array
     {
         $builder = new MilestoneBuilder();
-        $parser = new Parser(self::PATTERN_MILESTONE_STROKE);
+        $parser = new Parser($this->config->get('blueprint.drawing.stroke.pattern.milestone.subject'));
         $attributesMatchKey = $this->config->get('blueprint.drawing.stroke.pattern.key.attributes');
         $strokes = $drawing->getStrokes($parser, $attributesMatchKey, key: 'PRJ');
         $director->run($builder, $strokes);

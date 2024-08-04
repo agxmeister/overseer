@@ -24,7 +24,7 @@ trait HasProjectAsReference
             return $this;
         }
 
-        $parser = new Parser(static::PATTERN_REFERENCE_STROKE);
+        $parser = new Parser($this->config->get('blueprint.drawing.stroke.pattern.reference'));
         $attributesMatchKey = $this->config->get('blueprint.drawing.stroke.pattern.key.attributes');
         $referenceStroke = $drawing->getStroke($parser, $attributesMatchKey);
         if (is_null($referenceStroke)) {
