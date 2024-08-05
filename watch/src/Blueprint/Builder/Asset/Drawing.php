@@ -34,16 +34,13 @@ readonly class Drawing
         return $this->createStroke($match, $attributesMatchKey, ...$defaults);
     }
 
-    private function getStrokeAttributes(string $attributes): array
+    private function getStrokeAttributes(array $attributes): array
     {
         return array_map(
             fn(string $attribute) => $this->getStrokeAttribute($attribute),
             array_values(
                 array_filter(
-                    array_map(
-                        fn($attribute) => trim($attribute),
-                        explode(',', $attributes)
-                    ),
+                    $attributes,
                     fn(string $attribute) => !empty($attribute),
                 )
             )
@@ -76,7 +73,7 @@ readonly class Drawing
                 fn(string $key) => $key !== $attributesMatchKey,
                 ARRAY_FILTER_USE_KEY
             ),
-            $this->getStrokeAttributes($parts[$attributesMatchKey] ?? ''),
+            $this->getStrokeAttributes($parts[$attributesMatchKey] ?? []),
             ...$defaults
         );
     }

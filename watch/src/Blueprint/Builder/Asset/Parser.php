@@ -36,15 +36,36 @@ readonly class Parser
             fn($key) => is_string($key),
             ARRAY_FILTER_USE_KEY,
         );
+        $typedMatches = array_reduce(
+            array_keys($namedMatches),
+            fn($acc, $key) => [...$acc, ...$this->getTypedMatch($key, $namedMatches[$key])],
+            [],
+        );
         return [
             array_map(
                 fn($match) => $match[0],
-                $namedMatches,
+                $typedMatches,
             ),
             array_map(
                 fn($match) => $match[1],
-                $namedMatches,
+                $typedMatches,
             ),
         ];
+    }
+
+    private function getTypedMatch(string $key, array $match): array
+    {
+        $parts = explode('_', $key);
+        $type = sizeof($parts) < 2 ? 'string' : $parts[array_key_first($parts)];
+        return [$parts[array_key_last($parts)] => $type === 'csv' ? $this->getCsv($match) : $match];
+    }
+
+    private function getCsv(array $match): array
+    {
+        $match[0] = array_map(
+            fn(string $value) => trim($value),
+            explode(',', $match[0]),
+        );
+        return $match;
     }
 }
