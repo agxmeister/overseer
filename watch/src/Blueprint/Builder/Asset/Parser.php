@@ -25,7 +25,7 @@ readonly class Parser
         );
     }
 
-    private function getMatch(string $stroke): ?array
+    public function getMatch(string $stroke): ?array
     {
         $result = preg_match($this->pattern, $stroke, $matches, PREG_OFFSET_CAPTURE | PREG_UNMATCHED_AS_NULL);
         if (!$result) {
