@@ -62,6 +62,7 @@ class Schedule extends Builder
             project: 'PRJ',
             milestone: null,
             type: 'T',
+            modifier: null,
         );
         $director->run(
             $builder,

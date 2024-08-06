@@ -62,6 +62,7 @@ class Subject extends Builder
             project: 'PRJ',
             milestone: null,
             type: 'T',
+            modifier: null,
         );
         $director->run($builder, $strokes);
         $this->trackMarkerOffset = $builder->getEndPosition();

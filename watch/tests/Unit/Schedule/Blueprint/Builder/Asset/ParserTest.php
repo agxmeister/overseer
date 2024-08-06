@@ -19,7 +19,7 @@ class ParserTest extends Unit
     {
         return [
             [
-                '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+\-]?)(?<beginMarker>\|)(?<track>[x*.\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/',
+                '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+\-])?(?<beginMarker>\|)(?<track>[x*.\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/',
                 ' K-01 |xxx   | @ M-01 ',
                 [
                     [
@@ -27,7 +27,7 @@ class ParserTest extends Unit
                         'milestone' => null,
                         'type' => null,
                         'key' => 'K-01',
-                        'modifier' => '',
+                        'modifier' => null,
                         'beginMarker' => '|',
                         'track' => 'xxx   ',
                         'endMarker' => '|',
@@ -38,7 +38,7 @@ class ParserTest extends Unit
                         'milestone' => -1,
                         'type' => -1,
                         'key' => 1,
-                        'modifier' => 6,
+                        'modifier' => -1,
                         'beginMarker' => 6,
                         'track' => 7,
                         'endMarker' => 13,
@@ -46,7 +46,7 @@ class ParserTest extends Unit
                     ],
                 ],
             ], [
-                '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+\-]?)(?<beginMarker>\|)(?<track>[x*.\s]*)(?<endMarker>\|)\s*(?<csv_attributes>.*)/',
+                '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+\-])?(?<beginMarker>\|)(?<track>[x*.\s]*)(?<endMarker>\|)\s*(?<csv_attributes>.*)/',
                 ' K-01 |xxx   | @ M-01 ',
                 [
                     [
@@ -54,7 +54,7 @@ class ParserTest extends Unit
                         'milestone' => null,
                         'type' => null,
                         'key' => 'K-01',
-                        'modifier' => '',
+                        'modifier' => null,
                         'beginMarker' => '|',
                         'track' => 'xxx   ',
                         'endMarker' => '|',
@@ -65,7 +65,7 @@ class ParserTest extends Unit
                         'milestone' => -1,
                         'type' => -1,
                         'key' => 1,
-                        'modifier' => 6,
+                        'modifier' => -1,
                         'beginMarker' => 6,
                         'track' => 7,
                         'endMarker' => 13,
