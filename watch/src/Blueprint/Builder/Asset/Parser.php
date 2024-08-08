@@ -36,36 +36,54 @@ readonly class Parser
             fn($key) => is_string($key),
             ARRAY_FILTER_USE_KEY,
         );
-        $typedMatches = array_reduce(
+        $plainNamedMatches = array_map(
+            fn($key, $match) => [
+                $this->getKey($key),
+                $this->getValue($match[0], $this->getType($key)),
+                $match[1],
+            ],
             array_keys($namedMatches),
-            fn($acc, $key) => [...$acc, ...$this->getTypedMatch($key, $namedMatches[$key])],
-            [],
+            array_values($namedMatches),
         );
         return [
-            array_map(
-                fn($match) => $match[0],
-                $typedMatches,
+            array_reduce(
+                $plainNamedMatches,
+                fn($acc, $value) => [...$acc, $value[0] => $value[1]],
+                [],
             ),
-            array_map(
-                fn($match) => $match[1],
-                $typedMatches,
-            ),
+            array_reduce(
+                $plainNamedMatches,
+                fn($acc, $value) => [...$acc, $value[0] => $value[2]],
+                [],
+            )
         ];
     }
 
-    private function getTypedMatch(string $key, array $match): array
+    private function getKey(string $key): string
     {
-        $parts = explode('_', $key);
-        $type = sizeof($parts) < 2 ? 'string' : $parts[array_key_first($parts)];
-        return [$parts[array_key_last($parts)] => $type === 'csv' ? $this->getCsv($match) : $match];
+        $parts = explode('_', $key, 2);
+        return sizeof($parts) === 1 ? $parts[0] : $parts[1];
     }
 
-    private function getCsv(array $match): array
+    private function getType(string $key): ?string
     {
-        $match[0] = array_map(
-            fn(string $value) => trim($value),
-            explode(',', $match[0]),
+        $parts = explode('_', $key, 2);
+        return sizeof($parts) === 1 ? null : $parts[0];
+    }
+
+    private function getValue($value, $type): mixed
+    {
+        return match ($type) {
+            'csv' => $this->getCsvValue($value),
+            default => $value,
+        };
+    }
+
+    private function getCsvValue($value): array
+    {
+        return array_map(
+            fn(string $part) => trim($part),
+            explode(',', $value),
         );
-        return $match;
     }
 }
