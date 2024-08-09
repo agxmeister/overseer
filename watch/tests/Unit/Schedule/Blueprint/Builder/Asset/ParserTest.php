@@ -33,7 +33,7 @@ class ParserTest extends Unit
                     'attributes' => ['@ M-01 ', 15],
                 ],
             ], [
-                '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+\-])?(?<beginMarker>\|)(?<track>[x*.\s]*)(?<endMarker>\|)\s*(?<csv_attributes>.*)/',
+                '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+\-])?(?<beginMarker>\|)(?<track>[x*.\s]*)(?<endMarker>\|)\s*(?<attributes_csv>.*)/',
                 ' K-01 |xxx   | @ M-01 ',
                 [
                     'project' => null,

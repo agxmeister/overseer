@@ -61,14 +61,14 @@ readonly class Parser
 
     private function getKey(string $key): string
     {
-        $parts = explode('_', $key, 2);
-        return sizeof($parts) === 1 ? $parts[0] : $parts[1];
+        [$key] = explode('_', $key, 2);
+        return $key;
     }
 
     private function getType(string $key): ?string
     {
-        $parts = explode('_', $key, 2);
-        return sizeof($parts) === 1 ? null : $parts[0];
+        [, $type] = array_merge(explode('_', $key, 2), [null]);
+        return $type;
     }
 
     private function getValue($value, $type): mixed
