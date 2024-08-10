@@ -81,6 +81,9 @@ readonly class Parser
 
     private function getCsvValue($value): array
     {
+        if (empty(trim($value))) {
+            return [];
+        }
         return array_map(
             fn(string $part) => trim($part),
             explode(',', $value),

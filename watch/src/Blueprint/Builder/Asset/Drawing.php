@@ -38,12 +38,7 @@ readonly class Drawing
     {
         return array_map(
             fn(string $attribute) => $this->getStrokeAttribute($attribute),
-            array_values(
-                array_filter(
-                    $attributes,
-                    fn(string $attribute) => !empty($attribute),
-                )
-            )
+            $attributes,
         );
     }
 
