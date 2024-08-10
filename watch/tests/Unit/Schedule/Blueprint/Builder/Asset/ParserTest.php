@@ -19,32 +19,59 @@ class ParserTest extends Unit
     {
         return [
             [
-                '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+\-])?(?<beginMarker>\|)(?<track>[x*.\s]*)(?<endMarker>\|)\s*(?<attributes>.*)/',
-                ' K-01 |xxx   | @ M-01 ',
+                '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/',
+                '    M1                   ^             # 2023-09-09    ',
                 [
-                    'project' => null,
-                    'milestone' => null,
-                    'type' => null,
-                    'key' => ['K-01', 1],
-                    'modifier' => null,
-                    'beginMarker' => ['|', 6],
-                    'track' => ['xxx   ', 7],
-                    'endMarker' => ['|', 13],
-                    'attributes' => ['@ M-01 ', 15],
+                    'key' => ['M1', 4],
+                    'marker' => ['^', 25],
+                    'attributes' => ['# 2023-09-09    ', 39],
+                ],
+            ], [
+                '/(?<marker>>)\s*(?<attributes_csv>.*)/',
+                '    >     # 2023-07-15    ',
+                [
+                    'marker' => ['>', 4],
+                    'attributes' => [['# 2023-07-15'], 10],
+                ],
+            ], [
+                '/(?<marker>>)\s*(?<attributes_csv>.*)/',
+                '    >    ',
+                [
+                    'marker' => ['>', 4],
+                    'attributes' => [[], 9],
                 ],
             ], [
                 '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+\-])?(?<beginMarker>\|)(?<track>[x*.\s]*)(?<endMarker>\|)\s*(?<attributes_csv>.*)/',
-                ' K-01 |xxx   | @ M-01 ',
+                '    K-02          |    xxxx          | @ K-01    ',
                 [
                     'project' => null,
                     'milestone' => null,
                     'type' => null,
-                    'key' => ['K-01', 1],
+                    'key' => ['K-02', 4],
                     'modifier' => null,
-                    'beginMarker' => ['|', 6],
-                    'track' => ['xxx   ', 7],
-                    'endMarker' => ['|', 13],
-                    'attributes' => [['@ M-01'], 15],
+                    'beginMarker' => ['|', 18],
+                    'track' => ['    xxxx          ', 19],
+                    'endMarker' => ['|', 37],
+                    'attributes' => [['@ K-01'], 39],
+                ],
+            ], [
+                '/\s*(((?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<beginMarker>\|)(?<track>[_!\s]*)(?<endMarker>\|)\s*(?<attributes_csv>.*)/',
+                '    PB/finish-buf |            !!____| @ finish    ',
+                [
+                    'type' => ['PB', 4],
+                    'key' => ['finish-buf', 7],
+                    'beginMarker' => ['|', 18],
+                    'track' => ['            !!____', 19],
+                    'endMarker' => ['|', 37],
+                    'attributes' => [['@ finish'], 39],
+                ],
+            ], [
+                '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes_csv>.*)/',
+                '    M1                   ^             # 2023-09-09    ',
+                [
+                    'key' => ['M1', 4],
+                    'marker' => ['^', 25],
+                    'attributes' => [['# 2023-09-09'], 39],
                 ],
             ],
         ];
