@@ -15,18 +15,34 @@ class ParserTest extends Unit
         $this->assertEquals($this->getExpectedMatch($expected), $parser->getMatch($line));
     }
 
+    /**
+     * @dataProvider dataGetMatchByStrokePatterns
+     */
+    public function testGetMatchByStrokePatterns($pattern, $line, $expected)
+    {
+        $parser = new Parser($pattern);
+        $this->assertEquals($this->getExpectedMatch($expected), $parser->getMatch($line));
+    }
+
     static public function dataGetMatch(): array
     {
         return [
             [
-                '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes>.*)/',
-                '    M1                   ^             # 2023-09-09    ',
+                '/\s*(?<p1>[\w\-]+)?\s+(?<p2>[\w\-]+)\s+(?<p3>[\w\-]+)\s+/',
+                '    p1    p2    p3    ',
                 [
-                    'key' => ['M1', 4],
-                    'marker' => ['^', 25],
-                    'attributes' => ['# 2023-09-09    ', 39],
+                    'p1' => ['p1', 4],
+                    'p2' => ['p2', 10],
+                    'p3' => ['p3', 16],
                 ],
-            ], [
+            ],
+        ];
+    }
+
+    static public function dataGetMatchByStrokePatterns(): array
+    {
+        return [
+            [
                 '/(?<marker>>)\s*(?<attributes_csv>.*)/',
                 '    >     # 2023-07-15    ',
                 [
@@ -51,6 +67,20 @@ class ParserTest extends Unit
                     'modifier' => null,
                     'beginMarker' => ['|', 18],
                     'track' => ['    xxxx          ', 19],
+                    'endMarker' => ['|', 37],
+                    'attributes' => [['@ K-01'], 39],
+                ],
+            ], [
+                '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+])?(?<beginMarker>\|)(?<track>[*.\s]*)(?<endMarker>\|)\s*(?<attributes_csv>.*)/',
+                '    K-02          |    ****          | @ K-01    ',
+                [
+                    'project' => null,
+                    'milestone' => null,
+                    'type' => null,
+                    'key' => ['K-02', 4],
+                    'modifier' => null,
+                    'beginMarker' => ['|', 18],
+                    'track' => ['    ****          ', 19],
                     'endMarker' => ['|', 37],
                     'attributes' => [['@ K-01'], 39],
                 ],
