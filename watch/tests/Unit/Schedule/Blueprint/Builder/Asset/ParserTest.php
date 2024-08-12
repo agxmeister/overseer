@@ -16,12 +16,37 @@ class ParserTest extends Unit
     }
 
     /**
+     * @dataProvider dataGetMatchDefault
+     */
+    public function testGetMatchDefault($pattern, $defaults, $line, $expected)
+    {
+        $parser = new Parser($pattern, ...$defaults);
+        $this->assertEquals($this->getExpectedMatch($expected), $parser->getMatch($line));
+    }
+
+    /**
      * @dataProvider dataGetMatchByStrokePatterns
      */
     public function testGetMatchByStrokePatterns($pattern, $line, $expected)
     {
         $parser = new Parser($pattern);
         $this->assertEquals($this->getExpectedMatch($expected), $parser->getMatch($line));
+    }
+
+    static public function dataGetMatchDefault(): array
+    {
+        return [
+            [
+                '/\s*(?<p1>[\w\-]+)?\s+(?<p2>[\w\-]+)\s+/',
+                ['p3' => 'p3'],
+                '    p1    p2    p3    ',
+                [
+                    'p1' => ['p1', 4],
+                    'p2' => ['p2', 10],
+                    'p3' => ['p3', -1],
+                ],
+            ],
+        ];
     }
 
     static public function dataGetMatch(): array

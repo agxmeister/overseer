@@ -4,8 +4,11 @@ namespace Watch\Blueprint\Builder\Asset;
 
 readonly class Parser
 {
-    public function __construct(private string $pattern)
+    private array $defaults;
+
+    public function __construct(private string $pattern, ...$defaults)
     {
+        $this->defaults = $defaults;
     }
 
     /**
@@ -32,7 +35,13 @@ readonly class Parser
             return null;
         }
         $namedMatches = array_filter(
-            $matches,
+            array_merge(
+                array_map(
+                    fn($default) => [$default, -1],
+                    $this->defaults,
+                ),
+                $matches,
+            ),
             fn($key) => is_string($key),
             ARRAY_FILTER_USE_KEY,
         );
