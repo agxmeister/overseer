@@ -54,16 +54,15 @@ class Subject extends Builder
     private function setIssueModels(Drawing $drawing, Director $director): array
     {
         $builder = new IssueBuilder($this->mapper);
-        $parser = new Parser($this->config->get('blueprint.drawing.stroke.pattern.issue.subject'));
-        $attributesMatchKey = $this->config->get('blueprint.drawing.stroke.pattern.key.attributes');
-        $strokes = $drawing->getStrokes(
-            $parser,
-            $attributesMatchKey,
+        $parser = new Parser(
+            $this->config->get('blueprint.drawing.stroke.pattern.issue.subject'),
             project: 'PRJ',
             milestone: null,
             type: 'T',
             modifier: null,
         );
+        $attributesMatchKey = $this->config->get('blueprint.drawing.stroke.pattern.key.attributes');
+        $strokes = $drawing->getStrokes($parser, $attributesMatchKey);
         $director->run($builder, $strokes);
         $this->trackMarkerOffset = $builder->getEndPosition();
         return $builder->flush();
@@ -76,9 +75,12 @@ class Subject extends Builder
     private function setMilestoneModels(Drawing $drawing, Director $director): array
     {
         $builder = new MilestoneBuilder();
-        $parser = new Parser($this->config->get('blueprint.drawing.stroke.pattern.milestone.subject'));
+        $parser = new Parser(
+            $this->config->get('blueprint.drawing.stroke.pattern.milestone.subject'),
+            key: 'PRJ',
+        );
         $attributesMatchKey = $this->config->get('blueprint.drawing.stroke.pattern.key.attributes');
-        $strokes = $drawing->getStrokes($parser, $attributesMatchKey, key: 'PRJ');
+        $strokes = $drawing->getStrokes($parser, $attributesMatchKey);
         $director->run($builder, $strokes);
         $this->projectMarkerOffset = $builder->getMarkerOffset();
         return $builder->flush();

@@ -54,7 +54,7 @@ class ParserTest extends Unit
                     'p2' => ['p2', 10],
                     'p3' => ['p3', -1],
                 ],
-            ]
+            ],
         ];
     }
 

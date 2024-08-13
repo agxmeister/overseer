@@ -54,20 +54,16 @@ class Schedule extends Builder
     private function setIssueModels(Drawing $drawing, Director $director): array
     {
         $builder = new IssueBuilder();
-        $parser = new Parser($this->config->get('blueprint.drawing.stroke.pattern.issue.schedule'));
-        $attributesMatchKey = $this->config->get('blueprint.drawing.stroke.pattern.key.attributes');
-        $strokes = $drawing->getStrokes(
-            $parser,
-            $attributesMatchKey,
+        $parser = new Parser(
+            $this->config->get('blueprint.drawing.stroke.pattern.issue.schedule'),
             project: 'PRJ',
             milestone: null,
             type: 'T',
             modifier: null,
         );
-        $director->run(
-            $builder,
-            $strokes,
-        );
+        $attributesMatchKey = $this->config->get('blueprint.drawing.stroke.pattern.key.attributes');
+        $strokes = $drawing->getStrokes($parser, $attributesMatchKey);
+        $director->run($builder, $strokes);
         $this->trackMarkerOffset = max($builder->getEndPosition(), $this->trackMarkerOffset);
         return $builder->flush();
     }
@@ -80,9 +76,12 @@ class Schedule extends Builder
     private function setBufferModels(Drawing $drawing, Director $director): array
     {
         $builder = new BufferBuilder();
-        $parser = new Parser($this->config->get('blueprint.drawing.stroke.pattern.buffer.schedule'));
+        $parser = new Parser(
+            $this->config->get('blueprint.drawing.stroke.pattern.buffer.schedule'),
+            type: 'T',
+        );
         $attributesMatchKey = $this->config->get('blueprint.drawing.stroke.pattern.key.attributes');
-        $strokes = $drawing->getStrokes($parser, $attributesMatchKey, type: 'T');
+        $strokes = $drawing->getStrokes($parser, $attributesMatchKey);
         $director->run($builder, $strokes);
         $this->trackMarkerOffset = max($builder->getEndPosition(), $this->trackMarkerOffset);
         return $builder->flush();
@@ -96,9 +95,12 @@ class Schedule extends Builder
     private function setMilestoneModels(Drawing $drawing, Director $director): array
     {
         $builder = new MilestoneBuilder();
-        $parser = new Parser($this->config->get('blueprint.drawing.stroke.pattern.milestone.schedule'));
+        $parser = new Parser(
+            $this->config->get('blueprint.drawing.stroke.pattern.milestone.schedule'),
+            key: 'PRJ',
+        );
         $attributesMatchKey = $this->config->get('blueprint.drawing.stroke.pattern.key.attributes');
-        $strokes = $drawing->getStrokes($parser, $attributesMatchKey, key: 'PRJ');
+        $strokes = $drawing->getStrokes($parser, $attributesMatchKey);
         $director->run($builder, $strokes);
         $this->projectMarkerOffset = $builder->getMarkerOffset();
         return $builder->flush();
