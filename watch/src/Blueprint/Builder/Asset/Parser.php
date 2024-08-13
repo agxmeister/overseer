@@ -40,7 +40,10 @@ readonly class Parser
                     fn($default) => [$default, -1],
                     $this->defaults,
                 ),
-                $matches,
+                array_filter(
+                    $matches,
+                    fn($match) => !is_null($match[0]),
+                ),
             ),
             fn($key) => is_string($key),
             ARRAY_FILTER_USE_KEY,

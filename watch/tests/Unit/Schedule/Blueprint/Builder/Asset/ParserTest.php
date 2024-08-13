@@ -27,9 +27,9 @@ class ParserTest extends Unit
     /**
      * @dataProvider dataGetMatchByStrokePatterns
      */
-    public function testGetMatchByStrokePatterns($pattern, $line, $expected)
+    public function testGetMatchByStrokePatterns($pattern, $defaults, $line, $expected)
     {
-        $parser = new Parser($pattern);
+        $parser = new Parser($pattern, ...$defaults);
         $this->assertEquals($this->getExpectedMatch($expected), $parser->getMatch($line));
     }
 
@@ -45,7 +45,16 @@ class ParserTest extends Unit
                     'p2' => ['p2', 10],
                     'p3' => ['p3', -1],
                 ],
-            ],
+            ], [
+                '/\s*(?<p1>[\w\-]+)?\s+(?<p2>[\w\-]+)\s+(?<p3>[\w\-]+)?\s+/',
+                ['p3' => 'p3'],
+                '    p1    p2    ',
+                [
+                    'p1' => ['p1', 4],
+                    'p2' => ['p2', 10],
+                    'p3' => ['p3', -1],
+                ],
+            ]
         ];
     }
 
@@ -69,6 +78,7 @@ class ParserTest extends Unit
         return [
             [
                 '/(?<marker>>)\s*(?<attributes_csv>.*)/',
+                [],
                 '    >     # 2023-07-15    ',
                 [
                     'marker' => ['>', 4],
@@ -76,6 +86,7 @@ class ParserTest extends Unit
                 ],
             ], [
                 '/(?<marker>>)\s*(?<attributes_csv>.*)/',
+                [],
                 '    >    ',
                 [
                     'marker' => ['>', 4],
@@ -83,6 +94,12 @@ class ParserTest extends Unit
                 ],
             ], [
                 '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+\-])?(?<beginMarker>\|)(?<track>[x*.\s]*)(?<endMarker>\|)\s*(?<attributes_csv>.*)/',
+                [
+                    'project' => null,
+                    'milestone' => null,
+                    'type' => null,
+                    'modifier' => null,
+                ],
                 '    K-02          |    xxxx          | @ K-01    ',
                 [
                     'project' => null,
@@ -97,6 +114,12 @@ class ParserTest extends Unit
                 ],
             ], [
                 '/\s*(((((?<project>[\w\-]+)(#(?<milestone>[\w\-]+))?)\/)?(?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<modifier>[~+])?(?<beginMarker>\|)(?<track>[*.\s]*)(?<endMarker>\|)\s*(?<attributes_csv>.*)/',
+                [
+                    'project' => null,
+                    'milestone' => null,
+                    'type' => null,
+                    'modifier' => null,
+                ],
                 '    K-02          |    ****          | @ K-01    ',
                 [
                     'project' => null,
@@ -111,6 +134,7 @@ class ParserTest extends Unit
                 ],
             ], [
                 '/\s*(((?<type>[\w\-]+)\/)?(?<key>[\w\-]+))\s+(?<beginMarker>\|)(?<track>[_!\s]*)(?<endMarker>\|)\s*(?<attributes_csv>.*)/',
+                [],
                 '    PB/finish-buf |            !!____| @ finish    ',
                 [
                     'type' => ['PB', 4],
@@ -122,6 +146,7 @@ class ParserTest extends Unit
                 ],
             ], [
                 '/\s*(?<key>[\w\-]+)?\s+(?<marker>\^)\s+(?<attributes_csv>.*)/',
+                [],
                 '    M1                   ^             # 2023-09-09    ',
                 [
                     'key' => ['M1', 4],
