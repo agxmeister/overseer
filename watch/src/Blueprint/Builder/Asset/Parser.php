@@ -37,7 +37,7 @@ readonly class Parser
         $namedMatches = array_filter(
             array_merge(
                 array_map(
-                    fn($default) => [$default, -1],
+                    fn($default) => [$default, null],
                     $this->defaults,
                 ),
                 array_filter(

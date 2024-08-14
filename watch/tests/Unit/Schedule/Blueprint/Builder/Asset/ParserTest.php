@@ -43,7 +43,7 @@ class ParserTest extends Unit
                 [
                     'p1' => ['p1', 4],
                     'p2' => ['p2', 10],
-                    'p3' => ['p3', -1],
+                    'p3' => ['p3', null],
                 ],
             ], [
                 '/\s*(?<p1>[\w\-]+)?\s+(?<p2>[\w\-]+)\s+(?<p3>[\w\-]+)?\s+/',
@@ -52,7 +52,15 @@ class ParserTest extends Unit
                 [
                     'p1' => ['p1', 4],
                     'p2' => ['p2', 10],
-                    'p3' => ['p3', -1],
+                    'p3' => ['p3', null],
+                ],
+            ], [
+                '/\s*(?<p1>[\w\-]+)?\s+(?<p2>[\w\-]+)\s+(?<p3>[\w\-]+)?\s+/',
+                [],
+                '    p1    p2    ',
+                [
+                    'p1' => ['p1', 4],
+                    'p2' => ['p2', 10],
                 ],
             ],
         ];
@@ -165,7 +173,7 @@ class ParserTest extends Unit
                 $expected,
             ),
             array_map(
-                fn($value) => $value[1] ?? -1,
+                fn($value) => $value[1] ?? null,
                 $expected,
             ),
         ];
