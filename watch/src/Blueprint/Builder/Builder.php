@@ -45,19 +45,40 @@ abstract class Builder
 
     protected function getReferenceDate(?Stroke $referenceStroke): ?DateTimeImmutable
     {
-        if (empty($referenceStroke->attributes)) {
+        ['attributes' => $attributes] = $referenceStroke->parts;
+        if (empty($attributes)) {
             return null;
         }
 
         return new DateTimeImmutable(
             array_reduce(
                 array_filter(
-                    $referenceStroke->attributes,
+                    $this->getStrokeAttributes($attributes),
                     fn(Attribute $attribute) => $attribute->type === AttributeType::Date
                 ),
                 fn(Attribute|null $acc, Attribute $attribute) => $attribute,
             )?->value,
         );
+    }
+
+    protected function getStrokeAttributes(array $attributes): array
+    {
+        return array_map(
+            fn(string $attribute) => $this->getStrokeAttribute($attribute),
+            $attributes,
+        );
+    }
+
+    protected function getStrokeAttribute(string $attribute): Attribute
+    {
+        [$code, $value] = explode(' ', $attribute);
+        $type = match ($code) {
+            '@' => AttributeType::Schedule,
+            '&' => AttributeType::Sequence,
+            '#' => AttributeType::Date,
+            default => AttributeType::Default,
+        };
+        return new Attribute($type, $value);
     }
 
     public function clean(): self

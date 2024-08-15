@@ -36,18 +36,19 @@ class Issue extends Builder
 
     public function setModel(Stroke $stroke): self
     {
-        list(
+        [
             'key' => $key,
             'type' => $type,
             'project' => $project,
             'milestone' => $milestone,
             'modifier' => $modifier,
             'track' => $track,
-            ) = $stroke->parts;
+            'attributes' => $attributes,
+        ] = $stroke->parts;
         list('endMarker' => $endMarkerOffset) = $stroke->offsets;
         $trackGap = strlen($track) - strlen(rtrim($track));
         $this->endPosition = $endMarkerOffset - $trackGap;
-        $strokeAttributes = $stroke->attributes;
+        $strokeAttributes = $this->getStrokeAttributes($attributes);
         $this->model = new IssueModel(
             $key,
             $type,

@@ -32,16 +32,17 @@ class Buffer extends Builder
 
     public function setModel(Stroke $stroke): self
     {
-        list(
+        [
             'key' => $key,
             'type' => $type,
             'track' => $track,
-            ) = $stroke->parts;
+            'attributes' => $attributes,
+        ] = $stroke->parts;
         list('endMarker' => $endMarkerOffset) = $stroke->offsets;
         $trackGap = strlen($track) - strlen(rtrim($track));
         $this->endPosition = $endMarkerOffset - $trackGap;
         $consumption = substr_count(trim($track), '!');
-        $strokeAttributes = $stroke->attributes;
+        $strokeAttributes = $this->getStrokeAttributes($attributes);
         $this->model = new BufferModel(
             $key,
             $type,

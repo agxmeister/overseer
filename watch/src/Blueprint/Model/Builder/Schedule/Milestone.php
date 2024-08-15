@@ -29,9 +29,12 @@ class Milestone extends Builder
 
     public function setModel(Stroke $stroke): self
     {
-        ['key' => $key] = $stroke->parts;
+        [
+            'key' => $key,
+            'attributes' => $attributes,
+        ] = $stroke->parts;
         ['marker' => $this->markerOffset] = $stroke->offsets;
-        $this->model = new MilestoneModel($key, $stroke->attributes);
+        $this->model = new MilestoneModel($key, $this->getStrokeAttributes($attributes));
         return $this;
     }
 

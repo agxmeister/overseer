@@ -57,18 +57,6 @@ readonly class Drawing
     private function createStroke($match, $attributesMatchKey): Stroke
     {
         [$parts, $offsets] = $match;
-        return new Stroke(
-            array_filter(
-                $parts,
-                fn(string $key) => $key !== $attributesMatchKey,
-                ARRAY_FILTER_USE_KEY
-            ),
-            array_filter(
-                $offsets,
-                fn(string $key) => $key !== $attributesMatchKey,
-                ARRAY_FILTER_USE_KEY
-            ),
-            $this->getStrokeAttributes($parts[$attributesMatchKey] ?? []),
-        );
+        return new Stroke($parts, $offsets);
     }
 }
