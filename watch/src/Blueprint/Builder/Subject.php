@@ -61,8 +61,7 @@ class Subject extends Builder
             type: 'T',
             modifier: null,
         );
-        $attributesMatchKey = $this->config->get('blueprint.drawing.stroke.pattern.key.attributes');
-        $strokes = $drawing->getStrokes($parser, $attributesMatchKey);
+        $strokes = $drawing->getStrokes($parser);
         $director->run($builder, $strokes);
         $this->trackMarkerOffset = $builder->getEndPosition();
         return $builder->flush();
@@ -79,8 +78,7 @@ class Subject extends Builder
             $this->config->get('blueprint.drawing.stroke.pattern.milestone.subject'),
             key: 'PRJ',
         );
-        $attributesMatchKey = $this->config->get('blueprint.drawing.stroke.pattern.key.attributes');
-        $strokes = $drawing->getStrokes($parser, $attributesMatchKey);
+        $strokes = $drawing->getStrokes($parser);
         $director->run($builder, $strokes);
         $this->projectMarkerOffset = $builder->getMarkerOffset();
         return $builder->flush();

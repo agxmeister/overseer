@@ -61,8 +61,7 @@ class Schedule extends Builder
             type: 'T',
             modifier: null,
         );
-        $attributesMatchKey = $this->config->get('blueprint.drawing.stroke.pattern.key.attributes');
-        $strokes = $drawing->getStrokes($parser, $attributesMatchKey);
+        $strokes = $drawing->getStrokes($parser);
         $director->run($builder, $strokes);
         $this->trackMarkerOffset = max($builder->getEndPosition(), $this->trackMarkerOffset);
         return $builder->flush();
@@ -80,8 +79,7 @@ class Schedule extends Builder
             $this->config->get('blueprint.drawing.stroke.pattern.buffer.schedule'),
             type: 'T',
         );
-        $attributesMatchKey = $this->config->get('blueprint.drawing.stroke.pattern.key.attributes');
-        $strokes = $drawing->getStrokes($parser, $attributesMatchKey);
+        $strokes = $drawing->getStrokes($parser);
         $director->run($builder, $strokes);
         $this->trackMarkerOffset = max($builder->getEndPosition(), $this->trackMarkerOffset);
         return $builder->flush();
@@ -99,8 +97,7 @@ class Schedule extends Builder
             $this->config->get('blueprint.drawing.stroke.pattern.milestone.schedule'),
             key: 'PRJ',
         );
-        $attributesMatchKey = $this->config->get('blueprint.drawing.stroke.pattern.key.attributes');
-        $strokes = $drawing->getStrokes($parser, $attributesMatchKey);
+        $strokes = $drawing->getStrokes($parser);
         $director->run($builder, $strokes);
         $this->projectMarkerOffset = $builder->getMarkerOffset();
         return $builder->flush();
