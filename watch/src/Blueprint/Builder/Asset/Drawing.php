@@ -2,12 +2,9 @@
 
 namespace Watch\Blueprint\Builder\Asset;
 
-use Watch\Blueprint\Model\Attribute;
-use Watch\Blueprint\Model\AttributeType;
-
 readonly class Drawing
 {
-    public array $strokes;
+    private array $strokes;
 
     public function __construct(string $drawing)
     {
@@ -17,7 +14,11 @@ readonly class Drawing
         );
     }
 
-    public function getStrokes(Parser $parser): ?array
+    /**
+     * @param Parser $parser
+     * @return Stroke[]
+     */
+    public function getStrokes(Parser $parser): array
     {
         return array_map(
             fn(array $match) => $this->createStroke($match),
@@ -27,31 +28,11 @@ readonly class Drawing
 
     public function getStroke(Parser $parser): ?Stroke
     {
-        $match = current($parser->getMatches($this->strokes));
-        if ($match === false) {
+        $matches = $parser->getMatches($this->strokes);
+        if (empty($matches)) {
             return null;
         }
-        return $this->createStroke($match);
-    }
-
-    private function getStrokeAttributes(array $attributes): array
-    {
-        return array_map(
-            fn(string $attribute) => $this->getStrokeAttribute($attribute),
-            $attributes,
-        );
-    }
-
-    private function getStrokeAttribute(string $attribute): Attribute
-    {
-        [$code, $value] = explode(' ', $attribute);
-        $type = match ($code) {
-            '@' => AttributeType::Schedule,
-            '&' => AttributeType::Sequence,
-            '#' => AttributeType::Date,
-            default => AttributeType::Default,
-        };
-        return new Attribute($type, $value);
+        return $this->createStroke(array_pop($matches));
     }
 
     private function createStroke($match): Stroke
