@@ -13,7 +13,7 @@ readonly class Parser
 
     /**
      * @param string[] $lines
-     * @return string[]
+     * @return array
      */
     public function getMatches(array $lines): array
     {
@@ -30,8 +30,7 @@ readonly class Parser
 
     public function getMatch(string $line): ?array
     {
-        $result = preg_match($this->pattern, $line, $matches, PREG_OFFSET_CAPTURE | PREG_UNMATCHED_AS_NULL);
-        if (!$result) {
+        if (!preg_match($this->pattern, $line, $matches, PREG_OFFSET_CAPTURE | PREG_UNMATCHED_AS_NULL)) {
             return null;
         }
         $namedMatches = array_filter(

@@ -9,10 +9,10 @@ readonly class Drawing
      */
     private array $lines;
 
-    public function __construct(string $drawing)
+    public function __construct(string $content)
     {
         $this->lines = array_filter(
-            explode("\n", $drawing),
+            explode("\n", $content),
             fn($line) => !empty(trim($line)),
         );
     }
