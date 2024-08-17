@@ -4,11 +4,14 @@ namespace Watch\Blueprint\Builder\Asset;
 
 readonly class Drawing
 {
-    private array $strokes;
+    /**
+     * @var string[]
+     */
+    private array $lines;
 
     public function __construct(string $drawing)
     {
-        $this->strokes = array_filter(
+        $this->lines = array_filter(
             explode("\n", $drawing),
             fn($line) => !empty(trim($line)),
         );
@@ -22,13 +25,13 @@ readonly class Drawing
     {
         return array_map(
             fn(array $match) => $this->createStroke($match),
-            $parser->getMatches($this->strokes),
+            $parser->getMatches($this->lines),
         );
     }
 
     public function getStroke(Parser $parser): ?Stroke
     {
-        $matches = $parser->getMatches($this->strokes);
+        $matches = $parser->getMatches($this->lines);
         if (empty($matches)) {
             return null;
         }
