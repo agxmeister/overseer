@@ -40,7 +40,7 @@ readonly class Drawing
 
     private function createStroke($match): Stroke
     {
-        [$parts, $offsets] = $match;
-        return new Stroke($parts, $offsets);
+        [$dashes, $offsets] = $match;
+        return new Stroke($dashes, $offsets);
     }
 }

@@ -37,7 +37,7 @@ class Buffer extends Builder
             'type' => $type,
             'track' => $track,
             'attributes' => $attributes,
-        ] = $stroke->parts;
+        ] = $stroke->dashes;
         list('endMarker' => $endMarkerOffset) = $stroke->offsets;
         $trackGap = strlen($track) - strlen(rtrim($track));
         $this->endPosition = $endMarkerOffset - $trackGap;

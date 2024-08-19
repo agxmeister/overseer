@@ -44,7 +44,7 @@ abstract class Builder
 
     protected function getReferenceDate(?Stroke $referenceStroke): ?DateTimeImmutable
     {
-        ['attributes' => $attributes] = $referenceStroke->parts;
+        ['attributes' => $attributes] = $referenceStroke->dashes;
         if (empty($attributes)) {
             return null;
         }
