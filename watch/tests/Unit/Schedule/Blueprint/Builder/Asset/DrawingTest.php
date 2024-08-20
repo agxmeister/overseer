@@ -2,6 +2,7 @@
 namespace Tests\Unit\Schedule\Blueprint\Builder\Asset;
 
 use Codeception\Test\Unit;
+use Watch\Blueprint\Builder\Asset\Dash;
 use Watch\Blueprint\Builder\Asset\Drawing;
 use Watch\Blueprint\Builder\Asset\Parser;
 use Watch\Blueprint\Builder\Asset\Stroke;
@@ -40,7 +41,7 @@ class DrawingTest extends Unit
                     strokeC c
                 ',
                 '/strokeB\s+(?<parameter>[\w\d]+)/',
-                new Stroke(['parameter' => 'b'], ['parameter' => 28]),
+                new Stroke(['parameter' => new Dash('b', 28)]),
             ], [
                 '
                     strokeA a
@@ -49,7 +50,7 @@ class DrawingTest extends Unit
                     strokeB b2
                 ',
                 '/strokeB\s+(?<parameter>[\w\d]+)/',
-                new Stroke(['parameter' => 'b2'], ['parameter' => 28]),
+                new Stroke(['parameter' => new Dash('b2', 28)]),
             ], [
                 '
                     strokeA a
@@ -72,7 +73,7 @@ class DrawingTest extends Unit
                 ',
                 '/strokeB\s+(?<parameter>[\w\d]+)/',
                 [
-                    new Stroke(['parameter' => 'b'], ['parameter' => 28]),
+                    new Stroke(['parameter' => new Dash('b', 28)]),
                 ],
             ], [
                 '
@@ -83,8 +84,8 @@ class DrawingTest extends Unit
                 ',
                 '/strokeB\s+(?<parameter>[\w\d]+)/',
                 [
-                    new Stroke(['parameter' => 'b1'], ['parameter' => 28]),
-                    new Stroke(['parameter' => 'b2'], ['parameter' => 28]),
+                    new Stroke(['parameter' => new Dash('b1', 28)]),
+                    new Stroke(['parameter' => new Dash('b2', 28)]),
                 ],
             ], [
                 '
