@@ -43,14 +43,23 @@ readonly class Drawing
         return new Stroke(
             array_reduce(
                 array_map(
-                    fn($key, $value, $offset) => [$key, $value, $offset],
+                    fn($key, $value, $offset) => [
+                        'key' => $key,
+                        'value' => $value,
+                        'offset' => $offset,
+                    ],
                     array_keys($match[0]),
                     $match[0],
                     $match[1],
                 ),
-                fn($acc, $set) => [...$acc, $set[0] => new Dash($set[1], $set[2])],
+                fn($acc, $set) => [
+                    ...$acc,
+                    $set['key'] => !is_null($set['value'])
+                        ? new Dash($set['value'], $set['offset'])
+                        : null,
+                ],
                 [],
-            )
+            ),
         );
     }
 }

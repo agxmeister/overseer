@@ -19,11 +19,11 @@ readonly class Stroke
     {
         return match($name) {
             'dashes' => array_map(
-                fn(Dash $dash) => $dash->value,
+                fn(?Dash $dash) => $dash?->value,
                 $this->dashes,
             ),
             'offsets' => array_map(
-                fn(Dash $dash) => $dash->offset,
+                fn(?Dash $dash) => $dash?->offset,
                 $this->dashes,
             ),
         };
