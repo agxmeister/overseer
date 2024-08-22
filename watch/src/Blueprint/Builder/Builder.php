@@ -45,14 +45,17 @@ abstract class Builder
     protected function getReferenceDate(?Stroke $referenceStroke): ?DateTimeImmutable
     {
         ['attributes' => $attributes] = $referenceStroke->dashes;
-        if (empty($attributes)) {
+        if (is_null($attributes)) {
+            return null;
+        }
+        if (empty($attributes->value)) {
             return null;
         }
 
         return new DateTimeImmutable(
             array_reduce(
                 array_filter(
-                    $this->getStrokeAttributes($attributes),
+                    $this->getStrokeAttributes($attributes->value),
                     fn(Attribute $attribute) => $attribute->type === AttributeType::Date
                 ),
                 fn(Attribute|null $acc, Attribute $attribute) => $attribute,

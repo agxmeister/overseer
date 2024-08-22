@@ -46,20 +46,20 @@ class Issue extends Builder
             'attributes' => $attributes,
         ] = $stroke->dashes;
         list('endMarker' => $endMarkerOffset) = $stroke->offsets;
-        $trackGap = strlen($track) - strlen(rtrim($track));
+        $trackGap = strlen($track?->value) - strlen(rtrim($track?->value));
         $this->endPosition = $endMarkerOffset - $trackGap;
-        $strokeAttributes = $this->getStrokeAttributes($attributes);
+        $strokeAttributes = $this->getStrokeAttributes($attributes?->value ?? []);
         $this->model = new IssueModel(
-            $key,
-            $type,
-            $project,
-            $milestone,
-            new Track($track),
-            $this->getLinks($key, $strokeAttributes, $this->mapper),
+            $key?->value,
+            $type?->value,
+            $project?->value,
+            $milestone?->value,
+            new Track($track?->value),
+            $this->getLinks($key?->value, $strokeAttributes, $this->mapper),
             $strokeAttributes,
-            $modifier === '~',
-            $modifier === '+',
-            str_contains($track, '*'),
+            $modifier?->value === '~',
+            $modifier?->value === '+',
+            str_contains($track?->value, '*'),
         );
         return $this;
     }

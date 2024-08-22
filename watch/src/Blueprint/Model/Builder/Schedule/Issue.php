@@ -42,22 +42,22 @@ class Issue extends Builder
             'attributes' => $attributes,
         ] = $stroke->dashes;
         list('endMarker' => $endMarkerOffset) = $stroke->offsets;
-        $trackGap = strlen($track) - strlen(rtrim($track));
+        $trackGap = strlen($track?->value) - strlen(rtrim($track?->value));
         $this->endPosition = $endMarkerOffset - $trackGap;
-        $strokeAttributes = $this->getStrokeAttributes($attributes);
+        $strokeAttributes = $this->getStrokeAttributes($attributes?->value ?? []);
         $this->model = new IssueModel(
-            $key,
-            $type,
-            $project,
-            $milestone,
-            new Track($track),
-            $this->getLinks($key, $strokeAttributes),
+            $key?->value,
+            $type?->value,
+            $project?->value,
+            $milestone?->value,
+            new Track($track?->value),
+            $this->getLinks($key?->value, $strokeAttributes),
             $strokeAttributes,
-            $modifier === '~',
-            $modifier === '+',
-            str_contains($track, '*') || str_contains($track, 'x'),
-            str_contains($track, 'x'),
-            $modifier === '-',
+            $modifier?->value === '~',
+            $modifier?->value === '+',
+            str_contains($track?->value, '*') || str_contains($track?->value, 'x'),
+            str_contains($track?->value, 'x'),
+            $modifier?->value === '-',
         );
         return $this;
     }
