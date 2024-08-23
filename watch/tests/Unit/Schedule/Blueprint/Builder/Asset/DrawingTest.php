@@ -58,6 +58,12 @@ class DrawingTest extends Unit
                 ',
                 '/strokeB\s+(?<parameter>[\w\d]+)/',
                 null,
+            ], [
+                '
+                    strokeCSV a,b,c
+                ',
+                '/strokeCSV\s+(?<parameter_csv>[\w\d,]+)/',
+                new Stroke(['parameter' => new Dash(['a', 'b', 'c'], 30)]),
             ],
         ];
     }
