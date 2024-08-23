@@ -43,11 +43,11 @@ class Issue extends Builder
             'milestone' => $milestone,
             'modifier' => $modifier,
             'track' => $track,
+            'endMarker' => $endMarker,
             'attributes' => $attributes,
         ] = $stroke->dashes;
-        list('endMarker' => $endMarkerOffset) = $stroke->offsets;
         $trackGap = strlen($track?->value) - strlen(rtrim($track?->value));
-        $this->endPosition = $endMarkerOffset - $trackGap;
+        $this->endPosition = $endMarker?->offset - $trackGap;
         $strokeAttributes = $this->getStrokeAttributes($attributes?->value ?? []);
         $this->model = new IssueModel(
             $key?->value,

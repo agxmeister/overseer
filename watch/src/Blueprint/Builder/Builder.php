@@ -38,8 +38,8 @@ abstract class Builder
 
     protected function getReferenceMarkerOffset(Stroke $referenceStroke): int
     {
-        ['marker' => $markerOffset] = $referenceStroke->offsets;
-        return $markerOffset;
+        ['marker' => $marker] = $referenceStroke->dashes;
+        return $marker?->offset;
     }
 
     protected function getReferenceDate(?Stroke $referenceStroke): ?DateTimeImmutable

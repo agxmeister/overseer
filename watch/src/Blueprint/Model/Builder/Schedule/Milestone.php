@@ -31,9 +31,10 @@ class Milestone extends Builder
     {
         [
             'key' => $key,
+            'marker' => $marker,
             'attributes' => $attributes,
         ] = $stroke->dashes;
-        ['marker' => $this->markerOffset] = $stroke->offsets;
+        $this->markerOffset = $marker?->offset ?? 0;
         $this->model = new MilestoneModel($key?->value, $this->getStrokeAttributes($attributes?->value ?? []));
         return $this;
     }

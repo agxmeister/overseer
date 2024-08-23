@@ -36,11 +36,11 @@ class Buffer extends Builder
             'key' => $key,
             'type' => $type,
             'track' => $track,
+            'endMarker' => $endMarker,
             'attributes' => $attributes,
         ] = $stroke->dashes;
-        list('endMarker' => $endMarkerOffset) = $stroke->offsets;
         $trackGap = strlen($track?->value) - strlen(rtrim($track?->value));
-        $this->endPosition = $endMarkerOffset - $trackGap;
+        $this->endPosition = $endMarker?->offset - $trackGap;
         $consumption = substr_count(trim($track?->value), '!');
         $strokeAttributes = $this->getStrokeAttributes($attributes?->value ?? []);
         $this->model = new BufferModel(
